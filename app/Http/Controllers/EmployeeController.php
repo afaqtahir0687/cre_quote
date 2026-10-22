@@ -46,6 +46,8 @@ class EmployeeController extends Controller
             'password' => 'required|string|min:6',
         ]);
 
+        $shopId = current_shop_id();
+
         // Create user with employee role
         $user = \App\Models\User::create([
             'name' => $validated['name'],
@@ -53,10 +55,12 @@ class EmployeeController extends Controller
             'username' => $validated['username'],
             'password' => bcrypt($validated['password']),
             'role' => 'employee',
+            'shop_id' => $shopId,
         ]);
 
         // Create employee linked to user
         $validated['user_id'] = $user->id;
+        $validated['shop_id'] = $shopId;
         Employee::create($validated);
 
         return redirect()->route('employees.index')

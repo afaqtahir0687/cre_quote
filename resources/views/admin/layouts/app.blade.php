@@ -31,53 +31,8 @@
 
         <main class="main-content">
             {{-- Toast container always present for both server & JS toasts --}}
-            <div class="toast-container position-fixed top-0 end-0 p-3" id="toastContainer">
-                @if(session('success'))
-                    <div class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
-                        <div class="d-flex">
-                            <div class="toast-body">
-                                <i class="fas fa-check-circle me-2"></i>
-                                {{ session('success') }}
-                            </div>
-                            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-                        </div>
-                    </div>
-                @endif
-                @if(session('error'))
-                    <div class="toast align-items-center text-bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
-                        <div class="d-flex">
-                            <div class="toast-body">
-                                <i class="fas fa-exclamation-circle me-2"></i>
-                                {{ session('error') }}
-                            </div>
-                            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-                        </div>
-                    </div>
-                @endif
-                @if($errors->any())
-                    @foreach($errors->all() as $error)
-                        <div class="toast align-items-center text-bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
-                            <div class="d-flex">
-                                <div class="toast-body">
-                                    <i class="fas fa-exclamation-circle me-2"></i>
-                                    {{ $error }}
-                                </div>
-                                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-                            </div>
-                        </div>
-                    @endforeach
-                @endif
-            </div>
-            @if(session('success') || session('error') || $errors->any())
-            <script>
-                document.addEventListener('DOMContentLoaded', function () {
-                    var toastElList = [].slice.call(document.querySelectorAll('#toastContainer .toast'));
-                    toastElList.forEach(function (toastEl) {
-                        new bootstrap.Toast(toastEl).show();
-                    });
-                });
-            </script>
-            @endif
+            {{-- Toast container for backward-compatible fallback --}}
+            <div class="toast-container position-fixed top-0 end-0 p-3" id="toastContainer"></div>
 
             @yield('content')
         </main>
@@ -92,25 +47,64 @@
         });
 
         /**
-         * Global toast helper — same style as server-rendered toasts.
-         * type: 'success' | 'danger' | 'warning' | 'info'
+         * Global toast helper — modern SweetAlert2 Toast notification
+         * type: 'success' | 'error' | 'warning' | 'info' | 'danger'
          */
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3500,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+                toast.addEventListener('mouseenter', Swal.stopTimer);
+                toast.addEventListener('mouseleave', Swal.resumeTimer);
+            }
+        });
+
         function showToast(message, type) {
             type = type || 'success';
-            var icons = { success: 'fa-check-circle', danger: 'fa-exclamation-circle', warning: 'fa-exclamation-triangle', info: 'fa-info-circle' };
-            var icon  = icons[type] || 'fa-info-circle';
-            var el = document.createElement('div');
-            el.className = 'toast align-items-center text-bg-' + type + ' border-0';
-            el.setAttribute('role', 'alert');
-            el.setAttribute('aria-live', 'assertive');
-            el.setAttribute('aria-atomic', 'true');
-            el.innerHTML = '<div class="d-flex"><div class="toast-body"><i class="fas ' + icon + ' me-2"></i>' + message + '</div>'
-                         + '<button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button></div>';
-            document.getElementById('toastContainer').appendChild(el);
-            var t = new bootstrap.Toast(el, { delay: 4000 });
-            t.show();
-            el.addEventListener('hidden.bs.toast', function () { el.remove(); });
+            var icon = (type === 'danger' || type === 'error') ? 'error' : type;
+            Toast.fire({
+                icon: icon,
+                title: message
+            });
         }
+
+        @if(session('success'))
+            Toast.fire({
+                icon: 'success',
+                title: @json(session('success'))
+            });
+        @endif
+        @if(session('error'))
+            Toast.fire({
+                icon: 'error',
+                title: @json(session('error')),
+                timer: 4500
+            });
+        @endif
+        @if(session('warning'))
+            Toast.fire({
+                icon: 'warning',
+                title: @json(session('warning'))
+            });
+        @endif
+        @if(session('info'))
+            Toast.fire({
+                icon: 'info',
+                title: @json(session('info'))
+            });
+        @endif
+        @if(isset($errors) && $errors->any())
+            Swal.fire({
+                icon: 'error',
+                title: 'Please check form errors',
+                html: `{!! implode('<br>', array_map('e', $errors->all())) !!}`,
+                confirmButtonColor: '#3b82f6',
+                confirmButtonText: 'OK'
+            });
+        @endif
 
         // Global form submit loader
         document.addEventListener('submit', function(e) {
@@ -204,6 +198,7 @@
         document.addEventListener('DOMContentLoaded', bindSearchEvents);
     </script>
     @yield('scripts')
+    @stack('scripts')
 
     <!-- WhatsApp Floating Button -->
     <a href="https://wa.me/996598500143" target="_blank" style="position: fixed; width: 60px; height: 60px; bottom: 40px; right: 40px; background-color: #25d366; color: #FFF; border-radius: 50px; text-align: center; font-size: 35px; box-shadow: 2px 2px 5px rgba(0,0,0,0.3); z-index: 1000; display: flex; align-items: center; justify-content: center; text-decoration: none; transition: all 0.3s ease;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">

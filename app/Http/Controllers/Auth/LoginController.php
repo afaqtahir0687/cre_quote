@@ -44,10 +44,10 @@ class LoginController extends Controller
         $login = $request->input('login');
         $field = filter_var($login, FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
         
-        // If logging in with email, verify user is admin
+        // If logging in with email, verify user is admin or super_admin
         if ($field === 'email') {
             $user = \App\Models\User::where('email', $login)->first();
-            if ($user && $user->role !== 'admin') {
+            if ($user && !in_array($user->role, ['admin', 'super_admin'])) {
                 // Return invalid credentials if employee tries to login with email
                 return [
                     $field => $login,
@@ -80,7 +80,37 @@ class LoginController extends Controller
             return redirect()->route('login')
                 ->with('error', 'Employees can only login with username, not email.');
         }
+
+        // Check shop status
+        if (!$user->isSuperAdmin() && $user->shop && !$user->shop->isActive()) {
+            $shop = $user->shop;
+            auth()->logout();
+
+            if ($shop->isSuspended()) {
+                $msg = "Your shop ('{$shop->name}') has been permanently suspended. Please contact the platform Super Admin.";
+            } else {
+                $reason = $shop->status_reason ?: 'Payment or policy compliance required';
+                $deadlineInfo = '';
+                if ($shop->action_deadline) {
+                    $daysLeft = (int) now()->startOfDay()->diffInDays($shop->action_deadline->startOfDay(), false);
+                    if ($daysLeft > 0) {
+                        $deadlineInfo = " You have until {$shop->action_deadline->format('d M, Y')} ({$daysLeft} days left) to clear dues before permanent suspension.";
+                    } elseif ($daysLeft === 0) {
+                        $deadlineInfo = " Today is the final day to clear dues before permanent suspension.";
+                    } else {
+                        $deadlineInfo = " The grace period expired on {$shop->action_deadline->format('d M, Y')}.";
+                    }
+                }
+                $msg = "Your shop ('{$shop->name}') is temporarily inactive due to: {$reason}.{$deadlineInfo} Please contact Super Admin or complete pending payment to re-activate.";
+            }
+
+            return redirect()->route('login')->with('error', $msg);
+        }
         
+        if ($user->isSuperAdmin()) {
+            return redirect()->route('super_admin.dashboard');
+        }
+
         return redirect()->intended($this->redirectPath());
     }
 

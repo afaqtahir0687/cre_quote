@@ -7,9 +7,9 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Invoice extends Model
 {
-    use SoftDeletes;
+    use SoftDeletes, \App\Traits\BelongsToShop;
     protected $fillable = [
-        'invoice_number', 'invoice_date', 'due_date', 'customer_id', 'employee_id', 'subtotal', 'total_tax', 'total_discount', 'shipping', 'grand_total', 'amount_paid', 'balance_due', 'status', 'notes', 'terms', 'signature'
+        'shop_id', 'invoice_number', 'invoice_date', 'due_date', 'customer_id', 'employee_id', 'subtotal', 'total_tax', 'total_discount', 'shipping', 'grand_total', 'amount_paid', 'balance_due', 'status', 'notes', 'terms', 'signature'
     ];
 
     public function customer()

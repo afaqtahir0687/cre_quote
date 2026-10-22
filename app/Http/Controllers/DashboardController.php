@@ -9,16 +9,18 @@ use App\Models\Quote;
 use App\Models\JobOrder;
 use App\Models\Customer;
 use App\Models\Product;
+use App\Models\Shop;
 
 class DashboardController extends Controller
 {
     public function index()
     {
-        $userRole = auth()->user()->role;
-        $setting = \App\Models\Setting::first();
+        $user = auth()->user();
+        $setting = current_setting();
+        $currentShop = current_shop();
         
-        if ($userRole === 'admin') {
-            // Total discount given to all customers across the system
+        if ($user->isSuperAdmin() || $user->isAdmin()) {
+            // Total discount given to all customers across the active shop
             $invoiceDiscount = (float) Invoice::where('status', '!=', 'Cancelled')->sum('total_discount');
             $jobOrderDiscount = (float) JobOrder::whereNull('invoice_id')->where('status', '!=', 'cancelled')->sum('total_discount');
             $quoteDiscount = (float) Quote::where('status', '!=', 'Accepted')->sum('total_discount');
@@ -36,13 +38,12 @@ class DashboardController extends Controller
             
             $recentInvoices = Invoice::with('customer')->latest('id')->take(5)->get();
             
-            return view('admin.dashboard', compact('stats', 'recentInvoices', 'setting'));
+            return view('admin.dashboard', compact('stats', 'recentInvoices', 'setting', 'currentShop'));
         } else {
-            // Employee dashboard - show their own data
-            $employee = \App\Models\Employee::where('user_id', auth()->id())->first();
+            // Employee dashboard - show their own data within their shop
+            $employee = \App\Models\Employee::where('user_id', $user->id)->first();
             $employeeId = $employee ? $employee->id : null;
             
-            // Total discount given to all customers across the system
             $invoiceDiscount = (float) Invoice::where('status', '!=', 'Cancelled')->sum('total_discount');
             $jobOrderDiscount = (float) JobOrder::whereNull('invoice_id')->where('status', '!=', 'cancelled')->sum('total_discount');
             $quoteDiscount = (float) Quote::where('status', '!=', 'Accepted')->sum('total_discount');
@@ -60,7 +61,7 @@ class DashboardController extends Controller
             $recentQuotes = Quote::with('customer')->where('employee_id', $employeeId)->latest('id')->take(5)->get();
             $recentJobOrders = JobOrder::with('customer')->where('employee_id', $employeeId)->latest('id')->take(5)->get();
             
-            return view('employee.dashboard', compact('stats', 'recentQuotes', 'recentJobOrders', 'setting'));
+            return view('employee.dashboard', compact('stats', 'recentQuotes', 'recentJobOrders', 'setting', 'currentShop'));
         }
     }
 }

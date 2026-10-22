@@ -13,6 +13,9 @@ use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\DeliveryNoteController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\SystemLogController;
+use App\Http\Controllers\SuperAdmin\SuperAdminController;
+use App\Http\Controllers\SuperAdmin\ShopController;
+use App\Http\Controllers\SuperAdmin\UserController as SuperAdminUserController;
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -102,6 +105,26 @@ Route::group(['middleware' => 'auth'], function () {
 
     Route::delete('job-orders/{id}', [App\Http\Controllers\JobOrderController::class, 'destroy'])
         ->name('job-orders.destroy');
+
+    // Super Admin Switch Shop Routes
+    Route::post('super-admin/switch-shop/{id}', [ShopController::class, 'switchShop'])->name('super_admin.switch_shop');
+    Route::post('super-admin/switch-shop-all', [ShopController::class, 'switchShopAll'])->name('super_admin.switch_shop_all');
+
+    // Super Admin Management Panel
+    Route::group(['prefix' => 'super-admin', 'as' => 'super_admin.', 'middleware' => 'super_admin'], function () {
+        Route::get('/', [SuperAdminController::class, 'index'])->name('dashboard');
+        
+        // Shop Management
+        Route::resource('shops', ShopController::class);
+        Route::post('shops/{shop}/toggle-status', [ShopController::class, 'toggleStatus'])->name('shops.toggle_status');
+        Route::post('shops/{shop}/update-status', [ShopController::class, 'updateStatus'])->name('shops.update_status');
+        
+        // Platform Users Management
+        Route::resource('users', SuperAdminUserController::class);
+
+        // Test Email Dispatch
+        Route::post('test-email', [SuperAdminController::class, 'sendTestEmail'])->name('test_email');
+    });
 
 });
 

@@ -4,12 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Traits\BelongsToShop;
 
 class Quote extends Model
 {
-    use SoftDeletes;
+    use SoftDeletes, BelongsToShop;
+
     protected $fillable = [
-        'quote_number', 'quote_date', 'due_date', 'reference', 'customer_id', 'employee_id', 'subtotal', 'total_tax', 'total_discount', 'shipping', 'grand_total', 'status', 'notes', 'images'
+        'shop_id', 'quote_number', 'quote_date', 'due_date', 'reference', 'customer_id', 'employee_id', 'subtotal', 'total_tax', 'total_discount', 'shipping', 'grand_total', 'status', 'notes', 'images'
     ];
 
     protected $casts = [
@@ -31,6 +33,3 @@ class Quote extends Model
         return $this->belongsTo(Employee::class);
     }
 }
-
-
-

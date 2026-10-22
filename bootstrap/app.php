@@ -13,6 +13,11 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
             'admin' => \App\Http\Middleware\IsAdmin::class,
+            'super_admin' => \App\Http\Middleware\IsSuperAdmin::class,
+        ]);
+
+        $middleware->web(append: [
+            \App\Http\Middleware\CheckShopStatus::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

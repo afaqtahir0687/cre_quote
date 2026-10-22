@@ -7,10 +7,10 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Customer extends Model
 {
-    use SoftDeletes;
+    use SoftDeletes, \App\Traits\BelongsToShop;
 
     protected $fillable = [
-        'name', 'company_name', 'email', 'phone', 'address', 'city', 'zip', 'country', 'tax_id', 'vat_no', 'cr_no', 'is_active'
+        'shop_id', 'name', 'company_name', 'email', 'phone', 'address', 'city', 'zip', 'country', 'tax_id', 'vat_no', 'cr_no', 'is_active'
     ];
 
     public function quotes()

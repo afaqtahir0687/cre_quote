@@ -9,8 +9,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class JobOrder extends Model
 {
-    use SoftDeletes;
+    use SoftDeletes, \App\Traits\BelongsToShop;
     protected $fillable = [
+        'shop_id',
         'order_number',
         'quote_id',
         'customer_id',

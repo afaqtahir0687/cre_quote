@@ -22,9 +22,13 @@ class AppServiceProvider extends ServiceProvider
     {
         Paginator::useBootstrapFive();
 
-        // Share settings with all views
+        // Share multi-shop context with all views
         view()->composer('*', function ($view) {
-            $view->with('setting', \App\Models\Setting::first());
+            $view->with('setting', current_setting());
+            $view->with('currentShop', current_shop());
+            if (auth()->check() && auth()->user()->isSuperAdmin()) {
+                $view->with('allShops', \App\Models\Shop::orderBy('name')->get());
+            }
         });
     }
 }
