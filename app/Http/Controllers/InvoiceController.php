@@ -52,7 +52,7 @@ class InvoiceController extends Controller
     {
         $customers = Customer::where('is_active', true)->latest()->get();
         $products = Product::all();
-        $setting = Setting::first();
+        $setting = current_setting();
         
         $nextNumber = 1001;
         $latestInvoice = Invoice::latest('id')->first();
@@ -76,7 +76,7 @@ class InvoiceController extends Controller
         DB::transaction(function () use ($request) {
             $data = $request->validated();
             
-            $setting = \App\Models\Setting::first();
+            $setting = current_setting();
             $invoiceNumber = \App\Helpers\SerialGenerator::generate('invoice', now()->format('Y-m-d'));
             $data['invoice_number'] = $invoiceNumber;
 
@@ -147,7 +147,7 @@ class InvoiceController extends Controller
     public function downloadPdf(Invoice $invoice)
     {
         $invoice->load('customer', 'items', 'employee');
-        $setting = Setting::first();
+        $setting = ($invoice->shop_id ? Setting::withoutGlobalScopes()->where('shop_id', $invoice->shop_id)->first() : null) ?: current_setting();
         
         $mpdf = new \Mpdf\Mpdf([
             'mode' => 'utf-8',

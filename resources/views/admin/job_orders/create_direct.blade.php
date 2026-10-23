@@ -181,7 +181,7 @@
 
                     <div class="mb-3">
                         <label class="form-label text-muted fw-medium small">Notes</label>
-                        <textarea name="notes" class="form-control" rows="8" placeholder="Additional notes for the customer...">Dear Customer attention, Please Check The Design, Printing material type Size, And All other Details Completely before Signature on Print Approval. However After the Signature New sign or Designer Is not Responsible For Any mistake Printing Colours can Be Different than Desktop Computer Screen. Please, ask for a color sample if it is necessary</textarea>
+                        <textarea name="notes" class="form-control" rows="8" placeholder="Additional notes for the customer...">Dear Customer attention, Please Check The Design, Printing material type Size, And All other Details Completely before Signature on Print Approval. However After the Signature New Crelogics or Designer Is not Responsible For Any mistake Printing Colours can Be Different than Desktop Computer Screen. Please, ask for a color sample if it is necessary</textarea>
                     </div>
                 </x-card>
                 

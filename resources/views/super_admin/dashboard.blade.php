@@ -139,8 +139,8 @@
                     @if($shop->logo)
                         <img src="{{ asset($shop->logo) }}" alt="{{ $shop->name }}" class="rounded me-3 border p-1" style="width: 42px; height: 42px; object-fit: contain;">
                     @else
-                        <div class="rounded bg-light text-primary d-flex align-items-center justify-content-center me-3 fw-bold border" style="width: 42px; height: 42px; font-size: 1rem;">
-                            {{ strtoupper(substr($shop->name, 0, 2)) }}
+                        <div class="rounded bg-light text-primary d-flex align-items-center justify-content-center me-3 border" style="width: 42px; height: 42px; font-size: 1.15rem;">
+                            <i class="fas fa-store"></i>
                         </div>
                     @endif
                     <div>

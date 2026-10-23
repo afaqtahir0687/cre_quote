@@ -110,7 +110,7 @@ class JobOrderController extends Controller
     public function create()
     {
         $customers = \App\Models\Customer::where('is_active', true)->latest()->get();
-        $setting = Setting::first();
+        $setting = current_setting();
         $orderNumber = \App\Helpers\SerialGenerator::generate('job_order', now()->format('Y-m-d'));
         
         return view('admin.job_orders.create_direct', compact('customers', 'setting', 'orderNumber'));
@@ -311,7 +311,7 @@ class JobOrderController extends Controller
     public function show($id)
     {
         $jobOrder = JobOrder::with(['items', 'employee', 'customer', 'assignments.department', 'assignments.employee'])->findOrFail($id);
-        $setting = Setting::first();
+        $setting = ($jobOrder->shop_id ? Setting::withoutGlobalScopes()->where('shop_id', $jobOrder->shop_id)->first() : null) ?: current_setting();
         $departments = Department::where('is_active', true)->get();
         $employees = Employee::all();
         return view('admin.job_orders.show', compact('jobOrder', 'setting', 'departments', 'employees'));
@@ -395,7 +395,7 @@ class JobOrderController extends Controller
     public function edit($id)
     {
         $jobOrder = JobOrder::with('items')->findOrFail($id);
-        $setting = Setting::first();
+        $setting = ($jobOrder->shop_id ? Setting::withoutGlobalScopes()->where('shop_id', $jobOrder->shop_id)->first() : null) ?: current_setting();
         $customers = \App\Models\Customer::where('is_active', true)->latest()->get();
         return view('admin.job_orders.edit', compact('jobOrder', 'setting', 'customers'));
     }
@@ -574,7 +574,7 @@ class JobOrderController extends Controller
             return back()->with('error', 'Cannot convert a cancelled Job Order to an Invoice.');
         }
 
-        $setting = Setting::first();
+        $setting = ($jobOrder->shop_id ? Setting::withoutGlobalScopes()->where('shop_id', $jobOrder->shop_id)->first() : null) ?: current_setting();
 
         // Update payment status if fully paid
         if ($jobOrder->remaining_balance <= 0 && $jobOrder->payment_status !== 'paid') {
@@ -783,7 +783,7 @@ class JobOrderController extends Controller
     public function downloadPdf($id)
     {
         $jobOrder = JobOrder::with(['items', 'payments', 'customer', 'employee', 'assignments.department', 'assignments.employee'])->findOrFail($id);
-        $setting = Setting::first();
+        $setting = ($jobOrder->shop_id ? Setting::withoutGlobalScopes()->where('shop_id', $jobOrder->shop_id)->first() : null) ?: current_setting();
 
         $mpdf = new \Mpdf\Mpdf([
             'mode' => 'utf-8',
@@ -837,7 +837,7 @@ class JobOrderController extends Controller
             return back()->with('error', 'No Job Orders found' . ($dateFilter ? ' for ' . \Carbon\Carbon::parse($dateFilter)->format('d-M-Y') : '') . ' to generate statement.');
         }
 
-        $setting = Setting::first();
+        $setting = current_setting();
         $userTz = request()->cookie('user_timezone', config('app.timezone'));
         view()->share('userTz', $userTz);
 

@@ -3,6 +3,40 @@
 @section('title', 'Employee Dashboard')
 
 @section('content')
+<!-- Active Shop Branding Banner for Employee -->
+@php
+    $dashLogo = shop_logo_url($currentShop, $setting);
+    $dashTitle = shop_brand_name($currentShop, $setting);
+@endphp
+<div class="card border-0 shadow-sm rounded-4 mb-4 overflow-hidden" style="background: linear-gradient(135deg, #ffffff 0%, #f8faff 100%); border-left: 4px solid #0d6efd !important;">
+    <div class="card-body p-3 p-md-4">
+        <div class="d-flex align-items-center gap-3">
+            <div class="bg-white p-2 rounded-3 shadow-sm border d-flex align-items-center justify-content-center" style="width: 60px; height: 60px; min-width: 60px;">
+                @if($dashLogo)
+                    <img src="{{ $dashLogo }}" alt="{{ $dashTitle }}" class="img-fluid" style="max-height: 46px; max-width: 46px; object-fit: contain;">
+                @else
+                    <div class="w-100 h-100 rounded bg-primary text-white d-flex align-items-center justify-content-center fs-4">
+                        <i class="fas fa-store"></i>
+                    </div>
+                @endif
+            </div>
+            <div>
+                <div class="d-flex align-items-center gap-2 flex-wrap">
+                    <h5 class="fw-bold text-dark mb-0">{{ $dashTitle }}</h5>
+                    @if($currentShop)
+                        <span class="badge bg-light text-secondary border px-2 py-1 rounded-pill small">
+                            <i class="fas fa-store me-1"></i>Branch #{{ $currentShop->id }}
+                        </span>
+                    @endif
+                </div>
+                <div class="text-muted small mt-1">
+                    Welcome back, <strong>{{ auth()->user()->name }}</strong>. Here is your production and task summary.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="row g-4 mb-4">
     <!-- KPI Cards -->
     <div class="col-xl-3 col-md-6">

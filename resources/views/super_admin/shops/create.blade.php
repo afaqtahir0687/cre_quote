@@ -85,9 +85,17 @@
                     <div class="col-12">
                         <div class="p-3 border rounded-3 bg-light">
                             <label class="form-label fw-bold text-dark mb-1">Company Logo</label>
-                            <input type="file" name="logo" class="form-control @error('logo') is-invalid @enderror" accept="image/*">
-                            <small class="text-muted d-block mt-1">Recommended: Clean PNG/JPG logo under 20MB.</small>
-                            @error('logo') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                            <div class="d-flex align-items-center gap-3 mt-1">
+                                <div id="createLogoPreviewBox" class="bg-white p-2 rounded border d-flex align-items-center justify-content-center" style="width: 70px; height: 70px; min-width: 70px;">
+                                    <i class="fas fa-image text-muted fa-2x" id="createLogoPlaceholder"></i>
+                                    <img id="createLogoPreviewImg" src="" alt="Preview" class="img-fluid d-none" style="max-height: 54px; max-width: 54px; object-fit: contain;">
+                                </div>
+                                <div class="flex-grow-1">
+                                    <input type="file" name="logo" id="createShopLogoInput" class="form-control @error('logo') is-invalid @enderror" accept="image/*">
+                                    <small class="text-muted d-block mt-1">Recommended: Clean PNG/JPG logo under 20MB. This logo will display on this shop's dashboard, sidebar, and invoices.</small>
+                                    @error('logo') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -154,7 +162,7 @@
 </form>
 @endsection
 
-@section('scripts')
+@push('scripts')
 <script>
     function togglePasswordVisibility() {
         const input = document.getElementById('admin_password');
@@ -185,5 +193,24 @@
     document.getElementById('shopSlugInput')?.addEventListener('input', function() {
         this.dataset.manual = "true";
     });
+
+    document.getElementById('createShopLogoInput')?.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                const img = document.getElementById('createLogoPreviewImg');
+                const ph = document.getElementById('createLogoPlaceholder');
+                if (img) {
+                    img.src = evt.target.result;
+                    img.classList.remove('d-none');
+                }
+                if (ph) {
+                    ph.classList.add('d-none');
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+    });
 </script>
-@endsection
+@endpush

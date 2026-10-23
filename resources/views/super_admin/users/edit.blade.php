@@ -13,8 +13,8 @@
     </a>
 </div>
 
-<div class="row justify-content-center">
-    <div class="col-lg-8">
+<div class="row justify-content-center g-0">
+    <div class="col-lg-8 col-xl-7">
         <x-card title="Edit User Information">
             <form action="{{ route('super_admin.users.update', $user->id) }}" method="POST">
                 @csrf
@@ -90,8 +90,9 @@
         </x-card>
     </div>
 </div>
+@endsection
 
-@section('scripts')
+@push('scripts')
 <script>
     function togglePasswordVisibility() {
         const input = document.getElementById('user_password');
@@ -119,4 +120,4 @@
     document.getElementById('roleSelector')?.addEventListener('change', updateShopRequirement);
     updateShopRequirement();
 </script>
-@endsection
+@endpush

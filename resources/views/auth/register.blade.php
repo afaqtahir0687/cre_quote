@@ -6,10 +6,7 @@
 @endpush
 <div class="auth-bg min-vh-100 d-flex align-items-center justify-content-center">
     <div class="auth-card p-4 shadow-sm" style="background: rgba(255,255,255,0.85); backdrop-filter: blur(8px); border-radius: 12px; max-width: 420px; width: 100%;">
-        @php
-            $logoPath = \App\Models\Setting::first()->company_logo ?? asset('uploads/logo/newsign-logo.png');
-        @endphp
-        <img src="{{ asset($logoPath) }}" alt="Logo" class="mb-4 mx-auto d-block" style="max-height:80px;">
+        <img src="{{ platform_logo_url() ?: asset('uploads/logo/crelogics-logo.png') }}" alt="{{ platform_brand_name() }}" class="mb-4 mx-auto d-block" style="max-height:80px; max-width: 220px; object-fit: contain;">
         <h3 class="text-center mb-4">{{ __('Register') }}</h3>
         <form method="POST" action="{{ route('register') }}">
             @csrf

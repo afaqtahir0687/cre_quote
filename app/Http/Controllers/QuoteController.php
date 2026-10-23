@@ -53,7 +53,7 @@ class QuoteController extends Controller
     {
         $customers = Customer::where('is_active', true)->latest()->get();
         $products = Product::all();
-        $setting = Setting::first();
+        $setting = current_setting();
 
         $lastQuote = Quote::latest()->first();
         $nextNumber = 1001;
@@ -70,7 +70,7 @@ class QuoteController extends Controller
         DB::transaction(function () use ($request) {
             $data = $request->validated();
             
-            $setting = \App\Models\Setting::first();
+            $setting = current_setting();
             $lastQuote = Quote::latest('id')->first();
             $nextNumber = 1001;
             if ($lastQuote && preg_match('/(\d+)$/', $lastQuote->quote_number, $matches)) {
@@ -209,7 +209,7 @@ class QuoteController extends Controller
 
     public function convertToInvoice(Quote $quote)
     {
-        $setting = Setting::first();
+        $setting = ($quote->shop_id ? Setting::withoutGlobalScopes()->where('shop_id', $quote->shop_id)->first() : null) ?: current_setting();
         $lastInvoice = Invoice::latest()->first();
         $nextNumber = 1001;
         if ($lastInvoice && preg_match('/(\d+)$/', $lastInvoice->invoice_number, $matches)) {
@@ -253,7 +253,7 @@ class QuoteController extends Controller
     public function downloadPdf(Quote $quote)
     {
         $quote->load('customer', 'items', 'employee');
-        $setting = Setting::first();
+        $setting = ($quote->shop_id ? Setting::withoutGlobalScopes()->where('shop_id', $quote->shop_id)->first() : null) ?: current_setting();
 
         $mpdf = new \Mpdf\Mpdf([
             'mode' => 'utf-8',

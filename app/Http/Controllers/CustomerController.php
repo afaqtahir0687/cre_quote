@@ -121,7 +121,8 @@ class CustomerController extends Controller
             'default_font' => 'amiri',
         ]);
 
-        $html = view('admin.customers.statement_pdf', compact('customer', 'invoices'))->render();
+        $setting = ($customer->shop_id ? \App\Models\Setting::withoutGlobalScopes()->where('shop_id', $customer->shop_id)->first() : null) ?: current_setting();
+        $html = view('admin.customers.statement_pdf', compact('customer', 'invoices', 'setting'))->render();
         $mpdf->WriteHTML($html);
 
         return response($mpdf->Output('', 'S'))

@@ -16,6 +16,12 @@ class DashboardController extends Controller
     public function index()
     {
         $user = auth()->user();
+
+        // If super admin is in Global View (no specific shop selected in session), redirect to Super Admin Portal
+        if ($user->isSuperAdmin() && (!session('active_shop_id') || session('active_shop_id') === 'all')) {
+            return redirect()->route('super_admin.dashboard');
+        }
+
         $setting = current_setting();
         $currentShop = current_shop();
         

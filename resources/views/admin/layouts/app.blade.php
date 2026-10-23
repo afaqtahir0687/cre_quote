@@ -4,7 +4,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title')</title>
+    @php
+        $isSuperAdmin = auth()->check() && auth()->user()->isSuperAdmin();
+        $isGlobalView = $isSuperAdmin && (!session('active_shop_id') || session('active_shop_id') === 'all');
+        $isInSuperAdminSection = $isSuperAdmin && request()->routeIs('super_admin.*');
+
+        if ($isSuperAdmin && ($isGlobalView || $isInSuperAdminSection)) {
+            $layoutBrand = platform_brand_name();
+            $layoutLogo = platform_logo_url();
+        } else {
+            $layoutBrand = shop_brand_name($currentShop, $setting);
+            $layoutLogo = shop_logo_url($currentShop, $setting);
+        }
+    @endphp
+    <title>@hasSection('title')@yield('title') - {{ $layoutBrand }}@else{{ $layoutBrand }}@endif</title>
+    @if($layoutLogo)
+        <link rel="icon" type="image/png" href="{{ $layoutLogo }}">
+    @endif
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -13,10 +29,12 @@
         href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@400;500;600&display=swap"
         rel="stylesheet">
 
-    <!-- CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.2.3/css/flag-icons.min.css"/>
+    <!-- CSS (Local First for Offline/Slow Network Resilience, CDN as Fallback) -->
+    <link rel="stylesheet" href="{{ asset('assets/vendor/bootstrap/css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/vendor/fontawesome-free/css/all.min.css') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" onerror="this.onerror=null;">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" onerror="this.onerror=null;">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.2.3/css/flag-icons.min.css" onerror="this.onerror=null;"/>
     <link rel="stylesheet" href="{{ asset('assets/css/admin-theme.css') }}">
 
     @yield('styles')
@@ -38,9 +56,17 @@
         </main>
     </div>
 
-    <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Scripts (Local First for Offline/Slow Network Resilience, CDN as Fallback) -->
+    <script src="{{ asset('assets/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ asset('assets/vendor/sweetalert2/sweetalert2.all.min.js') }}"></script>
+    <script>
+        if (typeof bootstrap === 'undefined') {
+            document.write('<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"><\/script>');
+        }
+        if (typeof Swal === 'undefined') {
+            document.write('<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"><\/script>');
+        }
+    </script>
     <script>
         document.getElementById('sidebar-toggle')?.addEventListener('click', function () {
             document.getElementById('sidebar').classList.toggle('show');

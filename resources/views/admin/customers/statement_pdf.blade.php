@@ -48,7 +48,7 @@
         <table class="header-table">
             <tr>
                 <td style="width: 50%; vertical-align: top;">
-                    <img src="{{ $setting && $setting->company_logo ? public_path($setting->company_logo) : public_path('uploads/logo/newsign-logo.png') }}" class="logo" />
+                    <img src="{{ shop_logo_path(null, $setting) }}" class="logo" />
                 </td>
                 <td style="width: 50%; vertical-align: top; padding-left: 30px;">
                     <table class="info-table">

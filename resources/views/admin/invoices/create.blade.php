@@ -110,10 +110,10 @@
                 
                 <div class="mb-0">
                     <label class="form-label text-muted fw-medium small">Notes</label>
-                    <textarea name="notes" class="form-control" rows="8" placeholder="Additional notes for the customer...">Kindly be aware that this quotation may be reviewed, and the NewSign Advertising retains the right to amend the pricing if errors are identified. Additionally, the Newsign advertising reserves the right to revise, reject, or cancel the work entirely if there is any misunderstanding regarding the customer's requirements.
+                    <textarea name="notes" class="form-control" rows="8" placeholder="Additional notes for the customer...">Kindly be aware that this quotation may be reviewed, and the New Crelogics retains the right to amend the pricing if errors are identified. Additionally, the New Crelogics reserves the right to revise, reject, or cancel the work entirely if there is any misunderstanding regarding the customer's requirements.
 
-يرجى العلم أن هذا العرض قد يخضع للمراجعة، وتحتفظ وكالة الإعلان الجديد للدعاية والإعلان بالحق في تعديل الأسعار إذا تم اكتشاف أي أخطاء.
-بالإضافة إلى ذلك، تحتفظ وكالة الإعلان الجديد للدعاية والإعلان بالحق في تعديل السعر أو رفض العمل أو إلغائه بالكامل إذا كان هناك أي سوء فهم بخصوص متطلبات العميل.</textarea>
+يرجى العلم أن هذا العرض قد يخضع للمراجعة، وتحتفظ وكالة نيو كريلوجيكس (New Crelogics) بالحق في تعديل الأسعار إذا تم اكتشاف أي أخطاء.
+بالإضافة إلى ذلك، تحتفظ وكالة نيو كريلوجيكس (New Crelogics) بالحق في تعديل السعر أو رفض العمل أو إلغائه بالكامل إذا كان هناك أي سوء فهم بخصوص متطلبات العميل.</textarea>
                 </div>
             </x-card>
         </div>

@@ -35,8 +35,8 @@ return new class extends Migration
         // 2. Insert initial default shop
         $now = now();
         $shopId = DB::table('shops')->insertGetId([
-            'name' => 'New Sign Advertising',
-            'slug' => 'new-sign-advertising',
+            'name' => 'New Crelogics',
+            'slug' => 'new-crelogics',
             'email' => 'newsignad@gmail.com',
             'phone' => '+966 50 000 0000',
             'currency_symbol' => '$',
@@ -97,7 +97,7 @@ return new class extends Migration
         if (!$existingSetting) {
             DB::table('settings')->insert([
                 'shop_id' => $shopId,
-                'company_name' => 'New Sign Advertising',
+                'company_name' => 'New Crelogics',
                 'company_email' => 'newsignad@gmail.com',
                 'currency_symbol' => '$',
                 'invoice_prefix' => 'INV-',

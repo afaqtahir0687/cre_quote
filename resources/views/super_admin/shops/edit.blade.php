@@ -115,9 +115,20 @@
                     </div>
 
                     <div class="col-md-6">
-                        <label class="form-label fw-bold text-dark">Update Logo</label>
-                        <input type="file" name="logo" class="form-control @error('logo') is-invalid @enderror" accept="image/*">
-                        @error('logo') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                        <label class="form-label fw-bold text-dark">Shop Logo</label>
+                        <div class="d-flex align-items-center gap-3">
+                            @php
+                                $editShopLogo = shop_logo_url($shop, $shop->setting);
+                            @endphp
+                            <div class="bg-white p-2 rounded border d-flex align-items-center justify-content-center" style="width: 70px; height: 70px; min-width: 70px;">
+                                <img id="editShopLogoPreview" src="{{ $editShopLogo ?: asset('uploads/logo/crelogics-logo.png') }}" alt="{{ $shop->name }}" class="img-fluid" style="max-height: 54px; max-width: 54px; object-fit: contain;">
+                            </div>
+                            <div class="flex-grow-1">
+                                <input type="file" name="logo" id="editShopLogoInput" class="form-control @error('logo') is-invalid @enderror" accept="image/*">
+                                <small class="text-muted d-block mt-1">Upload a new file to change this shop's logo.</small>
+                                @error('logo') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Dynamic Inactive / Suspended Notice Container -->
@@ -206,7 +217,7 @@
 </form>
 @endsection
 
-@section('scripts')
+@push('scripts')
 <script>
     function toggleStatusFields(val) {
         const container = document.getElementById('editStatusExtraContainer');
@@ -216,5 +227,19 @@
             container.style.display = 'none';
         }
     }
+
+    document.getElementById('editShopLogoInput')?.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                const img = document.getElementById('editShopLogoPreview');
+                if (img) {
+                    img.src = evt.target.result;
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+    });
 </script>
-@endsection
+@endpush

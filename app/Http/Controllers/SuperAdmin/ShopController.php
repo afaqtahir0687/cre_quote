@@ -246,23 +246,25 @@ class ShopController extends Controller
 
         // Update corresponding shop setting
         $setting = Setting::where('shop_id', $shop->id)->first();
-        if ($setting) {
-            $settingUpdate = [
-                'company_name' => $shop->name,
-                'company_email' => $shop->email,
-                'company_phone' => $shop->phone,
-                'company_address' => $shop->address,
-                'company_city' => $shop->city,
-                'company_country' => $shop->country,
-                'currency_symbol' => $shop->currency_symbol,
-                'invoice_prefix' => $shop->invoice_prefix,
-                'quote_prefix' => $shop->quote_prefix,
-            ];
-            if (!empty($data['logo'])) {
-                $settingUpdate['company_logo'] = $data['logo'];
-            }
-            $setting->update($settingUpdate);
+        if (!$setting) {
+            $setting = new Setting(['shop_id' => $shop->id]);
         }
+        $settingUpdate = [
+            'company_name' => $shop->name,
+            'company_email' => $shop->email,
+            'company_phone' => $shop->phone,
+            'company_address' => $shop->address,
+            'company_city' => $shop->city,
+            'company_country' => $shop->country,
+            'currency_symbol' => $shop->currency_symbol,
+            'invoice_prefix' => $shop->invoice_prefix,
+            'quote_prefix' => $shop->quote_prefix,
+        ];
+        if (!empty($data['logo'])) {
+            $settingUpdate['company_logo'] = $data['logo'];
+        }
+        $setting->fill($settingUpdate);
+        $setting->save();
 
         return redirect()->route('super_admin.shops.index')
             ->with('success', 'Shop updated successfully!');

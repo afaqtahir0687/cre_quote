@@ -118,7 +118,7 @@ class DeliveryNoteController extends Controller
     public function generatePDF(DeliveryNote $deliveryNote)
     {
         $deliveryNote->load(['invoice.items', 'customer', 'employee']);
-        $setting = \App\Models\Setting::first();
+        $setting = ($deliveryNote->shop_id ? \App\Models\Setting::withoutGlobalScopes()->where('shop_id', $deliveryNote->shop_id)->first() : null) ?: current_setting();
         
         $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('admin.delivery_notes.pdf', compact('deliveryNote', 'setting'));
         

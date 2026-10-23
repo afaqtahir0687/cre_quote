@@ -193,7 +193,7 @@
                     <table style="width: 100%; border-collapse: collapse; border: none;">
                         <tr>
                             <td style="width: 130px; vertical-align: middle; border: none; padding: 0;">
-                                <img src="{{ $setting && $setting->company_logo ? public_path($setting->company_logo) : public_path('uploads/logo/newsign-logo.png') }}"
+                                <img src="{{ shop_logo_path(null, $setting) }}"
                                     class="logo" style="margin-bottom: 0;" />
                             </td>
                             <td style="vertical-align: middle; border: none; padding-left: 15px;">

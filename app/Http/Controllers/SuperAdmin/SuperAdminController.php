@@ -104,4 +104,60 @@ class SuperAdminController extends Controller
             return back()->with('error', "Failed to send test email: " . $e->getMessage());
         }
     }
+
+    /**
+     * Show Super Admin / Global Platform Branding Settings.
+     */
+    public function platformSettings()
+    {
+        $platformSetting = \App\Models\Setting::withoutGlobalScopes()->whereNull('shop_id')->first();
+        if (!$platformSetting) {
+            $platformSetting = \App\Models\Setting::withoutGlobalScopes()->create([
+                'shop_id' => null,
+                'company_name' => 'Crelogics Platform',
+                'company_email' => 'creelogics@gmail.com',
+                'company_phone' => '+966 50 000 0000',
+                'company_country' => 'Saudi Arabia',
+                'currency_symbol' => '$',
+                'invoice_prefix' => 'INV-',
+                'quote_prefix' => 'QT-',
+                'company_logo' => 'uploads/logo/crelogics-logo.png'
+            ]);
+        }
+
+        return view('super_admin.platform_settings', compact('platformSetting'));
+    }
+
+    /**
+     * Update Super Admin / Global Platform Branding Settings.
+     */
+    public function updatePlatformSettings(Request $request)
+    {
+        $request->validate([
+            'company_name' => 'required|string|max:255',
+            'company_email' => 'required|email|max:255',
+            'company_phone' => 'nullable|string|max:50',
+            'company_logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:20480',
+        ]);
+
+        $platformSetting = \App\Models\Setting::withoutGlobalScopes()->whereNull('shop_id')->first();
+        if (!$platformSetting) {
+            $platformSetting = new \App\Models\Setting();
+            $platformSetting->shop_id = null;
+        }
+
+        $data = $request->except(['company_logo']);
+
+        if ($request->hasFile('company_logo')) {
+            $imageName = \App\Helpers\ImageHelper::compressAndSave($request->company_logo, 'uploads/logo', 80, 500);
+            $logoPath = 'uploads/logo/' . $imageName;
+            $data['company_logo'] = $logoPath;
+        }
+
+        $data['shop_id'] = null;
+        $platformSetting->fill($data);
+        $platformSetting->save();
+
+        return redirect()->back()->with('success', 'Super Admin platform branding and central logo updated successfully!');
+    }
 }

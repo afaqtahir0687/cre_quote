@@ -122,6 +122,10 @@ Route::group(['middleware' => 'auth'], function () {
         // Platform Users Management
         Route::resource('users', SuperAdminUserController::class);
 
+        // Platform Branding Settings
+        Route::get('platform-settings', [SuperAdminController::class, 'platformSettings'])->name('platform_settings');
+        Route::put('platform-settings', [SuperAdminController::class, 'updatePlatformSettings'])->name('platform_settings.update');
+
         // Test Email Dispatch
         Route::post('test-email', [SuperAdminController::class, 'sendTestEmail'])->name('test_email');
     });

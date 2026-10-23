@@ -51,14 +51,9 @@
         @forelse($users as $user)
         <tr class="align-middle">
             <td>
-                <div class="d-flex align-items-center">
-                    <div class="rounded-circle bg-light text-primary d-flex align-items-center justify-content-center me-3 fw-bold border" style="width: 40px; height: 40px;">
-                        {{ strtoupper(substr($user->name, 0, 1)) }}
-                    </div>
-                    <div>
-                        <div class="fw-bold text-dark">{{ $user->name }}</div>
-                        <div class="text-muted small"><a href="mailto:{{ $user->email }}" class="text-decoration-none text-muted">{{ $user->email }}</a></div>
-                    </div>
+                <div>
+                    <div class="fw-bold text-dark">{{ $user->name }}</div>
+                    <div class="text-muted small"><a href="mailto:{{ $user->email }}" class="text-decoration-none text-muted">{{ $user->email }}</a></div>
                 </div>
             </td>
             <td>
