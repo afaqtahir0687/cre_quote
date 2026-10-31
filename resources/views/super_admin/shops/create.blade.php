@@ -144,8 +144,39 @@
                         @error('admin_password') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
                     </div>
                 </div>
+            </x-card>
 
-                <div class="p-3 rounded-3 bg-light border border-light-subtle mt-4 mb-0 small text-muted">
+            <!-- Package Selection Card -->
+            <x-card title="3. Package & Subscription (Cash By Hand)" class="mt-4">
+                <div class="mb-3">
+                    <label class="form-label fw-bold text-dark">Select Initial Package *</label>
+                    <select name="package_id" id="createPackageSelect" class="form-select" required>
+                        @foreach($packages as $pkg)
+                            <option value="{{ $pkg->id }}" 
+                                data-days="{{ $pkg->duration_days }}" 
+                                data-price="{{ $pkg->price }}" 
+                                data-max-shops="{{ $pkg->max_shops }}"
+                                {{ $pkg->slug === 'trial' ? 'selected' : '' }}>
+                                {{ $pkg->name }} — {{ $pkg->price == 0 ? 'Free' : number_format($pkg->price, 0) }} ({{ $pkg->duration_days }} Days, {{ $pkg->max_shops > 1 ? $pkg->max_shops . ' Shops' : '1 Shop' }})
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="row g-2 mb-3">
+                    <div class="col-6">
+                        <label class="form-label fw-bold text-dark small">Duration (Days)</label>
+                        <input type="number" name="duration_days" id="createDurationInput" class="form-control" value="7" min="1" required>
+                        <div class="form-text small">7 days for 1-Week Test Trial.</div>
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label fw-bold text-dark small">Cash Received</label>
+                        <input type="number" step="0.01" name="cash_paid" id="createCashInput" class="form-control" value="0" min="0" required>
+                        <div class="form-text small">Offline Cash In Hand.</div>
+                    </div>
+                </div>
+
+                <div class="p-3 rounded-3 bg-light border border-light-subtle mt-3 mb-0 small text-muted">
                     <i class="fas fa-magic text-primary me-2"></i>
                     <strong class="text-dark">Automated Provisioning:</strong> Default production departments (Workshop, Banner Machine, Sticker Print, Sign Board) and initial settings are configured automatically.
                 </div>
@@ -210,6 +241,15 @@
                 }
             };
             reader.readAsDataURL(file);
+        }
+    });
+
+    const createPkgSelect = document.getElementById('createPackageSelect');
+    createPkgSelect?.addEventListener('change', function() {
+        const opt = this.options[this.selectedIndex];
+        if (opt) {
+            document.getElementById('createDurationInput').value = opt.getAttribute('data-days') || 7;
+            document.getElementById('createCashInput').value = opt.getAttribute('data-price') || 0;
         }
     });
 </script>

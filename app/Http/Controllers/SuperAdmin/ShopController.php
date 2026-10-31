@@ -9,6 +9,9 @@ use App\Models\Setting;
 use App\Models\Employee;
 use App\Models\Department;
 use App\Models\Invoice;
+use App\Models\Package;
+use App\Models\Subscription;
+use App\Services\SubscriptionNotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -60,7 +63,8 @@ class ShopController extends Controller
      */
     public function create()
     {
-        return view('super_admin.shops.create');
+        $packages = Package::where('is_active', true)->orderBy('sort_order')->get();
+        return view('super_admin.shops.create', compact('packages'));
     }
 
     /**
@@ -88,6 +92,11 @@ class ShopController extends Controller
             'admin_username' => 'required|string|max:255|unique:users,username',
             'admin_email' => 'required|email|max:255|unique:users,email',
             'admin_password' => 'required|string|min:6',
+
+            // Package Details
+            'package_id' => 'nullable|exists:packages,id',
+            'cash_paid' => 'nullable|numeric|min:0',
+            'duration_days' => 'nullable|integer|min:1',
         ]);
 
         DB::transaction(function () use ($request) {
@@ -120,6 +129,18 @@ class ShopController extends Controller
                 );
             }
 
+            // Determine package and subscription dates
+            $package = $request->filled('package_id')
+                ? Package::find($request->package_id)
+                : Package::where('slug', 'trial')->first();
+
+            $durationDays = $request->filled('duration_days') && $request->duration_days > 0
+                ? (int) $request->duration_days
+                : ($package ? $package->duration_days : 7);
+
+            $startsAt = now();
+            $expiresAt = now()->addDays($durationDays);
+
             // 1. Create Shop
             $shop = Shop::create([
                 'name' => $request->name,
@@ -135,6 +156,10 @@ class ShopController extends Controller
                 'status' => 'active',
                 'logo' => $logoPath,
                 'notes' => $request->notes,
+                'package_id' => $package?->id,
+                'subscription_starts_at' => $startsAt,
+                'subscription_expires_at' => $expiresAt,
+                'subscription_status' => 'active',
             ]);
 
             // 2. Create Settings record for this shop
@@ -186,6 +211,35 @@ class ShopController extends Controller
                 'name' => $adminUser->name,
                 'designation' => 'Shop Owner / Admin',
             ]);
+
+            // Set shop owner
+            $shop->update(['owner_id' => $adminUser->id]);
+
+            // 6. Record Initial Subscription (Cash by Hand)
+            if ($package) {
+                $amountPaid = $request->filled('cash_paid')
+                    ? (float) $request->cash_paid
+                    : $package->price;
+
+                Subscription::create([
+                    'shop_id' => $shop->id,
+                    'package_id' => $package->id,
+                    'user_id' => $adminUser->id,
+                    'payment_method' => 'cash_by_hand',
+                    'payment_status' => $package->isTrial() ? 'free_trial' : 'paid',
+                    'amount_paid' => $amountPaid,
+                    'starts_at' => $startsAt,
+                    'expires_at' => $expiresAt,
+                    'status' => 'active',
+                    'payment_notes' => $package->isTrial()
+                        ? '1-Week Test Account (Trial)'
+                        : 'Initial Package activated by Super Admin (' . auth()->user()->name . ') via Cash By Hand',
+                    'recorded_by_id' => auth()->id(),
+                ]);
+
+                // Send subscription activation email to newly created shop admin
+                SubscriptionNotificationService::sendPackageActivated($shop, $package, $amountPaid);
+            }
         });
 
         return redirect()->route('super_admin.shops.index')
@@ -197,8 +251,9 @@ class ShopController extends Controller
      */
     public function edit(Shop $shop)
     {
-        $shop->load(['admins', 'setting']);
-        return view('super_admin.shops.edit', compact('shop'));
+        $shop->load(['admins', 'setting', 'package', 'subscriptions.package', 'subscriptions.recordedBy', 'branches']);
+        $packages = Package::where('is_active', true)->orderBy('sort_order')->get();
+        return view('super_admin.shops.edit', compact('shop', 'packages'));
     }
 
     /**

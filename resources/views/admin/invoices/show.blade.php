@@ -17,9 +17,26 @@
                 <i class="fas fa-plus me-2"></i> Record Payment
             </button>
         @endif
-        <a href="{{ route('invoices.pdf', $invoice) }}" class="btn btn-outline-secondary border-2 d-flex align-items-center fw-medium">
-            <i class="fas fa-file-pdf me-2"></i> Download PDF
-        </a>
+        <div class="btn-group">
+            <a href="{{ route('invoices.pdf', $invoice) }}" class="btn btn-outline-secondary border-2 d-flex align-items-center fw-medium">
+                <i class="fas fa-file-pdf me-2"></i> Download PDF
+            </a>
+            <button type="button" class="btn btn-outline-secondary border-2 dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false" title="PDF Options">
+                <span class="visually-hidden">Toggle Dropdown</span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                <li>
+                    <a class="dropdown-item py-2" href="{{ route('invoices.pdf', ['invoice' => $invoice->id, 'show_customer_name' => 1]) }}">
+                        <i class="fas fa-user-check text-success me-2"></i> With Customer Name
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item py-2" href="{{ route('invoices.pdf', ['invoice' => $invoice->id, 'show_customer_name' => 0]) }}">
+                        <i class="fas fa-user-slash text-danger me-2"></i> Without Customer Name
+                    </a>
+                </li>
+            </ul>
+        </div>
         @if(strtolower($invoice->status) !== 'cancelled' && $invoice->status != 'Paid')
             <form action="{{ route('invoices.convert_to_delivery_note', $invoice) }}" method="POST" style="display:inline;">
                 @csrf
@@ -71,12 +88,27 @@
                         </p>
                     </div>
                     <div class="col-sm-6 text-sm-end">
+                        @php
+                            $bComp = $invoice->billing_company;
+                        @endphp
                         <label class="text-uppercase text-muted fw-bold small mb-3 d-block">Bill To</label>
-                        <h5 class="fw-bold text-dark mb-1">{{ $invoice->customer->name }}</h5>
+                        <h5 class="fw-bold text-dark mb-1">{{ $invoice->customer?->name ?? 'N/A' }}</h5>
+                        @if($bComp?->company_name || $invoice->customer?->company_name)
+                            <div class="fw-semibold text-primary mb-1"><i class="fas fa-building me-1"></i>{{ $bComp?->company_name ?? $invoice->customer?->company_name }}</div>
+                        @endif
                         <p class="text-muted mb-0">
-                            {{ $invoice->customer->address }}<br>
-                            {{ $invoice->customer->city }}, {{ $invoice->customer->zip }}, {{ $invoice->customer->country }}<br>
-                            <i class="fas fa-envelope me-1 small"></i> {{ $invoice->customer->email }}
+                            {{ $bComp?->address ?? ($invoice->customer?->address ?? '') }}<br>
+                            {{ collect([$bComp?->city ?? $invoice->customer?->city, $bComp?->zip ?? $invoice->customer?->zip, $bComp?->country ?? $invoice->customer?->country])->filter()->join(', ') }}<br>
+                            @if($bComp?->vat_no || $invoice->customer?->vat_no)
+                                <span class="d-inline-block me-2"><strong>VAT:</strong> {{ $bComp?->vat_no ?? $invoice->customer?->vat_no }}</span>
+                            @endif
+                            @if($bComp?->cr_no || $invoice->customer?->cr_no)
+                                <span class="d-inline-block"><strong>CR:</strong> {{ $bComp?->cr_no ?? $invoice->customer?->cr_no }}</span><br>
+                            @endif
+                            <i class="fas fa-phone me-1 small"></i> {{ $invoice->customer?->formatted_phone ?: ($invoice->customer?->phone ?? 'N/A') }}<br>
+                            @if($invoice->customer?->email)
+                                <i class="fas fa-envelope me-1 small"></i> {{ $invoice->customer->email }}
+                            @endif
                         </p>
                     </div>
                 </div>
@@ -108,8 +140,13 @@
                         <span class="fw-bold text-primary fs-5">{{ format_currency($invoice->balance_due) }}</span>
                     </div>
                     <div class="col-3 text-end">
-                        <span class="text-muted small d-block">Created By</span>
-                        <span class="fw-bold text-primary">{{ $invoice->employee->name ?? 'Admin' }}</span>
+                        <span class="text-muted small d-block">Assigned To</span>
+                        <div class="d-inline-flex align-items-center gap-2">
+                            <span class="fw-bold text-dark">{{ $invoice->employee?->name ?? 'Admin / Unassigned' }}</span>
+                            <button type="button" class="btn btn-outline-primary btn-sm py-0 px-2 rounded-pill small" data-bs-toggle="modal" data-bs-target="#assignInvoiceModal" title="Reassign Employee">
+                                <i class="fas fa-user-edit small"></i> Assign
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -266,6 +303,41 @@
                 </div>
             </div>
         </form>
+    </div>
+</div>
+
+<!-- Assign Employee Modal -->
+<div class="modal fade" id="assignInvoiceModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-light">
+                <h5 class="modal-title fw-bold text-dark"><i class="fas fa-user-tag text-primary me-2"></i> Assign Invoice to Employee</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{{ route('invoices.assign_employee', $invoice) }}" method="POST">
+                @csrf
+                <div class="modal-body p-4">
+                    <p class="text-muted small mb-3">Assign this invoice to an employee who will manage billing and collection follow-up.</p>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold text-dark">Employee <span class="text-danger">*</span></label>
+                        <select name="employee_id" class="form-select" required>
+                            <option value="">Select Employee</option>
+                            @foreach($employees as $emp)
+                                <option value="{{ $emp->id }}" {{ $invoice->employee_id == $emp->id ? 'selected' : '' }}>
+                                    {{ $emp->name }} ({{ $emp->designation ?? 'Employee' }})
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary-modern">
+                        <i class="fas fa-save me-1"></i> Save Assignment
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 @endsection

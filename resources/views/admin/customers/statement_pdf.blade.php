@@ -113,27 +113,27 @@
                         <tr>
                             <td><span class="info-label">Company</span></td>
                             <td>:</td>
-                            <td>{{ $customer->company_name ?? '' }}</td>
+                            <td>{{ $customer->defaultCompany()?->company_name ?? ($customer->company_name ?? '') }}</td>
                         </tr>
                         <tr>
                             <td><span class="info-label">Telephone</span></td>
                             <td>:</td>
-                            <td>{{ $customer->phone ?? '' }}</td>
+                            <td>{{ $customer->formatted_phone ?: ($customer->phone ?? '') }}</td>
                         </tr>
                         <tr>
                             <td><span class="info-label">VAT Number</span></td>
                             <td>:</td>
-                            <td>{{ $customer->vat_no ?? '' }}</td>
+                            <td>{{ $customer->defaultCompany()?->vat_no ?? ($customer->vat_no ?? '') }}</td>
                         </tr>
                         <tr>
                             <td><span class="info-label">CR Number</span></td>
                             <td>:</td>
-                            <td>{{ $customer->cr_no ?? '' }}</td>
+                            <td>{{ $customer->defaultCompany()?->cr_no ?? ($customer->cr_no ?? '') }}</td>
                         </tr>
                         <tr>
                             <td><span class="info-label">Address</span></td>
                             <td>:</td>
-                            <td>{{ $customer->address ?? '' }}</td>
+                            <td>{{ $customer->defaultCompany()?->address ?? ($customer->address ?? '') }}</td>
                         </tr>
                     </table>
                 </td>
@@ -170,7 +170,7 @@
         <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
             <tr>
                 <td style="width: 50%; vertical-align: middle; text-align: center; border: none; padding-right: 20px;">
-                    <img src="{{ public_path('uploads/logo/stamp_logo.jpeg') }}" style="max-width: 300px; height: auto;" alt="Stamp">
+                    @include('partials.pdf_bank_details', ['setting' => $setting])
                 </td>
                 <td style="width: 50%; vertical-align: top; border: none;">
                     <table class="totals-table" style="margin-top: 0; width: 100%;">

@@ -21,9 +21,26 @@
         @endif
     </div>
     <div class="d-flex gap-2">
-        <a href="{{ route('job-orders.pdf', $jobOrder->id) }}" class="btn btn-outline-danger d-flex align-items-center shadow-sm">
-            <i class="fas fa-file-pdf me-2"></i> Download PDF
-        </a>
+        <div class="btn-group">
+            <a href="{{ route('job-orders.pdf', $jobOrder->id) }}" class="btn btn-outline-danger d-flex align-items-center shadow-sm">
+                <i class="fas fa-file-pdf me-2"></i> Download PDF
+            </a>
+            <button type="button" class="btn btn-outline-danger dropdown-toggle dropdown-toggle-split shadow-sm" data-bs-toggle="dropdown" aria-expanded="false" title="PDF Options">
+                <span class="visually-hidden">Toggle Dropdown</span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                <li>
+                    <a class="dropdown-item py-2" href="{{ route('job-orders.pdf', ['id' => $jobOrder->id, 'show_customer_name' => 1]) }}">
+                        <i class="fas fa-user-check text-success me-2"></i> With Customer Name
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item py-2" href="{{ route('job-orders.pdf', ['id' => $jobOrder->id, 'show_customer_name' => 0]) }}">
+                        <i class="fas fa-user-slash text-danger me-2"></i> Without Customer Name
+                    </a>
+                </li>
+            </ul>
+        </div>
         @if($jobOrder->status !== 'cancelled')
             <a href="{{ route('job-orders.edit', $jobOrder->id) }}" class="btn btn-outline-info d-flex align-items-center shadow-sm">
                 <i class="fas fa-edit me-2"></i> Edit
@@ -57,12 +74,23 @@
             </div>
             <div class="col-md-6 text-md-end">
                 <h5 class="mb-2 fw-bold text-primary">Job Order #: {{ $jobOrder->order_number }}</h5>
+                @php
+                    $bComp = $jobOrder->billing_company;
+                @endphp
                 <p class="text-muted mb-0">
                 <strong>Date:</strong> {{ $jobOrder->order_date ? $jobOrder->order_date->format('d-M-Y') : now()->format('d-M-Y') }}<br>
-                <strong>Customer:</strong> {{ $jobOrder->customer->name ?? '' }}<br>
-                {{ $jobOrder->customer->address ?? '' }}<br>
-                <i class="fas fa-phone me-1 small"></i> {{ $jobOrder->customer->phone ?? '' }}<br>
-                <strong>Created By:</strong> {{ $jobOrder->employee->name ?? 'N/A' }}</p>
+                <strong>Customer:</strong> {{ $jobOrder->customer?->name ?? 'N/A' }}<br>
+                @if($bComp?->company_name || $jobOrder->customer?->company_name)
+                    <strong>Company:</strong> {{ $bComp?->company_name ?? $jobOrder->customer?->company_name }}<br>
+                @endif
+                {{ $bComp?->address ?? ($jobOrder->customer?->address ?? '') }}<br>
+                <i class="fas fa-phone me-1 small"></i> {{ $jobOrder->customer?->formatted_phone ?: ($jobOrder->customer?->phone ?? 'N/A') }}<br>
+                <div class="mt-2 d-inline-flex align-items-center flex-wrap gap-2">
+                    <span><strong>Assigned To:</strong> <span class="fw-bold text-dark">{{ $jobOrder->employee->name ?? 'Admin / Unassigned' }}</span></span>
+                    <button type="button" class="btn btn-outline-primary btn-sm py-0 px-2 rounded-pill" data-bs-toggle="modal" data-bs-target="#assignJobOrderModal" title="Reassign Employee">
+                        <i class="fas fa-user-edit small"></i> Assign
+                    </button>
+                </div></p>
             </div>
         </div>
 
@@ -485,6 +513,41 @@
                 <div class="modal-footer border-top-0 pt-0">
                     <button type="button" class="btn btn-light" data-bs-dismiss="modal">No, Keep Order</button>
                     <button type="submit" class="btn btn-danger">Yes, Cancel Order</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Assign Employee Modal -->
+<div class="modal fade" id="assignJobOrderModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-light">
+                <h5 class="modal-title fw-bold text-dark"><i class="fas fa-user-tag text-primary me-2"></i> Assign Job Order to Employee</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{{ route('job-orders.assign_employee', $jobOrder->id) }}" method="POST">
+                @csrf
+                <div class="modal-body p-4">
+                    <p class="text-muted small mb-3">Assign this job order to an employee who will manage execution and client updates.</p>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold text-dark">Employee <span class="text-danger">*</span></label>
+                        <select name="employee_id" class="form-select" required>
+                            <option value="">Select Employee</option>
+                            @foreach($employees as $emp)
+                                <option value="{{ $emp->id }}" {{ $jobOrder->employee_id == $emp->id ? 'selected' : '' }}>
+                                    {{ $emp->name }} ({{ $emp->designation ?? 'Employee' }})
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary-modern">
+                        <i class="fas fa-save me-1"></i> Save Assignment
+                    </button>
                 </div>
             </form>
         </div>

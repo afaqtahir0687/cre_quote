@@ -71,7 +71,7 @@
             <a href="{{ route('super_admin.dashboard') }}"
                 class="sidebar-link {{ request()->routeIs('super_admin.dashboard') ? 'active' : '' }}">
                 <i class="fas fa-tachometer-alt text-warning"></i>
-                <span>Platform Overview</span>
+                <span>Overview</span>
             </a>
 
             <a href="{{ route('super_admin.shops.index') }}"
@@ -83,13 +83,25 @@
             <a href="{{ route('super_admin.users.index') }}"
                 class="sidebar-link {{ request()->routeIs('super_admin.users.*') ? 'active' : '' }}">
                 <i class="fas fa-users-cog text-info"></i>
-                <span>Platform Users</span>
+                <span>Users</span>
+            </a>
+
+            <a href="{{ route('super_admin.subscriptions.index') }}"
+                class="sidebar-link {{ request()->routeIs('super_admin.subscriptions.*') ? 'active' : '' }}">
+                <i class="fas fa-hand-holding-usd text-success"></i>
+                <span>Subscriptions</span>
+            </a>
+
+            <a href="{{ route('super_admin.packages.index') }}"
+                class="sidebar-link {{ request()->routeIs('super_admin.packages.*') ? 'active' : '' }}">
+                <i class="fas fa-boxes text-primary"></i>
+                <span>Packages</span>
             </a>
 
             <a href="{{ route('super_admin.platform_settings') }}"
                 class="sidebar-link {{ request()->routeIs('super_admin.platform_settings*') ? 'active' : '' }}">
                 <i class="fas fa-paint-brush text-warning"></i>
-                <span>Platform Branding</span>
+                <span>Branding</span>
             </a>
 
             <hr class="my-2 text-secondary opacity-25">
@@ -172,24 +184,34 @@
         </a>
 
         @if(auth()->check() && auth()->user()->isSuperAdmin())
-            @if(session('active_shop_id') && session('active_shop_id') !== 'all')
-                <a href="{{ route('settings.index') }}"
-                    class="sidebar-link {{ request()->routeIs('settings.*') ? 'active' : '' }}">
-                    <i class="fas fa-cog"></i>
-                    <span>Setting</span>
-                </a>
-            @else
-                <a href="{{ route('super_admin.platform_settings') }}"
-                    class="sidebar-link {{ request()->routeIs('super_admin.platform_settings*') ? 'active' : '' }}">
-                    <i class="fas fa-paint-brush text-warning"></i>
-                    <span>Platform Branding</span>
-                </a>
-            @endif
+            <a href="{{ route('super_admin.platform_settings') }}"
+                class="sidebar-link {{ request()->routeIs('super_admin.platform_settings*') ? 'active' : '' }}">
+                <i class="fas fa-paint-brush text-warning"></i>
+                <span>Platform Branding</span>
+            </a>
+
+            <a href="{{ route('settings.index') }}"
+                class="sidebar-link {{ request()->routeIs('settings.*') ? 'active' : '' }}">
+                <i class="fas fa-cog text-primary"></i>
+                <span>Settings</span>
+            </a>
         @elseif(auth()->check() && auth()->user()->isAdmin())
+            <a href="{{ route('branches.index') }}"
+                class="sidebar-link {{ request()->routeIs('branches.*') ? 'active' : '' }}">
+                <i class="fas fa-code-branch text-info"></i>
+                <span>Branches</span>
+            </a>
+
+            <a href="{{ route('subscription.index') }}"
+                class="sidebar-link {{ request()->routeIs('subscription.*') ? 'active' : '' }}">
+                <i class="fas fa-gem text-warning"></i>
+                <span>Subscription</span>
+            </a>
+
             <a href="{{ route('settings.index') }}"
                 class="sidebar-link {{ request()->routeIs('settings.*') ? 'active' : '' }}">
                 <i class="fas fa-cog"></i>
-                <span>Setting</span>
+                <span>Settings</span>
             </a>
         @endif
 

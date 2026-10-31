@@ -28,7 +28,21 @@ class ShopScope implements Scope
                     $builder->where($model->getTable() . '.shop_id', $activeShopId);
                 }
             } else {
-                // Shop admin or employee is strictly confined to their own shop
+                // If Business Admin has switched active branch
+                $activeShopId = session('active_shop_id');
+                if ($user->isAdmin() && !empty($activeShopId) && is_numeric($activeShopId)) {
+                    $userShop = $user->shop;
+                    if ($userShop) {
+                        $mainShop = ($userShop->parent_shop_id && $userShop->parentShop) ? $userShop->parentShop : $userShop;
+                        $allowed = $mainShop->branches->pluck('id')->push($mainShop->id)->all();
+                        if (in_array((int)$activeShopId, $allowed)) {
+                            $builder->where($model->getTable() . '.shop_id', (int)$activeShopId);
+                            return;
+                        }
+                    }
+                }
+
+                // Default: strictly confined to user's assigned shop
                 $builder->where($model->getTable() . '.shop_id', $user->shop_id);
             }
         }

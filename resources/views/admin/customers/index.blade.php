@@ -44,8 +44,19 @@
                 </div>
             </td>
             <td class="text-muted">
-                @if(!empty($customer->company_name))
-                    <i class="fas fa-building me-1 text-muted"></i>{{ $customer->company_name }}
+                @php
+                    $defComp = $customer->defaultCompany();
+                    $primaryName = $defComp?->company_name ?: ($customer->company_name ?: '');
+                @endphp
+                @if(!empty($primaryName))
+                    <div class="fw-semibold text-dark">
+                        <i class="fas fa-building me-1 text-primary"></i>{{ $primaryName }}
+                    </div>
+                    @if(!empty($defComp?->phone))
+                        <div class="small text-muted mt-1">
+                            <i class="fas fa-phone-alt me-1 text-secondary" style="font-size: 0.75rem;"></i>{{ $defComp->phone }}
+                        </div>
+                    @endif
                 @else
                     ---
                 @endif

@@ -51,12 +51,13 @@
                     <td class="fw-semibold text-dark">{{ $deliveryNote->invoice->invoice_number }}</td>
                     <td>
                         @if($deliveryNote->employee)
-                            <div class="d-flex align-items-center">
-                                
-                                <span class="text-muted small">{{ $deliveryNote->employee->name }}</span>
-                            </div>
+                            <span class="badge bg-light text-dark border">
+                                <i class="fas fa-user-circle text-primary me-1"></i>{{ $deliveryNote->employee->name }}
+                            </span>
                         @else
-                            <span class="badge bg-light text-muted border" style="font-size: 0.75rem;">N/A</span>
+                            <span class="badge bg-light text-secondary border">
+                                <i class="fas fa-user-shield text-muted me-1"></i>Admin
+                            </span>
                         @endif
                     </td>
                     <td>
@@ -85,6 +86,17 @@
                                             class="fas fa-edit me-2 text-info"></i> Edit</a></li>
                                 <li><a class="dropdown-item py-2" href="{{ route('delivery_notes.pdf', $deliveryNote) }}"><i
                                             class="fas fa-file-pdf me-2 text-danger"></i> Download PDF</a></li>
+                                @if(auth()->user()->role !== 'employee')
+                                <li>
+                                    <button type="button" class="dropdown-item py-2 assign-emp-trigger"
+                                            data-bs-toggle="modal" data-bs-target="#assignDeliveryNoteModal"
+                                            data-id="{{ $deliveryNote->id }}"
+                                            data-number="{{ $deliveryNote->delivery_number }}"
+                                            data-current-emp-id="{{ $deliveryNote->employee_id ?? '' }}">
+                                        <i class="fas fa-user-tag me-2 text-warning"></i> Assign / Reclaim
+                                    </button>
+                                </li>
+                                @endif
                                 <li><hr class="dropdown-divider"></li>
                                 <li>
                                     <form action="{{ route('delivery_notes.update_status', $deliveryNote) }}" method="POST" class="d-inline">
@@ -109,6 +121,69 @@
             </div>
         @endif
     </x-card>
+
+    <!-- Assign Employee Modal -->
+    <div class="modal fade" id="assignDeliveryNoteModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header bg-light">
+                    <h5 class="modal-title fw-bold text-dark">
+                        <i class="fas fa-user-tag text-primary me-2"></i> Assign Delivery Note <span id="modalDeliveryNoteNumber" class="text-primary"></span>
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="assignDeliveryNoteForm" method="POST" action="">
+                    @csrf
+                    <div class="modal-body p-4">
+                        <p class="text-muted small mb-3">Select an employee to assign this delivery note to, or choose <strong>Admin (Myself / Reclaim)</strong> to reclaim full control.</p>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold text-dark">Assignee / Owner</label>
+                            <select name="employee_id" id="modalDeliveryNoteEmployeeSelect" class="form-select">
+                                <option value="">-- Admin (Myself / Reclaim) --</option>
+                                @foreach($employees as $emp)
+                                    <option value="{{ $emp->id }}">
+                                        {{ $emp->name }} ({{ $emp->designation ?? 'Staff' }})
+                                    </option>
+                                @endforeach
+                            </select>
+                            <div class="form-text text-muted">
+                                Selecting <em>Admin (Myself / Reclaim)</em> unassigns employees and keeps it under Admin ownership.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer bg-light">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary-modern">
+                            <i class="fas fa-save me-1"></i> Save Assignment
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 @endsection
 
+@section('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const dnModal = document.getElementById('assignDeliveryNoteModal');
+        if (dnModal) {
+            const form = document.getElementById('assignDeliveryNoteForm');
+            const numberSpan = document.getElementById('modalDeliveryNoteNumber');
+            const select = document.getElementById('modalDeliveryNoteEmployeeSelect');
 
+            dnModal.addEventListener('show.bs.modal', function(event) {
+                const btn = event.relatedTarget;
+                if (!btn) return;
+                const id = btn.getAttribute('data-id');
+                const num = btn.getAttribute('data-number');
+                const empId = btn.getAttribute('data-current-emp-id');
+
+                numberSpan.textContent = num ? `#${num}` : '';
+                select.value = empId || '';
+                form.action = `/delivery_notes/${id}/assign`;
+            });
+        }
+    });
+</script>
+@endsection

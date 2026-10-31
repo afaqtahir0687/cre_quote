@@ -13,9 +13,12 @@ use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\DeliveryNoteController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\SystemLogController;
+use App\Http\Controllers\SubscriptionController;
+use App\Http\Controllers\BranchController;
 use App\Http\Controllers\SuperAdmin\SuperAdminController;
 use App\Http\Controllers\SuperAdmin\ShopController;
 use App\Http\Controllers\SuperAdmin\UserController as SuperAdminUserController;
+use App\Http\Controllers\SuperAdmin\SubscriptionController as SuperAdminSubscriptionController;
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -36,15 +39,18 @@ Route::group(['middleware' => 'auth'], function () {
     Route::resource('quotes', QuoteController::class);
     Route::get('quotes/{quote}/convert', [QuoteController::class, 'convertToInvoice'])->name('quotes.convert');
     Route::get('quotes/{quote}/pdf', [QuoteController::class, 'downloadPdf'])->name('quotes.pdf');
+    Route::post('quotes/{quote}/assign', [QuoteController::class, 'assignEmployee'])->name('quotes.assign_employee');
     
     Route::resource('delivery_notes', DeliveryNoteController::class)->only(['index', 'show', 'store', 'create', 'edit', 'update']);
     Route::get('invoices/{invoice}/delivery-note', [DeliveryNoteController::class, 'createFromInvoice'])->name('delivery_notes.create_from_invoice');
     Route::post('invoices/{invoice}/convert-to-delivery-note', [DeliveryNoteController::class, 'convertFromInvoice'])->name('invoices.convert_to_delivery_note');
     Route::get('delivery_notes/{deliveryNote}/pdf', [DeliveryNoteController::class, 'generatePDF'])->name('delivery_notes.pdf');
     Route::post('delivery_notes/{deliveryNote}/status', [DeliveryNoteController::class, 'updateStatus'])->name('delivery_notes.update_status');
+    Route::post('delivery_notes/{deliveryNote}/assign', [DeliveryNoteController::class, 'assignEmployee'])->name('delivery_notes.assign_employee');
     
     Route::resource('invoices', InvoiceController::class);
     Route::get('invoices/{invoice}/pdf', [InvoiceController::class, 'downloadPdf'])->name('invoices.pdf');
+    Route::post('invoices/{invoice}/assign', [InvoiceController::class, 'assignEmployee'])->name('invoices.assign_employee');
     Route::post('invoices/{invoice}/payments', [PaymentController::class, 'store'])->name('payments.store');
     
     Route::get('settings', [SettingController::class, 'index'])->name('settings.index')->middleware('admin');
@@ -103,6 +109,9 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('job-orders/{id}/cancel', [App\Http\Controllers\JobOrderController::class, 'cancel'])
         ->name('job-orders.cancel');
 
+    Route::post('job-orders/{id}/assign', [App\Http\Controllers\JobOrderController::class, 'assignEmployee'])
+        ->name('job-orders.assign_employee');
+
     Route::delete('job-orders/{id}', [App\Http\Controllers\JobOrderController::class, 'destroy'])
         ->name('job-orders.destroy');
 
@@ -128,7 +137,24 @@ Route::group(['middleware' => 'auth'], function () {
 
         // Test Email Dispatch
         Route::post('test-email', [SuperAdminController::class, 'sendTestEmail'])->name('test_email');
+
+        // Subscription & Package Management
+        Route::get('subscriptions', [SuperAdminSubscriptionController::class, 'index'])->name('subscriptions.index');
+        Route::post('subscriptions/{shop}/assign', [SuperAdminSubscriptionController::class, 'assignPackage'])->name('subscriptions.assign');
+        Route::post('subscriptions/shops/{shop}/status', [SuperAdminSubscriptionController::class, 'toggleShopStatus'])->name('subscriptions.shop_status');
+        Route::post('subscriptions/{subscription}/approve', [SuperAdminSubscriptionController::class, 'approveRequest'])->name('subscriptions.approve');
+        Route::get('packages', [SuperAdminSubscriptionController::class, 'packages'])->name('packages.index');
+        Route::put('packages/{package}', [SuperAdminSubscriptionController::class, 'updatePackage'])->name('packages.update');
     });
+
+    // Shop Admin Subscriptions & Multi-Shop Branches
+    Route::get('subscription/expired', [SubscriptionController::class, 'expired'])->name('subscription.expired');
+    Route::post('subscription/request-renewal', [SubscriptionController::class, 'requestRenewal'])->name('subscription.request_renewal');
+    Route::get('subscription', [SubscriptionController::class, 'mySubscription'])->name('subscription.index')->middleware('admin');
+
+    // Business Multi-Shop Branches
+    Route::resource('branches', BranchController::class)->only(['index', 'create', 'store'])->middleware('admin');
+    Route::post('branches/switch/{id}', [BranchController::class, 'switchBranch'])->name('branches.switch')->middleware('admin');
 
 });
 

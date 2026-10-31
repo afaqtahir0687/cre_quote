@@ -19,6 +19,9 @@ class InvoiceRequest extends FormRequest
         return [
             'invoice_number' => $this->isMethod('post') ? 'nullable|string' : 'required|string|unique:invoices,invoice_number,' . ($this->invoice->id ?? ''),
             'customer_id' => 'required|exists:customers,id',
+            'customer_company_id' => 'nullable|exists:customer_companies,id',
+            'employee_id' => 'nullable|exists:employees,id',
+            'show_customer_name' => 'nullable|boolean',
             'invoice_date' => 'required|date',
             'due_date' => 'nullable|date',
             'status' => 'nullable|string',

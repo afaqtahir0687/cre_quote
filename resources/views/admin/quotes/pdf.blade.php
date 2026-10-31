@@ -278,7 +278,7 @@
                         <tr>
                             <td><span class="info-label">Salesperson</span></td>
                             <td>:</td>
-                            <td>{{ Auth::user()->name }}</td>
+                            <td>{{ $quote->employee?->name ?? (Auth::user()?->name ?? 'Admin') }}</td>
                         </tr>
                     </table>
                 </td>
@@ -287,32 +287,34 @@
                         <tr>
                             <td style="width: 35%"><span class="info-label">Company</span></td>
                             <td style="width: 5%">:</td>
-                            <td style="width: 60%"><strong>{{ $quote->customer->company_name ?? '' }}</strong></td>
+                            <td style="width: 60%"><strong>{{ $quote->billing_company?->company_name ?? ($quote->customer?->company_name ?? '') }}</strong></td>
                         </tr>
+                        @if($quote->show_customer_name ?? true)
                         <tr>
                             <td><span class="info-label">Customer</span></td>
                             <td>:</td>
                             <td><strong>{{ $quote->customer->name ?? '' }}</strong></td>
                         </tr>
+                        @endif
                         <tr>
                             <td><span class="info-label">Telephone</span></td>
                             <td>:</td>
-                            <td>{{ $quote->customer->phone ?? '' }}</td>
+                            <td>{{ $quote->customer?->formatted_phone ?: ($quote->customer?->phone ?? '') }}</td>
                         </tr>
                         <tr>
                             <td><span class="info-label">VAT Number</span></td>
                             <td>:</td>
-                            <td>{{ $quote->customer->vat_no ?? '' }}</td>
+                            <td>{{ $quote->billing_company?->vat_no ?? ($quote->customer?->vat_no ?? '') }}</td>
                         </tr>
                         <tr>
                             <td><span class="info-label">CR Number</span></td>
                             <td>:</td>
-                            <td>{{ $quote->customer->cr_no ?? '' }}</td>
+                            <td>{{ $quote->billing_company?->cr_no ?? ($quote->customer?->cr_no ?? '') }}</td>
                         </tr>
                         <tr>
                             <td><span class="info-label">Address</span></td>
                             <td>:</td>
-                            <td>{{ $quote->customer->address ?? '' }}</td>
+                            <td>{{ $quote->billing_company?->address ?? ($quote->customer?->address ?? '') }}</td>
                         </tr>
                     </table>
                 </td>
@@ -368,7 +370,7 @@
         <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
             <tr>
                 <td style="width: 50%; vertical-align: middle; text-align: center; border: none; padding-right: 20px;">
-                    <img src="{{ public_path('uploads/logo/stamp_logo.jpeg') }}" style="max-width: 300px; height: auto;" alt="Stamp">
+                    @include('partials.pdf_bank_details', ['setting' => $setting])
                 </td>
                 <td style="width: 50%; vertical-align: top; border: none;">
                     <table class="totals-table" style="margin-top: 0; width: 100%;">

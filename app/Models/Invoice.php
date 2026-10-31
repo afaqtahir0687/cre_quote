@@ -9,12 +9,26 @@ class Invoice extends Model
 {
     use SoftDeletes, \App\Traits\BelongsToShop;
     protected $fillable = [
-        'shop_id', 'invoice_number', 'invoice_date', 'due_date', 'customer_id', 'employee_id', 'subtotal', 'total_tax', 'total_discount', 'shipping', 'grand_total', 'amount_paid', 'balance_due', 'status', 'notes', 'terms', 'signature'
+        'shop_id', 'invoice_number', 'invoice_date', 'due_date', 'customer_id', 'customer_company_id', 'show_customer_name', 'employee_id', 'subtotal', 'total_tax', 'total_discount', 'shipping', 'grand_total', 'amount_paid', 'balance_due', 'status', 'notes', 'terms', 'signature'
+    ];
+
+    protected $casts = [
+        'show_customer_name' => 'boolean',
     ];
 
     public function customer()
     {
         return $this->belongsTo(Customer::class);
+    }
+
+    public function customerCompany()
+    {
+        return $this->belongsTo(CustomerCompany::class, 'customer_company_id');
+    }
+
+    public function getBillingCompanyAttribute()
+    {
+        return $this->customerCompany ?: ($this->customer?->defaultCompany());
     }
 
     public function items()

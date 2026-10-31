@@ -109,11 +109,13 @@ class JobOrderController extends Controller
      */
     public function create()
     {
-        $customers = \App\Models\Customer::where('is_active', true)->latest()->get();
+        $customers = \App\Models\Customer::where('is_active', true)->with('companies')->latest()->get();
         $setting = current_setting();
+        $employees = \App\Models\Employee::orderBy('name')->get();
+        $currentEmployee = \App\Models\Employee::where('user_id', auth()->id())->first();
         $orderNumber = \App\Helpers\SerialGenerator::generate('job_order', now()->format('Y-m-d'));
         
-        return view('admin.job_orders.create_direct', compact('customers', 'setting', 'orderNumber'));
+        return view('admin.job_orders.create_direct', compact('customers', 'setting', 'orderNumber', 'employees', 'currentEmployee'));
     }
 
     /**
@@ -124,6 +126,8 @@ class JobOrderController extends Controller
         $validated = $request->validate([
             'order_number' => 'nullable|string',
             'customer_id' => 'required|exists:customers,id',
+            'customer_company_id' => 'nullable|exists:customer_companies,id',
+            'employee_id' => 'nullable|exists:employees,id',
             'order_date' => 'nullable|date',
             'status' => 'nullable|string',
             'notes' => 'nullable|string',
@@ -148,16 +152,24 @@ class JobOrderController extends Controller
             'items.*.images.*' => 'image|mimes:jpeg,jpg,png,gif|max:20480',
         ]);
 
-        $employee = \App\Models\Employee::where('user_id', auth()->id())->first();
-        $validated['employee_id'] = $employee ? $employee->id : null;
+        if (empty($validated['employee_id'])) {
+            $employee = \App\Models\Employee::where('user_id', auth()->id())->first();
+            $validated['employee_id'] = $employee ? $employee->id : null;
+        }
         $validated['order_date'] = $validated['order_date'] ?? now();
         $validated['status'] = $validated['status'] ?? 'draft';
         $validated['total_amount'] = $validated['grand_total'];
         $validated['paid_amount'] = 0;
         $validated['remaining_balance'] = $validated['grand_total'];
 
+        if (empty($validated['customer_company_id']) && !empty($validated['customer_id'])) {
+            $cust = \App\Models\Customer::find($validated['customer_id']);
+            $validated['customer_company_id'] = $cust?->defaultCompany()?->id;
+        }
+
         $dateForSerial = $validated['order_date'] ?? now()->format('Y-m-d');
         $validated['order_number'] = \App\Helpers\SerialGenerator::generate('job_order', $dateForSerial);
+        $validated['show_customer_name'] = $request->boolean('show_customer_name', true);
 
         $jobOrder = JobOrder::create($validated);
 
@@ -208,6 +220,8 @@ class JobOrderController extends Controller
             'order_number' => $orderNumber,
             'quote_id' => $quote->id,
             'customer_id' => $quote->customer_id,
+            'customer_company_id' => $quote->customer_company_id ?: $quote->customer?->defaultCompany()?->id,
+            'show_customer_name' => $quote->show_customer_name ?? true,
             'employee_id' => $employeeId,
             'order_date' => now(),
             'status' => 'approved',
@@ -277,7 +291,7 @@ class JobOrderController extends Controller
     /** Index - List all Job Orders */
     public function index(\Illuminate\Http\Request $request)
     {
-        $query = JobOrder::with('customer', 'items', 'employee', 'invoice');
+        $query = JobOrder::with('customer', 'customerCompany', 'items', 'employee', 'invoice');
 
         if (auth()->user()->role === 'employee') {
             $employee = \App\Models\Employee::where('user_id', auth()->id())->first();
@@ -294,6 +308,9 @@ class JobOrderController extends Controller
                       $q->where('name', 'like', "%{$search}%")
                         ->orWhere('phone', 'like', "%{$search}%")
                         ->orWhere('company_name', 'like', "%{$search}%");
+                  })
+                  ->orWhereHas('customerCompany', function($cq) use ($search) {
+                      $cq->where('company_name', 'like', "%{$search}%");
                   });
             });
         }
@@ -303,14 +320,15 @@ class JobOrderController extends Controller
         }
 
         $jobOrders = $query->latest('id')->paginate(10)->withQueryString();
+        $employees = \App\Models\Employee::orderBy('name')->get();
 
-        return view('admin.job_orders.index', compact('jobOrders'));
+        return view('admin.job_orders.index', compact('jobOrders', 'employees'));
     }
 
     /** Show a Job Order */
     public function show($id)
     {
-        $jobOrder = JobOrder::with(['items', 'employee', 'customer', 'assignments.department', 'assignments.employee'])->findOrFail($id);
+        $jobOrder = JobOrder::with(['items', 'employee', 'customer', 'customerCompany', 'assignments.department', 'assignments.employee'])->findOrFail($id);
         $setting = ($jobOrder->shop_id ? Setting::withoutGlobalScopes()->where('shop_id', $jobOrder->shop_id)->first() : null) ?: current_setting();
         $departments = Department::where('is_active', true)->get();
         $employees = Employee::all();
@@ -394,10 +412,11 @@ class JobOrderController extends Controller
     /** Edit form */
     public function edit($id)
     {
-        $jobOrder = JobOrder::with('items')->findOrFail($id);
+        $jobOrder = JobOrder::with(['items', 'customerCompany'])->findOrFail($id);
         $setting = ($jobOrder->shop_id ? Setting::withoutGlobalScopes()->where('shop_id', $jobOrder->shop_id)->first() : null) ?: current_setting();
-        $customers = \App\Models\Customer::where('is_active', true)->latest()->get();
-        return view('admin.job_orders.edit', compact('jobOrder', 'setting', 'customers'));
+        $customers = \App\Models\Customer::where('is_active', true)->with('companies')->latest()->get();
+        $employees = \App\Models\Employee::orderBy('name')->get();
+        return view('admin.job_orders.edit', compact('jobOrder', 'setting', 'customers', 'employees'));
     }
 
     /** Update Job Order */
@@ -405,6 +424,8 @@ class JobOrderController extends Controller
     {
         $validated = $request->validate([
             'customer_id' => 'required|exists:customers,id',
+            'customer_company_id' => 'nullable|exists:customer_companies,id',
+            'employee_id' => 'nullable|exists:employees,id',
             'order_date' => 'nullable|date',
             'status' => 'nullable|string',
             'notes' => 'nullable|string',
@@ -470,6 +491,13 @@ class JobOrderController extends Controller
                 $validated['order_number'] = \App\Helpers\SerialGenerator::generate('job_order', $validated['order_date']);
             }
         }
+
+        if (empty($validated['customer_company_id']) && !empty($validated['customer_id'])) {
+            $cust = \App\Models\Customer::find($validated['customer_id']);
+            $validated['customer_company_id'] = $cust?->defaultCompany()?->id;
+        }
+
+        $validated['show_customer_name'] = $request->boolean('show_customer_name', true);
 
         $jobOrder->update($validated);
         $jobOrder->touch();
@@ -648,6 +676,8 @@ class JobOrderController extends Controller
                 'invoice_date' => now(),
                 'due_date' => now()->addDays(7),
                 'customer_id' => $jobOrder->customer_id,
+                'customer_company_id' => $jobOrder->customer_company_id ?: $jobOrder->customer?->defaultCompany()?->id,
+                'show_customer_name' => $jobOrder->show_customer_name ?? true,
                 'employee_id' => $jobOrder->employee_id,
                 'subtotal' => $jobOrder->subtotal ?? $jobOrder->total_amount,
                 'total_tax' => $jobOrder->total_tax ?? 0,
@@ -782,8 +812,12 @@ class JobOrderController extends Controller
     /** Download Job Order PDF */
     public function downloadPdf($id)
     {
-        $jobOrder = JobOrder::with(['items', 'payments', 'customer', 'employee', 'assignments.department', 'assignments.employee'])->findOrFail($id);
+        $jobOrder = JobOrder::with(['items', 'payments', 'customer', 'customerCompany', 'employee', 'assignments.department', 'assignments.employee'])->findOrFail($id);
         $setting = ($jobOrder->shop_id ? Setting::withoutGlobalScopes()->where('shop_id', $jobOrder->shop_id)->first() : null) ?: current_setting();
+
+        if (request()->has('show_customer_name')) {
+            $jobOrder->show_customer_name = filter_var(request('show_customer_name'), FILTER_VALIDATE_BOOLEAN);
+        }
 
         $mpdf = new \Mpdf\Mpdf([
             'mode' => 'utf-8',
@@ -801,10 +835,28 @@ class JobOrderController extends Controller
             ->header('Content-Disposition', 'attachment; filename="' . $jobOrder->order_number . '.pdf"');
     }
 
+    public function assignEmployee(Request $request, $id)
+    {
+        $jobOrder = JobOrder::findOrFail($id);
+        $validated = $request->validate([
+            'employee_id' => 'nullable|exists:employees,id',
+        ]);
+
+        $empId = $validated['employee_id'] ?: null;
+        $jobOrder->update(['employee_id' => $empId]);
+
+        if ($empId) {
+            $emp = \App\Models\Employee::find($empId);
+            return back()->with('success', "Job Order #{$jobOrder->order_number} assigned to {$emp->name} successfully.");
+        }
+
+        return back()->with('success', "Job Order #{$jobOrder->order_number} assigned back to Admin successfully.");
+    }
+
     /** Download Statement PDF for Job Orders */
     public function downloadStatementPdf(Request $request)
     {
-        $query = JobOrder::with(['customer', 'items', 'employee', 'invoice', 'payments']);
+        $query = JobOrder::with(['customer', 'customerCompany', 'items', 'employee', 'invoice', 'payments']);
 
         if (auth()->user()->role === 'employee') {
             $employee = \App\Models\Employee::where('user_id', auth()->id())->first();

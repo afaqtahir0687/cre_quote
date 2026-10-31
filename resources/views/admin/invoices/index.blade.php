@@ -50,13 +50,19 @@
             </td>
             <td class="text-muted text-nowrap"><span class="d-none">{{ \Carbon\Carbon::parse($invoice->invoice_date)->format('Y-m-d') }}</span>{{ \Carbon\Carbon::parse($invoice->invoice_date)->format('d-M-Y') }}</td>
             <td>
-                @if($invoice->employee)
-                    <div class="d-flex align-items-center">
-                        <span class="text-muted small">{{ $invoice->employee->name }}</span>
-                    </div>
-                @else
-                    <span class="badge bg-light text-muted border" style="font-size: 0.75rem;">N/A</span>
-                @endif
+                <button type="button" 
+                        class="btn btn-sm {{ $invoice->employee ? 'btn-light border text-dark' : 'btn-outline-primary' }} d-inline-flex align-items-center gap-1 py-1 px-2 rounded-pill shadow-none assign-emp-trigger"
+                        style="font-size: 0.8rem; {{ !$invoice->employee ? 'border-style: dashed !important;' : '' }}"
+                        data-bs-toggle="modal" 
+                        data-bs-target="#assignInvoiceModal"
+                        data-id="{{ $invoice->id }}"
+                        data-number="{{ $invoice->invoice_number }}"
+                        data-current-emp-id="{{ $invoice->employee_id ?? '' }}"
+                        title="Click to assign / change employee">
+                    <i class="fas {{ $invoice->employee ? 'fa-user-circle text-primary' : 'fa-user-plus text-primary' }}"></i>
+                    <span class="fw-medium">{{ $invoice->employee->name ?? 'Assign' }}</span>
+                    <i class="fas fa-edit text-muted ms-1" style="font-size: 0.65rem;"></i>
+                </button>
             </td>
             <td class="fw-semibold text-dark">{{ format_currency($invoice->grand_total) }}</td>
             <td class="text-success fw-medium">{{ format_currency($invoice->amount_paid) }}</td>
@@ -84,6 +90,17 @@
                         <li><a class="dropdown-item py-2" href="{{ route('invoices.show', $invoice) }}"><i class="fas fa-eye me-2 text-primary"></i> View Detail</a></li>
                         <li><a class="dropdown-item py-2" href="{{ route('invoices.edit', $invoice) }}"><i class="fas fa-edit me-2 text-info"></i> Edit</a></li>
                         <li><a class="dropdown-item py-2" href="{{ route('invoices.pdf', $invoice) }}"><i class="fas fa-file-pdf me-2 text-danger"></i> Download PDF</a></li>
+                        @if(auth()->user()->role !== 'employee')
+                        <li>
+                            <button type="button" class="dropdown-item py-2 assign-emp-trigger"
+                                    data-bs-toggle="modal" data-bs-target="#assignInvoiceModal"
+                                    data-id="{{ $invoice->id }}"
+                                    data-number="{{ $invoice->invoice_number }}"
+                                    data-current-emp-id="{{ $invoice->employee_id ?? '' }}">
+                                <i class="fas fa-user-tag me-2 text-warning"></i> Assign / Reclaim
+                            </button>
+                        </li>
+                        @endif
                         <li><hr class="dropdown-divider"></li>
                         <li>
                             <form action="{{ route('invoices.destroy', $invoice->id) }}" method="POST" class="delete-form">
@@ -107,8 +124,47 @@
         </div>
     @endif
 </x-card>
-@endsection
 
+    <!-- Assign Employee Modal -->
+    <div class="modal fade" id="assignInvoiceModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header bg-light">
+                    <h5 class="modal-title fw-bold text-dark">
+                        <i class="fas fa-user-tag text-primary me-2"></i> Assign Invoice <span id="modalInvoiceNumber" class="text-primary"></span>
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="assignInvoiceForm" method="POST" action="">
+                    @csrf
+                    <div class="modal-body p-4">
+                        <p class="text-muted small mb-3">Select an employee to assign this invoice to, or choose <strong>Admin (Myself / Reclaim)</strong> to reclaim full control.</p>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold text-dark">Assignee / Owner</label>
+                            <select name="employee_id" id="modalInvoiceEmployeeSelect" class="form-select">
+                                <option value="">-- Admin (Myself / Reclaim) --</option>
+                                @foreach($employees as $emp)
+                                    <option value="{{ $emp->id }}">
+                                        {{ $emp->name }} ({{ $emp->designation ?? 'Staff' }})
+                                    </option>
+                                @endforeach
+                            </select>
+                            <div class="form-text text-muted">
+                                Selecting <em>Admin (Myself / Reclaim)</em> unassigns employees and keeps it under Admin ownership.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer bg-light">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary-modern">
+                            <i class="fas fa-save me-1"></i> Save Assignment
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+@endsection
 
 @section('scripts')
 <script>
@@ -117,11 +173,11 @@
             e.preventDefault();
             Swal.fire({
                 title: 'Are you sure?',
-                text: "You won't be able to revert this! All payments and items will be deleted.",
+                text: "You won't be able to revert this!",
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#6c757d',
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
                 confirmButtonText: 'Yes, delete it!'
             }).then((result) => {
                 if (result.isConfirmed) {
@@ -129,6 +185,27 @@
                 }
             });
         });
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const invModal = document.getElementById('assignInvoiceModal');
+        if (invModal) {
+            const form = document.getElementById('assignInvoiceForm');
+            const numberSpan = document.getElementById('modalInvoiceNumber');
+            const select = document.getElementById('modalInvoiceEmployeeSelect');
+
+            invModal.addEventListener('show.bs.modal', function(event) {
+                const btn = event.relatedTarget;
+                if (!btn) return;
+                const id = btn.getAttribute('data-id');
+                const num = btn.getAttribute('data-number');
+                const empId = btn.getAttribute('data-current-emp-id');
+
+                numberSpan.textContent = num ? `#${num}` : '';
+                select.value = empId || '';
+                form.action = `/invoices/${id}/assign`;
+            });
+        }
     });
 </script>
 @endsection

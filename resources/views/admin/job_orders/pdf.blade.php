@@ -303,32 +303,34 @@
                         <tr>
                             <td style="width: 35%"><span class="info-label">Customer Company</span></td>
                             <td style="width: 5%">:</td>
-                            <td style="width: 60%"><strong>{{ $jobOrder->customer->company_name ?? '' }}</strong></td>
+                            <td style="width: 60%"><strong>{{ $jobOrder->billing_company?->company_name ?? ($jobOrder->customer?->company_name ?? '') }}</strong></td>
                         </tr>
+                        @if($jobOrder->show_customer_name ?? true)
                         <tr>
                             <td><span class="info-label">Customer Name</span></td>
                             <td>:</td>
                             <td><strong style="font-size: 16px;">{{ $jobOrder->customer->name ?? '' }}</strong></td>
                         </tr>
+                        @endif
                         <tr>
                             <td><span class="info-label">Telephone</span></td>
                             <td>:</td>
-                            <td style="color: red;">{{ $jobOrder->customer->phone ?? '' }}</td>
+                            <td style="color: red;">{{ $jobOrder->customer?->formatted_phone ?: ($jobOrder->customer?->phone ?? '') }}</td>
                         </tr>
                         <tr>
                             <td><span class="info-label">VAT Number</span></td>
                             <td>:</td>
-                            <td>{{ $jobOrder->customer->vat_no ?? '' }}</td>
+                            <td>{{ $jobOrder->billing_company?->vat_no ?? ($jobOrder->customer?->vat_no ?? '') }}</td>
                         </tr>
                         <tr>
                             <td><span class="info-label">CR Number</span></td>
                             <td>:</td>
-                            <td>{{ $jobOrder->customer->cr_no ?? '' }}</td>
+                            <td>{{ $jobOrder->billing_company?->cr_no ?? ($jobOrder->customer?->cr_no ?? '') }}</td>
                         </tr>
                         <tr>
                             <td><span class="info-label">Address</span></td>
                             <td>:</td>
-                            <td>{{ $jobOrder->customer->address ?? '' }}</td>
+                            <td>{{ $jobOrder->billing_company?->address ?? ($jobOrder->customer?->address ?? '') }}</td>
                         </tr>
                     </table>
                 </td>
@@ -382,7 +384,7 @@
         <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
             <tr>
                 <td style="width: 50%; vertical-align: middle; text-align: center; border: none; padding-right: 20px;">
-                    <img src="{{ public_path('uploads/logo/stamp_logo.jpeg') }}" style="max-width: 300px; height: auto;" alt="Stamp">
+                    @include('partials.pdf_bank_details', ['setting' => $setting])
                 </td>
                 <td style="width: 50%; vertical-align: top; border: none;">
                     <table class="totals-table" style="margin-top: 0; width: 100%;">

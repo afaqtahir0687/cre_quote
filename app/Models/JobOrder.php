@@ -15,6 +15,8 @@ class JobOrder extends Model
         'order_number',
         'quote_id',
         'customer_id',
+        'customer_company_id',
+        'show_customer_name',
         'employee_id',
         'updated_by',
         'order_date',
@@ -37,6 +39,7 @@ class JobOrder extends Model
         'total_amount' => 'decimal:2',
         'paid_amount' => 'decimal:2',
         'payment_details' => 'array',
+        'show_customer_name' => 'boolean',
     ];
 
     /**
@@ -53,6 +56,16 @@ class JobOrder extends Model
     public function customer(): BelongsTo
     {
         return $this->belongsTo(Customer::class);
+    }
+
+    public function customerCompany(): BelongsTo
+    {
+        return $this->belongsTo(CustomerCompany::class, 'customer_company_id');
+    }
+
+    public function getBillingCompanyAttribute()
+    {
+        return $this->customerCompany ?: ($this->customer?->defaultCompany());
     }
 
     /**

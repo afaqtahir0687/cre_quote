@@ -74,18 +74,62 @@
                 </ul>
             </div>
         @elseif(auth()->check() && $currentShop)
-            <!-- Shop Brand Indicator for Branch Admin & Staff -->
             @php
                 $staffShopLogo = shop_logo_url($currentShop, $setting);
+                $userShop = auth()->user()->shop;
+                $mainShop = ($userShop && $userShop->parent_shop_id && $userShop->parentShop) ? $userShop->parentShop : $userShop;
+                $hasBranches = auth()->user()->isAdmin() && $mainShop && ($mainShop->branches->isNotEmpty() || $mainShop->isBusinessAccount());
             @endphp
-            <div class="d-none d-md-flex align-items-center px-3 py-1 bg-light rounded-pill border gap-2">
-                @if($staffShopLogo)
-                    <img src="{{ $staffShopLogo }}" alt="{{ $currentShop->name }}" class="rounded-circle" style="width: 22px; height: 22px; object-fit: contain;">
-                @else
-                    <i class="fas fa-store text-primary"></i>
-                @endif
-                <span class="small fw-semibold text-dark">{{ $currentShop->name }}</span>
-            </div>
+
+            @if($hasBranches)
+                <!-- Multi-Shop Branch Switcher for Business Admin -->
+                <div class="dropdown me-2">
+                    <button class="btn btn-outline-primary btn-sm dropdown-toggle rounded-pill px-3 shadow-none d-flex align-items-center gap-2" 
+                            type="button" id="branchSwitcherDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-building text-primary"></i>
+                        <span class="small fw-semibold">{{ $currentShop->name }}</span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 p-2" aria-labelledby="branchSwitcherDropdown" style="min-width: 230px;">
+                        <li class="dropdown-header small text-uppercase text-muted fw-bold">My Business Branches</li>
+                        <li>
+                            <form action="{{ route('branches.switch', $mainShop->id) }}" method="POST">
+                                @csrf
+                                <button type="submit" class="dropdown-item rounded py-2 d-flex align-items-center justify-content-between {{ ($currentShop->id == $mainShop->id) ? 'active text-white' : '' }}">
+                                    <span>{{ $mainShop->name }} (HQ)</span>
+                                    @if($currentShop->id == $mainShop->id) <i class="fas fa-check"></i> @endif
+                                </button>
+                            </form>
+                        </li>
+                        @foreach($mainShop->branches as $b)
+                            <li>
+                                <form action="{{ route('branches.switch', $b->id) }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="dropdown-item rounded py-2 d-flex align-items-center justify-content-between {{ ($currentShop->id == $b->id) ? 'active text-white' : '' }}">
+                                        <span>{{ $b->name }}</span>
+                                        @if($currentShop->id == $b->id) <i class="fas fa-check"></i> @endif
+                                    </button>
+                                </form>
+                            </li>
+                        @endforeach
+                        <li><hr class="dropdown-divider my-1"></li>
+                        <li>
+                            <a class="dropdown-item rounded py-2 text-primary fw-semibold" href="{{ route('branches.index') }}">
+                                <i class="fas fa-cog me-2"></i> Manage Branches
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            @else
+                <!-- Single Shop Brand Indicator for Branch Admin & Staff -->
+                <div class="d-none d-md-flex align-items-center px-3 py-1 bg-light rounded-pill border gap-2">
+                    @if($staffShopLogo)
+                        <img src="{{ $staffShopLogo }}" alt="{{ $currentShop->name }}" class="rounded-circle" style="width: 22px; height: 22px; object-fit: contain;">
+                    @else
+                        <i class="fas fa-store text-primary"></i>
+                    @endif
+                    <span class="small fw-semibold text-dark">{{ $currentShop->name }}</span>
+                </div>
+            @endif
         @endif
 
         <!-- User Profile Dropdown -->

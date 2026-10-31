@@ -6,7 +6,11 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
         <h2 class="fw-bold text-dark mb-1">Statement of Account</h2>
-        <p class="text-muted mb-0">{{ $customer->name }} {{ $customer->company_name ? ' - ' . $customer->company_name : '' }}</p>
+        @php
+            $defComp = $customer->defaultCompany();
+            $cName = $defComp?->company_name ?: $customer->company_name;
+        @endphp
+        <p class="text-muted mb-0">{{ $customer->name }}{{ $cName ? ' - ' . $cName : '' }}</p>
     </div>
     <div class="d-flex gap-2">
         <a href="{{ route('customers.index') }}" class="btn btn-light border">

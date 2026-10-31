@@ -12,9 +12,26 @@
         <span class="badge-soft badge-soft-primary ms-3">{{ $quote->quote_number }}</span>
     </div>
     <div class="d-flex gap-2">
-        <a href="{{ route('quotes.pdf', $quote) }}" class="btn btn-outline-secondary border-2 d-flex align-items-center fw-medium">
-            <i class="fas fa-file-pdf me-2"></i> Download PDF
-        </a>
+        <div class="btn-group">
+            <a href="{{ route('quotes.pdf', $quote) }}" class="btn btn-outline-secondary border-2 d-flex align-items-center fw-medium">
+                <i class="fas fa-file-pdf me-2"></i> Download PDF
+            </a>
+            <button type="button" class="btn btn-outline-secondary border-2 dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false" title="PDF Options">
+                <span class="visually-hidden">Toggle Dropdown</span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                <li>
+                    <a class="dropdown-item py-2" href="{{ route('quotes.pdf', ['quote' => $quote->id, 'show_customer_name' => 1]) }}">
+                        <i class="fas fa-user-check text-success me-2"></i> With Customer Name
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item py-2" href="{{ route('quotes.pdf', ['quote' => $quote->id, 'show_customer_name' => 0]) }}">
+                        <i class="fas fa-user-slash text-danger me-2"></i> Without Customer Name
+                    </a>
+                </li>
+            </ul>
+        </div>
         <button class="btn btn-primary-modern d-flex align-items-center shadow-sm" data-bs-toggle="modal" data-bs-target="#convertJobOrderModal">
             <i class="fas fa-check-circle me-2"></i> Approve & Convert to Job Order
         </button>
@@ -65,6 +82,15 @@
                     };
                 @endphp
                 <span class="badge-soft {{ $statusClass }}">{{ $quote->status }}</span>
+            </div>
+            <div class="col-3">
+                <span class="text-muted small d-block">Assigned To</span>
+                <div class="d-flex align-items-center gap-2">
+                    <span class="fw-bold text-dark"><i class="fas fa-user-circle text-primary me-1"></i>{{ $quote->employee?->name ?? 'Admin' }}</span>
+                    <button type="button" class="btn btn-outline-primary btn-sm py-0 px-2 rounded-pill small" data-bs-toggle="modal" data-bs-target="#assignQuoteModal" title="Reassign Employee">
+                        <i class="fas fa-user-edit small"></i> Assign
+                    </button>
+                </div>
             </div>
             <div class="col-3 text-end">
                 <span class="text-muted small d-block">Reference</span>
@@ -266,6 +292,41 @@
                 <button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-3" data-bs-dismiss="modal" aria-label="Close" style="z-index: 10;"></button>
                 <img id="modalImage" src="" class="img-fluid w-100 rounded-3">
             </div>
+        </div>
+    </div>
+</div>
+
+<!-- Assign Employee Modal -->
+<div class="modal fade" id="assignQuoteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-light">
+                <h5 class="modal-title fw-bold text-dark"><i class="fas fa-user-tag text-primary me-2"></i> Assign Quote to Employee</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{{ route('quotes.assign_employee', $quote) }}" method="POST">
+                @csrf
+                <div class="modal-body p-4">
+                    <p class="text-muted small mb-3">Assign this quote to an employee so they can manage and follow up with the client.</p>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold text-dark">Employee <span class="text-danger">*</span></label>
+                        <select name="employee_id" class="form-select" required>
+                            <option value="">Select Employee</option>
+                            @foreach($employees as $emp)
+                                <option value="{{ $emp->id }}" {{ $quote->employee_id == $emp->id ? 'selected' : '' }}>
+                                    {{ $emp->name }} ({{ $emp->designation ?? 'Employee' }})
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary-modern">
+                        <i class="fas fa-save me-1"></i> Save Assignment
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 </div>

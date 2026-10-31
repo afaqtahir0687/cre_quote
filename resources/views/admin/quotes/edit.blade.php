@@ -23,32 +23,63 @@
                 <x-card title="Quote Details">
                     <div class="row">
                         <div class="col-md-4">
+                            <input type="hidden" name="customer_company_id" id="customer_company_id" value="{{ old('customer_company_id', $quote->customer_company_id) }}">
                             <select name="customer_id" id="customer_id" class="cust-select-hidden" required>
                                 <option value="">Select Customer</option>
                                 @foreach($customers as $customer)
                                     @php
                                         $displayPhone = $customer->formatted_phone ?: $customer->phone;
-                                        $displayStr = $customer->name;
-                                        if (!empty($customer->company_name)) $displayStr .= ' — ' . $customer->company_name;
-                                        if (!empty($displayPhone)) $displayStr .= ' (' . $displayPhone . ')';
+                                        $companies = $customer->companies->isNotEmpty() ? $customer->companies : collect([[
+                                            'id' => null,
+                                            'company_name' => $customer->company_name ?? '',
+                                            'vat_no' => $customer->vat_no ?? '',
+                                            'cr_no' => $customer->cr_no ?? '',
+                                            'address' => $customer->address ?? ''
+                                        ]]);
                                     @endphp
-                                    <option value="{{ $customer->id }}" 
-                                            data-name="{{ $customer->name }}"
-                                            data-company="{{ $customer->company_name ?? '' }}" 
-                                            data-phone="{{ $displayPhone ?? '' }}"
-                                            data-display="{{ $displayStr }}"
-                                            {{ old('customer_id', $quote->customer_id) == $customer->id ? 'selected' : '' }}>{{ $displayStr }}</option>
+                                    @foreach($companies as $comp)
+                                        @php
+                                            $cId = is_array($comp) ? ($comp['id'] ?? '') : $comp->id;
+                                            $cName = is_array($comp) ? ($comp['company_name'] ?? '') : $comp->company_name;
+                                            $cVat = is_array($comp) ? ($comp['vat_no'] ?? '') : $comp->vat_no;
+                                            $cCr = is_array($comp) ? ($comp['cr_no'] ?? '') : $comp->cr_no;
+                                            $cAddr = is_array($comp) ? ($comp['address'] ?? '') : $comp->address;
+
+                                            $displayStr = $customer->name;
+                                            if (!empty($cName)) $displayStr .= ' — ' . $cName;
+                                            if (!empty($displayPhone)) $displayStr .= ' (' . $displayPhone . ')';
+
+                                            $targetCompId = old('customer_company_id', $quote->customer_company_id);
+                                            $isSel = (old('customer_id', $quote->customer_id) == $customer->id && ($targetCompId == $cId || empty($targetCompId)));
+                                        @endphp
+                                        <option value="{{ $customer->id }}" 
+                                                data-company-id="{{ $cId }}"
+                                                data-name="{{ $customer->name }}"
+                                                data-company="{{ $cName ?? '' }}" 
+                                                data-phone="{{ $displayPhone ?? '' }}"
+                                                data-vat="{{ $cVat ?? '' }}"
+                                                data-cr="{{ $cCr ?? '' }}"
+                                                data-address="{{ $cAddr ?? '' }}"
+                                                data-display="{{ $displayStr }}"
+                                                {{ $isSel ? 'selected' : '' }}>{{ $displayStr }}</option>
+                                    @endforeach
                                 @endforeach
                             </select>
                             <div class="cust-dropdown" id="cust-dropdown">
                                 <div class="form-floating">
                                     @php
                                         $currCustId = old('customer_id', $quote->customer_id);
+                                        $currCompId = old('customer_company_id', $quote->customer_company_id);
                                         $selCust = $currCustId ? $customers->firstWhere('id', $currCustId) : null;
+                                        $selComp = null;
+                                        if ($selCust) {
+                                            $selComp = $currCompId ? $selCust->companies->firstWhere('id', $currCompId) : $selCust->defaultCompany();
+                                        }
                                         $selTrigger = '';
                                         if ($selCust) {
                                             $selTrigger = $selCust->name;
-                                            if (!empty($selCust->company_name)) $selTrigger .= ' — ' . $selCust->company_name;
+                                            $cName = $selComp?->company_name ?: $selCust->company_name;
+                                            if (!empty($cName)) $selTrigger .= ' — ' . $cName;
                                             $sPhone = $selCust->formatted_phone ?: $selCust->phone;
                                             if (!empty($sPhone)) $selTrigger .= ' (' . $sPhone . ')';
                                         }
@@ -91,6 +122,15 @@
                                 </select>
                                 <label for="status">Status</label>
                             </div>
+                        </div>
+                        <div class="col-12 mt-2 pt-2 border-top d-flex align-items-center justify-content-between flex-wrap gap-2">
+                            <div class="form-check form-switch mb-0">
+                                <input class="form-check-input" type="checkbox" role="switch" name="show_customer_name" id="show_customer_name" value="1" {{ old('show_customer_name', $quote->show_customer_name ?? true) ? 'checked' : '' }}>
+                                <label class="form-check-label fw-semibold text-dark small cursor-pointer" for="show_customer_name">
+                                    <i class="fas fa-user-check text-primary me-1"></i> Show Customer Name on PDF
+                                </label>
+                            </div>
+                            <span class="text-muted small"><i class="fas fa-info-circle me-1"></i>Always Yes by default. Uncheck if you want to hide the Customer Name on PDF.</span>
                         </div>
                     </div>
                 </x-card>
@@ -299,16 +339,22 @@
                 var searchBox  = document.getElementById('cust-search');
                 var listEl     = document.getElementById('cust-list');
                 var dropdown   = document.getElementById('cust-dropdown');
+                var compHidden = document.getElementById('customer_company_id');
                 var selectedId = realSelect.value || '';
+                var selectedCompanyId = compHidden ? compHidden.value : '';
 
                 var customers = [];
                 Array.from(realSelect.options).forEach(function(opt) {
                     if (!opt.value) return;
                     customers.push({ 
                         id: opt.value, 
+                        companyId: opt.dataset.companyId || '',
                         name: opt.dataset.name || opt.text.trim(), 
                         company: opt.dataset.company || '', 
                         phone: opt.dataset.phone || '',
+                        vat: opt.dataset.vat || '',
+                        cr: opt.dataset.cr || '',
+                        address: opt.dataset.address || '',
                         display: opt.dataset.display || opt.text.trim()
                     });
                 });
@@ -340,7 +386,8 @@
                     listEl.innerHTML = filtered.map(function(c) {
                         var phoneBadge = c.phone ? '<span class="badge bg-light text-primary border opt-phone"><i class="fas fa-phone-alt me-1"></i>' + hl(c.phone, filter) + '</span>' : '';
                         var companyHtml = c.company ? '<div class="opt-company"><i class="fas fa-building me-1 text-muted"></i>' + hl(c.company, filter) + '</div>' : '';
-                        return '<div class="cust-option' + (c.id == selectedId ? ' selected' : '') + '" data-id="' + c.id + '" data-display="' + esc(c.display) + '">'
+                        var isSel = (c.id == selectedId && (!selectedCompanyId || c.companyId == selectedCompanyId));
+                        return '<div class="cust-option' + (isSel ? ' selected' : '') + '" data-id="' + c.id + '" data-company-id="' + c.companyId + '" data-display="' + esc(c.display) + '" data-vat="' + esc(c.vat) + '" data-cr="' + esc(c.cr) + '" data-address="' + esc(c.address) + '">'
                              + '  <div class="d-flex justify-content-between align-items-center">'
                              + '    <span class="opt-name">' + hl(c.name, filter) + '</span>'
                              + '    ' + phoneBadge
@@ -349,13 +396,17 @@
                              + '</div>';
                     }).join('');
                     listEl.querySelectorAll('.cust-option').forEach(function(el) {
-                        el.addEventListener('click', function() { selectCustomer(el.dataset.id, el.dataset.display); });
+                        el.addEventListener('click', function() { 
+                            selectCustomer(el.dataset.id, el.dataset.companyId, el.dataset.display, el.dataset.vat, el.dataset.cr, el.dataset.address); 
+                        });
                     });
                 }
 
-                function selectCustomer(id, display) {
+                function selectCustomer(id, companyId, display, vat, cr, address) {
                     selectedId = id;
+                    selectedCompanyId = companyId;
                     realSelect.value = id;
+                    if (compHidden) compHidden.value = companyId || '';
                     trigger.value = display;
                     trigger.classList.remove('is-invalid');
                     closePanel();
@@ -393,8 +444,13 @@
                 });
 
                 if (selectedId) {
-                    var found = customers.find(function(c){ return c.id == selectedId; });
-                    if (found) trigger.value = found.display || found.name;
+                    var found = customers.find(function(c){ 
+                        return c.id == selectedId && (!selectedCompanyId || c.companyId == selectedCompanyId); 
+                    }) || customers.find(function(c){ return c.id == selectedId; });
+                    if (found) {
+                        trigger.value = found.display || found.name;
+                        if (compHidden && found.companyId) compHidden.value = found.companyId;
+                    }
                 }
 
                 renderList('');

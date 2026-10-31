@@ -221,12 +221,15 @@
                             <strong>{{ $jobOrder->order_number }}</strong>
                         </td>
                         <td>
+                            @php
+                                $bComp = $jobOrder->billing_company;
+                            @endphp
                             <strong>{{ $jobOrder->customer->name ?? 'N/A' }}</strong>
-                            @if(!empty($jobOrder->customer->company_name))
-                                <div style="font-size: 9px; color: #555; margin-top: 2px;">{{ $jobOrder->customer->company_name }}</div>
+                            @if(!empty($bComp?->company_name) || !empty($jobOrder->customer?->company_name))
+                                <div style="font-size: 9px; color: #555; margin-top: 2px;">{{ $bComp?->company_name ?? $jobOrder->customer?->company_name }}</div>
                             @endif
-                            @if(!empty($jobOrder->customer->phone))
-                                <div style="font-size: 9px; color: #777; margin-top: 1px;">Ph: {{ $jobOrder->customer->phone }}</div>
+                            @if(!empty($jobOrder->customer?->formatted_phone ?: $jobOrder->customer?->phone))
+                                <div style="font-size: 9px; color: #777; margin-top: 1px;">Ph: {{ $jobOrder->customer?->formatted_phone ?: $jobOrder->customer?->phone }}</div>
                             @endif
                         </td>
                         <td class="col-gray center">{{ number_format($jobOrder->grand_total ?? $jobOrder->total_amount, 2) }}</td>
@@ -241,7 +244,7 @@
         <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
             <tr>
                 <td style="width: 50%; vertical-align: middle; text-align: center; border: none; padding-right: 20px;">
-                    <img src="{{ public_path('uploads/logo/stamp_logo.jpeg') }}" style="max-width: 260px; height: auto;" alt="Stamp">
+                    @include('partials.pdf_bank_details', ['setting' => $setting])
                 </td>
                 <td style="width: 50%; vertical-align: top; border: none;">
                     <table class="totals-table" style="margin-top: 0; width: 100%;">

@@ -18,7 +18,7 @@ class InvoiceController extends Controller
 {
     public function index(\Illuminate\Http\Request $request)
     {
-        $query = Invoice::with('customer', 'items', 'employee');
+        $query = Invoice::with('customer', 'customerCompany', 'items', 'employee');
 
         if (auth()->user()->role === 'employee') {
             $employee = \App\Models\Employee::where('user_id', auth()->id())->first();
@@ -31,10 +31,13 @@ class InvoiceController extends Controller
             $search = $request->search;
             $query->where(function($q) use ($search) {
                 $q->where('invoice_number', 'like', "%{$search}%")
-                  ->orWhereHas('customer', function($q) use ($search) {
-                      $q->where('name', 'like', "%{$search}%")
+                  ->orWhereHas('customer', function($cq) use ($search) {
+                      $cq->where('name', 'like', "%{$search}%")
                         ->orWhere('phone', 'like', "%{$search}%")
                         ->orWhere('company_name', 'like', "%{$search}%");
+                  })
+                  ->orWhereHas('customerCompany', function($cq) use ($search) {
+                      $cq->where('company_name', 'like', "%{$search}%");
                   });
             });
         }
@@ -44,14 +47,17 @@ class InvoiceController extends Controller
         }
 
         $invoices = $query->latest('id')->paginate(10)->withQueryString();
+        $employees = \App\Models\Employee::orderBy('name')->get();
 
-        return view('admin.invoices.index', compact('invoices'));
+        return view('admin.invoices.index', compact('invoices', 'employees'));
     }
 
     public function create()
     {
-        $customers = Customer::where('is_active', true)->latest()->get();
+        $customers = Customer::where('is_active', true)->with('companies')->latest()->get();
         $products = Product::all();
+        $employees = \App\Models\Employee::orderBy('name')->get();
+        $currentEmployee = \App\Models\Employee::where('user_id', auth()->id())->first();
         $setting = current_setting();
         
         $nextNumber = 1001;
@@ -68,7 +74,7 @@ class InvoiceController extends Controller
             $invoiceNumber = ($setting->invoice_prefix ?? 'INV-') . $nextNumber;
         }
 
-        return view('admin.invoices.create', compact('customers', 'products', 'invoiceNumber'));
+        return view('admin.invoices.create', compact('customers', 'products', 'invoiceNumber', 'setting', 'employees', 'currentEmployee'));
     }
 
     public function store(InvoiceRequest $request)
@@ -80,10 +86,19 @@ class InvoiceController extends Controller
             $invoiceNumber = \App\Helpers\SerialGenerator::generate('invoice', now()->format('Y-m-d'));
             $data['invoice_number'] = $invoiceNumber;
 
-            // Set employee_id from authenticated user's employee record
-            $employee = \App\Models\Employee::where('user_id', auth()->id())->first();
-            $data['employee_id'] = $employee ? $employee->id : null;
+            // Set employee_id from input or authenticated user's employee record
+            if (empty($data['employee_id'])) {
+                $employee = \App\Models\Employee::where('user_id', auth()->id())->first();
+                $data['employee_id'] = $employee ? $employee->id : null;
+            }
+
+            // Multi-company fallback
+            if (empty($data['customer_company_id']) && !empty($data['customer_id'])) {
+                $cust = Customer::find($data['customer_id']);
+                $data['customer_company_id'] = $cust?->defaultCompany()?->id;
+            }
             
+            $data['show_customer_name'] = $request->boolean('show_customer_name', true);
             $invoice = Invoice::create($data);
             $invoice->update(['balance_due' => $invoice->grand_total]);
             
@@ -97,25 +112,34 @@ class InvoiceController extends Controller
 
     public function show(Invoice $invoice)
     {
-        $invoice->load('customer', 'items', 'payments', 'employee');
-        return view('admin.invoices.show', compact('invoice'));
+        $invoice->load('customer', 'customerCompany', 'items', 'payments', 'employee');
+        $employees = \App\Models\Employee::orderBy('name')->get();
+        return view('admin.invoices.show', compact('invoice', 'employees'));
     }
 
     public function edit(Invoice $invoice)
     {
-        $invoice->load('items');
-        $customers = Customer::where('is_active', true)->latest()->get();
+        $invoice->load('items', 'customerCompany', 'employee');
+        $customers = Customer::where('is_active', true)->with('companies')->latest()->get();
         $products = Product::all();
-        return view('admin.invoices.edit', compact('invoice', 'customers', 'products'));
+        $employees = \App\Models\Employee::orderBy('name')->get();
+        $setting = current_setting();
+        return view('admin.invoices.edit', compact('invoice', 'customers', 'products', 'setting', 'employees'));
     }
 
     public function update(InvoiceRequest $request, Invoice $invoice)
     {
         DB::transaction(function () use ($request, $invoice) {
             $data = $request->validated();
-            // Keep original creator's employee_id intact
+            // Multi-company fallback
+            if (empty($data['customer_company_id']) && !empty($data['customer_id'])) {
+                $cust = Customer::find($data['customer_id']);
+                $data['customer_company_id'] = $cust?->defaultCompany()?->id;
+            }
             
-            $invoice->update($data);$invoice->touch();
+            $data['show_customer_name'] = $request->boolean('show_customer_name', true);
+            $invoice->update($data);
+            $invoice->touch();
             $invoice->update(['balance_due' => $invoice->grand_total - $invoice->amount_paid]);
             $invoice->items()->delete();
             
@@ -146,8 +170,12 @@ class InvoiceController extends Controller
 
     public function downloadPdf(Invoice $invoice)
     {
-        $invoice->load('customer', 'items', 'employee');
+        $invoice->load('customer', 'customerCompany', 'items', 'employee');
         $setting = ($invoice->shop_id ? Setting::withoutGlobalScopes()->where('shop_id', $invoice->shop_id)->first() : null) ?: current_setting();
+        
+        if (request()->has('show_customer_name')) {
+            $invoice->show_customer_name = filter_var(request('show_customer_name'), FILTER_VALIDATE_BOOLEAN);
+        }
         
         $mpdf = new \Mpdf\Mpdf([
             'mode' => 'utf-8',
@@ -164,5 +192,21 @@ class InvoiceController extends Controller
             ->header('Content-Type', 'application/pdf')
             ->header('Content-Disposition', 'attachment; filename="' . $invoice->invoice_number . '.pdf"');
     }
-}
 
+    public function assignEmployee(Request $request, Invoice $invoice)
+    {
+        $validated = $request->validate([
+            'employee_id' => 'nullable|exists:employees,id',
+        ]);
+
+        $empId = $validated['employee_id'] ?: null;
+        $invoice->update(['employee_id' => $empId]);
+
+        if ($empId) {
+            $emp = \App\Models\Employee::find($empId);
+            return back()->with('success', "Invoice #{$invoice->invoice_number} assigned to {$emp->name} successfully.");
+        }
+
+        return back()->with('success', "Invoice #{$invoice->invoice_number} assigned back to Admin successfully.");
+    }
+}

@@ -246,35 +246,37 @@
                 </td>
                 <td style="width: 50%; vertical-align: top; padding-left: 30px;">
                     <table class="info-table" style="margin-top: 10px;">
+                        @if($deliveryNote->show_customer_name ?? true)
                         <tr>
                             <td style="width: 35%"><span class="info-label">Customer</span></td>
                             <td style="width: 5%">:</td>
                             <td style="width: 60%"><strong>{{ $deliveryNote->customer->name ?? '' }}</strong></td>
                         </tr>
+                        @endif
                         <tr>
                             <td><span class="info-label">Company</span></td>
                             <td>:</td>
-                            <td>{{ $deliveryNote->customer->company_name ?? '' }}</td>
+                            <td>{{ $deliveryNote->billing_company?->company_name ?? ($deliveryNote->customer?->company_name ?? '') }}</td>
                         </tr>
                         <tr>
                             <td><span class="info-label">Telephone</span></td>
                             <td>:</td>
-                            <td>{{ $deliveryNote->customer->phone ?? '' }}</td>
+                            <td>{{ $deliveryNote->customer?->formatted_phone ?: ($deliveryNote->customer?->phone ?? '') }}</td>
                         </tr>
                         <tr>
                             <td><span class="info-label">VAT Number</span></td>
                             <td>:</td>
-                            <td>{{ $deliveryNote->customer->vat_no ?? '' }}</td>
+                            <td>{{ $deliveryNote->billing_company?->vat_no ?? ($deliveryNote->customer?->vat_no ?? '') }}</td>
                         </tr>
                         <tr>
                             <td><span class="info-label">CR Number</span></td>
                             <td>:</td>
-                            <td>{{ $deliveryNote->customer->cr_no ?? '' }}</td>
+                            <td>{{ $deliveryNote->billing_company?->cr_no ?? ($deliveryNote->customer?->cr_no ?? '') }}</td>
                         </tr>
                         <tr>
                             <td><span class="info-label">Address</span></td>
                             <td>:</td>
-                            <td>{{ $deliveryNote->customer->address ?? '' }}</td>
+                            <td>{{ $deliveryNote->billing_company?->address ?? ($deliveryNote->customer?->address ?? '') }}</td>
                         </tr>
                     </table>
                 </td>

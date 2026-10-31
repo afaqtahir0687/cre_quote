@@ -28,13 +28,24 @@ class Shop extends Model
         'action_deadline',
         'status_updated_at',
         'logo',
+        'bank_stamp_logo',
         'notes',
+        'package_id',
+        'subscription_starts_at',
+        'subscription_expires_at',
+        'subscription_expiry_notified_at',
+        'subscription_status',
+        'parent_shop_id',
+        'owner_id',
     ];
 
     protected $casts = [
         'action_deadline' => 'date',
         'status_updated_at' => 'datetime',
         'grace_period_days' => 'integer',
+        'subscription_starts_at' => 'datetime',
+        'subscription_expires_at' => 'datetime',
+        'subscription_expiry_notified_at' => 'datetime',
     ];
 
     /**
@@ -228,5 +239,129 @@ class Shop extends Model
         }
 
         return $phone;
+    }
+
+    /**
+     * The package assigned to this shop.
+     */
+    public function package()
+    {
+        return $this->belongsTo(Package::class);
+    }
+
+    /**
+     * All subscriptions/payment logs for this shop.
+     */
+    public function subscriptions()
+    {
+        return $this->hasMany(Subscription::class)->latest('id');
+    }
+
+    /**
+     * Current active subscription log.
+     */
+    public function activeSubscription()
+    {
+        return $this->hasOne(Subscription::class)->where('status', 'active')->latestOfMany();
+    }
+
+    /**
+     * Sub-shops / Branches under this main shop.
+     */
+    public function branches()
+    {
+        return $this->hasMany(Shop::class, 'parent_shop_id');
+    }
+
+    /**
+     * Main / parent shop if this is a branch.
+     */
+    public function parentShop()
+    {
+        return $this->belongsTo(Shop::class, 'parent_shop_id');
+    }
+
+    /**
+     * The business owner / admin user.
+     */
+    public function owner()
+    {
+        return $this->belongsTo(User::class, 'owner_id');
+    }
+
+    /**
+     * Check if shop has an active, unexpired subscription.
+     */
+    public function hasActiveSubscription(): bool
+    {
+        if ($this->parent_shop_id && $this->parentShop) {
+            return $this->parentShop->hasActiveSubscription();
+        }
+
+        if ($this->subscription_status !== 'active') {
+            return false;
+        }
+
+        if ($this->subscription_expires_at && $this->subscription_expires_at->isPast()) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Check if subscription has expired.
+     */
+    public function isSubscriptionExpired(): bool
+    {
+        return !$this->hasActiveSubscription();
+    }
+
+    /**
+     * Days remaining until subscription expires.
+     */
+    public function subscriptionDaysRemaining(): int
+    {
+        $target = ($this->parent_shop_id && $this->parentShop) ? $this->parentShop : $this;
+
+        if (!$target->subscription_expires_at) {
+            return 999;
+        }
+
+        return (int) now()->startOfDay()->diffInDays($target->subscription_expires_at->startOfDay(), false);
+    }
+
+    /**
+     * Check if shop is on Business (multi-shop) plan.
+     */
+    public function isBusinessAccount(): bool
+    {
+        $target = ($this->parent_shop_id && $this->parentShop) ? $this->parentShop : $this;
+        return $target->package && $target->package->allowsMultiShop();
+    }
+
+    /**
+     * Check if shop is on Test Trial plan.
+     */
+    public function isTrialAccount(): bool
+    {
+        $target = ($this->parent_shop_id && $this->parentShop) ? $this->parentShop : $this;
+        return $target->package && $target->package->isTrial();
+    }
+
+    /**
+     * Check if this shop can add more branches.
+     */
+    public function canAddBranch(): bool
+    {
+        if (!$this->isBusinessAccount()) {
+            return false;
+        }
+
+        $target = ($this->parent_shop_id && $this->parentShop) ? $this->parentShop : $this;
+        $maxShops = $target->package->max_shops ?? 5;
+        $currentBranchesCount = $target->branches()->count() + 1; // including main shop
+
+        return $currentBranchesCount < $maxShops;
     }
 }

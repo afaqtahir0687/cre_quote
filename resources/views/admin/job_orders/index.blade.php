@@ -83,13 +83,19 @@
                     </td>
                     <td class="text-nowrap"><span class="d-none">{{ \Carbon\Carbon::parse($jobOrder->order_date ?? now())->format('Y-m-d') }}</span>{{ \Carbon\Carbon::parse($jobOrder->order_date ?? now())->format('d-M-Y') }}</td>
                     <td>
-                        @if($jobOrder->employee)
-                            <div class="d-flex align-items-center">
-                                <span class="text-muted small">{{ $jobOrder->employee->name }}</span>
-                            </div>
-                        @else
-                            <span class="badge bg-light text-muted border" style="font-size: 0.75rem;">N/A</span>
-                        @endif
+                        <button type="button" 
+                                class="btn btn-sm {{ $jobOrder->employee ? 'btn-light border text-dark' : 'btn-outline-primary' }} d-inline-flex align-items-center gap-1 py-1 px-2 rounded-pill shadow-none assign-emp-trigger"
+                                style="font-size: 0.8rem; {{ !$jobOrder->employee ? 'border-style: dashed !important;' : '' }}"
+                                data-bs-toggle="modal" 
+                                data-bs-target="#assignJobOrderModal"
+                                data-id="{{ $jobOrder->id }}"
+                                data-number="{{ $jobOrder->order_number }}"
+                                data-current-emp-id="{{ $jobOrder->employee_id ?? '' }}"
+                                title="Click to assign / change employee">
+                            <i class="fas {{ $jobOrder->employee ? 'fa-user-circle text-primary' : 'fa-user-plus text-primary' }}"></i>
+                            <span class="fw-medium">{{ $jobOrder->employee->name ?? 'Assign' }}</span>
+                            <i class="fas fa-edit text-muted ms-1" style="font-size: 0.65rem;"></i>
+                        </button>
                     </td>
                     <td>
                         @php
@@ -143,6 +149,18 @@
                                     </form>
                                 </li>
                                 @endif
+                                @if(auth()->user()->role !== 'employee')
+                                <li>
+                                    <button type="button" class="dropdown-item py-2 assign-emp-trigger"
+                                            data-bs-toggle="modal" data-bs-target="#assignJobOrderModal"
+                                            data-id="{{ $jobOrder->id }}"
+                                            data-number="{{ $jobOrder->order_number }}"
+                                            data-current-emp-id="{{ $jobOrder->employee_id ?? '' }}">
+                                        <i class="fas fa-user-tag me-2 text-warning"></i> Assign / Reclaim
+                                    </button>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                @endif
                                 <li>
                                     <form action="{{ route('job-orders.destroy', $jobOrder->id) }}" method="POST" class="delete-form">
                                         @csrf
@@ -166,6 +184,46 @@
         @endif
     @endif
 </x-card>
+
+    <!-- Assign Employee Modal -->
+    <div class="modal fade" id="assignJobOrderModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header bg-light">
+                    <h5 class="modal-title fw-bold text-dark">
+                        <i class="fas fa-user-tag text-primary me-2"></i> Assign Job Order <span id="modalJobOrderNumber" class="text-primary"></span>
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="assignJobOrderForm" method="POST" action="">
+                    @csrf
+                    <div class="modal-body p-4">
+                        <p class="text-muted small mb-3">Select an employee to assign this job order to, or choose <strong>Admin (Myself / Reclaim)</strong> to reclaim full control.</p>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold text-dark">Assignee / Owner</label>
+                            <select name="employee_id" id="modalJobOrderEmployeeSelect" class="form-select">
+                                <option value="">-- Admin (Myself / Reclaim) --</option>
+                                @foreach($employees as $emp)
+                                    <option value="{{ $emp->id }}">
+                                        {{ $emp->name }} ({{ $emp->designation ?? 'Staff' }})
+                                    </option>
+                                @endforeach
+                            </select>
+                            <div class="form-text text-muted">
+                                Selecting <em>Admin (Myself / Reclaim)</em> unassigns employees and keeps it under Admin ownership.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer bg-light">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary-modern">
+                            <i class="fas fa-save me-1"></i> Save Assignment
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @section('scripts')
@@ -188,7 +246,26 @@
             });
         });
     });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const joModal = document.getElementById('assignJobOrderModal');
+        if (joModal) {
+            const form = document.getElementById('assignJobOrderForm');
+            const numberSpan = document.getElementById('modalJobOrderNumber');
+            const select = document.getElementById('modalJobOrderEmployeeSelect');
+
+            joModal.addEventListener('show.bs.modal', function(event) {
+                const btn = event.relatedTarget;
+                if (!btn) return;
+                const id = btn.getAttribute('data-id');
+                const num = btn.getAttribute('data-number');
+                const empId = btn.getAttribute('data-current-emp-id');
+
+                numberSpan.textContent = num ? `#${num}` : '';
+                select.value = empId || '';
+                form.action = `/job-orders/${id}/assign`;
+            });
+        }
+    });
 </script>
 @endsection
-
-

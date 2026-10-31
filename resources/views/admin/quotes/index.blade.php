@@ -50,11 +50,13 @@
                     <td class="text-muted text-nowrap"><span class="d-none">{{ \Carbon\Carbon::parse($quote->quote_date)->format('Y-m-d') }}</span>{{ \Carbon\Carbon::parse($quote->quote_date)->format('d-M-Y') }}</td>
                     <td>
                         @if($quote->employee)
-                            <div class="d-flex align-items-center">
-                                <span class="text-muted small">{{ $quote->employee->name }}</span>
-                            </div>
+                            <span class="badge bg-light text-dark border">
+                                <i class="fas fa-user-circle text-primary me-1"></i>{{ $quote->employee->name }}
+                            </span>
                         @else
-                            <span class="badge bg-light text-muted border" style="font-size: 0.75rem;">N/A</span>
+                            <span class="badge bg-light text-secondary border">
+                                <i class="fas fa-user-shield text-muted me-1"></i>Admin
+                            </span>
                         @endif
                     </td>
                     <td class="fw-semibold text-dark">{{ format_currency($quote->grand_total) }}</td>
@@ -110,6 +112,17 @@
                                             class="fas fa-edit me-2 text-info"></i> Edit</a></li>
                                 <li><a class="dropdown-item py-2" href="{{ route('quotes.pdf', $quote) }}"><i
                                             class="fas fa-file-pdf me-2 text-danger"></i> Download PDF</a></li>
+                                @if(auth()->user()->role !== 'employee')
+                                <li>
+                                    <button type="button" class="dropdown-item py-2 assign-emp-trigger"
+                                            data-bs-toggle="modal" data-bs-target="#assignQuoteModal"
+                                            data-id="{{ $quote->id }}"
+                                            data-number="{{ $quote->quote_number }}"
+                                            data-current-emp-id="{{ $quote->employee_id ?? '' }}">
+                                        <i class="fas fa-user-tag me-2 text-warning"></i> Assign / Reclaim
+                                    </button>
+                                </li>
+                                @endif
                                 <li><hr class="dropdown-divider"></li>
                                 <li>
                                     <form action="{{ route('quotes.destroy', $quote) }}" method="POST" class="d-inline delete-form">
@@ -151,6 +164,46 @@
             </div>
         </div>
     </div>
+
+    <!-- Assign Employee Modal -->
+    <div class="modal fade" id="assignQuoteModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header bg-light">
+                    <h5 class="modal-title fw-bold text-dark">
+                        <i class="fas fa-user-tag text-primary me-2"></i> Assign Quote <span id="modalQuoteNumber" class="text-primary"></span>
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="assignQuoteForm" method="POST" action="">
+                    @csrf
+                    <div class="modal-body p-4">
+                        <p class="text-muted small mb-3">Select an employee to assign this quote to, or choose <strong>Admin (Myself / Reclaim)</strong> to reclaim full control.</p>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold text-dark">Assignee / Owner</label>
+                            <select name="employee_id" id="modalQuoteEmployeeSelect" class="form-select">
+                                <option value="">-- Admin (Myself / Reclaim) --</option>
+                                @foreach($employees as $emp)
+                                    <option value="{{ $emp->id }}">
+                                        {{ $emp->name }} ({{ $emp->designation ?? 'Staff' }})
+                                    </option>
+                                @endforeach
+                            </select>
+                            <div class="form-text text-muted">
+                                Selecting <em>Admin (Myself / Reclaim)</em> unassigns employees and keeps it under Admin ownership.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer bg-light">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary-modern">
+                            <i class="fas fa-save me-1"></i> Save Assignment
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @section('scripts')
@@ -179,25 +232,26 @@
                 });
             });
         });
-    
-    function filterTable() {
-        let textFilter = document.getElementById('searchInput').value.toLowerCase();
-        let dateFilter = document.getElementById('dateFilter').value;
-        let rows = document.querySelectorAll('.quote-row');
-        
-        rows.forEach(row => {
-            let text = row.textContent.toLowerCase().replace(/\s+/g, ' ');
-            let textMatch = text.includes(textFilter);
-            let dateMatch = dateFilter === '' || text.includes(dateFilter);
-            
-            if (textMatch && dateMatch) {
-                row.style.display = '';
-            } else {
-                row.style.display = 'none';
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const quoteModal = document.getElementById('assignQuoteModal');
+            if (quoteModal) {
+                const form = document.getElementById('assignQuoteForm');
+                const numberSpan = document.getElementById('modalQuoteNumber');
+                const select = document.getElementById('modalQuoteEmployeeSelect');
+
+                quoteModal.addEventListener('show.bs.modal', function(event) {
+                    const btn = event.relatedTarget;
+                    if (!btn) return;
+                    const id = btn.getAttribute('data-id');
+                    const num = btn.getAttribute('data-number');
+                    const empId = btn.getAttribute('data-current-emp-id');
+
+                    numberSpan.textContent = num ? `#${num}` : '';
+                    select.value = empId || '';
+                    form.action = `/quotes/${id}/assign`;
+                });
             }
         });
-    }
-    document.getElementById('searchInput').addEventListener('keyup', filterTable);
-    document.getElementById('dateFilter').addEventListener('change', filterTable);
-</script>
+    </script>
 @endsection

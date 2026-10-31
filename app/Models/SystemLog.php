@@ -17,6 +17,15 @@ class SystemLog extends Model
         'description',
     ];
 
+    protected static function booted()
+    {
+        static::creating(function ($log) {
+            if (empty($log->model_type)) {
+                $log->model_type = 'System';
+            }
+        });
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class);

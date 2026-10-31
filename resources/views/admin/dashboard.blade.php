@@ -33,6 +33,14 @@
                             <span class="badge bg-light text-secondary border px-2 py-1 rounded-pill small">
                                 <i class="fas fa-store me-1"></i>Branch #{{ $currentShop->id }}
                             </span>
+                            @if($currentShop->package)
+                                <a href="{{ route('subscription.index') }}" class="text-decoration-none">
+                                    <span class="badge {{ $currentShop->package->badgeClass() }} border px-2 py-1 rounded-pill small">
+                                        <i class="fas fa-gem me-1"></i> {{ $currentShop->package->name }}
+                                        &bull; {{ $currentShop->subscriptionDaysRemaining() }}d left
+                                    </span>
+                                </a>
+                            @endif
                         @endif
                         @if($isSuper && $isSwitched)
                             <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle px-2 py-1 rounded-pill small">

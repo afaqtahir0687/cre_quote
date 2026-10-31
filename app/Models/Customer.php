@@ -13,6 +13,17 @@ class Customer extends Model
         'shop_id', 'name', 'company_name', 'email', 'phone', 'address', 'city', 'zip', 'country', 'tax_id', 'vat_no', 'cr_no', 'is_active'
     ];
 
+    public function companies()
+    {
+        return $this->hasMany(CustomerCompany::class, 'customer_id');
+    }
+
+    public function defaultCompany()
+    {
+        return $this->companies->firstWhere('is_default', true) 
+            ?: $this->companies->first();
+    }
+
     public function quotes()
     {
         return $this->hasMany(Quote::class);

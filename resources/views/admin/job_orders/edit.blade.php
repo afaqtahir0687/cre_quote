@@ -70,32 +70,62 @@
                     <div class="row">
                         <div class="col-md-4">
                             <div class="d-flex gap-2 align-items-start">
+                                <input type="hidden" name="customer_company_id" id="customer_company_id" value="{{ old('customer_company_id', $jobOrder->customer_company_id) }}">
                                 <select name="customer_id" id="customer_id" required>
                                     <option value="">Select Customer</option>
                                     @foreach($customers as $customer)
                                         @php
                                             $displayPhone = $customer->formatted_phone ?: $customer->phone;
-                                            $displayStr = $customer->name;
-                                            if (!empty($customer->company_name)) $displayStr .= ' — ' . $customer->company_name;
-                                            if (!empty($displayPhone)) $displayStr .= ' (' . $displayPhone . ')';
+                                            $companies = $customer->companies->isNotEmpty() ? $customer->companies : collect([[
+                                                'id' => null,
+                                                'company_name' => $customer->company_name ?? '',
+                                                'vat_no' => $customer->vat_no ?? '',
+                                                'cr_no' => $customer->cr_no ?? '',
+                                                'address' => $customer->address ?? ''
+                                            ]]);
                                         @endphp
-                                        <option value="{{ $customer->id }}" 
-                                                data-name="{{ $customer->name }}"
-                                                data-company="{{ $customer->company_name ?? '' }}" 
-                                                data-phone="{{ $displayPhone ?? '' }}"
-                                                data-display="{{ $displayStr }}"
-                                                {{ old('customer_id', $jobOrder->customer_id) == $customer->id ? 'selected' : '' }}>{{ $displayStr }}</option>
+                                        @foreach($companies as $comp)
+                                            @php
+                                                $cId = is_array($comp) ? ($comp['id'] ?? '') : $comp->id;
+                                                $cName = is_array($comp) ? ($comp['company_name'] ?? '') : $comp->company_name;
+                                                $cVat = is_array($comp) ? ($comp['vat_no'] ?? '') : $comp->vat_no;
+                                                $cCr = is_array($comp) ? ($comp['cr_no'] ?? '') : $comp->cr_no;
+                                                $cAddr = is_array($comp) ? ($comp['address'] ?? '') : $comp->address;
+
+                                                $displayStr = $customer->name;
+                                                if (!empty($cName)) $displayStr .= ' — ' . $cName;
+                                                if (!empty($displayPhone)) $displayStr .= ' (' . $displayPhone . ')';
+                                                $targetCompId = old('customer_company_id', $jobOrder->customer_company_id);
+                                                $isSel = (old('customer_id', $jobOrder->customer_id) == $customer->id && ($targetCompId == $cId || empty($targetCompId)));
+                                            @endphp
+                                            <option value="{{ $customer->id }}" 
+                                                    data-company-id="{{ $cId }}"
+                                                    data-name="{{ $customer->name }}"
+                                                    data-company="{{ $cName ?? '' }}" 
+                                                    data-phone="{{ $displayPhone ?? '' }}"
+                                                    data-vat="{{ $cVat ?? '' }}"
+                                                    data-cr="{{ $cCr ?? '' }}"
+                                                    data-address="{{ $cAddr ?? '' }}"
+                                                    data-display="{{ $displayStr }}"
+                                                    {{ $isSel ? 'selected' : '' }}>{{ $displayStr }}</option>
+                                        @endforeach
                                     @endforeach
                                 </select>
                                 <div class="flex-grow-1 cust-dropdown" id="cust-dropdown">
                                     <div class="form-floating">
                                         @php
                                             $currCustId = old('customer_id', $jobOrder->customer_id);
+                                            $currCompId = old('customer_company_id', $jobOrder->customer_company_id);
                                             $selCust = $currCustId ? $customers->firstWhere('id', $currCustId) : null;
+                                            $selComp = null;
+                                            if ($selCust) {
+                                                $selComp = $currCompId ? $selCust->companies->firstWhere('id', $currCompId) : $selCust->defaultCompany();
+                                            }
                                             $selTrigger = '';
                                             if ($selCust) {
                                                 $selTrigger = $selCust->name;
-                                                if (!empty($selCust->company_name)) $selTrigger .= ' — ' . $selCust->company_name;
+                                                $cName = $selComp?->company_name ?: $selCust->company_name;
+                                                if (!empty($cName)) $selTrigger .= ' — ' . $cName;
                                                 $sPhone = $selCust->formatted_phone ?: $selCust->phone;
                                                 if (!empty($sPhone)) $selTrigger .= ' (' . $sPhone . ')';
                                             }
@@ -139,6 +169,15 @@
                                 <label for="status">Status</label>
                                 @error('status') <div class="invalid-feedback">{{ $message }}</div> @enderror
                             </div>
+                        </div>
+                        <div class="col-12 mt-2 pt-2 border-top d-flex align-items-center justify-content-between flex-wrap gap-2">
+                            <div class="form-check form-switch mb-0">
+                                <input class="form-check-input" type="checkbox" role="switch" name="show_customer_name" id="show_customer_name" value="1" {{ old('show_customer_name', $jobOrder->show_customer_name ?? true) ? 'checked' : '' }}>
+                                <label class="form-check-label fw-semibold text-dark small cursor-pointer" for="show_customer_name">
+                                    <i class="fas fa-user-check text-primary me-1"></i> Show Customer Name on PDF
+                                </label>
+                            </div>
+                            <span class="text-muted small"><i class="fas fa-info-circle me-1"></i>Always Yes by default. Uncheck if you want to hide the Customer Name on PDF.</span>
                         </div>
                     </div>
                 </x-card>
@@ -262,8 +301,8 @@
                 </div>
                 <div class="modal-body p-4">
                     <div id="customerModalAlert" class="d-none mb-3"></div>
-                    <div class="row g-3">
-                        <div class="col-md-6">
+                    <div class="row">
+                        <div class="col-md-4">
                             <div class="form-floating">
                                 <input type="text" id="c_name" class="form-control" placeholder="Full Name">
                                 <label>Full Name *</label>
@@ -274,6 +313,19 @@
                             <div class="form-floating">
                                 <input type="text" id="c_company_name" class="form-control" placeholder="Company Name">
                                 <label>Company Name</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small text-muted mb-1">Company Phone</label>
+                            <div class="input-group">
+                                <select id="c_company_country_code" class="form-select flex-grow-0" style="width: 130px; max-width: 40%;">
+                                    @foreach(\App\Models\Customer::allCountries() as $iso => $country)
+                                        <option value="{{ $country['code'] }}" {{ $country['code'] === '+966' ? 'selected' : '' }}>
+                                            {{ $country['code'] }} ({{ $country['name'] }})
+                                        </option>
+                                    @endforeach
+                                </select>
+                                <input type="tel" id="c_company_phone" class="form-control">
                             </div>
                         </div>
                         <div class="col-md-6">
@@ -381,16 +433,22 @@
                 var searchBox  = document.getElementById('cust-search');
                 var listEl     = document.getElementById('cust-list');
                 var dropdown   = document.getElementById('cust-dropdown');
+                var compHidden = document.getElementById('customer_company_id');
                 var selectedId = realSelect.value || '';
+                var selectedCompanyId = compHidden ? compHidden.value : '';
 
                 var customers = [];
                 Array.from(realSelect.options).forEach(function(opt) {
                     if (!opt.value) return;
                     customers.push({ 
                         id: opt.value, 
+                        companyId: opt.dataset.companyId || '',
                         name: opt.dataset.name || opt.text.trim(), 
                         company: opt.dataset.company || '', 
                         phone: opt.dataset.phone || '',
+                        vat: opt.dataset.vat || '',
+                        cr: opt.dataset.cr || '',
+                        address: opt.dataset.address || '',
                         display: opt.dataset.display || opt.text.trim()
                     });
                 });
@@ -422,7 +480,8 @@
                     listEl.innerHTML = filtered.map(function(c) {
                         var phoneBadge = c.phone ? '<span class="badge bg-light text-primary border opt-phone"><i class="fas fa-phone-alt me-1"></i>' + hl(c.phone, filter) + '</span>' : '';
                         var companyHtml = c.company ? '<div class="opt-company"><i class="fas fa-building me-1 text-muted"></i>' + hl(c.company, filter) + '</div>' : '';
-                        return '<div class="cust-option' + (c.id == selectedId ? ' selected' : '') + '" data-id="' + c.id + '" data-display="' + esc(c.display) + '">'
+                        var isSel = (c.id == selectedId && (!selectedCompanyId || c.companyId == selectedCompanyId));
+                        return '<div class="cust-option' + (isSel ? ' selected' : '') + '" data-id="' + c.id + '" data-company-id="' + c.companyId + '" data-display="' + esc(c.display) + '" data-vat="' + esc(c.vat) + '" data-cr="' + esc(c.cr) + '" data-address="' + esc(c.address) + '">'
                              + '  <div class="d-flex justify-content-between align-items-center">'
                              + '    <span class="opt-name">' + hl(c.name, filter) + '</span>'
                              + '    ' + phoneBadge
@@ -431,13 +490,17 @@
                              + '</div>';
                     }).join('');
                     listEl.querySelectorAll('.cust-option').forEach(function(el) {
-                        el.addEventListener('click', function() { selectCustomer(el.dataset.id, el.dataset.display); });
+                        el.addEventListener('click', function() { 
+                            selectCustomer(el.dataset.id, el.dataset.companyId, el.dataset.display, el.dataset.vat, el.dataset.cr, el.dataset.address); 
+                        });
                     });
                 }
 
-                function selectCustomer(id, display) {
+                function selectCustomer(id, companyId, display, vat, cr, address) {
                     selectedId = id;
+                    selectedCompanyId = companyId;
                     realSelect.value = id;
+                    if (compHidden) compHidden.value = companyId || '';
                     trigger.value = display;
                     trigger.classList.remove('is-invalid');
                     closePanel();
@@ -475,22 +538,42 @@
                 });
 
                 if (selectedId) {
-                    var found = customers.find(function(c){ return c.id == selectedId; });
-                    if (found) trigger.value = found.display || found.name;
+                    var found = customers.find(function(c){ 
+                        return c.id == selectedId && (!selectedCompanyId || c.companyId == selectedCompanyId); 
+                    }) || customers.find(function(c){ return c.id == selectedId; });
+                    if (found) {
+                        trigger.value = found.display || found.name;
+                        if (compHidden && found.companyId) compHidden.value = found.companyId;
+                    }
                 }
 
-                window.addCustomerToDropdown = function(id, name, company, phone, display) {
+                window.addCustomerToDropdown = function(id, name, company, phone, display, companyId, vat, cr, address) {
                     display = display || name;
-                    customers.push({ id: String(id), name: name, company: company || '', phone: phone || '', display: display });
+                    companyId = companyId || '';
+                    customers.push({ 
+                        id: String(id), 
+                        companyId: String(companyId), 
+                        name: name, 
+                        company: company || '', 
+                        phone: phone || '', 
+                        vat: vat || '', 
+                        cr: cr || '', 
+                        address: address || '', 
+                        display: display 
+                    });
                     var opt = document.createElement('option');
                     opt.value = id; 
                     opt.text = display; 
+                    opt.dataset.companyId = companyId;
                     opt.dataset.name = name;
                     opt.dataset.company = company || '';
                     opt.dataset.phone = phone || '';
+                    opt.dataset.vat = vat || '';
+                    opt.dataset.cr = cr || '';
+                    opt.dataset.address = address || '';
                     opt.dataset.display = display;
                     realSelect.appendChild(opt);
-                    selectCustomer(String(id), display);
+                    selectCustomer(String(id), String(companyId), display, vat, cr, address);
                 };
 
                 renderList('');
@@ -527,6 +610,8 @@
                     body: JSON.stringify({
                         name: name,
                         company_name: document.getElementById('c_company_name').value.trim()||null,
+                        company_phone: (document.getElementById('c_company_phone') ? document.getElementById('c_company_phone').value.trim() : null) || null,
+                company_country_code: (document.getElementById('c_company_country_code') ? document.getElementById('c_company_country_code').value : '+966'),
                         email: document.getElementById('c_email').value.trim()||null,
                         country_code: countryCode,
                         phone: phone,
@@ -542,12 +627,22 @@
                 .then(function(r){ return r.json(); })
                 .then(function(data) {
                     if (data.success) {
-                        window.addCustomerToDropdown(data.customer.id, data.customer.name, data.customer.company_name||'', data.customer.phone||'', data.customer.display||data.customer.name);
+                        window.addCustomerToDropdown(
+                            data.customer.id, 
+                            data.customer.name, 
+                            data.customer.company_name||'', 
+                            data.customer.phone||'', 
+                            data.customer.display||data.customer.name,
+                            data.customer.company_id||'',
+                            data.customer.vat_no||'',
+                            data.customer.cr_no||'',
+                            data.customer.address||''
+                        );
                         // Close modal immediately
                         bootstrap.Modal.getInstance(document.getElementById('addCustomerModal')).hide();
                         // Show same Bootstrap toast as the rest of the app
                         showToast('Customer <strong>' + data.customer.name + '</strong> added and selected!', 'success');
-                        ['c_name','c_company_name','c_email','c_phone','c_address','c_city','c_zip','c_country','c_tax_id','c_vat_no']
+                        ['c_name','c_company_name','c_email','c_phone','c_address','c_city','c_zip','c_country','c_tax_id','c_vat_no','c_company_phone']
                             .forEach(function(id){ document.getElementById(id).value=''; });
                     } else if (data.errors) {
                         alertEl.className = 'alert alert-danger rounded-3';
@@ -572,7 +667,7 @@
             document.getElementById('addCustomerModal').addEventListener('hidden.bs.modal', function() {
                 document.getElementById('customerModalAlert').className = 'd-none';
                 document.querySelectorAll('#addCustomerModal .is-invalid').forEach(function(el){ el.classList.remove('is-invalid'); });
-                ['c_name','c_company_name','c_email','c_phone_input','c_phone','c_address','c_city','c_zip','c_country','c_tax_id','c_vat_no']
+                ['c_name','c_company_name','c_email','c_phone_input','c_phone','c_address','c_city','c_zip','c_country','c_tax_id','c_vat_no','c_company_phone']
                     .forEach(function(id){ if(document.getElementById(id)) document.getElementById(id).value=''; });
                 if (window.setCountry_c_phone) window.setCountry_c_phone('+966', 'sa');
                 if (document.getElementById('c_phone_err')) document.getElementById('c_phone_err').textContent = '';

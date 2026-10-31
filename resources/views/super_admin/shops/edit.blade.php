@@ -210,11 +210,102 @@
                         No admin user assigned.
                     </li>
                     @endforelse
-                </ul>
+            </x-card>
+
+            <!-- Package & Subscription Card -->
+            <x-card title="Package & Subscription" class="mt-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="badge {{ $shop->package ? $shop->package->badgeClass() : 'badge-soft-secondary' }} px-3 py-2">
+                        {{ $shop->package ? $shop->package->name : 'No Package' }}
+                    </span>
+                    @if($shop->isSubscriptionExpired())
+                        <span class="badge bg-danger-subtle text-danger border border-danger-subtle">
+                            Expired
+                        </span>
+                    @else
+                        <span class="badge bg-success-subtle text-success border border-success-subtle">
+                            {{ $shop->subscriptionDaysRemaining() }} days left
+                        </span>
+                    @endif
+                </div>
+
+                <div class="small text-muted mb-3">
+                    <div><strong>Expires:</strong> {{ $shop->subscription_expires_at ? $shop->subscription_expires_at->format('d M, Y') : 'N/A' }}</div>
+                    <div class="mt-1"><strong>Payment Mode:</strong> Cash By Hand</div>
+                    @if($shop->isBusinessAccount())
+                        <div class="mt-1"><strong>Branches:</strong> {{ $shop->branches->count() + 1 }} / {{ $shop->package->max_shops }} Shops</div>
+                    @endif
+                </div>
+
+                <button type="button" class="btn btn-outline-primary btn-sm w-100 shadow-none" data-bs-toggle="modal" data-bs-target="#editAssignPkgModal">
+                    <i class="fas fa-hand-holding-usd me-1"></i> Renew / Change Package (Cash)
+                </button>
             </x-card>
         </div>
     </div>
 </form>
+
+<!-- Assign / Renew Package Modal for Edit View -->
+<div class="modal fade" id="editAssignPkgModal" tabindex="-1" aria-labelledby="editAssignPkgModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <form action="{{ route('super_admin.subscriptions.assign', $shop->id) }}" method="POST">
+                @csrf
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold text-dark" id="editAssignPkgModalLabel">
+                        <i class="fas fa-hand-holding-usd text-primary me-2"></i> Assign Package (Cash By Hand)
+                    </h5>
+                    <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-dark">Select Package *</label>
+                        <select name="package_id" id="editPkgSelect" class="form-select" required>
+                            @foreach($packages as $p)
+                                <option value="{{ $p->id }}" 
+                                    data-price="{{ $p->price }}" 
+                                    data-days="{{ $p->duration_days }}"
+                                    {{ $shop->package_id == $p->id ? 'selected' : '' }}>
+                                    {{ $p->name }} — {{ number_format($p->price, 0) }} ({{ $p->duration_days }} Days, {{ $p->max_shops > 1 ? $p->max_shops . ' Shops' : '1 Shop' }})
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="row g-2 mb-3">
+                        <div class="col-6">
+                            <label class="form-label fw-bold text-dark small">Duration (Days)</label>
+                            <input type="number" name="duration_days" id="editDurationInput" class="form-control" value="{{ $shop->package ? $shop->package->duration_days : 365 }}" min="1" required>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label fw-bold text-dark small">Cash Received</label>
+                            <input type="number" step="0.01" name="amount_paid" id="editCashInput" class="form-control" value="{{ $shop->package ? $shop->package->price : 500 }}" min="0" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-dark small">Extend From</label>
+                        <select name="extend_from" class="form-select">
+                            <option value="today">Today (Reset Expiry)</option>
+                            <option value="current_expiry" selected>Current Expiry (Extend)</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-dark small">Cash Handover Notes</label>
+                        <textarea name="payment_notes" class="form-control" rows="2" placeholder="e.g. Received cash from shop admin."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary-modern px-4">
+                        <i class="fas fa-check me-1"></i> Save & Activate
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 @endsection
 
 @push('scripts')
@@ -239,6 +330,15 @@
                 }
             };
             reader.readAsDataURL(file);
+        }
+    });
+
+    const editPkgSelect = document.getElementById('editPkgSelect');
+    editPkgSelect?.addEventListener('change', function() {
+        const opt = this.options[this.selectedIndex];
+        if (opt) {
+            document.getElementById('editDurationInput').value = opt.getAttribute('data-days') || 365;
+            document.getElementById('editCashInput').value = opt.getAttribute('data-price') || 0;
         }
     });
 </script>

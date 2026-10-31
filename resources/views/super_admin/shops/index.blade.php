@@ -63,6 +63,18 @@
                             <i class="fas fa-map-marker-alt me-1 text-danger"></i>{{ $shop->city ?? 'Main Location' }}
                             @if($shop->country) &bull; {{ $shop->country }}@endif
                         </div>
+                        @if($shop->package)
+                            <div class="mt-1">
+                                <span class="badge {{ $shop->package->badgeClass() }}" style="font-size: 0.7rem;">
+                                    {{ $shop->package->name }}
+                                    @if($shop->isSubscriptionExpired())
+                                        &bull; <span class="text-danger fw-bold">Expired</span>
+                                    @else
+                                        &bull; {{ $shop->subscriptionDaysRemaining() }}d left
+                                    @endif
+                                </span>
+                            </div>
+                        @endif
                     </div>
                 </div>
             </td>
@@ -167,6 +179,11 @@
                             <li>
                                 <a class="dropdown-item py-2" href="{{ route('super_admin.users.index') }}?shop_id={{ $shop->id }}">
                                     <i class="fas fa-users me-2 text-primary"></i> View Shop Users
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item py-2" href="{{ route('super_admin.subscriptions.index') }}?search={{ urlencode($shop->name) }}">
+                                    <i class="fas fa-hand-holding-usd me-2 text-success"></i> Manage Package / Renew Cash
                                 </a>
                             </li>
                             <li><hr class="dropdown-divider"></li>

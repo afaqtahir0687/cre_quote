@@ -300,35 +300,37 @@
                 </td>
                 <td style="width: 50%; vertical-align: top; padding-left: 30px;">
                     <table class="info-table" style="margin-top: 10px;">
+                        @if($invoice->show_customer_name ?? true)
                         <tr>
                             <td style="width: 35%"><span class="info-label">Customer</span></td>
                             <td style="width: 5%">:</td>
                             <td style="width: 60%"><strong>{{ $invoice->customer->name ?? '' }}</strong></td>
                         </tr>
+                        @endif
                         <tr>
                             <td><span class="info-label">Company</span></td>
                             <td>:</td>
-                            <td>{{ $invoice->customer->company_name ?? '' }}</td>
+                            <td>{{ $invoice->billing_company?->company_name ?? ($invoice->customer?->company_name ?? '') }}</td>
                         </tr>
                         <tr>
                             <td><span class="info-label">Telephone</span></td>
                             <td>:</td>
-                            <td>{{ $invoice->customer->phone ?? '' }}</td>
+                            <td>{{ $invoice->customer?->formatted_phone ?: ($invoice->customer?->phone ?? '') }}</td>
                         </tr>
                         <tr>
                             <td><span class="info-label">VAT Number</span></td>
                             <td>:</td>
-                            <td>{{ $invoice->customer->vat_no ?? '' }}</td>
+                            <td>{{ $invoice->billing_company?->vat_no ?? ($invoice->customer?->vat_no ?? '') }}</td>
                         </tr>
                         <tr>
                             <td><span class="info-label">CR Number</span></td>
                             <td>:</td>
-                            <td>{{ $invoice->customer->cr_no ?? '' }}</td>
+                            <td>{{ $invoice->billing_company?->cr_no ?? ($invoice->customer?->cr_no ?? '') }}</td>
                         </tr>
                         <tr>
                             <td><span class="info-label">Address</span></td>
                             <td>:</td>
-                            <td>{{ $invoice->customer->address ?? '' }}</td>
+                            <td>{{ $invoice->billing_company?->address ?? ($invoice->customer?->address ?? '') }}</td>
                         </tr>
                     </table>
                 </td>
@@ -383,7 +385,7 @@
         <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
             <tr>
                 <td style="width: 50%; vertical-align: middle; text-align: center; border: none; padding-right: 20px;">
-                    <img src="{{ public_path('uploads/logo/stamp_logo.jpeg') }}" style="max-width: 300px; height: auto;" alt="Stamp">
+                    @include('partials.pdf_bank_details', ['setting' => $setting])
                 </td>
                 <td style="width: 50%; vertical-align: top; border: none;">
                     <table class="totals-table" style="margin-top: 0; width: 100%;">

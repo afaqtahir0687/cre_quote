@@ -106,6 +106,11 @@ class LoginController extends Controller
 
             return redirect()->route('login')->with('error', $msg);
         }
+
+        // Check if shop subscription has expired
+        if (!$user->isSuperAdmin() && $user->shop && $user->shop->isSubscriptionExpired()) {
+            return redirect()->route('subscription.expired');
+        }
         
         if ($user->isSuperAdmin()) {
             return redirect()->route('super_admin.dashboard');

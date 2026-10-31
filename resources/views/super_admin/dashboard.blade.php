@@ -1,6 +1,6 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Platform Overview - Super Admin')
+@section('title', 'Overview - Super Admin')
 
 @section('content')
 <!-- Header Section -->
@@ -11,7 +11,7 @@
     </div>
     <div class="d-flex align-items-center gap-2">
         <a href="{{ route('super_admin.users.index') }}" class="btn btn-outline-secondary d-flex align-items-center">
-            <i class="fas fa-users-cog me-2"></i> Platform Users
+            <i class="fas fa-users-cog me-2"></i>Users
         </a>
         <a href="{{ route('super_admin.shops.create') }}" class="btn btn-primary-modern d-flex align-items-center">
             <i class="fas fa-plus me-2"></i> Add New Shop

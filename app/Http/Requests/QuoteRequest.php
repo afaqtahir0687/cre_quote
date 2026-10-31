@@ -19,6 +19,9 @@ class QuoteRequest extends FormRequest
         return [
             'quote_number' => $this->isMethod('post') ? 'nullable|string' : 'required|string|unique:quotes,quote_number,' . ($this->quote->id ?? ''),
             'customer_id' => 'required|exists:customers,id',
+            'customer_company_id' => 'nullable|exists:customer_companies,id',
+            'employee_id' => 'nullable|exists:employees,id',
+            'show_customer_name' => 'nullable|boolean',
             'quote_date' => 'required|date',
             'due_date' => 'nullable|date',
             'reference' => 'nullable|string',
