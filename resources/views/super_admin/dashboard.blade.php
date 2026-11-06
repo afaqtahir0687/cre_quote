@@ -51,9 +51,9 @@
 @endif
 
 <!-- Admin-Themed KPI Cards (5 in 1 row) -->
-<div class="row g-3 mb-4 kpi-row-5">
+<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-xl-5 g-3 mb-4 kpi-row-5">
     <!-- {{ __('Total Shops') }} -->
-    <div class="kpi-col-5">
+    <div class="col kpi-col-5">
         <div class="card-modern kpi-card kpi-card-sm bg-gradient-indigo h-100">
             <div class="icon-box">
                 <i class="fas fa-store"></i>
@@ -67,7 +67,7 @@
     </div>
 
     <!-- Total Collected Revenue -->
-    <div class="kpi-col-5">
+    <div class="col kpi-col-5">
         <div class="card-modern kpi-card kpi-card-sm bg-gradient-emerald h-100">
             <div class="icon-box">
                 <i class="fas fa-wallet"></i>
@@ -79,7 +79,7 @@
     </div>
 
     <!-- Total Receivable / Due -->
-    <div class="kpi-col-5">
+    <div class="col kpi-col-5">
         <div class="card-modern kpi-card kpi-card-sm bg-gradient-rose h-100">
             <div class="icon-box">
                 <i class="fas fa-clock"></i>
@@ -91,7 +91,7 @@
     </div>
 
     <!-- Quotes & Job Orders -->
-    <div class="kpi-col-5">
+    <div class="col kpi-col-5">
         <div class="card-modern kpi-card kpi-card-sm bg-gradient-cyan h-100">
             <div class="icon-box">
                 <i class="fas fa-tasks"></i>
@@ -103,7 +103,7 @@
     </div>
 
     <!-- Platform Users & Clients -->
-    <div class="kpi-col-5">
+    <div class="col kpi-col-5">
         <div class="card-modern kpi-card kpi-card-sm bg-gradient-purple h-100">
             <div class="icon-box">
                 <i class="fas fa-users"></i>

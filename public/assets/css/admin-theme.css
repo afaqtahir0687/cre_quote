@@ -162,22 +162,29 @@ html, body {
     flex-wrap: wrap;
 }
 
-@media (min-width: 992px) {
-    .kpi-col-5 {
-        flex: 0 0 20%;
-        max-width: 20%;
-    }
+.kpi-col-5 {
+    flex: 0 0 100%;
+    max-width: 100%;
 }
-@media (max-width: 991.98px) and (min-width: 576px) {
+
+@media (min-width: 576px) {
     .kpi-col-5 {
         flex: 0 0 50%;
         max-width: 50%;
     }
 }
-@media (max-width: 575.98px) {
+
+@media (min-width: 768px) {
     .kpi-col-5 {
-        flex: 0 0 100%;
-        max-width: 100%;
+        flex: 0 0 33.333333%;
+        max-width: 33.333333%;
+    }
+}
+
+@media (min-width: 1200px) {
+    .kpi-col-5 {
+        flex: 0 0 20%;
+        max-width: 20%;
     }
 }
 

@@ -92,7 +92,7 @@
                                 </div>
                                 <div class="flex-grow-1">
                                     <input type="file" name="logo" id="createShopLogoInput" class="form-control @error('logo') is-invalid @enderror" accept="image/*">
-                                    <small class="text-muted d-block mt-1">{{ __('Recommended: Clean PNG/JPG logo under 20MB. This logo will display on this shop's dashboard, sidebar, and invoices.') }}</small>
+                                    <small class="text-muted d-block mt-1">{{ __('Recommended: Clean PNG or JPG logo under 20MB. This logo will display on the shop dashboard, sidebar, and invoices.') }}</small>
                                     @error('logo') <div class="invalid-feedback">{{ $message }}</div> @enderror
                                 </div>
                             </div>

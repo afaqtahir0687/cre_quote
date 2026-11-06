@@ -79,9 +79,9 @@
     </div>
 </div>
 
-<div class="row g-3 mb-4 kpi-row-5">
+<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-xl-5 g-3 mb-4 kpi-row-5">
     <!-- KPI Cards (5 in 1 row) -->
-    <div class="kpi-col-5">
+    <div class="col kpi-col-5">
         <div class="card-modern kpi-card kpi-card-sm bg-gradient-indigo h-100">
             <div class="icon-box">
                 <i class="fas fa-users"></i>
@@ -91,7 +91,7 @@
         </div>
     </div>
     
-    <div class="kpi-col-5">
+    <div class="col kpi-col-5">
         <div class="card-modern kpi-card kpi-card-sm bg-gradient-emerald h-100">
             <div class="icon-box">
                 <i class="fas fa-file-invoice-dollar"></i>
@@ -101,7 +101,7 @@
         </div>
     </div>
 
-    <div class="kpi-col-5">
+    <div class="col kpi-col-5">
         <div class="card-modern kpi-card kpi-card-sm bg-gradient-amber h-100">
             <div class="icon-box">
                 <i class="fas fa-check-circle"></i>
@@ -111,7 +111,7 @@
         </div>
     </div>
 
-    <div class="kpi-col-5">
+    <div class="col kpi-col-5">
         <div class="card-modern kpi-card kpi-card-sm bg-gradient-rose h-100">
             <div class="icon-box">
                 <i class="fas fa-clock"></i>
@@ -121,7 +121,7 @@
         </div>
     </div>
 
-    <div class="kpi-col-5">
+    <div class="col kpi-col-5">
         <div class="card-modern kpi-card kpi-card-sm bg-gradient-purple h-100">
             <div class="icon-box">
                 <i class="fas fa-tags"></i>

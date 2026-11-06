@@ -35,7 +35,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" onerror="this.onerror=null;">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" onerror="this.onerror=null;">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.2.3/css/flag-icons.min.css" onerror="this.onerror=null;"/>
-    <link rel="stylesheet" href="{{ asset('assets/css/admin-theme.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/admin-theme.css') }}?v={{ @filemtime(public_path('assets/css/admin-theme.css')) ?: time() }}">
 
     @if(app()->getLocale() === 'ar')
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css" onerror="this.onerror=null;">

@@ -1,6 +1,6 @@
 @extends('admin.layouts.app')
 
-@section('title', __('{{ __('Create Delivery Note') }}'))
+@section('title', __('Create Delivery Note'))
 
 @section('content')
 <div class="card">

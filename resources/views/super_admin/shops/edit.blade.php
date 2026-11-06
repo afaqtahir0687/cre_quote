@@ -125,7 +125,7 @@
                             </div>
                             <div class="flex-grow-1">
                                 <input type="file" name="logo" id="editShopLogoInput" class="form-control @error('logo') is-invalid @enderror" accept="image/*">
-                                <small class="text-muted d-block mt-1">{{ __('Upload a new file to change this shop's logo.') }}</small>
+                                <small class="text-muted d-block mt-1">{{ __('Upload a new file to change the shop logo.') }}</small>
                                 @error('logo') <div class="invalid-feedback">{{ $message }}</div> @enderror
                             </div>
                         </div>
