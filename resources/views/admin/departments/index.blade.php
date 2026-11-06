@@ -1,17 +1,17 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Manage Departments & Machines')
+@section('title', __('Manage Departments & Machines'))
 
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
-        <h2 class="fw-bold text-dark mb-1">Departments & Machine Units</h2>
+        <h2 class="fw-bold text-dark mb-1">{{ __('Departments & Machine Units') }}</h2>
         <p class="text-muted small mb-0">Manage work departments (Workshop, Banner Machine, Flex, Sticker Print, Sign Board, etc.)</p>
     </div>
     <div class="d-flex align-items-center gap-3">
         <form action="{{ route('departments.index') }}" method="GET" class="d-flex gap-2">
             <div class="input-group">
-                <input type="text" name="search" class="form-control" placeholder="Search department..." value="{{ request('search') }}">
+                <input type="text" name="search" class="form-control" placeholder="{{ __('Search department...') }}" value="{{ request('search') }}">
                 <button class="btn btn-outline-secondary" type="submit"><i class="fas fa-search"></i></button>
             </div>
             @if(request('search'))
@@ -20,7 +20,7 @@
         </form>
 
         <button class="btn btn-primary-modern d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#createDepartmentModal">
-            <i class="fas fa-plus me-2"></i> Add New Department
+            <i class="fas fa-plus me-2"></i> {{ __('Add New Department') }}
         </button>
     </div>
 </div>
@@ -42,25 +42,22 @@
 <x-card :padding="false">
     <x-table>
         <x-slot name="thead">
-            <th>Department / Unit Name</th>
-            <th>Description</th>
-            <th>Active Assignments</th>
-            <th>Status</th>
-            <th class="text-end pe-4">Action</th>
+            <th style="min-width: 200px;">{{ __('Department / Unit Name') }}</th>
+            <th>{{ __('Description') }}</th>
+            <th class="text-nowrap">{{ __('Active Assignments') }}</th>
+            <th class="text-nowrap">{{ __('Status') }}</th>
+            <th class="text-end pe-4 text-nowrap">{{ __('Action') }}</th>
         </x-slot>
 
         @foreach($departments as $dept)
         <tr class="align-middle">
             <td>
-                <div class="d-flex align-items-center">
-                    
-                    <div>
-                        <div class="fw-bold text-dark">{{ $dept->name }}</div>
-                        <div class="text-muted small">ID: #{{ str_pad($dept->id, 3, '0', STR_PAD_LEFT) }}</div>
-                    </div>
+                <div>
+                    <div class="fw-semibold text-dark" style="font-size: 0.88rem; line-height: 1.35;">{{ tdb($dept->name) }}</div>
+                    <div class="text-muted" style="font-size: 0.78rem;">ID: #{{ str_pad($dept->id, 3, '0', STR_PAD_LEFT) }}</div>
                 </div>
             </td>
-            <td class="text-muted">{{ $dept->description ?? 'No description provided' }}</td>
+            <td class="text-muted" style="font-size: 0.85rem;">{{ $dept->description ? tdb($dept->description) : __('No description provided') }}</td>
             <td>
                 <span class="badge bg-light text-primary border px-3 py-2 fw-semibold">
                     <i class="fas fa-tasks me-1"></i> {{ $dept->assignments_count }} Tasks
@@ -102,12 +99,12 @@
                         </div>
                         <div class="modal-body">
                             <div class="mb-3">
-                                <label class="form-label fw-bold small">Department / Unit Name <span class="text-danger">*</span></label>
-                                <input type="text" name="name" class="form-control" value="{{ $dept->name }}" required>
+                                <label class="form-label fw-bold small">{{ __('Department / Unit Name *') }} <span class="text-danger">*</span></label>
+                                <input type="text" name="name" class="form-control" value="{{ tdb($dept->name) }}" required>
                             </div>
                             <div class="mb-3">
-                                <label class="form-label fw-bold small">Description</label>
-                                <textarea name="description" class="form-control" rows="3">{{ $dept->description }}</textarea>
+                                <label class="form-label fw-bold small">{{ __('Description') }}</label>
+                                <textarea name="description" class="form-control" rows="3">{{ tdb($dept->description) }}</textarea>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label fw-bold small">Status</label>
@@ -118,8 +115,8 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
-                            <button type="submit" class="btn btn-primary">Update Department</button>
+                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">{{ __('Cancel') }}</button>
+                            <button type="submit" class="btn btn-primary">{{ __('Update Department') }}</button>
                         </div>
                     </form>
                 </div>
@@ -142,22 +139,22 @@
             <form action="{{ route('departments.store') }}" method="POST">
                 @csrf
                 <div class="modal-header">
-                    <h5 class="modal-title fw-bold">Add New Department / Unit</h5>
+                    <h5 class="modal-title fw-bold">{{ __('Add New Department / Unit') }}</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label class="form-label fw-bold small">Department / Unit Name <span class="text-danger">*</span></label>
+                        <label class="form-label fw-bold small">{{ __('Department / Unit Name *') }} <span class="text-danger">*</span></label>
                         <input type="text" name="name" class="form-control" placeholder="e.g. Workshop, Banner Machine, Flex, Sticker Print, Sign Board" required>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label fw-bold small">Description</label>
-                        <textarea name="description" class="form-control" rows="3" placeholder="Brief description of work done by this unit..."></textarea>
+                        <label class="form-label fw-bold small">{{ __('Description') }}</label>
+                        <textarea name="description" class="form-control" rows="3" placeholder="{{ __('Brief description of work done by this unit...') }}"></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Save Department</button>
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">{{ __('Cancel') }}</button>
+                    <button type="submit" class="btn btn-primary">{{ __('Save Department') }}</button>
                 </div>
             </form>
         </div>

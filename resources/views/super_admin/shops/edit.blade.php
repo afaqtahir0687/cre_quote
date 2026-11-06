@@ -1,22 +1,22 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Edit Shop - ' . $shop->name)
+@section('title', __('Edit Shop') . ' - ' . $shop->name)
 
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
-        <h2 class="fw-bold text-dark mb-1">Edit Shop: {{ $shop->name }}</h2>
-        <p class="text-muted small mb-0">Update shop details, branding, invoice prefixes, and active operating status.</p>
+        <h2 class="fw-bold text-dark mb-1">{{ __('Edit Shop') }}: {{ $shop->name }}</h2>
+        <p class="text-muted small mb-0">{{ __('Update shop details, branding, invoice prefixes, and active operating status.') }}</p>
     </div>
     <div class="d-flex align-items-center gap-2">
         <form action="{{ route('super_admin.switch_shop', $shop->id) }}" method="POST">
             @csrf
             <button type="submit" class="btn btn-primary-modern d-flex align-items-center">
-                <i class="fas fa-sign-in-alt me-2"></i> Enter Shop
+                <i class="fas fa-sign-in-alt me-2"></i> {{ __('Enter Shop') }}
             </button>
         </form>
         <a href="{{ route('super_admin.shops.index') }}" class="btn btn-outline-secondary">
-            <i class="fas fa-arrow-left me-1"></i> Back to Shops
+            <i class="fas fa-arrow-left me-1"></i> {{ __('Back to Shops') }}
         </a>
     </div>
 </div>
@@ -27,22 +27,22 @@
 
     <div class="row g-4">
         <div class="col-lg-8">
-            <x-card title="Branch Profile & Configuration">
+            <x-card :title="__('Branch Profile & Configuration')">
                 <div class="row g-3">
                     <div class="col-md-8">
-                        <label class="form-label fw-bold text-dark">Shop / Branch Name *</label>
-                        <input type="text" name="name" class="form-control @error('name') is-invalid @enderror" value="{{ old('name', $shop->name) }}" required>
+                        <label class="form-label fw-bold text-dark">{{ __('Shop / Branch Name *') }}</label>
+                        <input type="text" name="name" class="form-control @error('name') is-invalid @enderror" value="{{ old('name', tdb($shop->name)) }}" required>
                         @error('name') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
 
                     <div class="col-md-4">
-                        <label class="form-label fw-bold text-dark">URL Slug *</label>
+                        <label class="form-label fw-bold text-dark">{{ __('URL Slug') }} *</label>
                         <input type="text" name="slug" class="form-control @error('slug') is-invalid @enderror" value="{{ old('slug', $shop->slug) }}" required>
                         @error('slug') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
 
                     <div class="col-md-6">
-                        <label class="form-label fw-bold text-dark">Shop Email</label>
+                        <label class="form-label fw-bold text-dark">{{ __('Shop Email') }}</label>
                         <input type="email" name="email" class="form-control @error('email') is-invalid @enderror" value="{{ old('email', $shop->email) }}">
                         @error('email') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
@@ -54,7 +54,7 @@
                         $currentNumber = old('phone', $parsedPhone['number']);
                     @endphp
                     <div class="col-md-6">
-                        <label class="form-label fw-bold text-dark">Shop Phone</label>
+                        <label class="form-label fw-bold text-dark">{{ __('Shop Phone') }}</label>
                         <x-country-phone-picker id="shop_phone" 
                                                 name="phone" 
                                                 codeName="country_code" 
@@ -65,57 +65,57 @@
                                                 placeholder="50 123 4567" 
                                                 :error="$errors->first('phone')" />
                         @error('phone') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
-                        <small class="text-muted d-block mt-1">Select country code and enter phone number without leading 0.</small>
+                        <small class="text-muted d-block mt-1">{{ __('Select country code and enter phone number without leading 0.') }}</small>
                     </div>
 
                     <div class="col-12">
-                        <label class="form-label fw-bold text-dark">Physical Address</label>
-                        <textarea name="address" rows="2" class="form-control @error('address') is-invalid @enderror">{{ old('address', $shop->address) }}</textarea>
+                        <label class="form-label fw-bold text-dark">{{ __('Address') }}</label>
+                        <textarea name="address" rows="2" class="form-control @error('address') is-invalid @enderror">{{ old('address', tdb($shop->address)) }}</textarea>
                         @error('address') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
 
                     <div class="col-md-6">
-                        <label class="form-label fw-bold text-dark">City</label>
-                        <input type="text" name="city" class="form-control @error('city') is-invalid @enderror" value="{{ old('city', $shop->city) }}">
+                        <label class="form-label fw-bold text-dark">{{ __('City') }}</label>
+                        <input type="text" name="city" class="form-control @error('city') is-invalid @enderror" value="{{ old('city', tdb($shop->city)) }}">
                         @error('city') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
 
                     <div class="col-md-6">
-                        <label class="form-label fw-bold text-dark">Country</label>
+                        <label class="form-label fw-bold text-dark">{{ __('Country') }}</label>
                         <input type="text" name="country" class="form-control @error('country') is-invalid @enderror" value="{{ old('country', $shop->country) }}">
                         @error('country') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
 
                     <div class="col-md-4">
-                        <label class="form-label fw-bold text-dark">Currency Symbol *</label>
+                        <label class="form-label fw-bold text-dark">{{ __('Currency Symbol') }} *</label>
                         <input type="text" name="currency_symbol" class="form-control @error('currency_symbol') is-invalid @enderror" value="{{ old('currency_symbol', $shop->currency_symbol) }}" required>
                         @error('currency_symbol') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
 
                     <div class="col-md-4">
-                        <label class="form-label fw-bold text-dark">Quote Prefix *</label>
+                        <label class="form-label fw-bold text-dark">{{ __('Quote Prefix') }} *</label>
                         <input type="text" name="quote_prefix" class="form-control @error('quote_prefix') is-invalid @enderror" value="{{ old('quote_prefix', $shop->quote_prefix) }}" required>
                         @error('quote_prefix') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
 
                     <div class="col-md-4">
-                        <label class="form-label fw-bold text-dark">Invoice Prefix *</label>
+                        <label class="form-label fw-bold text-dark">{{ __('Invoice Prefix') }} *</label>
                         <input type="text" name="invoice_prefix" class="form-control @error('invoice_prefix') is-invalid @enderror" value="{{ old('invoice_prefix', $shop->invoice_prefix) }}" required>
                         @error('invoice_prefix') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
 
                     <div class="col-md-6">
-                        <label class="form-label fw-bold text-dark">Operating Status *</label>
+                        <label class="form-label fw-bold text-dark">{{ __('Operating Status') }} *</label>
                         <select name="status" id="editStatusSelect" class="form-select @error('status') is-invalid @enderror" required onchange="toggleStatusFields(this.value)">
-                            <option value="active" {{ old('status', $shop->status) === 'active' ? 'selected' : '' }}>Active (Allow Full Operations & Login)</option>
-                            <option value="inactive" {{ old('status', $shop->status) === 'inactive' ? 'selected' : '' }}>Inactive / Payment Hold (Temporary)</option>
-                            <option value="suspended" {{ old('status', $shop->status) === 'suspended' ? 'selected' : '' }}>Suspended (Blocked Permanently)</option>
+                            <option value="active" {{ old('status', $shop->status) === 'active' ? 'selected' : '' }}>{{ __('Active (Allow Full Operations & Login)') }}</option>
+                            <option value="inactive" {{ old('status', $shop->status) === 'inactive' ? 'selected' : '' }}>{{ __('Inactive / Payment Hold (Temporary)') }}</option>
+                            <option value="suspended" {{ old('status', $shop->status) === 'suspended' ? 'selected' : '' }}>{{ __('Suspended (Blocked Permanently)') }}</option>
                         </select>
                         @error('status') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
 
                     <div class="col-md-6">
-                        <label class="form-label fw-bold text-dark">Shop Logo</label>
+                        <label class="form-label fw-bold text-dark">{{ __('Shop Logo') }}</label>
                         <div class="d-flex align-items-center gap-3">
                             @php
                                 $editShopLogo = shop_logo_url($shop, $shop->setting);
@@ -125,7 +125,7 @@
                             </div>
                             <div class="flex-grow-1">
                                 <input type="file" name="logo" id="editShopLogoInput" class="form-control @error('logo') is-invalid @enderror" accept="image/*">
-                                <small class="text-muted d-block mt-1">Upload a new file to change this shop's logo.</small>
+                                <small class="text-muted d-block mt-1">{{ __('Upload a new file to change this shop's logo.') }}</small>
                                 @error('logo') <div class="invalid-feedback">{{ $message }}</div> @enderror
                             </div>
                         </div>
@@ -135,23 +135,23 @@
                     <div class="col-12" id="editStatusExtraContainer" style="{{ in_array(old('status', $shop->status), ['inactive', 'suspended']) ? '' : 'display:none;' }}">
                         <div class="p-3 rounded-3 bg-light border border-warning-subtle">
                             <h6 class="fw-bold text-dark mb-2">
-                                <i class="fas fa-exclamation-circle text-warning me-1"></i> Deactivation & Notice Details
+                                <i class="fas fa-exclamation-circle text-warning me-1"></i> {{ __('Deactivation & Notice Details') }}
                             </h6>
                             <div class="row g-3">
                                 <div class="col-md-6">
-                                    <label class="form-label small fw-bold text-dark">Reason for Deactivation / Suspension</label>
+                                    <label class="form-label small fw-bold text-dark">{{ __('Reason for Deactivation / Suspension') }}</label>
                                     <input type="text" name="status_reason" class="form-control" placeholder="e.g. Overdue Subscription Payment" value="{{ old('status_reason', $shop->status_reason) }}">
                                 </div>
                                 <div class="col-md-3">
-                                    <label class="form-label small fw-bold text-dark">Grace Period (Days)</label>
+                                    <label class="form-label small fw-bold text-dark">{{ __('Grace Period (Days)') }}</label>
                                     <input type="number" name="grace_period_days" class="form-control" placeholder="7" value="{{ old('grace_period_days', $shop->grace_period_days ?? 7) }}">
                                 </div>
                                 <div class="col-md-3">
-                                    <label class="form-label small fw-bold text-dark">Payment Deadline Date</label>
+                                    <label class="form-label small fw-bold text-dark">{{ __('Payment Deadline Date') }}</label>
                                     <input type="date" name="action_deadline" class="form-control" value="{{ old('action_deadline', $shop->action_deadline ? $shop->action_deadline->format('Y-m-d') : '') }}">
                                 </div>
                                 <div class="col-12">
-                                    <label class="form-label small fw-bold text-dark">Instructions / Note for Shop Owner</label>
+                                    <label class="form-label small fw-bold text-dark">{{ __('Instructions / Note for Shop Owner') }}</label>
                                     <textarea name="status_message" rows="2" class="form-control" placeholder="Explain the next steps or payment method...">{{ old('status_message', $shop->status_message) }}</textarea>
                                 </div>
                             </div>
@@ -159,15 +159,15 @@
                     </div>
 
                     <div class="col-12">
-                        <label class="form-label fw-bold text-dark">Internal Notes</label>
+                        <label class="form-label fw-bold text-dark">{{ __('Internal Notes') }}</label>
                         <textarea name="notes" rows="2" class="form-control">{{ old('notes', $shop->notes) }}</textarea>
                     </div>
                 </div>
 
                 <div class="mt-4 d-flex justify-content-end gap-2">
-                    <a href="{{ route('super_admin.shops.index') }}" class="btn btn-outline-secondary">Cancel</a>
+                    <a href="{{ route('super_admin.shops.index') }}" class="btn btn-outline-secondary">{{ __('Cancel') }}</a>
                     <button type="submit" class="btn btn-primary-modern">
-                        <i class="fas fa-save me-1"></i> Save Changes
+                        <i class="fas fa-save me-1"></i> {{ __('Save Changes') }}
                     </button>
                 </div>
             </x-card>
@@ -175,22 +175,22 @@
 
         <div class="col-lg-4">
             <!-- Current Logo Preview Card -->
-            <x-card title="Current Logo" class="text-center">
+            <x-card :title="__('Current Logo')" class="text-center">
                 @if($shop->logo)
                     <img src="{{ asset($shop->logo) }}" alt="{{ $shop->name }}" class="img-fluid border rounded p-2 mb-2" style="max-height: 120px;">
                 @else
                     <div class="rounded bg-light border d-flex align-items-center justify-content-center mx-auto mb-2 text-muted" style="width: 100px; height: 100px;">
                         <i class="fas fa-image fa-2x opacity-50"></i>
                     </div>
-                    <div class="text-muted small">No custom logo uploaded yet.</div>
+                    <div class="text-muted small">{{ __('No custom logo uploaded yet.') }}</div>
                 @endif
             </x-card>
 
             <!-- Linked Admins Card -->
-            <x-card title="Shop Administrators" class="mt-4">
+            <x-card :title="__('Shop Administrators')" class="mt-4">
                 <x-slot name="headerActions">
                     <a href="{{ route('super_admin.users.create') }}?shop_id={{ $shop->id }}" class="btn btn-sm btn-link text-decoration-none fw-medium">
-                        <i class="fas fa-plus"></i> Add
+                        <i class="fas fa-plus"></i> {{ __('Add') }}
                     </a>
                 </x-slot>
 
@@ -201,19 +201,19 @@
                             <div class="fw-bold text-dark">{{ $admin->name }}</div>
                             <span class="small text-muted">{{ $admin->email }}</span>
                         </div>
-                        <a href="{{ route('super_admin.users.edit', $admin->id) }}" class="btn btn-sm btn-light rounded-circle shadow-none" title="Edit Admin">
+                        <a href="{{ route('super_admin.users.edit', $admin->id) }}" class="btn btn-sm btn-light rounded-circle shadow-none" title="{{ __('Edit Admin') }}">
                             <i class="fas fa-user-edit text-muted"></i>
                         </a>
                     </li>
                     @empty
                     <li class="list-group-item text-center py-3 text-muted small border-0">
-                        No admin user assigned.
+                        {{ __('No admin user assigned.') }}
                     </li>
                     @endforelse
             </x-card>
 
             <!-- Package & Subscription Card -->
-            <x-card title="Package & Subscription" class="mt-4">
+            <x-card :title="__('Package & Subscription')" class="mt-4">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <span class="badge {{ $shop->package ? $shop->package->badgeClass() : 'badge-soft-secondary' }} px-3 py-2">
                         {{ $shop->package ? $shop->package->name : 'No Package' }}
@@ -224,21 +224,21 @@
                         </span>
                     @else
                         <span class="badge bg-success-subtle text-success border border-success-subtle">
-                            {{ $shop->subscriptionDaysRemaining() }} days left
+                            {{ $shop->subscriptionDaysRemaining() }} {{ __('days left') }}
                         </span>
                     @endif
                 </div>
 
                 <div class="small text-muted mb-3">
-                    <div><strong>Expires:</strong> {{ $shop->subscription_expires_at ? $shop->subscription_expires_at->format('d M, Y') : 'N/A' }}</div>
-                    <div class="mt-1"><strong>Payment Mode:</strong> Cash By Hand</div>
+                    <div><strong>{{ __('Expires:') }}</strong> {{ $shop->subscription_expires_at ? $shop->subscription_expires_at->format('d M, Y') : 'N/A' }}</div>
+                    <div class="mt-1"><strong>{{ __('Payment Mode:') }}</strong> {{ __('Cash By Hand') }}</div>
                     @if($shop->isBusinessAccount())
-                        <div class="mt-1"><strong>Branches:</strong> {{ $shop->branches->count() + 1 }} / {{ $shop->package->max_shops }} Shops</div>
+                        <div class="mt-1"><strong>{{ __('Branches:') }}</strong> {{ $shop->branches->count() + 1 }} / {{ $shop->package->max_shops }} Shops</div>
                     @endif
                 </div>
 
                 <button type="button" class="btn btn-outline-primary btn-sm w-100 shadow-none" data-bs-toggle="modal" data-bs-target="#editAssignPkgModal">
-                    <i class="fas fa-hand-holding-usd me-1"></i> Renew / Change Package (Cash)
+                    <i class="fas fa-hand-holding-usd me-1"></i> {{ __('Renew / Change Package (Cash)') }}
                 </button>
             </x-card>
         </div>
@@ -253,13 +253,13 @@
                 @csrf
                 <div class="modal-header border-0 pb-0">
                     <h5 class="modal-title fw-bold text-dark" id="editAssignPkgModalLabel">
-                        <i class="fas fa-hand-holding-usd text-primary me-2"></i> Assign Package (Cash By Hand)
+                        <i class="fas fa-hand-holding-usd text-primary me-2"></i> {{ __('Assign Package (Cash By Hand)') }}
                     </h5>
                     <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body p-4">
                     <div class="mb-3">
-                        <label class="form-label fw-bold text-dark">Select Package *</label>
+                        <label class="form-label fw-bold text-dark">{{ __('Select Package *') }}</label>
                         <select name="package_id" id="editPkgSelect" class="form-select" required>
                             @foreach($packages as $p)
                                 <option value="{{ $p->id }}" 
@@ -274,32 +274,32 @@
 
                     <div class="row g-2 mb-3">
                         <div class="col-6">
-                            <label class="form-label fw-bold text-dark small">Duration (Days)</label>
+                            <label class="form-label fw-bold text-dark small">{{ __('Duration (Days)') }}</label>
                             <input type="number" name="duration_days" id="editDurationInput" class="form-control" value="{{ $shop->package ? $shop->package->duration_days : 365 }}" min="1" required>
                         </div>
                         <div class="col-6">
-                            <label class="form-label fw-bold text-dark small">Cash Received</label>
+                            <label class="form-label fw-bold text-dark small">{{ __('Cash Received') }}</label>
                             <input type="number" step="0.01" name="amount_paid" id="editCashInput" class="form-control" value="{{ $shop->package ? $shop->package->price : 500 }}" min="0" required>
                         </div>
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label fw-bold text-dark small">Extend From</label>
+                        <label class="form-label fw-bold text-dark small">{{ __('Extend From') }}</label>
                         <select name="extend_from" class="form-select">
-                            <option value="today">Today (Reset Expiry)</option>
-                            <option value="current_expiry" selected>Current Expiry (Extend)</option>
+                            <option value="today">{{ __('Today (Reset Expiry)') }}</option>
+                            <option value="current_expiry" selected>{{ __('Current Expiry (Extend)') }}</option>
                         </select>
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label fw-bold text-dark small">Cash Handover Notes</label>
+                        <label class="form-label fw-bold text-dark small">{{ __('Cash Handover Notes') }}</label>
                         <textarea name="payment_notes" class="form-control" rows="2" placeholder="e.g. Received cash from shop admin."></textarea>
                     </div>
                 </div>
                 <div class="modal-footer border-0 pt-0">
-                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">{{ __('Cancel') }}</button>
                     <button type="submit" class="btn btn-primary-modern px-4">
-                        <i class="fas fa-check me-1"></i> Save & Activate
+                        <i class="fas fa-check me-1"></i> {{ __('Save & Activate') }}
                     </button>
                 </div>
             </form>

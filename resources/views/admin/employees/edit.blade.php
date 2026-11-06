@@ -1,11 +1,11 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Edit Employee')
+@section('title', __('Edit Employee'))
 
 @section('content')
 <div class="card">
     <div class="card-header bg-white">
-        <h5>Edit Employee</h5>
+        <h5>{{ __('Edit Employee') }}</h5>
     </div>
     <div class="card-body">
         <form action="{{ route('employees.update', $employee) }}" method="POST" id="employee-form" novalidate>
@@ -14,29 +14,29 @@
 
             <div class="row">
                 <div class="col-md-6 mb-3">
-                    <label class="form-label">Name *</label>
-                    <input type="text" name="name" class="form-control" value="{{ old('name', $employee->name) }}" required>
+                    <label class="form-label">{{ __('Name') }} *</label>
+                    <input type="text" name="name" class="form-control" value="{{ old('name', tdb($employee->name)) }}" required>
                 </div>
                 <div class="col-md-6 mb-3">
-                    <label class="form-label">Designation *</label>
-                    <input type="text" name="designation" class="form-control" value="{{ old('designation', $employee->designation) }}" required>
+                    <label class="form-label">{{ __('Designation *') }}</label>
+                    <input type="text" name="designation" class="form-control" value="{{ old('designation', tdb($employee->designation)) }}" required>
                 </div>
             </div>
             <div class="row">
                 <div class="col-md-6 mb-3">
-                    <label class="form-label">Username *</label>
+                    <label class="form-label">{{ __('Username') }} *</label>
                     <input type="text" name="username" class="form-control" value="{{ old('username', $employee->user->username ?? '') }}" required>
-                    <small class="text-muted">This will be used for login</small>
+                    <small class="text-muted">{{ __('This will be used for login') }}</small>
                 </div>
                 <div class="col-md-6 mb-3">
-                    <label class="form-label">Password</label>
+                    <label class="form-label">{{ __('Password') }}</label>
                     <div class="input-group">
-                        <input type="password" name="password" id="password" class="form-control" placeholder="Leave blank to keep current">
+                        <input type="password" name="password" id="password" class="form-control" placeholder="{{ __('Leave blank to keep current') }}">
                         <button type="button" class="btn btn-outline-secondary" onclick="togglePassword()">
                             <i class="fas fa-eye" id="eyeIcon"></i>
                         </button>
                     </div>
-                    <small class="text-muted">Leave blank to keep current password</small>
+                    <small class="text-muted">{{ __('Leave blank to keep current password') }}</small>
                 </div>
             </div>
             
@@ -58,8 +58,8 @@
             </script>
             
             <div class="text-end">
-                <a href="{{ route('employees.index') }}" class="btn btn-secondary">Cancel</a>
-                <button type="submit" class="btn btn-primary">Update Employee</button>
+                <a href="{{ route('employees.index') }}" class="btn btn-secondary">{{ __('Cancel') }}</a>
+                <button type="submit" class="btn btn-primary">{{ __('Update Employee') }}</button>
             </div>
         </form>
     </div>

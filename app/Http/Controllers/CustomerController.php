@@ -282,6 +282,9 @@ class CustomerController extends Controller
 
     public function statementPdf(Customer $customer)
     {
+        if (request()->filled('lang')) {
+            app()->setLocale(request('lang'));
+        }
         $customer->load('companies');
         $invoices = $customer->invoices()->with('customerCompany')->orderBy('invoice_date', 'asc')->get();
         $userTz = request()->cookie('user_timezone', config('app.timezone'));
@@ -291,7 +294,12 @@ class CustomerController extends Controller
             'mode' => 'utf-8',
             'format' => 'A4',
             'default_font' => 'amiri',
+            'autoScriptToLang' => true,
+            'autoLangToFont' => true,
         ]);
+        if (app()->getLocale() === 'ar') {
+            $mpdf->SetDirectionality('rtl');
+        }
 
         $setting = ($customer->shop_id ? \App\Models\Setting::withoutGlobalScopes()->where('shop_id', $customer->shop_id)->first() : null) ?: current_setting();
         $html = view('admin.customers.statement_pdf', compact('customer', 'invoices', 'setting'))->render();

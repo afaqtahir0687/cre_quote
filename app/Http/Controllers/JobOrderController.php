@@ -80,6 +80,7 @@ class JobOrderController extends Controller
                     'balance_due' => $newBalanceDue,
                     'status' => ($newBalanceDue <= 0 && $newGrandTotal > 0) ? 'Paid' : ($totalPaid > 0 ? 'Partially Paid' : 'Unpaid'),
                     'notes' => $jobOrder->notes,
+                'terms' => $jobOrder->terms,
                 ]);
 
                 // Sync items
@@ -226,6 +227,7 @@ class JobOrderController extends Controller
             'order_date' => now(),
             'status' => 'approved',
             'notes' => $quote->notes ?? '',
+            'terms' => $quote->terms ?? '',
             'subtotal' => $quote->subtotal,
             'total_tax' => $quote->total_tax,
             'total_discount' => $quote->total_discount,
@@ -643,6 +645,7 @@ class JobOrderController extends Controller
                         'balance_due' => $newBalanceDue,
                         'status' => ($newBalanceDue <= 0 && $newGrandTotal > 0) ? 'Paid' : ($invoice->amount_paid > 0 ? 'Partially Paid' : 'Unpaid'),
                         'notes' => $jobOrder->notes,
+                'terms' => $jobOrder->terms,
                     ]);
 
                     $invoice->items()->delete();
@@ -688,6 +691,7 @@ class JobOrderController extends Controller
                 'balance_due' => $jobOrder->remaining_balance,
                 'status' => ($jobOrder->remaining_balance <= 0 && ($jobOrder->grand_total ?? $jobOrder->total_amount) > 0) ? 'Paid' : ($jobOrder->paid_amount > 0 ? 'Partially Paid' : 'Unpaid'),
                 'notes' => $jobOrder->notes,
+                'terms' => $jobOrder->terms,
             ]);
 
             foreach ($jobOrder->payments as $payment) {
@@ -812,6 +816,9 @@ class JobOrderController extends Controller
     /** Download Job Order PDF */
     public function downloadPdf($id)
     {
+        if (request()->filled('lang')) {
+            app()->setLocale(request('lang'));
+        }
         $jobOrder = JobOrder::with(['items', 'payments', 'customer', 'customerCompany', 'employee', 'assignments.department', 'assignments.employee'])->findOrFail($id);
         $setting = ($jobOrder->shop_id ? Setting::withoutGlobalScopes()->where('shop_id', $jobOrder->shop_id)->first() : null) ?: current_setting();
 
@@ -826,6 +833,9 @@ class JobOrderController extends Controller
             'autoScriptToLang' => true,
             'autoLangToFont' => true,
         ]);
+        if (app()->getLocale() === 'ar') {
+            $mpdf->SetDirectionality('rtl');
+        }
 
         $html = view('admin.job_orders.pdf', compact('jobOrder', 'setting'))->render();
         $mpdf->WriteHTML($html);
@@ -856,6 +866,9 @@ class JobOrderController extends Controller
     /** Download Statement PDF for Job Orders */
     public function downloadStatementPdf(Request $request)
     {
+        if (request()->filled('lang')) {
+            app()->setLocale(request('lang'));
+        }
         $query = JobOrder::with(['customer', 'customerCompany', 'items', 'employee', 'invoice', 'payments']);
 
         if (auth()->user()->role === 'employee') {
@@ -906,6 +919,9 @@ class JobOrderController extends Controller
             'autoScriptToLang' => true,
             'autoLangToFont' => true,
         ]);
+        if (app()->getLocale() === 'ar') {
+            $mpdf->SetDirectionality('rtl');
+        }
 
         $html = view('admin.job_orders.statement_pdf', compact(
             'jobOrders', 'setting', 'dateFilter', 'totalOrders', 'totalBilled', 'totalPaid', 'totalBalance', 'totalDiscount'

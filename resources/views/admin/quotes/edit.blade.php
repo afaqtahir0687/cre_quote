@@ -1,6 +1,6 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Edit Quote')
+@section('title', __('Edit Quote'))
 
 @section('content')
     <div class="d-flex justify-content-between align-items-center mb-4">
@@ -8,7 +8,7 @@
             <a href="{{ route('quotes.index') }}" class="btn btn-light btn-sm rounded-circle me-3 shadow-sm">
                 <i class="fas fa-arrow-left text-muted"></i>
             </a>
-            <h2 class="fw-bold text-dark mb-0">Edit Quote</h2>
+            <h2 class="fw-bold text-dark mb-0">{{ __('Edit Quote') }}</h2>
             <span class="badge-soft badge-soft-primary ms-3">{{ $quote->quote_number }}</span>
         </div>
     </div>
@@ -20,12 +20,12 @@
 
         <div class="row g-4">
             <div class="col-lg-12">
-                <x-card title="Quote Details">
+                <x-card :title="__('Quote Details')">
                     <div class="row">
                         <div class="col-md-4">
                             <input type="hidden" name="customer_company_id" id="customer_company_id" value="{{ old('customer_company_id', $quote->customer_company_id) }}">
                             <select name="customer_id" id="customer_id" class="cust-select-hidden" required>
-                                <option value="">Select Customer</option>
+                                <option value="">{{ __('Select Customer') }}</option>
                                 @foreach($customers as $customer)
                                     @php
                                         $displayPhone = $customer->formatted_phone ?: $customer->phone;
@@ -127,27 +127,27 @@
                             <div class="form-check form-switch mb-0">
                                 <input class="form-check-input" type="checkbox" role="switch" name="show_customer_name" id="show_customer_name" value="1" {{ old('show_customer_name', $quote->show_customer_name ?? true) ? 'checked' : '' }}>
                                 <label class="form-check-label fw-semibold text-dark small cursor-pointer" for="show_customer_name">
-                                    <i class="fas fa-user-check text-primary me-1"></i> Show Customer Name on PDF
+                                    <i class="fas fa-user-check text-primary me-1"></i> {{ __('Show Customer Name on PDF') }}
                                 </label>
                             </div>
-                            <span class="text-muted small"><i class="fas fa-info-circle me-1"></i>Always Yes by default. Uncheck if you want to hide the Customer Name on PDF.</span>
+                            <span class="text-muted small"><i class="fas fa-info-circle me-1"></i>{{ __('Always Yes by default. Uncheck if you want to hide the Customer Name on PDF.') }}</span>
                         </div>
                     </div>
                 </x-card>
             </div>
 
             <div class="col-lg-12">
-                <x-card title="Quote Items" :padding="false">
+                <x-card title="{{ __('Quote Items') }}" :padding="false">
                     <x-table>
                         <x-slot name="thead">
-                            <th style="width: 25%">Description</th>
-                            <th style="width: 8%">Images</th>
-                            <th style="width: 12%">Size and meter</th>
-                            <th style="width: 12%">Unit Price</th>
-                            <th style="width: 8%">Qty</th>
-                            <th style="width: 10%">Tax %</th>
-                            <th style="width: 10%">Discount</th>
-                            <th style="width: 10%">Total</th>
+                            <th style="width: 25%">{{ __('Description') }}</th>
+                            <th style="width: 8%">{{ __('Images') }}</th>
+                            <th style="width: 12%">{{ __('Size and meter') }}</th>
+                            <th style="width: 12%">{{ __('Unit Price') }}</th>
+                            <th style="width: 8%">{{ __('Qty') }}</th>
+                            <th style="width: 10%">{{ __('Tax %') }}</th>
+                            <th style="width: 10%">{{ __('Discount') }}</th>
+                            <th style="width: 10%">{{ __('Total') }}</th>
                             <th style="width: 5%" class="text-center"></th>
                         </x-slot>
 
@@ -155,13 +155,13 @@
                             @foreach($quote->items as $index => $item)
                                 <tr class="item-row align-middle">
                                     <td>
-                                        <textarea name="items[{{ $index }}][description]" class="form-control bg-white border p-2 fs-6 shadow-sm" rows="2" style="resize: vertical; min-height: 80px;" required>{{ $item->description }}</textarea>
+                                        <textarea name="items[{{ $index }}][description]" class="form-control bg-white border p-2 fs-6 shadow-sm" rows="2" style="resize: vertical; min-height: 80px;" required>{{ old("items.$index.description", tdb($item->description)) }}</textarea>
                                     </td>
                                     <td>
                                         <input type="hidden" name="items[{{ $index }}][id]" value="{{ $item->id }}">
                                         <input type="hidden" name="items[{{ $index }}][existing_images]" value='{{ json_encode($item->images) }}'>
                                         <input type="hidden" name="items[{{ $index }}][removed_images]" class="removed-images-input" value='[]'>
-                                        <button type="button" class="btn btn-outline-secondary item-image-btn mb-2">Add Image</button>
+                                        <button type="button" class="btn btn-outline-secondary item-image-btn mb-2">{{ __('Add Image') }}</button>
                                         <input type="file" name="items[{{ $index }}][image]" class="item-image-input d-none" accept="image/jpeg,image/jpg,image/png,image/gif">
                                         <div class="item-image-preview row g-2">
                                             @if(!empty($item->images))
@@ -177,7 +177,7 @@
                                         </div>
                                     </td>
                                     <td>
-                                        <input type="text" name="items[{{ $index }}][item_text]" class="form-control bg-white border p-2 fs-6 shadow-sm" value="{{ $item->item_text ?? '' }}" placeholder="Size / Meter">
+                                        <input type="text" name="items[{{ $index }}][item_text]" class="form-control bg-white border p-2 fs-6 shadow-sm" value="{{ $item->item_text ?? '' }}" placeholder="{{ __('Size / Meter') }}">
                                     </td>
                                     <td>
                                         <input type="number" step="0.01" name="items[{{ $index }}][unit_price]" class="form-control p-2 fs-6 shadow-sm unit-price text-end rounded-2" value="{{ $item->unit_price }}" required>
@@ -207,33 +207,33 @@
                     <div class="p-3 border-top bg-light-subtle rounded-bottom-4">
                         <button type="button" class="btn btn-outline-primary btn-sm d-flex align-items-center"
                             id="add-item">
-                            <i class="fas fa-plus me-2"></i> Add Item Row
+                            <i class="fas fa-plus me-2"></i> {{ __('Add Item Row') }}
                         </button>
                     </div>
                 </x-card>
             </div>
 
             <div class="col-md-7">
-                <x-card title="Additional Information">
+                <x-card title="{{ __('Additional Information') }}">
                     <div class="mb-3">
-                        <label class="form-label text-muted fw-medium small">Payment Terms & Conditions</label>
-                        <textarea name="terms" class="form-control" rows="3">{{ $quote->terms }}</textarea>
+                        <label class="form-label text-muted fw-medium small">{{ __('Payment Terms & Conditions') }}</label>
+                        <textarea name="terms" class="form-control" rows="3">{{ old('terms', tdb($quote->terms)) }}</textarea>
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label text-muted fw-medium small">Notes</label>
+                        <label class="form-label text-muted fw-medium small">{{ __('Notes') }}</label>
                         <textarea name="notes" class="form-control" rows="3"
-                            placeholder="Additional notes for the customer...">{{ $quote->notes }}</textarea>
+                            placeholder="{{ __('Additional notes for the customer...') }}">{{ old('notes', tdb($quote->notes)) }}</textarea>
                     </div>
 
                 </x-card>
             </div>
 
             <div class="col-md-5">
-                <x-card title="Summary">
+                <x-card title="{{ __('Summary') }}">
                     <div class="d-flex flex-column gap-3">
                         <div class="d-flex justify-content-between align-items-center">
-                            <span class="text-muted">Subtotal</span>
+                            <span class="text-muted">{{ __('Subtotal') }}</span>
                             <div class="input-group input-group-sm w-50">
                                 <span class="input-group-text border-0 bg-transparent">$</span>
                                 <input type="number" step="0.01" name="subtotal" id="subtotal"
@@ -243,7 +243,7 @@
                         </div>
 
                         <div class="d-flex justify-content-between align-items-center">
-                            <span class="text-muted">Total Tax</span>
+                            <span class="text-muted">{{ __('Total Tax') }}</span>
                             <div class="input-group input-group-sm w-50">
                                 <span class="input-group-text border-0 bg-transparent">$</span>
                                 <input type="number" step="0.01" name="total_tax" id="total_tax"
@@ -253,7 +253,7 @@
                         </div>
 
                         <div class="d-flex justify-content-between align-items-center">
-                            <span class="text-muted">Total Discount</span>
+                            <span class="text-muted">{{ __('Total Discount') }}</span>
                             <div class="input-group input-group-sm w-50">
                                 <span class="input-group-text border-0 bg-transparent">-$</span>
                                 <input type="number" step="0.01" name="total_discount" id="total_discount"
@@ -263,7 +263,7 @@
                         </div>
 
                         <div class="d-flex justify-content-between align-items-center pt-2 border-top">
-                            <span class="text-muted">Shipping</span>
+                            <span class="text-muted">{{ __('Shipping') }}</span>
                             <div class="input-group input-group-sm w-50">
                                 <span class="input-group-text border-0 bg-light">$</span>
                                 <input type="number" step="0.01" name="shipping" id="shipping"
@@ -272,7 +272,7 @@
                         </div>
 
                         <div class="d-flex justify-content-between align-items-center mt-3 p-3 bg-light rounded-3">
-                            <span class="fw-bold text-dark fs-5">Grand Total</span>
+                            <span class="fw-bold text-dark fs-5">{{ __('Grand Total') }}</span>
                             <div class="input-group w-50">
                                 <span class="input-group-text border-0 bg-transparent fs-5 fw-bold">$</span>
                                 <input type="number" step="0.01" name="grand_total" id="grand_total"
@@ -286,7 +286,7 @@
                         <button type="submit" class="btn btn-primary-modern py-3">
                             <i class="fas fa-save me-2"></i> Update Quote
                         </button>
-                        <a href="{{ route('quotes.index') }}" class="btn btn-link text-muted">Cancel and Go Back</a>
+                        <a href="{{ route('quotes.index') }}" class="btn btn-link text-muted">{{ __('Cancel and Go Back') }}</a>
                     </div>
                 </x-card>
             </div>
@@ -296,17 +296,17 @@
     <template id="item-template">
         <tr class="item-row align-middle">
             <td>
-                <textarea name="items[INDEX][description]" class="form-control bg-white border p-2 fs-6 shadow-sm" rows="2" style="resize: vertical; min-height: 80px;" placeholder="Enter item description" required></textarea>
+                <textarea name="items[INDEX][description]" class="form-control bg-white border p-2 fs-6 shadow-sm" rows="2" style="resize: vertical; min-height: 80px;" placeholder="{{ __('Enter item description') }}" required></textarea>
             </td>
             <td>
                 <input type="hidden" name="items[INDEX][existing_images]" value='[]'>
                 <input type="hidden" name="items[INDEX][removed_images]" class="removed-images-input" value='[]'>
-                <button type="button" class="btn btn-outline-secondary item-image-btn mb-2">Add Image</button>
+                <button type="button" class="btn btn-outline-secondary item-image-btn mb-2">{{ __('Add Image') }}</button>
                 <input type="file" name="items[INDEX][image]" class="item-image-input d-none" accept="image/jpeg,image/jpg,image/png,image/gif">
                 <div class="item-image-preview row g-2"></div>
             </td>
             <td>
-                <input type="text" name="items[INDEX][item_text]" class="form-control bg-white border p-2 fs-6 shadow-sm" placeholder="Size / Meter">
+                <input type="text" name="items[INDEX][item_text]" class="form-control bg-white border p-2 fs-6 shadow-sm" placeholder="{{ __('Size / Meter') }}">
             </td>
             <td>
                 <input type="number" step="0.01" name="items[INDEX][unit_price]" class="form-control p-2 fs-6 shadow-sm unit-price text-end rounded-2" value="0.00" required>
@@ -380,7 +380,7 @@
                                matchPhone;
                     });
                     if (!filtered.length) {
-                        listEl.innerHTML = '<div class="cust-empty"><i class="fas fa-search me-1"></i>No customers found</div>';
+                        listEl.innerHTML = '<div class="cust-empty"><i class="fas fa-search me-1"></i>'+ window.__('No customers found', 'No customers found') +'</div>';
                         return;
                     }
                     listEl.innerHTML = filtered.map(function(c) {

@@ -31,4 +31,16 @@ class CustomerCompany extends Model
     {
         return $this->belongsTo(Customer::class, 'customer_id');
     }
+
+    protected static function booted()
+    {
+        static::saved(function ($comp) {
+            if (!empty($comp->company_name)) {
+                \App\Services\TranslationService::warmCache($comp->company_name);
+            }
+            if (!empty($comp->city)) {
+                \App\Services\TranslationService::warmCache($comp->city);
+            }
+        });
+    }
 }

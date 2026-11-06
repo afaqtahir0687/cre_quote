@@ -8,22 +8,22 @@
         <a href="{{ route('job-orders.index') }}" class="btn btn-light btn-sm rounded-circle me-3 shadow-sm">
             <i class="fas fa-arrow-left text-muted"></i>
         </a>
-        <h2 class="fw-bold text-dark mb-0">Job Order Detail</h2>
+        <h2 class="fw-bold text-dark mb-0">{{ __('Job Order Detail') }}</h2>
         <span class="badge-soft badge-soft-primary ms-3">{{ $jobOrder->order_number }}</span>
         @if($jobOrder->status === 'cancelled')
-            <span class="badge bg-danger ms-2"><i class="fas fa-ban me-1"></i> Cancelled</span>
+            <span class="badge bg-danger ms-2"><i class="fas fa-ban me-1"></i> {{ __('Cancelled') }}</span>
         @elseif($jobOrder->remaining_balance <= 0 && ($jobOrder->grand_total ?? $jobOrder->total_amount) > 0)
-            <span class="badge bg-success ms-2"><i class="fas fa-check-circle me-1"></i> Paid</span>
+            <span class="badge bg-success ms-2"><i class="fas fa-check-circle me-1"></i> {{ __('Paid') }}</span>
         @elseif($jobOrder->paid_amount > 0)
-            <span class="badge bg-warning text-dark ms-2"><i class="fas fa-clock me-1"></i> Partial Paid</span>
+            <span class="badge bg-warning text-dark ms-2"><i class="fas fa-clock me-1"></i> {{ __('Partial Paid') }}</span>
         @else
-            <span class="badge bg-secondary ms-2"><i class="fas fa-hourglass-start me-1"></i> Unpaid</span>
+            <span class="badge bg-secondary ms-2"><i class="fas fa-hourglass-start me-1"></i> {{ __('Unpaid') }}</span>
         @endif
     </div>
     <div class="d-flex gap-2">
         <div class="btn-group">
             <a href="{{ route('job-orders.pdf', $jobOrder->id) }}" class="btn btn-outline-danger d-flex align-items-center shadow-sm">
-                <i class="fas fa-file-pdf me-2"></i> Download PDF
+                <i class="fas fa-file-pdf me-2"></i> {{ __('Download PDF') }}
             </a>
             <button type="button" class="btn btn-outline-danger dropdown-toggle dropdown-toggle-split shadow-sm" data-bs-toggle="dropdown" aria-expanded="false" title="PDF Options">
                 <span class="visually-hidden">Toggle Dropdown</span>
@@ -31,22 +31,34 @@
             <ul class="dropdown-menu dropdown-menu-end shadow-sm">
                 <li>
                     <a class="dropdown-item py-2" href="{{ route('job-orders.pdf', ['id' => $jobOrder->id, 'show_customer_name' => 1]) }}">
-                        <i class="fas fa-user-check text-success me-2"></i> With Customer Name
+                        <i class="fas fa-user-check text-success me-2"></i> {{ __('With Customer Name') }}
                     </a>
                 </li>
                 <li>
                     <a class="dropdown-item py-2" href="{{ route('job-orders.pdf', ['id' => $jobOrder->id, 'show_customer_name' => 0]) }}">
-                        <i class="fas fa-user-slash text-danger me-2"></i> Without Customer Name
+                        <i class="fas fa-user-slash text-danger me-2"></i> {{ __('Without Customer Name') }}
+                    </a>
+                </li>
+                <li><hr class="dropdown-divider"></li>
+                <li class="dropdown-header small text-muted">{{ __('Language Options') }}</li>
+                <li>
+                    <a class="dropdown-item py-2" href="{{ route('job-orders.pdf', ['id' => $jobOrder->id, 'lang' => 'ar']) }}">
+                        <i class="fas fa-language text-primary me-2"></i> {{ __('Download PDF (Arabic / العربية)') }}
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item py-2" href="{{ route('job-orders.pdf', ['id' => $jobOrder->id, 'lang' => 'en']) }}">
+                        <i class="fas fa-globe text-secondary me-2"></i> {{ __('Download PDF (English)') }}
                     </a>
                 </li>
             </ul>
         </div>
         @if($jobOrder->status !== 'cancelled')
             <a href="{{ route('job-orders.edit', $jobOrder->id) }}" class="btn btn-outline-info d-flex align-items-center shadow-sm">
-                <i class="fas fa-edit me-2"></i> Edit
+                <i class="fas fa-edit me-2"></i> {{ __('Edit') }}
             </a>
             <button type="button" class="btn btn-outline-danger d-flex align-items-center shadow-sm" data-bs-toggle="modal" data-bs-target="#cancelJobOrderModal">
-                <i class="fas fa-ban me-2"></i> Cancel Order
+                <i class="fas fa-ban me-2"></i> {{ __('Cancel Order') }}
             </button>
         @endif
     </div>
@@ -56,8 +68,8 @@
 <div class="alert alert-danger d-flex align-items-center mb-4 py-2 px-3 shadow-sm border border-danger-subtle rounded-3">
     <i class="fas fa-ban fs-4 me-3 text-danger"></i>
     <div>
-        <strong>This Job Order has been Cancelled!</strong>
-        <div class="small">All items, totals, discounts, taxes, and balances have been set to 0.00.</div>
+        <strong>{{ __('This Job Order has been Cancelled!') }}</strong>
+        <div class="small">{{ __('All items, totals, discounts, taxes, and balances have been set to 0.00.') }}</div>
     </div>
 </div>
 @endif
@@ -66,46 +78,46 @@
     <div class="card-body">
         <div class="row mb-3">
             <div class="col-md-6">
-                <h5 class="mb-2 fw-bold text-dark">{{ $setting->company_name ?? 'My Company' }}</h5>
-                <p class="text-muted mb-0">{{ $setting->company_address ?? '' }}<br>
-                {{ $setting->company_city ?? '' }} {{ $setting->company_country ?? '' }}<br>
+                <h5 class="mb-2 fw-bold text-dark">{{ tdb($setting->company_name ?? 'My Company') }}</h5>
+                <p class="text-muted mb-0">{{ tdb($setting->company_address ?? '') }}<br>
+                {{ tdb($setting->company_city ?? '') }} {{ tdb($setting->company_country ?? '') }}<br>
                 <i class="fas fa-phone me-1 small"></i> {{ $setting->company_phone ?? '' }}<br>
                 <i class="fas fa-envelope me-1 small"></i> {{ $setting->company_email ?? '' }}</p>
             </div>
             <div class="col-md-6 text-md-end">
-                <h5 class="mb-2 fw-bold text-primary">Job Order #: {{ $jobOrder->order_number }}</h5>
+                <h5 class="mb-2 fw-bold text-primary">{{ __('Job Order #:') }} {{ $jobOrder->order_number }}</h5>
                 @php
                     $bComp = $jobOrder->billing_company;
                 @endphp
                 <p class="text-muted mb-0">
-                <strong>Date:</strong> {{ $jobOrder->order_date ? $jobOrder->order_date->format('d-M-Y') : now()->format('d-M-Y') }}<br>
-                <strong>Customer:</strong> {{ $jobOrder->customer?->name ?? 'N/A' }}<br>
+                <strong>{{ __('Date:') }}</strong> {{ $jobOrder->order_date ? $jobOrder->order_date->format('d-M-Y') : now()->format('d-M-Y') }}<br>
+                <strong>{{ __('Customer:') }}</strong> {{ tdb($jobOrder->customer?->name ?? 'N/A') }}<br>
                 @if($bComp?->company_name || $jobOrder->customer?->company_name)
-                    <strong>Company:</strong> {{ $bComp?->company_name ?? $jobOrder->customer?->company_name }}<br>
+                    <strong>{{ __('Company:') }}</strong> {{ tdb($bComp?->company_name ?? $jobOrder->customer?->company_name) }}<br>
                 @endif
-                {{ $bComp?->address ?? ($jobOrder->customer?->address ?? '') }}<br>
+                {{ tdb($bComp?->address ?? ($jobOrder->customer?->address ?? '')) }}<br>
                 <i class="fas fa-phone me-1 small"></i> {{ $jobOrder->customer?->formatted_phone ?: ($jobOrder->customer?->phone ?? 'N/A') }}<br>
                 <div class="mt-2 d-inline-flex align-items-center flex-wrap gap-2">
-                    <span><strong>Assigned To:</strong> <span class="fw-bold text-dark">{{ $jobOrder->employee->name ?? 'Admin / Unassigned' }}</span></span>
+                    <span><strong>{{ __('Assigned To:') }}</strong> <span class="fw-bold text-dark">{{ $jobOrder->employee ? tdb($jobOrder->employee->name) : __('Admin / Unassigned') }}</span></span>
                     <button type="button" class="btn btn-outline-primary btn-sm py-0 px-2 rounded-pill" data-bs-toggle="modal" data-bs-target="#assignJobOrderModal" title="Reassign Employee">
-                        <i class="fas fa-user-edit small"></i> Assign
+                        <i class="fas fa-user-edit small"></i> {{ __('Assign') }}
                     </button>
                 </div></p>
             </div>
         </div>
 
-        <h6 class="fw-bold text-dark mt-4 mb-3">Job Items</h6>
+        <h6 class="fw-bold text-dark mt-4 mb-3">{{ __('Job Items') }}</h6>
         <div class="table-responsive">
             <table class="table table-bordered align-middle">
                 <thead class="table-light">
                     <tr>
                         <th style="width:5%">#</th>
-                        <th style="width:35%">Description</th>
-                        <th style="width:20%">Image</th>
-                        <th class="text-end" style="width:10%">Unit Price</th>
-                        <th class="text-center" style="width:8%">Qty</th>
-                        <th class="text-center" style="width:10%">Tax %</th>
-                        <th class="text-end" style="width:12%">Total</th>
+                        <th style="width:35%">{{ __('Description') }}</th>
+                        <th style="width:20%">{{ __('Image') }}</th>
+                        <th class="text-end" style="width:10%">{{ __('Unit Price') }}</th>
+                        <th class="text-center" style="width:8%">{{ __('Qty') }}</th>
+                        <th class="text-center" style="width:10%">{{ __('Tax %') }}</th>
+                        <th class="text-end" style="width:12%">{{ __('Total') }}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -113,7 +125,7 @@
                     <tr>
                         <td>{{ $index + 1 }}</td>
                         <td>
-                            <div class="fw-bold text-dark">{{ $item->description }}</div>
+                            <div class="fw-bold text-dark">{{ tdb($item->description) }}</div>
                             @if($item->item_text)
                                 <div class="text-muted small">{{ $item->item_text }}</div>
                             @endif
@@ -144,47 +156,53 @@
             <div class="col-md-5">
                 <div class="d-flex flex-column gap-2 p-3 bg-light rounded-3 shadow-sm border">
                     <div class="d-flex justify-content-between align-items-center">
-                        <span class="text-muted small">Subtotal</span>
+                        <span class="text-muted small">{{ __('Subtotal') }}</span>
                         <span class="fw-semibold text-dark">{{ format_currency($jobOrder->subtotal ?? $jobOrder->items->sum('total')) }}</span>
                     </div>
                     @if($jobOrder->total_tax > 0)
                     <div class="d-flex justify-content-between align-items-center">
-                        <span class="text-muted small">Total Tax</span>
+                        <span class="text-muted small">{{ __('Total Tax') }}</span>
                         <span class="fw-semibold text-dark">{{ format_currency($jobOrder->total_tax) }}</span>
                     </div>
                     @endif
                     @if($jobOrder->total_discount > 0)
                     <div class="d-flex justify-content-between align-items-center">
-                        <span class="text-muted small">Total Discount</span>
+                        <span class="text-muted small">{{ __('Total Discount') }}</span>
                         <span class="fw-semibold text-danger">-{{ format_currency($jobOrder->total_discount) }}</span>
                     </div>
                     @endif
                     @if($jobOrder->shipping > 0)
                     <div class="d-flex justify-content-between align-items-center">
-                        <span class="text-muted small">Shipping</span>
+                        <span class="text-muted small">{{ __('Shipping') }}</span>
                         <span class="fw-semibold text-dark">{{ format_currency($jobOrder->shipping) }}</span>
                     </div>
                     @endif
                     <div class="d-flex justify-content-between align-items-center pt-2 border-top">
-                        <span class="fw-bold text-dark">Grand Total</span>
+                        <span class="fw-bold text-dark">{{ __('Grand Total') }}</span>
                         <span class="fw-bold text-primary fs-5">{{ format_currency($jobOrder->grand_total ?? $jobOrder->total_amount) }}</span>
                     </div>
                     <div class="d-flex justify-content-between align-items-center text-success fw-bold small">
-                        <span>Paid Amount</span>
+                        <span>{{ __('Paid Amount') }}</span>
                         <span>{{ format_currency($jobOrder->paid_amount) }}</span>
                     </div>
                     <div class="d-flex justify-content-between align-items-center text-danger fw-bold border-top pt-2">
-                        <span>Remaining Balance</span>
+                        <span>{{ __('Remaining Balance') }}</span>
                         <span class="fs-5">{{ format_currency($jobOrder->remaining_balance) }}</span>
                     </div>
                 </div>
             </div>
         </div>
 
+        @if($jobOrder->terms)
+        <div class="mt-3 p-3 bg-light-subtle border-start border-3 border-info rounded">
+            <h6 class="fw-bold text-dark mb-1">{{ __('Payment Terms & Conditions:') }}</h6>
+            <p class="text-muted mb-0 small" style="white-space: pre-line;">{{ tdb($jobOrder->terms) }}</p>
+        </div>
+        @endif
         @if($jobOrder->notes)
         <div class="mt-3 p-3 bg-light-subtle border-start border-3 border-warning rounded">
-            <h6 class="fw-bold text-dark mb-1">Notes:</h6>
-            <p class="text-muted mb-0 small">{{ $jobOrder->notes }}</p>
+            <h6 class="fw-bold text-dark mb-1">{{ __('Individual Note:') }}</h6>
+            <p class="text-muted mb-0 small" style="white-space: pre-line;">{{ tdb($jobOrder->notes) }}</p>
         </div>
         @endif
     </div>
@@ -195,13 +213,13 @@
     <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
         <div>
             <h5 class="fw-bold text-dark mb-0">
-                <i class="fas fa-sitemap me-2 text-primary"></i> Department & Work Assignments
+                <i class="fas fa-sitemap me-2 text-primary"></i> {{ __('Department & Work Assignments') }}
             </h5>
-            <span class="text-muted small">Track work assigned to Workshop, Banner Machine, Sticker Print, Flex, Sign Board, etc.</span>
+            <span class="text-muted small">{{ __('Track work assigned to Workshop, Banner Machine, Sticker Print, Flex, Sign Board, etc.') }}</span>
         </div>
         @if($jobOrder->status !== 'cancelled')
         <button class="btn btn-primary-modern btn-sm d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#addAssignmentModal">
-            <i class="fas fa-plus me-2"></i> Assign Department / Worker
+            <i class="fas fa-plus me-2"></i> {{ __('Assign Department / Worker') }}
         </button>
         @endif
     </div>
@@ -209,10 +227,10 @@
         @if($jobOrder->assignments->isEmpty())
             <div class="text-center py-4 border rounded bg-light-subtle">
                 <i class="fas fa-tools text-muted fs-2 mb-2"></i>
-                <p class="text-muted mb-2">No departments assigned to this job order yet.</p>
+                <p class="text-muted mb-2">{{ __('No departments assigned to this job order yet.') }}</p>
                 @if($jobOrder->status !== 'cancelled')
                 <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addAssignmentModal">
-                    <i class="fas fa-plus me-1"></i> Assign Workshop / Banner Machine / Flex / Sticker / Sign Board
+                    <i class="fas fa-plus me-1"></i> {{ __('Assign Workshop / Banner Machine / Flex / Sticker / Sign Board') }}
                 </button>
                 @endif
             </div>
@@ -225,10 +243,10 @@
                             <div class="d-flex justify-content-between align-items-start mb-2">
                                 <div>
                                     <span class="badge bg-primary-subtle text-primary fw-bold text-uppercase px-2 py-1 mb-1 d-inline-block">
-                                        <i class="fas fa-industry me-1"></i> {{ $assignment->department_name }}
+                                        <i class="fas fa-industry me-1"></i> {{ tdb($assignment->department_name) }}
                                     </span>
                                     <h6 class="fw-bold text-dark mb-0">
-                                        <i class="fas fa-user-circle text-muted me-1"></i> {{ $assignment->assigned_display_name }}
+                                        <i class="fas fa-user-circle text-muted me-1"></i> {{ tdb($assignment->assigned_display_name) }}
                                     </h6>
                                 </div>
                                 <span class="badge-soft {{ $assignment->status_badge_class }}">
@@ -244,10 +262,10 @@
 
                             <div class="text-muted extra-small mb-3">
                                 @if($assignment->started_at)
-                                    <div><i class="far fa-clock me-1"></i> Started: {{ $assignment->started_at->format('M d, H:i') }}</div>
+                                    <div><i class="far fa-clock me-1"></i> {{ __('Started:') }} {{ $assignment->started_at->format('M d, H:i') }}</div>
                                 @endif
                                 @if($assignment->completed_at)
-                                    <div><i class="fas fa-check-circle me-1 text-success"></i> Completed: {{ $assignment->completed_at->format('M d, H:i') }}</div>
+                                    <div><i class="fas fa-check-circle me-1 text-success"></i> {{ __('Completed:') }} {{ $assignment->completed_at->format('M d, H:i') }}</div>
                                 @endif
                             </div>
 
@@ -258,7 +276,7 @@
                                         @csrf @method('PATCH')
                                         <input type="hidden" name="status" value="in_progress">
                                         <button type="submit" class="btn btn-sm btn-outline-primary w-100">
-                                            <i class="fas fa-play me-1"></i> Start Work
+                                            <i class="fas fa-play me-1"></i> {{ __('Start Work') }}
                                         </button>
                                     </form>
                                 @elseif($assignment->status === 'in_progress')
@@ -266,18 +284,18 @@
                                         @csrf @method('PATCH')
                                         <input type="hidden" name="status" value="completed">
                                         <button type="submit" class="btn btn-sm btn-success w-100">
-                                            <i class="fas fa-check me-1"></i> Mark Completed
+                                            <i class="fas fa-check me-1"></i> {{ __('Mark Completed') }}
                                         </button>
                                     </form>
                                 @else
                                     <span class="btn btn-sm btn-light text-muted w-100 disabled">
-                                        <i class="fas fa-check-circle text-success me-1"></i> Done
+                                        <i class="fas fa-check-circle text-success me-1"></i> {{ __('Done') }}
                                     </span>
                                 @endif
 
                                 <form action="{{ route('job-assignments.destroy', $assignment->id) }}" method="POST" class="d-inline delete-assignment-form">
                                     @csrf @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-light text-danger" title="Remove Assignment">
+                                    <button type="submit" class="btn btn-sm btn-light text-danger" title="{{ __('Remove Assignment') }}">
                                         <i class="fas fa-trash-alt"></i>
                                     </button>
                                 </form>
@@ -292,23 +310,23 @@
 </div>
 
 <!-- PAYMENTS & INVOICE CARD -->
-<x-card title="Payments & Balance" class="mb-4">
+<x-card :title="__('Payments & Balance')" class="mb-4">
     <div class="row text-center mb-4 g-3">
         <div class="col-md-4">
             <div class="p-3 border rounded shadow-sm bg-light h-100 d-flex flex-column justify-content-center">
-                <span class="text-muted fw-bold d-block mb-1">Total Amount</span>
+                <span class="text-muted fw-bold d-block mb-1">{{ __('Total Amount') }}</span>
                 <span class="fw-bold text-dark fs-3">{{ format_currency($jobOrder->grand_total ?? $jobOrder->total_amount) }}</span>
             </div>
         </div>
         <div class="col-md-4">
             <div class="p-3 border rounded shadow-sm bg-success-subtle h-100 d-flex flex-column justify-content-center">
-                <span class="text-muted fw-bold d-block mb-1">Paid Amount</span>
+                <span class="text-muted fw-bold d-block mb-1">{{ __('Paid Amount') }}</span>
                 <span class="fw-bold text-success fs-3">{{ format_currency($jobOrder->paid_amount) }}</span>
             </div>
         </div>
         <div class="col-md-4">
             <div class="p-3 border rounded shadow-sm bg-danger-subtle h-100 d-flex flex-column justify-content-center">
-                <span class="text-muted fw-bold d-block mb-1">Remaining Balance</span>
+                <span class="text-muted fw-bold d-block mb-1">{{ __('Remaining Balance') }}</span>
                 <span class="fw-bold text-danger fs-3">{{ format_currency($jobOrder->remaining_balance) }}</span>
             </div>
         </div>
@@ -316,18 +334,18 @@
 
     @if($jobOrder->payments->isEmpty())
         <div class="alert alert-light border text-muted small mb-4">
-            <i class="fas fa-info-circle me-1"></i> No payments recorded yet. You can add advance payment below.
+            <i class="fas fa-info-circle me-1"></i> {{ __('No payments recorded yet. You can add advance payment below.') }}
         </div>
     @else
         <div class="table-responsive">
             <x-table class="mb-4">
                 <x-slot name="thead">
                     <th>#</th>
-                    <th>Method</th>
-                    <th class="text-end">Amount</th>
+                    <th>{{ __('Method') }}</th>
+                    <th class="text-end">{{ __('Amount') }}</th>
                     <th>Date</th>
-                    <th>Reference</th>
-                    <th class="text-end">Actions</th>
+                    <th>{{ __('Reference') }}</th>
+                    <th class="text-end">{{ __('Actions') }}</th>
                 </x-slot>
                     @foreach($jobOrder->payments as $idx => $pay)
                     <tr>
@@ -337,20 +355,20 @@
                         <td>{{ $pay->received_at ? \Carbon\Carbon::parse($pay->received_at)->format('d-M-Y') : '-' }}</td>
                         <td class="text-muted small">{{ $pay->reference ?? '-' }}</td>
                         <td class="text-end">
-                            <button type="button" class="btn btn-sm btn-outline-primary p-1 px-2" data-bs-toggle="modal" data-bs-target="#editPaymentModal{{ $pay->id }}" title="Edit Payment">
+                            <button type="button" class="btn btn-sm btn-outline-primary p-1 px-2" data-bs-toggle="modal" data-bs-target="#editPaymentModal{{ $pay->id }}" title="{{ __('Edit Payment') }}">
                                 <i class="fas fa-edit"></i>
                             </button>
                             <form action="{{ route('job-order-payments.destroy', $pay->id) }}" method="POST" class="d-inline-block delete-payment-form">
                                 @csrf
                                 @method('DELETE')
-                                <button type="button" class="btn btn-sm btn-outline-danger p-1 px-2 delete-payment-btn" title="Delete Payment">
+                                <button type="button" class="btn btn-sm btn-outline-danger p-1 px-2 delete-payment-btn" title="{{ __('Delete Payment') }}">
                                     <i class="fas fa-trash-alt"></i>
                                 </button>
                             </form>
                         </td>
                     </tr>
 
-                    <!-- Edit Payment Modal -->
+                    <!-- {{ __('Edit Payment') }} Modal -->
                     <div class="modal fade" id="editPaymentModal{{ $pay->id }}" tabindex="-1" aria-hidden="true">
                         <div class="modal-dialog modal-dialog-centered">
                             <div class="modal-content">
@@ -358,31 +376,31 @@
                                     @csrf
                                     @method('PUT')
                                     <div class="modal-header">
-                                        <h5 class="modal-title fw-bold">Edit Payment</h5>
+                                        <h5 class="modal-title fw-bold">{{ __('Edit Payment') }}</h5>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body text-start">
                                         <div class="mb-3">
-                                            <label class="form-label small fw-bold">Payment Method</label>
+                                            <label class="form-label small fw-bold">{{ __('Payment Method') }}</label>
                                             <select name="method" class="form-select" required>
-                                                <option value="cash" {{ $pay->method == 'cash' ? 'selected' : '' }}>Cash</option>
-                                                <option value="bank" {{ $pay->method == 'bank' ? 'selected' : '' }}>Bank Transfer</option>
-                                                <option value="check" {{ $pay->method == 'check' ? 'selected' : '' }}>Check</option>
-                                                <option value="other" {{ $pay->method == 'other' ? 'selected' : '' }}>Other</option>
+                                                <option value="cash" {{ $pay->method == 'cash' ? 'selected' : '' }}>{{ __('Cash') }}</option>
+                                                <option value="bank" {{ $pay->method == 'bank' ? 'selected' : '' }}>{{ __('Bank Transfer') }}</option>
+                                                <option value="check" {{ $pay->method == 'check' ? 'selected' : '' }}>{{ __('Check') }}</option>
+                                                <option value="other" {{ $pay->method == 'other' ? 'selected' : '' }}>{{ __('Other') }}</option>
                                             </select>
                                         </div>
                                         <div class="mb-3">
-                                            <label class="form-label small fw-bold">Amount</label>
+                                            <label class="form-label small fw-bold">{{ __('Amount') }}</label>
                                             <input type="number" name="amount" step="0.01" class="form-control" value="{{ $pay->amount }}" required>
                                         </div>
                                         <div class="mb-3">
-                                            <label class="form-label small fw-bold">Reference</label>
+                                            <label class="form-label small fw-bold">{{ __('Reference') }}</label>
                                             <input type="text" name="reference" class="form-control" value="{{ $pay->reference }}">
                                         </div>
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
-                                        <button type="submit" class="btn btn-primary">Update Payment</button>
+                                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">{{ __('Cancel') }}</button>
+                                        <button type="submit" class="btn btn-primary">{{ __('Update Payment') }}</button>
                                     </div>
                                 </form>
                             </div>
@@ -398,25 +416,25 @@
         <form action="{{ route('job-orders.payments', $jobOrder->id) }}" method="POST" class="row g-3 align-items-end mb-2">
             @csrf
             <div class="col-md-3">
-                <label class="form-label fw-bold">Payment Method</label>
+                <label class="form-label fw-bold">{{ __('Payment Method') }}</label>
                 <select name="method" class="form-select p-2 shadow-sm fs-6" required>
-                    <option value="cash">Cash</option>
-                    <option value="bank">Bank Transfer</option>
-                    <option value="check">Check</option>
-                    <option value="other">Other</option>
+                    <option value="cash">{{ __('Cash') }}</option>
+                    <option value="bank">{{ __('Bank Transfer') }}</option>
+                    <option value="check">{{ __('Check') }}</option>
+                    <option value="other">{{ __('Other') }}</option>
                 </select>
             </div>
             <div class="col-md-3">
-                <label class="form-label fw-bold">Amount</label>
+                <label class="form-label fw-bold">{{ __('Amount') }}</label>
                 <input type="number" name="amount" step="0.01" class="form-control p-2 shadow-sm fs-6" required placeholder="0.00">
             </div>
             <div class="col-md-3">
-                <label class="form-label fw-bold">Reference</label>
-                <input type="text" name="reference" class="form-control p-2 shadow-sm fs-6" placeholder="Ref # / Note">
+                <label class="form-label fw-bold">{{ __('Reference') }}</label>
+                <input type="text" name="reference" class="form-control p-2 shadow-sm fs-6" placeholder="{{ __('Ref # / Note') }}">
             </div>
             <div class="col-md-3">
                 <button type="submit" class="btn btn-success p-2 w-100 shadow-sm fw-bold fs-6">
-                    <i class="fas fa-plus me-1"></i> Add Payment
+                    <i class="fas fa-plus me-1"></i> {{ __('Add Payment') }}
                 </button>
             </div>
         </form>
@@ -424,14 +442,14 @@
         <hr class="my-4">
 
         <div class="d-flex justify-content-between align-items-center">
-            <span class="text-muted">Ready to bill the client? Convert this Job Order to a final Invoice.</span>
+            <span class="text-muted">{{ __('Ready to bill the client? Convert this Job Order to a final Invoice.') }}</span>
             <a href="{{ route('job-orders.invoice', $jobOrder->id) }}" class="btn btn-primary-modern px-4 py-2 fw-bold d-flex align-items-center shadow-sm convert-to-invoice-btn">
-                <i class="fas fa-exchange-alt me-2"></i> Convert to Invoice
+                <i class="fas fa-exchange-alt me-2"></i> {{ __('Convert to Invoice') }}
             </a>
         </div>
         @else
         <div class="alert alert-light text-muted small border mb-0 text-center py-3">
-            <i class="fas fa-ban text-danger me-1"></i> This Job Order is cancelled. Payments and invoice conversion are disabled.
+            <i class="fas fa-ban text-danger me-1"></i> {{ __('This Job Order is cancelled. Payments and invoice conversion are disabled.') }}
         </div>
         @endif
 </x-card>
@@ -443,30 +461,30 @@
             <form action="{{ route('job-orders.assignments.store', $jobOrder->id) }}" method="POST">
                 @csrf
                 <div class="modal-header">
-                    <h5 class="modal-title fw-bold">Assign Department / Worker</h5>
+                    <h5 class="modal-title fw-bold">{{ __('Assign Department / Worker') }}</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label class="form-label fw-bold small">Select Department / Machine Unit</label>
+                        <label class="form-label fw-bold small">{{ __('Select Department / Machine Unit') }}</label>
                         <select name="department_id" class="form-select" id="departmentSelect" onchange="toggleCustomDept(this)">
-                            <option value="">-- Select Existing Department --</option>
+                            <option value="">{{ __('-- Select Existing Department --') }}</option>
                             @foreach($departments as $dept)
-                                <option value="{{ $dept->id }}">{{ $dept->name }}</option>
+                                <option value="{{ $dept->id }}">{{ __($dept->name) }}</option>
                             @endforeach
-                            <option value="custom">+ Add Custom Name (Workshop, Flex, Sticker, Sign Board...)</option>
+                            <option value="custom">{{ __('+ Add Custom Name (Workshop, Flex, Sticker, Sign Board...)') }}</option>
                         </select>
                     </div>
 
                     <div class="mb-3 d-none" id="customDeptGroup">
-                        <label class="form-label fw-bold small">Custom Department / Machine Name <span class="text-danger">*</span></label>
+                        <label class="form-label fw-bold small">{{ __('Custom Department / Machine Name') }} <span class="text-danger">*</span></label>
                         <input type="text" name="department_name" class="form-control" placeholder="e.g. Banner Machine #2, Acrylic Cutter, Outdoor Mounting">
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label fw-bold small">Assign Worker / Employee</label>
+                        <label class="form-label fw-bold small">{{ __('Assign Worker / Employee') }}</label>
                         <select name="employee_id" class="form-select">
-                            <option value="">-- Select Registered Employee (Optional) --</option>
+                            <option value="">{{ __('-- Select Registered Employee (Optional) --') }}</option>
                             @foreach($employees as $emp)
                                 <option value="{{ $emp->id }}">{{ $emp->name }} ({{ $emp->designation ?? 'Staff' }})</option>
                             @endforeach
@@ -474,18 +492,18 @@
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label fw-bold small">Custom Worker / Team Name (If non-employee)</label>
+                        <label class="form-label fw-bold small">{{ __('Custom Worker / Team Name (If non-employee)') }}</label>
                         <input type="text" name="assigned_to_name" class="form-control" placeholder="e.g. Master Farhan, Printing Team B">
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label fw-bold small">Task Instructions / Notes</label>
+                        <label class="form-label fw-bold small">{{ __('Task Instructions / Notes') }}</label>
                         <textarea name="instructions" class="form-control" rows="3" placeholder="e.g. Print 500 copies on 300gsm vinyl sheet, frame size 4x6 ft"></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Assign Work</button>
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">{{ __('Cancel') }}</button>
+                    <button type="submit" class="btn btn-primary">{{ __('Assign Work') }}</button>
                 </div>
             </form>
         </div>
@@ -500,19 +518,19 @@
                 @csrf
                 <div class="modal-header border-bottom-0 pb-0">
                     <h5 class="modal-title fw-bold text-danger">
-                        <i class="fas fa-exclamation-triangle me-2"></i> Cancel Job Order
+                        <i class="fas fa-exclamation-triangle me-2"></i> {{ __('Cancel Job Order') }}
                     </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body py-3">
-                    <p class="mb-2">Are you sure you want to cancel Job Order <strong>#{{ $jobOrder->order_number }}</strong>?</p>
+                    <p class="mb-2">{{ __('Are you sure you want to cancel Job Order') }} <strong>#{{ $jobOrder->order_number }}</strong>?</p>
                     <div class="alert alert-warning small mb-0">
-                        <i class="fas fa-info-circle me-1"></i> Cancelling will set all amounts, item prices, discounts, taxes, and balance to <strong>0.00</strong> and mark the order as <strong>Cancelled</strong>.
+                        <i class="fas fa-info-circle me-1"></i> {{ __('Cancelling will set all amounts, item prices, discounts, taxes, and balance to 0.00 and mark the order as Cancelled.') }}
                     </div>
                 </div>
                 <div class="modal-footer border-top-0 pt-0">
-                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">No, Keep Order</button>
-                    <button type="submit" class="btn btn-danger">Yes, Cancel Order</button>
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">{{ __('No, Keep Order') }}</button>
+                    <button type="submit" class="btn btn-danger">Yes, {{ __('Cancel Order') }}</button>
                 </div>
             </form>
         </div>
@@ -524,17 +542,17 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 shadow">
             <div class="modal-header bg-light">
-                <h5 class="modal-title fw-bold text-dark"><i class="fas fa-user-tag text-primary me-2"></i> Assign Job Order to Employee</h5>
+                <h5 class="modal-title fw-bold text-dark"><i class="fas fa-user-tag text-primary me-2"></i> {{ __('Assign Job Order to Employee') }}</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form action="{{ route('job-orders.assign_employee', $jobOrder->id) }}" method="POST">
                 @csrf
                 <div class="modal-body p-4">
-                    <p class="text-muted small mb-3">Assign this job order to an employee who will manage execution and client updates.</p>
+                    <p class="text-muted small mb-3">{{ __('Assign this job order to an employee who will manage execution and client updates.') }}</p>
                     <div class="mb-3">
-                        <label class="form-label fw-semibold text-dark">Employee <span class="text-danger">*</span></label>
+                        <label class="form-label fw-semibold text-dark">{{ __('Employee') }} <span class="text-danger">*</span></label>
                         <select name="employee_id" class="form-select" required>
-                            <option value="">Select Employee</option>
+                            <option value="">{{ __('Select Employee') }}</option>
                             @foreach($employees as $emp)
                                 <option value="{{ $emp->id }}" {{ $jobOrder->employee_id == $emp->id ? 'selected' : '' }}>
                                     {{ $emp->name }} ({{ $emp->designation ?? 'Employee' }})
@@ -544,9 +562,9 @@
                     </div>
                 </div>
                 <div class="modal-footer bg-light">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('Cancel') }}</button>
                     <button type="submit" class="btn btn-primary-modern">
-                        <i class="fas fa-save me-1"></i> Save Assignment
+                        <i class="fas fa-save me-1"></i> {{ __('Save Assignment') }}
                     </button>
                 </div>
             </form>

@@ -310,3 +310,13 @@ if (!function_exists('format_subscription_currency')) {
         return 'SAR ' . number_format((float) $amount, 2);
     }
 }
+
+if (!function_exists('tdb')) {
+    /**
+     * Translate dynamic database content between English and Arabic.
+     */
+    function tdb(?string $text, ?string $targetLang = null): string
+    {
+        return \App\Services\TranslationService::translate($text, $targetLang);
+    }
+}

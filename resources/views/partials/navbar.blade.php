@@ -3,7 +3,7 @@
         <button class="btn btn-link link-dark d-lg-none me-3" id="sidebar-toggle">
             <i class="fas fa-bars"></i>
         </button>
-        <h4 class="mb-0 text-dark fw-bold">@yield('title', 'Welcome')</h4>
+        <h4 class="mb-0 text-dark fw-bold">{!! __(trim($__env->yieldContent('title', 'Welcome'))) !!}</h4>
     </div>
 
     <div class="d-flex align-items-center gap-3">
@@ -22,21 +22,21 @@
                     @endif
                     <span class="fw-semibold text-dark">
                         @if($isSpecificShop)
-                            {{ $currentShop->name ?? 'Active Shop' }}
+                            {{ $currentShop->name ?? __('Active Shop') }}
                         @else
-                            All Shops (Global View)
+                            {{ __('All Shops (Global View)') }}
                         @endif
                     </span>
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2 p-2" aria-labelledby="shopSwitcherDropdown" style="min-width: 280px;">
                     <li class="dropdown-header small text-uppercase fw-bold text-muted">
-                        <i class="fas fa-exchange-alt me-1"></i> Switch Active Shop
+                        <i class="fas fa-exchange-alt me-1"></i> {{ __('Switch Active Shop') }}
                     </li>
                     <li>
                         <form action="{{ route('super_admin.switch_shop_all') }}" method="POST">
                             @csrf
                             <button type="submit" class="dropdown-item rounded py-2 d-flex align-items-center justify-content-between {{ (!session('active_shop_id') || session('active_shop_id') === 'all') ? 'active text-white' : '' }}">
-                                <span><i class="fas fa-globe me-2"></i> All Shops (Super Admin)</span>
+                                <span><i class="fas fa-globe me-2"></i> {{ __('All Shops (Super Admin)') }}</span>
                                 @if(!session('active_shop_id') || session('active_shop_id') === 'all') <i class="fas fa-check"></i> @endif
                             </button>
                         </form>
@@ -68,7 +68,7 @@
                     <li><hr class="dropdown-divider my-1"></li>
                     <li>
                         <a class="dropdown-item rounded py-2 text-primary fw-semibold" href="{{ route('super_admin.shops.index') }}">
-                            <i class="fas fa-cog me-2"></i> Manage All Shops
+                            <i class="fas fa-cog me-2"></i> {{ __('Manage All Shops') }}
                         </a>
                     </li>
                 </ul>
@@ -90,7 +90,7 @@
                         <span class="small fw-semibold">{{ $currentShop->name }}</span>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 p-2" aria-labelledby="branchSwitcherDropdown" style="min-width: 230px;">
-                        <li class="dropdown-header small text-uppercase text-muted fw-bold">My Business Branches</li>
+                        <li class="dropdown-header small text-uppercase text-muted fw-bold">{{ __('My Business Branches') }}</li>
                         <li>
                             <form action="{{ route('branches.switch', $mainShop->id) }}" method="POST">
                                 @csrf
@@ -114,7 +114,7 @@
                         <li><hr class="dropdown-divider my-1"></li>
                         <li>
                             <a class="dropdown-item rounded py-2 text-primary fw-semibold" href="{{ route('branches.index') }}">
-                                <i class="fas fa-cog me-2"></i> Manage Branches
+                                <i class="fas fa-cog me-2"></i> {{ __('Manage Branches') }}
                             </a>
                         </li>
                     </ul>
@@ -132,72 +132,104 @@
             @endif
         @endif
 
-        <!-- User Profile Dropdown -->
-        <div class="dropdown">
-            <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle" id="userDropdown"
-                data-bs-toggle="dropdown" aria-expanded="false">
-                
-                <span class="d-none d-md-inline text-dark fw-medium">
-                    {{ auth()->check() ? Auth::user()->name : 'Guest' }}
-                    @if(auth()->check() && Auth::user()->isSuperAdmin())
-                        <span class="badge-soft badge-soft-warning ms-1"><i class="fas fa-crown"></i> Super Admin</span>
-                    @elseif(auth()->check() && Auth::user()->isAdmin())
-                        <span class="badge-soft badge-soft-primary ms-1">Shop Admin</span>
-                    @endif
-                </span>
-            </a>
-            <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-3" aria-labelledby="userDropdown">
-                @if(auth()->check() && Auth::user()->isSuperAdmin())
-                    <li>
-                        <a class="dropdown-item py-2" href="{{ route('super_admin.dashboard') }}">
-                            <i class="fas fa-crown text-warning me-2"></i>Super Admin Portal
-                        </a>
-                    </li>
-                    <li>
-                        <a class="dropdown-item py-2" href="{{ route('super_admin.shops.index') }}">
-                            <i class="fas fa-store me-2 text-primary"></i>Manage Shops
-                        </a>
-                    </li>
-                    <li>
-                        <a class="dropdown-item py-2" href="{{ route('super_admin.users.index') }}">
-                            <i class="fas fa-users-cog me-2 text-info"></i>Platform Users
-                        </a>
-                    </li>
-                    <li><hr class="dropdown-divider"></li>
-                @endif
-
-                @if(auth()->check() && Auth::user()->isSuperAdmin())
-                    <li>
-                        <a class="dropdown-item py-2" href="{{ route('super_admin.platform_settings') }}">
-                            <i class="fas fa-paint-brush me-2 text-warning"></i>Platform Branding
-                        </a>
-                    </li>
-                    @if(session('active_shop_id') && session('active_shop_id') !== 'all')
+                <!-- Language Switcher Dropdown (AJAX Enabled) -->
+                <div class="dropdown">
+                    <button class="btn btn-light border btn-sm dropdown-toggle rounded-pill px-3 py-1 shadow-sm d-flex align-items-center gap-2"
+                            type="button" id="languageSwitcherDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        @if(app()->getLocale() === 'ar')
+                            <span>🇸🇦</span> <span class="fw-semibold">العربية</span>
+                        @else
+                            <span>🇬🇧</span> <span class="fw-semibold">English</span>
+                        @endif
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 p-2" aria-labelledby="languageSwitcherDropdown" style="min-width: 150px;">
                         <li>
-                            <a class="dropdown-item py-2" href="{{ route('settings.index') }}">
-                                <i class="fas fa-cog me-2 text-primary"></i>Setting
+                            <a class="dropdown-item rounded py-2 d-flex align-items-center justify-content-between lang-switcher-btn {{ app()->getLocale() === 'en' ? 'active text-white' : '' }}" 
+                               href="{{ route('language.switch', 'en') }}"
+                               data-locale="en"
+                               onclick="event.preventDefault(); switchLanguageAjax('en', '{{ route('language.switch', 'en') }}');">
+                                <span>🇬🇧 English</span>
+                                @if(app()->getLocale() === 'en') <i class="fas fa-check"></i> @endif
                             </a>
                         </li>
-                    @endif
-                    <li><hr class="dropdown-divider"></li>
-                @elseif(auth()->check() && Auth::user()->isAdmin())
-                    <li>
-                        <a class="dropdown-item py-2" href="{{ route('settings.index') }}">
-                            <i class="fas fa-cog me-2"></i>Setting
-                        </a>
-                    </li>
-                    <li><hr class="dropdown-divider"></li>
-                @endif
-                
-                <li>
-                    <form action="{{ route('logout') }}" method="POST">
-                        @csrf
-                        <button type="submit" class="dropdown-item py-2 text-danger">
-                            <i class="fas fa-sign-out-alt me-2"></i> Logout
-                        </button>
-                    </form>
-                </li>
-            </ul>
-        </div>
+                        <li>
+                            <a class="dropdown-item rounded py-2 d-flex align-items-center justify-content-between lang-switcher-btn {{ app()->getLocale() === 'ar' ? 'active text-white' : '' }}" 
+                               href="{{ route('language.switch', 'ar') }}"
+                               data-locale="ar"
+                               onclick="event.preventDefault(); switchLanguageAjax('ar', '{{ route('language.switch', 'ar') }}');">
+                                <span>🇸🇦 العربية</span>
+                                @if(app()->getLocale() === 'ar') <i class="fas fa-check"></i> @endif
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- User Profile Dropdown -->
+                <div class="dropdown">
+                    <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle" id="userDropdown"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        
+                        <span class="d-none d-md-inline text-dark fw-medium">
+                            {{ auth()->check() ? Auth::user()->name : __('Guest') }}
+                            @if(auth()->check() && Auth::user()->isSuperAdmin())
+                                <span class="badge-soft badge-soft-warning ms-1"><i class="fas fa-crown"></i> {{ __('Super Admin') }}</span>
+                            @elseif(auth()->check() && Auth::user()->isAdmin())
+                                <span class="badge-soft badge-soft-primary ms-1">{{ __('Shop Admin') }}</span>
+                            @endif
+                        </span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-3" aria-labelledby="userDropdown">
+                        @if(auth()->check() && Auth::user()->isSuperAdmin())
+                            <li>
+                                <a class="dropdown-item py-2" href="{{ route('super_admin.dashboard') }}">
+                                    <i class="fas fa-crown text-warning me-2"></i>{{ __('Super Admin Portal') }}
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item py-2" href="{{ route('super_admin.shops.index') }}">
+                                    <i class="fas fa-store me-2 text-primary"></i>{{ __('Manage Shops') }}
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item py-2" href="{{ route('super_admin.users.index') }}">
+                                    <i class="fas fa-users-cog me-2 text-info"></i>{{ __('Platform Users') }}
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                        @endif
+
+                        @if(auth()->check() && Auth::user()->isSuperAdmin())
+                            <li>
+                                <a class="dropdown-item py-2" href="{{ route('super_admin.platform_settings') }}">
+                                    <i class="fas fa-paint-brush me-2 text-warning"></i>{{ __('Platform Branding') }}
+                                </a>
+                            </li>
+                            @if(session('active_shop_id') && session('active_shop_id') !== 'all')
+                                <li>
+                                    <a class="dropdown-item py-2" href="{{ route('settings.index') }}">
+                                        <i class="fas fa-cog me-2 text-primary"></i>{{ __('Settings') }}
+                                    </a>
+                                </li>
+                            @endif
+                            <li><hr class="dropdown-divider"></li>
+                        @elseif(auth()->check() && Auth::user()->isAdmin())
+                            <li>
+                                <a class="dropdown-item py-2" href="{{ route('settings.index') }}">
+                                    <i class="fas fa-cog me-2"></i>{{ __('Settings') }}
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                        @endif
+                        
+                        <li>
+                            <form action="{{ route('logout') }}" method="POST">
+                                @csrf
+                                <button type="submit" class="dropdown-item py-2 text-danger">
+                                    <i class="fas fa-sign-out-alt me-2"></i> {{ __('Logout') }}
+                                </button>
+                            </form>
+                        </li>
+                    </ul>
+                </div>
     </div>
 </nav>

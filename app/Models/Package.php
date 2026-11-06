@@ -93,4 +93,16 @@ class Package extends Model
             default => 'badge-soft-secondary',
         };
     }
+
+    protected static function booted()
+    {
+        static::saved(function ($pkg) {
+            if (!empty($pkg->name)) {
+                \App\Services\TranslationService::warmCache($pkg->name);
+            }
+            if (!empty($pkg->description)) {
+                \App\Services\TranslationService::warmCache($pkg->description);
+            }
+        });
+    }
 }

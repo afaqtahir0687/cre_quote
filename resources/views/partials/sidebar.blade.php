@@ -25,7 +25,7 @@
                 </div>
                 <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle mt-1"
                     style="font-size: 0.65rem; font-weight: 500;">
-                    <i class="fas fa-crown text-warning me-1"></i> Super Admin Portal
+                    <i class="fas fa-crown text-warning me-1"></i> {{ __('Super Admin Portal') }}
                 </span>
             </a>
         @else
@@ -53,7 +53,7 @@
 
                 @if($currentShop)
                     <span class="badge bg-light text-secondary border mt-1" style="font-size: 0.65rem; font-weight: 500;">
-                        <i class="fas fa-store text-primary me-1"></i> Branch #{{ $currentShop->id }}
+                        <i class="fas fa-store text-primary me-1"></i> {{ __('Branch') }} #{{ $currentShop->id }}
                     </span>
                 @endif
             </a>
@@ -65,43 +65,43 @@
             <!-- Super Admin Control Panel -->
             <div class="px-3 pt-2 pb-1 text-uppercase text-muted fw-bold"
                 style="font-size: 0.7rem; letter-spacing: 0.05em;">
-                <i class="fas fa-crown text-warning me-1"></i> Super Admin
+                <i class="fas fa-crown text-warning me-1"></i> {{ __('Super Admin') }}
             </div>
 
             <a href="{{ route('super_admin.dashboard') }}"
                 class="sidebar-link {{ request()->routeIs('super_admin.dashboard') ? 'active' : '' }}">
                 <i class="fas fa-tachometer-alt text-warning"></i>
-                <span>Overview</span>
+                <span>{{ __('Overview') }}</span>
             </a>
 
             <a href="{{ route('super_admin.shops.index') }}"
                 class="sidebar-link {{ request()->routeIs('super_admin.shops.*') ? 'active' : '' }}">
                 <i class="fas fa-store text-primary"></i>
-                <span>Manage Shops</span>
+                <span>{{ __('Manage Shops') }}</span>
             </a>
 
             <a href="{{ route('super_admin.users.index') }}"
                 class="sidebar-link {{ request()->routeIs('super_admin.users.*') ? 'active' : '' }}">
                 <i class="fas fa-users-cog text-info"></i>
-                <span>Users</span>
+                <span>{{ __('Users') }}</span>
             </a>
 
             <a href="{{ route('super_admin.subscriptions.index') }}"
                 class="sidebar-link {{ request()->routeIs('super_admin.subscriptions.*') ? 'active' : '' }}">
                 <i class="fas fa-hand-holding-usd text-success"></i>
-                <span>Subscriptions</span>
+                <span>{{ __('Subscriptions') }}</span>
             </a>
 
             <a href="{{ route('super_admin.packages.index') }}"
                 class="sidebar-link {{ request()->routeIs('super_admin.packages.*') ? 'active' : '' }}">
                 <i class="fas fa-boxes text-primary"></i>
-                <span>Packages</span>
+                <span>{{ __('Packages') }}</span>
             </a>
 
             <a href="{{ route('super_admin.platform_settings') }}"
                 class="sidebar-link {{ request()->routeIs('super_admin.platform_settings*') ? 'active' : '' }}">
                 <i class="fas fa-paint-brush text-warning"></i>
-                <span>Branding</span>
+                <span>{{ __('Branding') }}</span>
             </a>
 
             <hr class="my-2 text-secondary opacity-25">
@@ -111,62 +111,74 @@
         @if(auth()->check() && auth()->user()->isSuperAdmin())
             <div class="px-3 pt-1 pb-1 text-uppercase text-muted fw-bold"
                 style="font-size: 0.7rem; letter-spacing: 0.05em;">
-                <i class="fas fa-store-alt text-secondary me-1"></i> Active Shop
+                <i class="fas fa-store-alt text-secondary me-1"></i> {{ __('Active Shop') }}
             </div>
         @endif
 
         <a href="{{ route('dashboard') }}" class="sidebar-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
             <i class="fas fa-home"></i>
-            <span>Dashboard</span>
+            <span>{{ __('Dashboard') }}</span>
         </a>
 
         @if(auth()->check() && in_array(auth()->user()->role, ['admin', 'super_admin']))
             <a href="{{ route('employees.index') }}"
                 class="sidebar-link {{ request()->routeIs('employees.*') ? 'active' : '' }}">
                 <i class="fas fa-user-tie"></i>
-                <span>Employees</span>
+                <span>{{ __('Employees') }}</span>
             </a>
         @endif
 
         <a href="{{ route('customers.index') }}"
             class="sidebar-link {{ request()->routeIs('customers.*') ? 'active' : '' }}">
             <i class="fas fa-users"></i>
-            <span>Customers</span>
+            <span>{{ __('Customers') }}</span>
         </a>
 
         <a href="{{ route('quotes.index') }}" class="sidebar-link {{ request()->routeIs('quotes.*') ? 'active' : '' }}">
             <i class="fas fa-file-invoice"></i>
-            <span>Quotes</span>
+            <span>{{ __('Quotes') }}</span>
         </a>
 
         <a href="{{ route('job-orders.index') }}"
             class="sidebar-link {{ request()->routeIs('job-orders.*') ? 'active' : '' }}">
             <i class="fas fa-tasks"></i>
-            <span>Job Orders</span>
+            <span>{{ __('Job Orders') }}</span>
         </a>
 
         <a href="{{ route('departments.index') }}"
             class="sidebar-link {{ request()->routeIs('departments.*') ? 'active' : '' }}">
             <i class="fas fa-sitemap"></i>
-            <span>Department</span>
+            <span>{{ __('Department') }}</span>
         </a>
 
         <a href="{{ route('invoices.index') }}"
             class="sidebar-link {{ request()->routeIs('invoices.*') ? 'active' : '' }}">
             <i class="fas fa-receipt"></i>
-            <span>Invoices</span>
+            <span>{{ __('Invoices') }}</span>
         </a>
 
         <a href="{{ route('delivery_notes.index') }}"
             class="sidebar-link {{ request()->routeIs('delivery_notes.*') ? 'active' : '' }}">
             <i class="fas fa-truck"></i>
-            <span>Delivery Notes</span>
+            <span>{{ __('Delivery Notes') }}</span>
         </a>
 
         <a href="{{ route('products.index') }}"
             class="sidebar-link {{ request()->routeIs('products.*') ? 'active' : '' }}">
             <i class="fas fa-box"></i>
-            <span>Products</span>
+            <span>{{ __('Products') }}</span>
+        </a>
+
+        <a href="{{ route('categories.index') }}"
+            class="sidebar-link {{ request()->routeIs('categories.*') ? 'active' : '' }}">
+            <i class="fas fa-tags"></i>
+            <span>{{ __('Categories') }}</span>
+        </a>
+
+        <a href="{{ route('units.index') }}"
+            class="sidebar-link {{ request()->routeIs('units.*') ? 'active' : '' }}">
+            <i class="fas fa-balance-scale"></i>
+            <span>{{ __('Units') }}</span>
         </a>
 
         <hr class="my-3 text-secondary opacity-25">
@@ -174,44 +186,44 @@
         <a href="{{ route('recycle_bin.index') }}"
             class="sidebar-link {{ request()->routeIs('recycle_bin.*') ? 'active' : '' }}">
             <i class="fas fa-trash-alt"></i>
-            <span>Recycle Bin</span>
+            <span>{{ __('Recycle Bin') }}</span>
         </a>
 
         <a href="{{ route('system_logs.index') }}"
             class="sidebar-link {{ request()->routeIs('system_logs.*') ? 'active' : '' }}">
             <i class="fas fa-history"></i>
-            <span>Activity Logs</span>
+            <span>{{ __('Activity Logs') }}</span>
         </a>
 
         @if(auth()->check() && auth()->user()->isSuperAdmin())
             <a href="{{ route('super_admin.platform_settings') }}"
                 class="sidebar-link {{ request()->routeIs('super_admin.platform_settings*') ? 'active' : '' }}">
                 <i class="fas fa-paint-brush text-warning"></i>
-                <span>Platform Branding</span>
+                <span>{{ __('Platform Branding') }}</span>
             </a>
 
             <a href="{{ route('settings.index') }}"
                 class="sidebar-link {{ request()->routeIs('settings.*') ? 'active' : '' }}">
                 <i class="fas fa-cog text-primary"></i>
-                <span>Settings</span>
+                <span>{{ __('Settings') }}</span>
             </a>
         @elseif(auth()->check() && auth()->user()->isAdmin())
             <a href="{{ route('branches.index') }}"
                 class="sidebar-link {{ request()->routeIs('branches.*') ? 'active' : '' }}">
                 <i class="fas fa-code-branch text-info"></i>
-                <span>Branches</span>
+                <span>{{ __('Branches') }}</span>
             </a>
 
             <a href="{{ route('subscription.index') }}"
                 class="sidebar-link {{ request()->routeIs('subscription.*') ? 'active' : '' }}">
                 <i class="fas fa-gem text-warning"></i>
-                <span>Subscription</span>
+                <span>{{ __('Subscription') }}</span>
             </a>
 
             <a href="{{ route('settings.index') }}"
                 class="sidebar-link {{ request()->routeIs('settings.*') ? 'active' : '' }}">
                 <i class="fas fa-cog"></i>
-                <span>Settings</span>
+                <span>{{ __('Settings') }}</span>
             </a>
         @endif
 
@@ -219,7 +231,7 @@
             <form action="{{ route('logout') }}" method="POST">
                 @csrf
                 <button type="submit" class="btn btn-outline-danger w-100 btn-sm">
-                    <i class="fas fa-sign-out-alt me-2"></i> Logout
+                    <i class="fas fa-sign-out-alt me-2"></i> {{ __('Logout') }}
                 </button>
             </form>
         </div>

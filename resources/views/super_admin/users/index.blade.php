@@ -1,38 +1,38 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Platform Users')
+@section('title', __('Platform Users'))
 
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
-        <h2 class="fw-bold text-dark mb-1">Platform Users</h2>
-        <p class="text-muted small mb-0">Manage global super admins, branch owners, and shop employees across the platform.</p>
+        <h2 class="fw-bold text-dark mb-1">{{ __('Platform Users') }}</h2>
+        <p class="text-muted small mb-0">{{ __('Manage global super admins, branch owners, and shop employees across the platform.') }}</p>
     </div>
     <div class="d-flex align-items-center gap-3">
         <form action="{{ route('super_admin.users.index') }}" method="GET" class="d-flex gap-2">
             <div class="input-group" style="min-width: 220px;">
-                <input type="text" name="search" class="form-control" placeholder="Search name, username, email..." value="{{ request('search') }}">
+                <input type="text" name="search" class="form-control" placeholder="{{ __('Search name, username, email...') }}" value="{{ request('search') }}">
                 <button class="btn btn-outline-secondary" type="submit"><i class="fas fa-search"></i></button>
             </div>
             <select name="shop_id" class="form-select" style="min-width: 130px;" onchange="this.form.submit()">
-                <option value="">All Shops</option>
+                <option value="">{{ __('All Shops') }}</option>
                 @foreach($shops as $s)
                     <option value="{{ $s->id }}" {{ request('shop_id') == $s->id ? 'selected' : '' }}>{{ $s->name }}</option>
                 @endforeach
             </select>
             <select name="role" class="form-select" style="min-width: 120px;" onchange="this.form.submit()">
-                <option value="">All Roles</option>
-                <option value="super_admin" {{ request('role') === 'super_admin' ? 'selected' : '' }}>Super Admin</option>
-                <option value="admin" {{ request('role') === 'admin' ? 'selected' : '' }}>Shop Admin</option>
-                <option value="employee" {{ request('role') === 'employee' ? 'selected' : '' }}>Employee</option>
+                <option value="">{{ __('All Roles') }}</option>
+                <option value="super_admin" {{ request('role') === 'super_admin' ? 'selected' : '' }}>{{ __('Super Admin') }}</option>
+                <option value="admin" {{ request('role') === 'admin' ? 'selected' : '' }}>{{ __('Shop Admin') }}</option>
+                <option value="employee" {{ request('role') === 'employee' ? 'selected' : '' }}>{{ __('Employee') }}</option>
             </select>
             @if(request()->hasAny(['search', 'shop_id', 'role']))
-                <a href="{{ route('super_admin.users.index') }}" class="btn btn-outline-danger" title="Clear Filters"><i class="fas fa-times"></i></a>
+                <a href="{{ route('super_admin.users.index') }}" class="btn btn-outline-danger" title="{{ __('Clear Filters') }}"><i class="fas fa-times"></i></a>
             @endif
         </form>
 
         <a href="{{ route('super_admin.users.create') }}" class="btn btn-primary-modern text-nowrap d-flex align-items-center">
-            <i class="fas fa-user-plus me-2"></i> Add Users
+            <i class="fas fa-user-plus me-2"></i> {{ __('Add User') }}
         </a>
     </div>
 </div>
@@ -40,19 +40,19 @@
 <x-card :padding="false">
     <x-table>
         <x-slot name="thead">
-            <th>User</th>
-            <th>Username</th>
-            <th>Role</th>
-            <th>Assigned Shop</th>
-            <th>Created At</th>
-            <th class="text-end pe-4">Action</th>
+            <th>{{ __('User') }}</th>
+            <th>{{ __('Username') }}</th>
+            <th>{{ __('Role') }}</th>
+            <th>{{ __('Assigned Shop') }}</th>
+            <th>{{ __('Created At') }}</th>
+            <th class="text-end pe-4">{{ __('Action') }}</th>
         </x-slot>
 
         @forelse($users as $user)
         <tr class="align-middle">
             <td>
                 <div>
-                    <div class="fw-bold text-dark">{{ $user->name }}</div>
+                    <div class="fw-bold text-dark">{{ tdb($user->name) }}</div>
                     <div class="text-muted small"><a href="mailto:{{ $user->email }}" class="text-decoration-none text-muted">{{ $user->email }}</a></div>
                 </div>
             </td>
@@ -61,11 +61,11 @@
             </td>
             <td>
                 @if($user->isSuperAdmin())
-                    <span class="badge-soft badge-soft-warning"><i class="fas fa-crown me-1"></i> Super Admin</span>
+                    <span class="badge-soft badge-soft-warning"><i class="fas fa-crown me-1"></i> {{ __('Super Admin') }}</span>
                 @elseif($user->isAdmin())
-                    <span class="badge-soft badge-soft-primary"><i class="fas fa-user-shield me-1"></i> Shop Admin</span>
+                    <span class="badge-soft badge-soft-primary"><i class="fas fa-user-shield me-1"></i> {{ __('Shop Admin') }}</span>
                 @else
-                    <span class="badge-soft badge-soft-secondary"><i class="fas fa-user me-1"></i> Employee</span>
+                    <span class="badge-soft badge-soft-secondary"><i class="fas fa-user me-1"></i> {{ __('Employee') }}</span>
                 @endif
             </td>
             <td>
@@ -74,7 +74,7 @@
                         <i class="fas fa-store me-1 text-primary"></i>{{ $user->shop->name }}
                     </a>
                 @else
-                    <span class="text-muted small">Global (Platform Wide)</span>
+                    <span class="text-muted small">{{ __('Global (Platform Wide)') }}</span>
                 @endif
             </td>
             <td class="small text-muted">
@@ -88,7 +88,7 @@
                     <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
                         <li>
                             <a class="dropdown-item py-2" href="{{ route('super_admin.users.edit', $user->id) }}">
-                                <i class="fas fa-edit me-2 text-info"></i> Edit User
+                                <i class="fas fa-edit me-2 text-info"></i> {{ __('Edit User') }}
                             </a>
                         </li>
                         @if(auth()->id() !== $user->id)
@@ -98,7 +98,7 @@
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="dropdown-item py-2 text-danger">
-                                        <i class="fas fa-trash-alt me-2"></i> Delete User
+                                        <i class="fas fa-trash-alt me-2"></i> {{ __('Delete User') }}
                                     </button>
                                 </form>
                             </li>
@@ -110,7 +110,7 @@
         @empty
         <tr>
             <td colspan="6" class="text-center py-5 text-muted">
-                No users found.
+                {{ __('No users found.') }}
             </td>
         </tr>
         @endforelse

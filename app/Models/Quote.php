@@ -11,7 +11,7 @@ class Quote extends Model
     use SoftDeletes, BelongsToShop;
 
     protected $fillable = [
-        'shop_id', 'quote_number', 'quote_date', 'due_date', 'reference', 'customer_id', 'customer_company_id', 'show_customer_name', 'employee_id', 'subtotal', 'total_tax', 'total_discount', 'shipping', 'grand_total', 'status', 'notes', 'images'
+        'shop_id', 'quote_number', 'quote_date', 'due_date', 'reference', 'customer_id', 'customer_company_id', 'show_customer_name', 'employee_id', 'subtotal', 'total_tax', 'total_discount', 'shipping', 'grand_total', 'status', 'notes', 'terms', 'images'
     ];
 
     protected $casts = [
@@ -42,5 +42,27 @@ class Quote extends Model
     public function employee()
     {
         return $this->belongsTo(Employee::class);
+    }
+
+    public function getLocalizedNotesAttribute(): string
+    {
+        return tdb($this->notes);
+    }
+
+    public function getLocalizedTermsAttribute(): string
+    {
+        return tdb($this->terms);
+    }
+
+    protected static function booted()
+    {
+        static::saved(function ($quote) {
+            if (!empty($quote->notes)) {
+                \App\Services\TranslationService::warmCache($quote->notes);
+            }
+            if (!empty($quote->terms)) {
+                \App\Services\TranslationService::warmCache($quote->terms);
+            }
+        });
     }
 }

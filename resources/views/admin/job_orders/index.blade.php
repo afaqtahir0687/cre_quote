@@ -1,30 +1,30 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Job Orders')
+@section('title', __('Job Orders'))
 
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="fw-bold text-dark mb-0">Job Orders</h2>
+    <h2 class="fw-bold text-dark mb-0">{{ __('Job Orders') }}</h2>
     <div class="d-flex gap-2">
         <form action="{{ url()->current() }}" method="GET" class="d-flex gap-2 mb-0">
             <div class="input-group">
                 <span class="input-group-text bg-white border-end-0"><i class="fas fa-search text-muted"></i></span>
-                <input type="text" name="search" value="{{ request('search') }}" class="form-control border-start-0" placeholder="Search Name, Job Order #..." onkeypress="if(event.keyCode == 13) this.form.submit()">
+                <input type="text" name="search" value="{{ request('search') }}" class="form-control border-start-0" placeholder="{{ __('Search Name, Job Order #...') }}" onkeypress="if(event.keyCode == 13) this.form.submit()">
             </div>
-            <input type="date" name="date" value="{{ request('date') }}" class="form-control" style="max-width: 150px; cursor: pointer;" title="Filter by date" onclick="this.showPicker()" onchange="this.form.submit()">
+            <input type="date" name="date" value="{{ request('date') }}" class="form-control" style="max-width: 150px; cursor: pointer;" title="{{ __('Filter by date') }}" onclick="this.showPicker()" onchange="this.form.submit()">
             @if(request()->has('search') || request()->has('date'))
-                <a href="{{ url()->current() }}" class="btn btn-light border" title="Clear Filters"><i class="fas fa-times"></i></a>
+                <a href="{{ url()->current() }}" class="btn btn-light border" title="{{ __('Clear Filters') }}"><i class="fas fa-times"></i></a>
             @endif
         </form>
         <a href="{{ route('job-orders.statement-pdf', array_filter(['date' => request('date'), 'search' => request('search')])) }}" 
            class="btn btn-outline-danger d-flex align-items-center text-nowrap shadow-sm" 
            target="_blank"
-           title="Download Statement PDF">
+           title="{{ __('Download Statement PDF') }}">
             <i class="fas fa-file-pdf me-2"></i> 
-            <span>{{ request('date') ? 'Statement (' . \Carbon\Carbon::parse(request('date'))->format('d-M-Y') . ')' : 'Daily Statement' }}</span>
+            <span>{{ request('date') ? __('Statement') . ' (' . \Carbon\Carbon::parse(request('date'))->format('d-M-Y') . ')' : __('Daily Statement') }}</span>
         </a>
         <a href="{{ route('job-orders.create') }}" class="btn btn-primary-modern text-nowrap">
-            <i class="fas fa-plus me-2"></i> Create Job Order
+            <i class="fas fa-plus me-2"></i> {{ __('Create Job Order') }}
         </a>
     </div>
 </div>
@@ -34,13 +34,13 @@
         <div class="d-flex align-items-center gap-2">
             <i class="fas fa-calendar-check text-primary fs-5"></i>
             <div>
-                <span class="fw-bold text-dark">Statement Date:</span>
+                <span class="fw-bold text-dark">{{ __('Statement Date:') }}</span>
                 <span class="badge bg-primary fs-6 ms-1">{{ \Carbon\Carbon::parse(request('date'))->format('d-M-Y') }}</span>
                 <span class="text-muted ms-2 small">({{ $jobOrders->total() }} {{ Str::plural('Job Order', $jobOrders->total()) }} found)</span>
             </div>
         </div>
         <a href="{{ route('job-orders.statement-pdf', array_filter(['date' => request('date'), 'search' => request('search')])) }}" class="btn btn-sm btn-danger d-flex align-items-center shadow-sm" target="_blank">
-            <i class="fas fa-file-pdf me-2"></i> Download Statement PDF
+            <i class="fas fa-file-pdf me-2"></i> {{ __('Download Statement PDF') }}
         </a>
     </div>
 @endif
@@ -49,33 +49,33 @@
     @if($jobOrders->isEmpty())
         <div class="text-center py-5">
             <i class="fas fa-tasks fa-3x text-muted mb-3"></i>
-            <h5 class="text-muted">No Job Orders Found</h5>
-            <p class="text-muted small">Create a Job Order from a Quote to get started.</p>
+            <h5 class="text-muted">{{ __('No Job Orders Found') }}</h5>
+            <p class="text-muted small">{{ __('Create a Job Order from a Quote to get started.') }}</p>
             <a href="{{ route('quotes.index') }}" class="btn btn-primary-modern">
-                <i class="fas fa-plus me-2"></i> View Quotes
+                <i class="fas fa-plus me-2"></i> {{ __('View Quotes') }}
             </a>
         </div>
     @else
         <x-table>
             <x-slot name="thead">
-                <th>Order #</th>
-                <th>Customer</th>
-                <th>Date</th>
-                <th>Employee</th>
-                <th>Status</th>
-                <th>Total Amount</th>
-                <th>Paid</th>
-                <th>Balance</th>
-                <th class="text-end pe-4">Action</th>
+                <th class="text-nowrap">{{ __('Order #') }}</th>
+                <th style="min-width: 180px;">{{ __('Customer') }}</th>
+                <th class="text-nowrap">{{ __('Date') }}</th>
+                <th class="text-nowrap">{{ __('Employee') }}</th>
+                <th class="text-nowrap">{{ __('Status') }}</th>
+                <th class="text-nowrap">{{ __('Total Amount') }}</th>
+                <th class="text-nowrap">{{ __('Paid') }}</th>
+                <th class="text-nowrap">{{ __('Balance') }}</th>
+                <th class="text-end pe-4 text-nowrap">{{ __('Action') }}</th>
             </x-slot>
 
                 @foreach($jobOrders as $jobOrder)
-                <tr class="job-order-row">
-                    <td><strong>{{ $jobOrder->order_number }}</strong></td>
+                <tr class="job-order-row align-middle">
+                    <td class="text-nowrap"><strong>{{ $jobOrder->order_number }}</strong></td>
                     <td>
-                        <div class="fw-bold">{{ $jobOrder->customer->name ?? '' }}</div>
+                        <div class="fw-semibold text-dark" style="font-size: 0.88rem; line-height: 1.35;">{{ tdb($jobOrder->customer->name ?? '') }}</div>
                         @if(!empty($jobOrder->customer->company_name))
-                            <div class="small text-muted"><i class="fas fa-building me-1"></i>{{ $jobOrder->customer->company_name }}</div>
+                            <div class="small text-muted"><i class="fas fa-building me-1"></i>{{ tdb($jobOrder->customer->company_name) }}</div>
                         @endif
                         @if(!empty($jobOrder->customer->phone))
                             <div class="small text-muted mt-1"><i class="fas fa-phone-alt me-1"></i>{{ $jobOrder->customer->phone }}</div>
@@ -93,7 +93,7 @@
                                 data-current-emp-id="{{ $jobOrder->employee_id ?? '' }}"
                                 title="Click to assign / change employee">
                             <i class="fas {{ $jobOrder->employee ? 'fa-user-circle text-primary' : 'fa-user-plus text-primary' }}"></i>
-                            <span class="fw-medium">{{ $jobOrder->employee->name ?? 'Assign' }}</span>
+                            <span class="fw-medium">{{ $jobOrder->employee ? tdb($jobOrder->employee->name) : __('Assign') }}</span>
                             <i class="fas fa-edit text-muted ms-1" style="font-size: 0.65rem;"></i>
                         </button>
                     </td>
@@ -106,7 +106,7 @@
                                 default => 'badge-soft-info'
                             };
                         @endphp
-                        <span class="badge-soft {{ $statusClass }}">{{ ucfirst($jobOrder->status) }}</span>
+                        <span class="badge-soft {{ $statusClass }}">{{ __(ucfirst(str_replace('_', ' ', $jobOrder->status))) }}</span>
                     </td>
                     <td>{{ format_currency($jobOrder->total_amount) }}</td>
                     <td class="text-success">{{ format_currency($jobOrder->paid_amount) }}</td>
@@ -119,32 +119,32 @@
                             <ul class="dropdown-menu dropdown-menu-end">
                                 <li>
                                     <a class="dropdown-item" href="{{ route('job-orders.show', $jobOrder->id) }}">
-                                        <i class="fas fa-eye me-2 text-info"></i> View
+                                        <i class="fas fa-eye me-2 text-info"></i> {{ __('View') }}
                                     </a>
                                 </li>
                                 @if($jobOrder->status !== 'cancelled')
                                 <li>
                                     <a class="dropdown-item" href="{{ route('job-orders.edit', $jobOrder->id) }}">
-                                        <i class="fas fa-edit me-2 text-warning"></i> Edit
+                                        <i class="fas fa-edit me-2 text-warning"></i> {{ __('Edit') }}
                                     </a>
                                 </li>
                                 @endif
                                 <li>
                                     <a class="dropdown-item" href="{{ route('job-orders.pdf', $jobOrder->id) }}">
-                                        <i class="fas fa-file-pdf me-2 text-danger"></i> PDF
+                                        <i class="fas fa-file-pdf me-2 text-danger"></i> {{ __('PDF') }}
                                     </a>
                                 </li>
                                 @if($jobOrder->status !== 'cancelled')
                                 <li>
                                     <a class="dropdown-item" href="{{ route('job-orders.invoice', $jobOrder->id) }}">
-                                        <i class="fas fa-file-invoice-dollar me-2 text-success"></i> Convert to Invoice
+                                        <i class="fas fa-file-invoice-dollar me-2 text-success"></i> {{ __('Convert to Invoice') }}
                                     </a>
                                 </li>
                                 <li>
                                     <form action="{{ route('job-orders.cancel', $jobOrder->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to cancel Job Order #{{ $jobOrder->order_number }}? All amounts and totals will be set to 0.00.');">
                                         @csrf
                                         <button type="submit" class="dropdown-item text-danger">
-                                            <i class="fas fa-ban me-2"></i> Cancel Order
+                                            <i class="fas fa-ban me-2"></i> {{ __('Cancel Order') }}
                                         </button>
                                     </form>
                                 </li>
@@ -156,7 +156,7 @@
                                             data-id="{{ $jobOrder->id }}"
                                             data-number="{{ $jobOrder->order_number }}"
                                             data-current-emp-id="{{ $jobOrder->employee_id ?? '' }}">
-                                        <i class="fas fa-user-tag me-2 text-warning"></i> Assign / Reclaim
+                                        <i class="fas fa-user-tag me-2 text-warning"></i> {{ __('Assign / Reclaim') }}
                                     </button>
                                 </li>
                                 <li><hr class="dropdown-divider"></li>
@@ -166,7 +166,7 @@
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="dropdown-item text-danger">
-                                            <i class="fas fa-trash me-2"></i> Delete
+                                            <i class="fas fa-trash me-2"></i> {{ __('Delete') }}
                                         </button>
                                     </form>
                                 </li>
@@ -191,18 +191,18 @@
             <div class="modal-content border-0 shadow">
                 <div class="modal-header bg-light">
                     <h5 class="modal-title fw-bold text-dark">
-                        <i class="fas fa-user-tag text-primary me-2"></i> Assign Job Order <span id="modalJobOrderNumber" class="text-primary"></span>
+                        <i class="fas fa-user-tag text-primary me-2"></i> {{ __('Assign Job Order') }} <span id="modalJobOrderNumber" class="text-primary"></span>
                     </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <form id="assignJobOrderForm" method="POST" action="">
                     @csrf
                     <div class="modal-body p-4">
-                        <p class="text-muted small mb-3">Select an employee to assign this job order to, or choose <strong>Admin (Myself / Reclaim)</strong> to reclaim full control.</p>
+                        <p class="text-muted small mb-3">{{ __('Select an employee to assign this job order to, or choose Admin (Myself / Reclaim) to reclaim full control.') }}</p>
                         <div class="mb-3">
-                            <label class="form-label fw-semibold text-dark">Assignee / Owner</label>
+                            <label class="form-label fw-semibold text-dark">{{ __('Assignee / Owner') }}</label>
                             <select name="employee_id" id="modalJobOrderEmployeeSelect" class="form-select">
-                                <option value="">-- Admin (Myself / Reclaim) --</option>
+                                <option value="">-- {{ __('Admin (Myself / Reclaim)') }} --</option>
                                 @foreach($employees as $emp)
                                     <option value="{{ $emp->id }}">
                                         {{ $emp->name }} ({{ $emp->designation ?? 'Staff' }})
@@ -210,14 +210,14 @@
                                 @endforeach
                             </select>
                             <div class="form-text text-muted">
-                                Selecting <em>Admin (Myself / Reclaim)</em> unassigns employees and keeps it under Admin ownership.
+                                {{ __('Selecting Admin (Myself / Reclaim) unassigns employees and keeps it under Admin ownership.') }}
                             </div>
                         </div>
                     </div>
                     <div class="modal-footer bg-light">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('Cancel') }}</button>
                         <button type="submit" class="btn btn-primary-modern">
-                            <i class="fas fa-save me-1"></i> Save Assignment
+                            <i class="fas fa-save me-1"></i> {{ __('Save Assignment') }}
                         </button>
                     </div>
                 </form>

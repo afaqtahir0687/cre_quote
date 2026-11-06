@@ -5,44 +5,44 @@
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
-        <h2 class="fw-bold text-dark mb-1">Edit User: {{ $user->name }}</h2>
-        <p class="text-muted small mb-0">Update credentials, role assignment, branch location, or reset password.</p>
+        <h2 class="fw-bold text-dark mb-1">{{ __('Edit User') }}: {{ $user->name }}</h2>
+        <p class="text-muted small mb-0">{{ __('Update credentials, role assignment, branch location, or reset password.') }}</p>
     </div>
     <a href="{{ route('super_admin.users.index') }}" class="btn btn-outline-secondary">
-        <i class="fas fa-arrow-left me-1"></i> Back to Users
+        <i class="fas fa-arrow-left me-1"></i> {{ __('Back to Users') }}
     </a>
 </div>
 
 <div class="row justify-content-center g-0">
     <div class="col-lg-8 col-xl-7">
-        <x-card title="Edit User Information">
+        <x-card :title="__('Edit User Information')">
             <form action="{{ route('super_admin.users.update', $user->id) }}" method="POST">
                 @csrf
                 @method('PUT')
 
                 <div class="row g-3">
                     <div class="col-md-6">
-                        <label class="form-label fw-bold text-dark">Full Name *</label>
-                        <input type="text" name="name" class="form-control @error('name') is-invalid @enderror" value="{{ old('name', $user->name) }}" required>
+                        <label class="form-label fw-bold text-dark">{{ __('Full Name') }} *</label>
+                        <input type="text" name="name" class="form-control @error('name') is-invalid @enderror" value="{{ old('name', tdb($user->name)) }}" required>
                         @error('name') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
 
                     <div class="col-md-6">
-                        <label class="form-label fw-bold text-dark">Username *</label>
+                        <label class="form-label fw-bold text-dark">{{ __('Username') }} *</label>
                         <input type="text" name="username" class="form-control @error('username') is-invalid @enderror" value="{{ old('username', $user->username) }}" required>
                         @error('username') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
 
                     <div class="col-md-6">
-                        <label class="form-label fw-bold text-dark">Email Address *</label>
+                        <label class="form-label fw-bold text-dark">{{ __('Email Address') }} *</label>
                         <input type="email" name="email" class="form-control @error('email') is-invalid @enderror" value="{{ old('email', $user->email) }}" required>
                         @error('email') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
 
                     <div class="col-md-6">
-                        <label class="form-label fw-bold text-dark">Reset Password (leave blank to keep current)</label>
+                        <label class="form-label fw-bold text-dark">{{ __('Reset Password (leave blank to keep current)') }}</label>
                         <div class="input-group">
-                            <input type="password" name="password" id="user_password" class="form-control @error('password') is-invalid @enderror" placeholder="New password if changing">
+                            <input type="password" name="password" id="user_password" class="form-control @error('password') is-invalid @enderror" placeholder="{{ __('New password if changing') }}">
                             <button type="button" class="btn btn-outline-secondary" onclick="togglePasswordVisibility()">
                                 <i class="fas fa-eye" id="pwdToggleIcon"></i>
                             </button>
@@ -51,11 +51,11 @@
                     </div>
 
                     <div class="col-md-6">
-                        <label class="form-label fw-bold text-dark">Role *</label>
+                        <label class="form-label fw-bold text-dark">{{ __('Role') }} *</label>
                         <select name="role" class="form-select @error('role') is-invalid @enderror" required id="roleSelector">
-                            <option value="admin" {{ old('role', $user->role) === 'admin' ? 'selected' : '' }}>Shop Admin (Branch Owner / Manager)</option>
-                            <option value="employee" {{ old('role', $user->role) === 'employee' ? 'selected' : '' }}>Employee (Shop Staff)</option>
-                            <option value="super_admin" {{ old('role', $user->role) === 'super_admin' ? 'selected' : '' }}>Super Admin (Full Platform Control)</option>
+                            <option value="admin" {{ old('role', $user->role) === 'admin' ? 'selected' : '' }}>{{ __('Shop Admin (Branch Owner / Manager)') }}</option>
+                            <option value="employee" {{ old('role', $user->role) === 'employee' ? 'selected' : '' }}>{{ __('Employee (Shop Staff)') }}</option>
+                            <option value="super_admin" {{ old('role', $user->role) === 'super_admin' ? 'selected' : '' }}>{{ __('Super Admin (Full Platform Control)') }}</option>
                         </select>
                         @error('role') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
@@ -63,7 +63,7 @@
                     <div class="col-md-6" id="shopSelectContainer">
                         <label class="form-label fw-bold text-dark">Assigned Shop <span class="text-danger" id="shopReqStar">*</span></label>
                         <select name="shop_id" class="form-select @error('shop_id') is-invalid @enderror" id="shopSelector">
-                            <option value="">Select Shop...</option>
+                            <option value="">{{ __('Select Shop...') }}</option>
                             @foreach($shops as $shop)
                                 <option value="{{ $shop->id }}" {{ old('shop_id', $user->shop_id) == $shop->id ? 'selected' : '' }}>
                                     {{ $shop->name }}
@@ -74,14 +74,14 @@
                     </div>
 
                     <div class="col-12" id="designationContainer">
-                        <label class="form-label fw-bold text-dark">Staff Designation / Job Title</label>
+                        <label class="form-label fw-bold text-dark">{{ __('Staff Designation / Job Title') }}</label>
                         <input type="text" name="designation" class="form-control @error('designation') is-invalid @enderror" value="{{ old('designation', $user->employee?->designation) }}" placeholder="e.g. Branch Manager, Senior Estimator">
                         @error('designation') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
                 </div>
 
                 <div class="mt-4 d-flex justify-content-end gap-2">
-                    <a href="{{ route('super_admin.users.index') }}" class="btn btn-outline-secondary">Cancel</a>
+                    <a href="{{ route('super_admin.users.index') }}" class="btn btn-outline-secondary">{{ __('Cancel') }}</a>
                     <button type="submit" class="btn btn-primary-modern">
                         <i class="fas fa-save me-1"></i> Save Changes
                     </button>

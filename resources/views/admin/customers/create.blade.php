@@ -1,6 +1,6 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Add Customer')
+@section('title', __('Add Customer'))
 
 @section('content')
 <style>
@@ -23,12 +23,12 @@
 </style>
 
 <div class="d-flex align-items-center mb-4">
-    <a href="{{ route('customers.index') }}" class="btn btn-light btn-sm rounded-circle shadow-sm me-3" style="width: 38px; height: 38px; display: inline-flex; align-items: center; justify-content: center;" title="Back to Customers">
+    <a href="{{ route('customers.index') }}" class="btn btn-light btn-sm rounded-circle shadow-sm me-3" style="width: 38px; height: 38px; display: inline-flex; align-items: center; justify-content: center;" title="{{ __('Back to Customers') }}">
         <i class="fas fa-arrow-left text-muted"></i>
     </a>
     <div>
-        <h3 class="fw-bold text-dark mb-0">Add Customer</h3>
-        <p class="text-muted small mb-0">Create a customer profile with multiple branch or company details</p>
+        <h3 class="fw-bold text-dark mb-0">{{ __('Add Customer') }}</h3>
+        <p class="text-muted small mb-0">{{ __('Create a customer profile with multiple branch or company details') }}</p>
     </div>
 </div>
 
@@ -39,35 +39,35 @@
     <div class="card shadow-sm border-0 mb-4 rounded-3">
         <div class="card-header bg-white py-3 border-bottom">
             <h5 class="fw-bold text-dark mb-0">
-                <i class="fas fa-user-circle text-primary me-2"></i> Section 1: Primary Contact Information
+                <i class="fas fa-user-circle text-primary me-2"></i> {{ __('Section 1: Primary Contact Information') }}
             </h5>
         </div>
         <div class="card-body p-4">
             <div class="row g-3">
                 <div class="col-md-6">
-                    <label class="form-label fw-semibold text-dark">Full Name <span class="text-danger">*</span></label>
+                    <label class="form-label fw-semibold text-dark">{{ __('Full Name') }} <span class="text-danger">*</span></label>
                     <input type="text" name="name" class="form-control @error('name') is-invalid @enderror" value="{{ old('name') }}"  required>
                     @error('name') <div class="invalid-feedback">{{ $message }}</div> @enderror
                 </div>
 
                 <div class="col-md-6">
-                    <label class="form-label fw-semibold text-dark">Phone Number <span class="text-danger">*</span></label>
+                    <label class="form-label fw-semibold text-dark">{{ __('Phone Number') }} <span class="text-danger">*</span></label>
                     <x-country-phone-picker id="customer_phone" name="phone" codeName="country_code" :error="$errors->first('phone')" />
                     @error('phone') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
-                    <small class="text-muted d-block mt-1">Select country code and enter mobile number without leading 0.</small>
+                    <small class="text-muted d-block mt-1">{{ __('Select country code and enter mobile number without leading 0.') }}</small>
                 </div>
 
                 <div class="col-md-6">
-                    <label class="form-label fw-semibold text-dark">Email Address</label>
+                    <label class="form-label fw-semibold text-dark">{{ __('Email Address') }}</label>
                     <input type="email" name="email" class="form-control @error('email') is-invalid @enderror" value="{{ old('email') }}" >
                     @error('email') <div class="invalid-feedback">{{ $message }}</div> @enderror
                 </div>
 
                 <div class="col-md-6">
-                    <label class="form-label fw-semibold text-dark">Status</label>
+                    <label class="form-label fw-semibold text-dark">{{ __('Status') }}</label>
                     <select name="is_active" class="form-select">
-                        <option value="1" {{ old('is_active', 1) == 1 ? 'selected' : '' }}>Active</option>
-                        <option value="0" {{ old('is_active') === '0' || old('is_active') === 0 ? 'selected' : '' }}>Inactive</option>
+                        <option value="1" {{ old('is_active', 1) == 1 ? 'selected' : '' }}>{{ __('Active') }}</option>
+                        <option value="0" {{ old('is_active') === '0' || old('is_active') === 0 ? 'selected' : '' }}>{{ __('Inactive') }}</option>
                     </select>
                 </div>
             </div>
@@ -79,14 +79,14 @@
         <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center flex-wrap gap-2">
             <div class="d-flex align-items-center">
                 <h5 class="fw-bold text-dark mb-0">
-                    <i class="fas fa-building text-primary me-2"></i> Section 2: Companies & Branches
+                    <i class="fas fa-building text-primary me-2"></i> {{ __('Section 2: Companies & Branches') }}
                 </h5>
                 <span class="badge bg-light text-primary border ms-2 px-2 py-1" id="companies-count-badge">
                     <i class="fas fa-layer-group me-1"></i>1 Company
                 </span>
             </div>
             <button type="button" class="btn btn-outline-primary btn-sm rounded-pill px-3" id="add-company-btn">
-                <i class="fas fa-plus me-2"></i> Add Another Company
+                <i class="fas fa-plus me-2"></i> {{ __('Add Another Company') }}
             </button>
         </div>
         <div class="card-body p-4">
@@ -127,7 +127,7 @@
                                            value="{{ $index }}" 
                                            {{ $isDefault ? 'checked' : '' }}>
                                     <label class="form-check-label fw-semibold text-primary cursor-pointer small" for="default_company_{{ $index }}">
-                                        <i class="fas fa-star text-warning me-1"></i>Primary / Default
+                                        <i class="fas fa-star text-warning me-1"></i>{{ __('Primary / Default') }}
                                     </label>
                                 </div>
                                 <button type="button" class="btn btn-outline-danger btn-sm btn-remove-company py-1 px-2" title="Remove Company" {{ count($initialCompanies) <= 1 ? 'disabled' : '' }}>
@@ -139,7 +139,7 @@
                             <input type="hidden" name="companies[{{ $index }}][id]" value="{{ $comp['id'] ?? '' }}">
                             <div class="row g-3">
                                 <div class="col-md-6">
-                                    <label class="form-label small fw-semibold text-dark">Company Name <span class="text-danger">*</span></label>
+                                    <label class="form-label small fw-semibold text-dark">{{ __('Company Name') }} <span class="text-danger">*</span></label>
                                     <input type="text" name="companies[{{ $index }}][company_name]" 
                                            class="form-control form-control-sm company-name-input @error('companies.'.$index.'.company_name') is-invalid @enderror" 
                                            value="{{ $comp['company_name'] ?? '' }}" 
@@ -149,7 +149,7 @@
                                     @enderror
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label small fw-semibold text-dark">Company Phone</label>
+                                    <label class="form-label small fw-semibold text-dark">{{ __('Company Phone') }}</label>
                                     @php
                                         $cPhoneParsed = \App\Models\Customer::parsePhone($comp['phone'] ?? '');
                                         $compPickerId = 'comp_phone_' . $index;
@@ -167,42 +167,42 @@
                                                             placeholder="" />
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label small fw-semibold text-dark">VAT Number</label>
+                                    <label class="form-label small fw-semibold text-dark">{{ __('VAT Number') }}</label>
                                     <input type="text" name="companies[{{ $index }}][vat_no]" 
                                            class="form-control form-control-sm" 
                                            value="{{ $comp['vat_no'] ?? '' }}" 
                                            >
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label small fw-semibold text-dark">CR Number</label>
+                                    <label class="form-label small fw-semibold text-dark">{{ __('CR Number') }}</label>
                                     <input type="text" name="companies[{{ $index }}][cr_no]" 
                                            class="form-control form-control-sm" 
                                            value="{{ $comp['cr_no'] ?? '' }}" 
                                            >
                                 </div>
                                 <div class="col-md-12">
-                                    <label class="form-label small fw-semibold text-dark">Address</label>
+                                    <label class="form-label small fw-semibold text-dark">{{ __('Address') }}</label>
                                     <input type="text" name="companies[{{ $index }}][address]" 
                                            class="form-control form-control-sm" 
                                            value="{{ $comp['address'] ?? '' }}" 
                                            >
                                 </div>
                                 <div class="col-md-4">
-                                    <label class="form-label small fw-semibold text-dark">City</label>
+                                    <label class="form-label small fw-semibold text-dark">{{ __('City') }}</label>
                                     <input type="text" name="companies[{{ $index }}][city]" 
                                            class="form-control form-control-sm" 
                                            value="{{ $comp['city'] ?? '' }}" 
                                            >
                                 </div>
                                 <div class="col-md-4">
-                                    <label class="form-label small fw-semibold text-dark">ZIP Code</label>
+                                    <label class="form-label small fw-semibold text-dark">{{ __('ZIP Code') }}</label>
                                     <input type="text" name="companies[{{ $index }}][zip]" 
                                            class="form-control form-control-sm" 
                                            value="{{ $comp['zip'] ?? '' }}" 
                                            >
                                 </div>
                                 <div class="col-md-4">
-                                    <label class="form-label small fw-semibold text-dark">Country</label>
+                                    <label class="form-label small fw-semibold text-dark">{{ __('Country') }}</label>
                                     <input type="text" name="companies[{{ $index }}][country]" 
                                            class="form-control form-control-sm" 
                                            value="{{ $comp['country'] ?? 'Saudi Arabia' }}" 
@@ -219,10 +219,10 @@
     <!-- FORM ACTIONS -->
     <div class="d-flex justify-content-between align-items-center mb-5">
         <a href="{{ route('customers.index') }}" class="btn btn-link text-muted text-decoration-none">
-            <i class="fas fa-times me-1"></i> Cancel and Go Back
+            <i class="fas fa-times me-1"></i> {{ __('Cancel and Go Back') }}
         </a>
         <button type="submit" class="btn btn-primary-modern py-2 px-4 shadow-sm" id="saveCustomerBtn">
-            <i class="fas fa-save me-2"></i> Save / Update Customer
+            <i class="fas fa-save me-2"></i> {{ __('Save / Update Customer') }}
         </button>
     </div>
 </form>
@@ -240,7 +240,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const cards = container.querySelectorAll('.company-card');
         const count = cards.length;
         if (badge) {
-            badge.innerHTML = `<i class="fas fa-layer-group me-1"></i>${count} ${count === 1 ? 'Company' : 'Companies'}`;
+            badge.innerHTML = `<i class="fas fa-layer-group me-1"></i>${count} ${count === 1 ? window.__('Company') : window.__('Companies')}`;
         }
         cards.forEach(card => {
             const removeBtn = card.querySelector('.btn-remove-company');
@@ -322,7 +322,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                    id="default_company_${idx}" 
                                    value="${idx}">
                             <label class="form-check-label fw-semibold text-primary cursor-pointer small" for="default_company_${idx}">
-                                <i class="fas fa-star text-warning me-1"></i>Primary / Default
+                                <i class="fas fa-star text-warning me-1"></i>{{ __('Primary / Default') }}
                             </label>
                         </div>
                         <button type="button" class="btn btn-outline-danger btn-sm btn-remove-company py-1 px-2" title="Remove Company">
@@ -334,14 +334,14 @@ document.addEventListener('DOMContentLoaded', function() {
                     <input type="hidden" name="companies[${idx}][id]" value="">
                     <div class="row g-3">
                         <div class="col-md-6">
-                            <label class="form-label small fw-semibold text-dark">Company Name <span class="text-danger">*</span></label>
+                            <label class="form-label small fw-semibold text-dark">{{ __('Company Name') }} <span class="text-danger">*</span></label>
                             <input type="text" name="companies[${idx}][company_name]" 
                                    class="form-control form-control-sm company-name-input" 
                                    value="" 
                                     required>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label small fw-semibold text-dark">Company Phone</label>
+                            <label class="form-label small fw-semibold text-dark">{{ __('Company Phone') }}</label>
                             <div class="country-phone-group" id="comp_phone_${idx}_group">
                                 <div class="dropdown">
                                     <button class="country-picker-btn dropdown-toggle" 
@@ -384,42 +384,42 @@ document.addEventListener('DOMContentLoaded', function() {
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label small fw-semibold text-dark">VAT Number</label>
+                            <label class="form-label small fw-semibold text-dark">{{ __('VAT Number') }}</label>
                             <input type="text" name="companies[${idx}][vat_no]" 
                                    class="form-control form-control-sm" 
                                    value="" 
                                    >
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label small fw-semibold text-dark">CR Number</label>
+                            <label class="form-label small fw-semibold text-dark">{{ __('CR Number') }}</label>
                             <input type="text" name="companies[${idx}][cr_no]" 
                                    class="form-control form-control-sm" 
                                    value="" 
                                    >
                         </div>
                         <div class="col-md-12">
-                            <label class="form-label small fw-semibold text-dark">Address</label>
+                            <label class="form-label small fw-semibold text-dark">{{ __('Address') }}</label>
                             <input type="text" name="companies[${idx}][address]" 
                                    class="form-control form-control-sm" 
                                    value="" 
                                    >
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label small fw-semibold text-dark">City</label>
+                            <label class="form-label small fw-semibold text-dark">{{ __('City') }}</label>
                             <input type="text" name="companies[${idx}][city]" 
                                    class="form-control form-control-sm" 
                                    value="" 
                                    >
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label small fw-semibold text-dark">ZIP Code</label>
+                            <label class="form-label small fw-semibold text-dark">{{ __('ZIP Code') }}</label>
                             <input type="text" name="companies[${idx}][zip]" 
                                    class="form-control form-control-sm" 
                                    value="" 
                                    >
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label small fw-semibold text-dark">Country</label>
+                            <label class="form-label small fw-semibold text-dark">{{ __('Country') }}</label>
                             <input type="text" name="companies[${idx}][country]" 
                                    class="form-control form-control-sm" 
                                    value="Saudi Arabia" 

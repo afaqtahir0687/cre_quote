@@ -1,6 +1,6 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Edit Invoice')
+@section('title', __('Edit Invoice'))
 
 @section('content')
 <form action="{{ route('invoices.update', $invoice) }}" method="POST" id="invoice-form" novalidate>
@@ -16,7 +16,7 @@
                 <div class="col-md-4 mb-3">
                     <input type="hidden" name="customer_company_id" id="customer_company_id" value="{{ old('customer_company_id', $invoice->customer_company_id) }}">
                     <select name="customer_id" id="customer_id" class="cust-select-hidden" required>
-                        <option value="">Select Customer</option>
+                        <option value="">{{ __('Select Customer') }}</option>
                         @foreach($customers as $customer)
                             @php
                                 $displayPhone = $customer->formatted_phone ?: $customer->phone;
@@ -77,23 +77,23 @@
                             <input type="text" id="cust-trigger" class="form-control cust-trigger @error('customer_id') is-invalid @enderror"
                                    placeholder="Customer *" autocomplete="off" readonly
                                    value="{{ $selTrigger }}">
-                            <label for="cust-trigger">Customer *</label>
+                            <label for="cust-trigger">{{ __('Customer') }} *</label>
                             @error('customer_id')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
                         </div>
                         <div class="cust-panel" id="cust-panel">
                             <div class="cust-search-wrap">
-                                <input type="text" class="cust-search" id="cust-search" placeholder="Search by name, phone, or company...">
+                                <input type="text" class="cust-search" id="cust-search" placeholder="{{ __('Search by name, phone, or company...') }}">
                             </div>
                             <div class="cust-list" id="cust-list"></div>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-4 mb-3">
-                    <label class="form-label">Invoice Date *</label>
+                    <label class="form-label">{{ __('Invoice Date') }} *</label>
                     <input type="date" name="invoice_date" class="form-control" value="{{ old('invoice_date', $invoice->invoice_date ? \Carbon\Carbon::parse($invoice->invoice_date)->format('Y-m-d') : '') }}" required>
                 </div>
                 <div class="col-md-4 mb-3">
-                    <label class="form-label">Due Date</label>
+                    <label class="form-label">{{ __('Due Date') }}</label>
                     <input type="date" name="due_date" class="form-control" value="{{ old('due_date', $invoice->due_date ? \Carbon\Carbon::parse($invoice->due_date)->format('Y-m-d') : '') }}">
                 </div>
                 <div class="col-12 mt-2 pt-2 border-top d-flex align-items-center justify-content-between flex-wrap gap-2">
@@ -115,12 +115,12 @@
             <table class="table table-bordered mb-0">
                 <thead class="table-light">
                     <tr>
-                        <th style="width: 25%">Description</th>
-                        <th style="width: 15%">Size and meter</th>
+                        <th style="width: 25%">{{ __('Description') }}</th>
+                        <th style="width: 15%">{{ __('Size and meter') }}</th>
                         <th style="width: 15%">Unit Price</th>
                         <th style="width: 10%">Qty</th>
-                        <th style="width: 10%">Tax %</th>
-                        <th style="width: 10%">Discount</th>
+                        <th style="width: 10%">{{ __('Tax %') }}</th>
+                        <th style="width: 10%">{{ __('Discount') }}</th>
                         <th style="width: 10%">Total</th>
                         <th style="width: 5%"></th>
                     </tr>
@@ -128,7 +128,7 @@
                 <tbody id="item-rows">
                     @foreach($invoice->items as $index => $item)
                     <tr class="item-row">
-                        <td><textarea name="items[{{ $index }}][description]" class="form-control bg-white border p-2 fs-6 shadow-sm" rows="2" style="resize: vertical; min-height: 80px;" required>{{ $item->description }}</textarea></td>
+                        <td><textarea name="items[{{ $index }}][description]" class="form-control bg-white border p-2 fs-6 shadow-sm" rows="2" style="resize: vertical; min-height: 80px;" required>{{ old("items.$index.description", tdb($item->description)) }}</textarea></td>
                         <td><input type="text" name="items[{{ $index }}][item_text]" class="form-control" value="{{ $item->item_text }}"></td>
                         <td><input type="number" step="0.01" name="items[{{ $index }}][unit_price]" class="form-control p-2 fs-6 shadow-sm unit-price" value="{{ $item->unit_price }}" required></td>
                         <td><input type="number" name="items[{{ $index }}][quantity]" class="form-control p-2 fs-6 shadow-sm quantity" value="{{ $item->quantity }}" required></td>
@@ -148,10 +148,10 @@
         <div class="col-md-7">
             <div class="card mb-4">
                 <div class="card-body">
-                    <label class="form-label">Terms & Conditions</label>
-                    <textarea name="terms" class="form-control" rows="3">{{ $invoice->terms }}</textarea>
-                    <label class="form-label mt-3">Notes</label>
-                    <textarea name="notes" class="form-control" rows="3">{{ $invoice->notes }}</textarea>
+                    <label class="form-label">{{ __('Terms & Conditions') }}</label>
+                    <textarea name="terms" class="form-control" rows="3">{{ old('terms', tdb($invoice->terms)) }}</textarea>
+                    <label class="form-label mt-3">{{ __('Notes') }}</label>
+                    <textarea name="notes" class="form-control" rows="3" placeholder="{{ __('Additional notes for the customer...') }}">{{ old('notes', tdb($invoice->notes)) }}</textarea>
                 </div>
             </div>
         </div>
@@ -159,16 +159,16 @@
             <div class="card">
                 <div class="card-body">
                     <table class="table table-borderless mb-0">
-                        <tr><td>Subtotal</td><td><input type="number" step="0.01" name="subtotal" id="subtotal" class="form-control text-end border-0" readonly value="{{ $invoice->subtotal }}"></td></tr>
-                        <tr><td>Total Tax</td><td><input type="number" step="0.01" name="total_tax" id="total_tax" class="form-control text-end border-0" readonly value="{{ $invoice->total_tax }}"></td></tr>
-                        <tr><td>Total Discount</td><td><input type="number" step="0.01" name="total_discount" id="total_discount" class="form-control text-end border-0" readonly value="{{ $invoice->total_discount }}"></td></tr>
-                        <tr><td>Shipping</td><td><input type="number" step="0.01" name="shipping" id="shipping" class="form-control text-end" value="{{ $invoice->shipping }}"></td></tr>
-                        <tr class="table-light fw-bold"><td>Grand Total</td><td><input type="number" step="0.01" name="grand_total" id="grand_total" class="form-control text-end border-0 fw-bold" readonly value="{{ $invoice->grand_total }}"></td></tr>
+                        <tr><td>{{ __('Subtotal') }}</td><td><input type="number" step="0.01" name="subtotal" id="subtotal" class="form-control text-end border-0" readonly value="{{ $invoice->subtotal }}"></td></tr>
+                        <tr><td>{{ __('Total Tax') }}</td><td><input type="number" step="0.01" name="total_tax" id="total_tax" class="form-control text-end border-0" readonly value="{{ $invoice->total_tax }}"></td></tr>
+                        <tr><td>{{ __('Total Discount') }}</td><td><input type="number" step="0.01" name="total_discount" id="total_discount" class="form-control text-end border-0" readonly value="{{ $invoice->total_discount }}"></td></tr>
+                        <tr><td>{{ __('Shipping') }}</td><td><input type="number" step="0.01" name="shipping" id="shipping" class="form-control text-end" value="{{ $invoice->shipping }}"></td></tr>
+                        <tr class="table-light fw-bold"><td>{{ __('Grand Total') }}</td><td><input type="number" step="0.01" name="grand_total" id="grand_total" class="form-control text-end border-0 fw-bold" readonly value="{{ $invoice->grand_total }}"></td></tr>
                     </table>
                 </div>
             </div>
             <div class="text-end mt-4">
-                <a href="{{ route('invoices.index') }}" class="btn btn-secondary me-2">Cancel</a>
+                <a href="{{ route('invoices.index') }}" class="btn btn-secondary me-2">{{ __('Cancel') }}</a>
                 <button type="submit" class="btn btn-lg btn-success px-5">Update Invoice</button>
             </div>
         </div>
@@ -239,7 +239,7 @@
                        matchPhone;
             });
             if (!filtered.length) {
-                listEl.innerHTML = '<div class="cust-empty"><i class="fas fa-search me-1"></i>No customers found</div>';
+                listEl.innerHTML = '<div class="cust-empty"><i class="fas fa-search me-1"></i>'+ window.__('No customers found', 'No customers found') +'</div>';
                 return;
             }
             listEl.innerHTML = filtered.map(function(c) {

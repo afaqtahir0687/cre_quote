@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ app()->getLocale() }}" dir="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}">
 
 <head>
     <meta charset="UTF-8">
@@ -26,7 +26,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@400;500;600&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=Poppins:wght@400;500;600&display=swap"
         rel="stylesheet">
 
     <!-- CSS (Local First for Offline/Slow Network Resilience, CDN as Fallback) -->
@@ -36,6 +36,11 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" onerror="this.onerror=null;">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.2.3/css/flag-icons.min.css" onerror="this.onerror=null;"/>
     <link rel="stylesheet" href="{{ asset('assets/css/admin-theme.css') }}">
+
+    @if(app()->getLocale() === 'ar')
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css" onerror="this.onerror=null;">
+        <link rel="stylesheet" href="{{ asset('assets/css/rtl.css') }}">
+    @endif
 
     @yield('styles')
 </head>
@@ -65,6 +70,55 @@
         }
         if (typeof Swal === 'undefined') {
             document.write('<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"><\/script>');
+        }
+    </script>
+    <script>
+        // Antigravity Client-Side Localization Engine (AJAX + Dynamic Strings)
+        window.APP_LOCALE = "{{ app()->getLocale() }}";
+        window.APP_DIR = "{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}";
+        @php
+            $locJsonPath = base_path('lang/' . app()->getLocale() . '.json');
+            $locDictRaw = file_exists($locJsonPath) ? file_get_contents($locJsonPath) : '{}';
+        @endphp
+        window.APP_TRANSLATIONS = {!! $locDictRaw !!};
+        window.__ = function(key, fallback) {
+            return (window.APP_TRANSLATIONS && window.APP_TRANSLATIONS[key]) ? window.APP_TRANSLATIONS[key] : (fallback || key);
+        };
+
+        // AJAX Language Switch Handler
+        function switchLanguageAjax(locale, url) {
+            const btn = document.getElementById('languageSwitcherDropdown');
+            if (btn) {
+                btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>' + (locale === 'ar' ? 'العربية...' : 'English...');
+                btn.disabled = true;
+            }
+
+            fetch(url, {
+                method: 'GET',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    if (typeof Toast !== 'undefined') {
+                        Toast.fire({
+                            icon: 'success',
+                            title: data.message || (locale === 'ar' ? 'تم تحويل اللغة إلى العربية' : 'Language switched to English')
+                        });
+                    }
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 150);
+                } else {
+                    window.location.href = url;
+                }
+            })
+            .catch(() => {
+                window.location.href = url;
+            });
         }
     </script>
     <script>

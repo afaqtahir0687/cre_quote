@@ -50,5 +50,8 @@ class DatabaseSeeder extends Seeder
 
         // Seed Job Orders
         $this->call(JobOrderSeeder::class);
+
+        // Seed Categories, Units, and Products
+        $this->call(CategoryAndProductSeeder::class);
     }
 }

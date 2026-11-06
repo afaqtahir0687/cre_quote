@@ -1,15 +1,15 @@
 @extends('admin.layouts.app')
 
-@section('title', 'My Subscription & Package')
+@section('title', __('Subscription & Package Details'))
 
 @section('content')
 <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
     <div>
-        <h2 class="fw-bold text-dark mb-1">Subscription & Package Details</h2>
-        <p class="text-muted small mb-0">View your active plan, days remaining, multi-branch entitlement, and cash payment history.</p>
+        <h2 class="fw-bold text-dark mb-1">{{ __('Subscription & Package Details') }}</h2>
+        <p class="text-muted small mb-0">{{ __('View your active plan, days remaining, multi-branch entitlement, and cash payment history.') }}</p>
     </div>
     <button type="button" class="btn btn-primary-modern" data-bs-toggle="modal" data-bs-target="#requestUpgradeModal">
-        <i class="fas fa-arrow-circle-up me-1"></i> Request Package Upgrade / Renewal
+        <i class="fas fa-arrow-circle-up me-1"></i> {{ __('Request Package Upgrade / Renewal') }}
     </button>
 </div>
 
@@ -23,16 +23,16 @@
 @php
     $pkg = $shop->package;
     $daysRemaining = $shop->subscriptionDaysRemaining();
-    $isExpired = $shop->isSubscriptionExpired();
+    $is{{ __('Expired') }} = $shop->isSubscription{{ __('Expired') }}();
 @endphp
 
 <!-- Current Plan Overview Card -->
-<div class="card border-0 shadow-sm rounded-4 mb-4 overflow-hidden position-relative" style="background: linear-gradient(135deg, #ffffff 0%, #f8faff 100%); border-left: 5px solid {{ $isExpired ? '#dc3545' : '#0d6efd' }} !important;">
+<div class="card border-0 shadow-sm rounded-4 mb-4 overflow-hidden position-relative" style="background: linear-gradient(135deg, #ffffff 0%, #f8faff 100%); border-left: 5px solid {{ $is{{ __('Expired') }} ? '#dc3545' : '#0d6efd' }} !important;">
     <div class="card-body p-4">
         <div class="row align-items-center g-4">
             <div class="col-lg-8">
                 <div class="d-flex align-items-center gap-3 mb-3">
-                    <div class="rounded-circle {{ $isExpired ? 'bg-danger bg-opacity-10 text-danger' : 'bg-primary bg-opacity-10 text-primary' }} p-3 d-flex align-items-center justify-content-center" style="width: 56px; height: 56px;">
+                    <div class="rounded-circle {{ $is{{ __('Expired') }} ? 'bg-danger bg-opacity-10 text-danger' : 'bg-primary bg-opacity-10 text-primary' }} p-3 d-flex align-items-center justify-content-center" style="width: 56px; height: 56px;">
                         @if($pkg && $pkg->isTrial())
                             <i class="fas fa-flask fs-4"></i>
                         @elseif($pkg && $pkg->isBusiness())
@@ -43,18 +43,18 @@
                     </div>
                     <div>
                         <div class="d-flex align-items-center gap-2 flex-wrap">
-                            <h4 class="fw-bold text-dark mb-0">{{ $pkg ? $pkg->name : 'No Active Package' }}</h4>
-                            @if($isExpired)
+                            <h4 class="fw-bold text-dark mb-0">{{ $pkg ? $pkg->name : 'No {{ __('Active') }} Package' }}</h4>
+                            @if($is{{ __('Expired') }})
                                 <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-2 py-1 rounded-pill">
-                                    <i class="fas fa-clock me-1"></i> Expired
+                                    <i class="fas fa-clock me-1"></i> {{ __('Expired') }}
                                 </span>
                             @else
                                 <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1 rounded-pill">
-                                    <i class="fas fa-check-circle me-1"></i> Active
+                                    <i class="fas fa-check-circle me-1"></i> {{ __('Active') }}
                                 </span>
                             @endif
                             <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle px-2 py-1 rounded-pill">
-                                <i class="fas fa-hand-holding-usd me-1"></i> Cash By Hand
+                                <i class="fas fa-hand-holding-usd me-1"></i> {{ __('Cash By Hand') }}
                             </span>
                         </div>
                         <div class="text-muted small mt-1">
@@ -75,7 +75,7 @@
                     <div class="col-sm-4">
                         <div class="p-3 bg-white rounded-3 border">
                             <div class="text-muted small">Expiration Date</div>
-                            <div class="fw-bold {{ $isExpired ? 'text-danger' : 'text-dark' }} mt-1">
+                            <div class="fw-bold {{ $is{{ __('Expired') }} ? 'text-danger' : 'text-dark' }} mt-1">
                                 {{ $shop->subscription_expires_at ? $shop->subscription_expires_at->format('d M, Y') : 'N/A' }}
                             </div>
                         </div>
@@ -98,10 +98,10 @@
             <div class="col-lg-4 text-center text-lg-end">
                 <div class="p-4 bg-light rounded-4 text-center">
                     <div class="text-muted small">Time Remaining</div>
-                    <div class="display-6 fw-bold {{ $isExpired ? 'text-danger' : ($daysRemaining <= 7 ? 'text-warning' : 'text-primary') }} my-1">
-                        {{ $isExpired ? '0' : $daysRemaining }}
+                    <div class="display-6 fw-bold {{ $is{{ __('Expired') }} ? 'text-danger' : ($daysRemaining <= 7 ? 'text-warning' : 'text-primary') }} my-1">
+                        {{ $is{{ __('Expired') }} ? '0' : $daysRemaining }}
                     </div>
-                    <div class="small text-muted mb-3">Days Remaining</div>
+                    <div class="small text-muted mb-3">{{ __('Days Remaining') }}</div>
                     <button type="button" class="btn btn-outline-primary btn-sm w-100" data-bs-toggle="modal" data-bs-target="#requestUpgradeModal">
                         <i class="fas fa-sync-alt me-1"></i> Renew with Cash
                     </button>
@@ -161,7 +161,7 @@
                 <div class="mt-auto">
                     <button type="button" class="btn {{ $pkg && $pkg->id === $p->id ? 'btn-outline-secondary disabled' : 'btn-primary-modern' }} w-100"
                         data-bs-toggle="modal" data-bs-target="#requestUpgradeModal" data-package-id="{{ $p->id }}" data-package-name="{{ $p->name }}">
-                        {{ $pkg && $pkg->id === $p->id ? 'Active Plan' : 'Select & Request' }}
+                        {{ $pkg && $pkg->id === $p->id ? '{{ __('Active') }} Plan' : 'Select & Request' }}
                     </button>
                 </div>
             </div>
@@ -170,7 +170,7 @@
 </div>
 
 <!-- Cash Payment History / Receipts -->
-<x-card title="Cash By Hand Payment History">
+<x-card title="{{ __('Cash By Hand') }} Payment History">
     <div class="table-responsive">
         <table class="table table-hover align-middle mb-0">
             <thead class="text-muted small">
@@ -249,11 +249,11 @@
                     </div>
 
                     <div class="alert alert-warning py-2 px-3 small border-0 rounded-3 mb-0">
-                        <i class="fas fa-info-circle me-1"></i> Payment mode is <strong>Cash By Hand only</strong>.
+                        <i class="fas fa-info-circle me-1"></i> Payment mode is <strong>{{ __('Cash By Hand') }} only</strong>.
                     </div>
                 </div>
                 <div class="modal-footer border-0 pt-0">
-                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">{{ __('Cancel') }}</button>
                     <button type="submit" class="btn btn-primary-modern px-4">
                         <i class="fas fa-paper-plane me-1"></i> Send Request
                     </button>

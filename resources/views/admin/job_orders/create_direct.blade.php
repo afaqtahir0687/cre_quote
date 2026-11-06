@@ -1,6 +1,6 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Create Job Order')
+@section('title', __('Create Job Order'))
 
 @section('styles')
 <style>
@@ -45,15 +45,15 @@
 
 @section('content')
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="fw-bold text-dark mb-0">Create Job Order</h2>
+        <h2 class="fw-bold text-dark mb-0">{{ __('Create Job Order') }}</h2>
         <div class="d-flex align-items-center gap-2">
             <div class="d-flex align-items-center bg-white px-3 py-2 rounded-3 shadow-sm border">
-                <span class="text-muted me-2 small fw-medium">Created By:</span>
+                <span class="text-muted me-2 small fw-medium">{{ __('Created By:') }}</span>
                 <i class="fas fa-user-circle text-primary me-1"></i>
                 <span class="fw-semibold text-dark">{{ auth()->user()->name }}</span>
             </div>
             <div class="d-flex align-items-center bg-white px-3 py-2 rounded-3 shadow-sm border">
-                <span class="text-muted me-2 small fw-medium">Order Number:</span>
+                <span class="text-muted me-2 small fw-medium">{{ __('Order Number:') }}</span>
                 <span class="fw-bold text-primary">{{ $orderNumber }}</span>
             </div>
         </div>
@@ -65,13 +65,13 @@
 
         <div class="row g-4">
             <div class="col-lg-12">
-                <x-card title="Job Order Details">
+                <x-card title="{{ __('Job Order Details') }}">
                     <div class="row">
                         <div class="col-md-4">
                             <div class="d-flex gap-2 align-items-start">
                                 <input type="hidden" name="customer_company_id" id="customer_company_id" value="{{ old('customer_company_id') }}">
                                 <select name="customer_id" id="customer_id" required>
-                                    <option value="">Select Customer</option>
+                                    <option value="">{{ __('Select Customer') }}</option>
                                     @foreach($customers as $customer)
                                         @php
                                             $displayPhone = $customer->formatted_phone ?: $customer->phone;
@@ -172,7 +172,7 @@
                             <div class="form-check form-switch mb-0">
                                 <input class="form-check-input" type="checkbox" role="switch" name="show_customer_name" id="show_customer_name" value="1" {{ old('show_customer_name', $setting->show_customer_name_on_pdf ?? true) ? 'checked' : '' }}>
                                 <label class="form-check-label fw-semibold text-dark small cursor-pointer" for="show_customer_name">
-                                    <i class="fas fa-user-check text-primary me-1"></i> Show Customer Name on PDF
+                                    <i class="fas fa-user-check text-primary me-1"></i> {{ __('Show Customer Name on PDF') }}
                                 </label>
                             </div>
                             <span class="text-muted small"><i class="fas fa-info-circle me-1"></i>Always Yes by default. Uncheck if you want to hide the Customer Name on PDF.</span>
@@ -182,17 +182,17 @@
             </div>
 
             <div class="col-lg-12">
-                <x-card title="Job Order Items" :padding="false">
+                <x-card :title="__('Job Order Items')" :padding="false">
                     <x-table>
                         <x-slot name="thead">
-                            <th style="min-width: 250px;">Description</th>
-                            <th style="min-width: 120px;">Images</th>
-                            <th style="min-width: 130px;">Size and meter</th>
-                            <th style="min-width: 130px;">Unit Price</th>
-                            <th style="min-width: 100px;">Qty</th>
-                            <th style="min-width: 100px;">Vat %</th>
-                            <th style="min-width: 120px;">Discount</th>
-                            <th style="min-width: 140px;">Total</th>
+                            <th style="min-width: 250px;">{{ __('Description') }}</th>
+                            <th style="min-width: 120px;">{{ __('Images') }}</th>
+                            <th style="min-width: 130px;">{{ __('Size and meter') }}</th>
+                            <th style="min-width: 130px;">{{ __('Unit Price') }}</th>
+                            <th style="min-width: 100px;">{{ __('Qty') }}</th>
+                            <th style="min-width: 100px;">{{ __('VAT %') }}</th>
+                            <th style="min-width: 120px;">{{ __('Discount') }}</th>
+                            <th style="min-width: 140px;">{{ __('Total') }}</th>
                             <th style="min-width: 50px;" class="text-center"></th>
                         </x-slot>
 
@@ -204,23 +204,22 @@
                     <div class="p-3 border-top bg-light-subtle rounded-bottom-4">
                         <button type="button" class="btn btn-outline-primary btn-sm d-flex align-items-center"
                             id="add-item">
-                            <i class="fas fa-plus me-2"></i> Add Item Row
+                            <i class="fas fa-plus me-2"></i> {{ __('Add Item Row') }}
                         </button>
                     </div>
                 </x-card>
             </div>
 
             <div class="col-md-7">
-                <x-card title="Additional Information">
+                <x-card :title="__('Additional Information')">
                     <div class="mb-3">
-                        <label class="form-label text-muted fw-medium small">Payment Terms & Conditions</label>
-                        <textarea name="terms" class="form-control" rows="3">1. This job order is valid for 30 days.
-                            2. Prices are subject to change after the validity period.</textarea>
+                        <label class="form-label text-muted fw-medium small">{{ __('Payment Terms & Conditions') }}</label>
+                        <textarea name="terms" class="form-control" rows="3">{{ old('terms', "1. This job order is valid for 30 days.\n2. Prices are subject to change after the validity period.") }}</textarea>
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label text-muted fw-medium small">Notes</label>
-                        <textarea name="notes" class="form-control" rows="8" placeholder="Additional notes for the customer...">Dear Customer attention, Please Check The Design, Printing material type Size, And All other Details Completely before Signature on Print Approval. However After the Signature New Crelogics or Designer Is not Responsible For Any mistake Printing Colours can Be Different than Desktop Computer Screen. Please, ask for a color sample if it is necessary</textarea>
+                        <label class="form-label text-muted fw-medium small">{{ __('Notes') }}</label>
+                        <textarea name="notes" class="form-control" rows="5" placeholder="{{ __('Additional notes for the customer...') }}">{{ old('notes', 'Dear Customer attention, Please Check The Design, Printing material type Size, And All other Details Completely before Signature on Print Approval. However After the Signature ' . ($setting->company_name ?? 'New sign') . ' or Designer Is not Responsible For Any mistake Printing Colours can Be Different than Desktop Computer Screen. Please, ask for a color sample if it is necessary') }}</textarea>
                     </div>
                 </x-card>
                 
@@ -228,10 +227,10 @@
             </div>
 
             <div class="col-md-5">
-                <x-card title="Summary">
+                <x-card :title="__('Summary')">
                     <div class="d-flex flex-column gap-3">
                         <div class="d-flex justify-content-between align-items-center">
-                            <span class="text-muted">Subtotal</span>
+                            <span class="text-muted">{{ __('Subtotal') }}</span>
                             <div class="input-group input-group-sm w-50">
                                 <span class="input-group-text border-0 bg-transparent">SAR</span>
                                 <input type="number" step="0.01" name="subtotal" id="subtotal"
@@ -267,7 +266,7 @@
                         </div>
 
                         <div class="d-flex justify-content-between align-items-center mt-3 p-3 bg-light rounded-3">
-                            <span class="fw-bold text-dark fs-5">Grand Total</span>
+                            <span class="fw-bold text-dark fs-5">{{ __('Grand Total') }}</span>
                             <div class="input-group w-50">
                                 <span class="input-group-text border-0 bg-transparent fs-5 fw-bold">SAR</span>
                                 <input type="number" step="0.01" name="grand_total" id="grand_total"
@@ -279,9 +278,9 @@
 
                     <div class="mt-4 d-grid gap-2">
                         <button type="submit" class="btn btn-primary-modern py-3">
-                            <i class="fas fa-save me-2"></i> Save Job Order
+                            <i class="fas fa-save me-2"></i> {{ __('Save Job Order') }}
                         </button>
-                        <a href="{{ route('job-orders.index') }}" class="btn btn-link text-muted">Cancel and Go Back</a>
+                        <a href="{{ route('job-orders.index') }}" class="btn btn-link text-muted">{{ __('Cancel and Go Back') }}</a>
                     </div>
                 </x-card>
             </div>
@@ -293,7 +292,7 @@
         <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content border-0 shadow-lg">
                 <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title" id="addCustomerModalLabel"><i class="fas fa-user-plus me-2"></i>Add New Customer</h5>
+                    <h5 class="modal-title" id="addCustomerModalLabel"><i class="fas fa-user-plus me-2"></i>{{ __('Add New Customer') }}</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body p-4">
@@ -302,18 +301,18 @@
                         <div class="col-md-4">
                             <div class="form-floating">
                                 <input type="text" id="c_name" class="form-control" placeholder="Full Name">
-                                <label>Full Name *</label>
+                                <label>{{ __('Full Name') }} *</label>
                                 <div class="invalid-feedback" id="c_name_err"></div>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-floating">
                                 <input type="text" id="c_company_name" class="form-control" placeholder="Company Name">
-                                <label>Company Name</label>
+                                <label>{{ __('Company Name') }}</label>
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label small text-muted mb-1">Company Phone</label>
+                            <label class="form-label small text-muted mb-1">{{ __('Company Phone') }}</label>
                             <div class="input-group">
                                 <select id="c_company_country_code" class="form-select flex-grow-0" style="width: 130px; max-width: 40%;">
                                     @foreach(\App\Models\Customer::allCountries() as $iso => $country)
@@ -328,57 +327,57 @@
                         <div class="col-md-6">
                             <div class="form-floating">
                                 <input type="email" id="c_email" class="form-control" placeholder="Email">
-                                <label>Email</label>
+                                <label>{{ __('Email') }}</label>
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label small text-muted mb-1">Phone Number *</label>
+                            <label class="form-label small text-muted mb-1">{{ __('Phone Number') }} *</label>
                             <x-country-phone-picker id="c_phone" name="c_phone" codeName="c_country_code" />
                             <div class="invalid-feedback d-block" id="c_phone_err"></div>
                         </div>
                         <div class="col-md-12">
                             <div class="form-floating">
                                 <input type="text" id="c_address" class="form-control" placeholder="Address">
-                                <label>Address</label>
+                                <label>{{ __('Address') }}</label>
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="form-floating">
                                 <input type="text" id="c_city" class="form-control" placeholder="City">
-                                <label>City</label>
+                                <label>{{ __('City') }}</label>
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="form-floating">
                                 <input type="text" id="c_zip" class="form-control" placeholder="ZIP">
-                                <label>ZIP / Postal Code</label>
+                                <label>{{ __('ZIP / Postal Code') }}</label>
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="form-floating">
                                 <input type="text" id="c_country" class="form-control" placeholder="Country">
-                                <label>Country</label>
+                                <label>{{ __('Country') }}</label>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-floating">
                                 <input type="text" id="c_tax_id" class="form-control" placeholder="Tax ID">
-                                <label>Tax ID</label>
+                                <label>{{ __('Tax ID') }}</label>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-floating">
                                 <input type="text" id="c_vat_no" class="form-control" placeholder="VAT No.">
-                                <label>VAT No.</label>
+                                <label>{{ __('VAT No.') }}</label>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer border-0 pt-0">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('Cancel') }}</button>
                     <button type="button" class="btn btn-primary" id="saveCustomerBtn">
                         <span id="saveCustomerSpinner" class="spinner-border spinner-border-sm me-1 d-none"></span>
-                        <i class="fas fa-save me-1" id="saveCustomerIcon"></i> Save Customer
+                        <i class="fas fa-save me-1" id="saveCustomerIcon"></i> {{ __('Save Customer') }}
                     </button>
                 </div>
             </div>

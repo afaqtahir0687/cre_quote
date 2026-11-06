@@ -39,7 +39,7 @@
             <div class="country-search-wrap">
                 <div class="input-group input-group-sm">
                     <span class="input-group-text bg-white border-end-0 text-muted"><i class="fas fa-search"></i></span>
-                    <input type="text" class="form-control border-start-0 country-search-input" id="{{ $id }}_search" placeholder="Search country or code..." autocomplete="off">
+                    <input type="text" class="form-control border-start-0 country-search-input" id="{{ $id }}_search" placeholder="{{ __('Search country or code...') }}" autocomplete="off">
                 </div>
             </div>
             <div class="country-list-scroll" id="{{ $id }}_list">

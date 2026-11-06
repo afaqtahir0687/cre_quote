@@ -67,6 +67,28 @@ class Invoice extends Model
         }
         return $value;
     }
+
+    public function getLocalizedNotesAttribute(): string
+    {
+        return tdb($this->notes);
+    }
+
+    public function getLocalizedTermsAttribute(): string
+    {
+        return tdb($this->terms);
+    }
+
+    protected static function booted()
+    {
+        static::saved(function ($invoice) {
+            if (!empty($invoice->notes)) {
+                \App\Services\TranslationService::warmCache($invoice->notes);
+            }
+            if (!empty($invoice->terms)) {
+                \App\Services\TranslationService::warmCache($invoice->terms);
+            }
+        });
+    }
 }
 
 

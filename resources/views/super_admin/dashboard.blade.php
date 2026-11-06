@@ -1,20 +1,20 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Overview - Super Admin')
+@section('title', __('Super Admin Portal'))
 
 @section('content')
 <!-- Header Section -->
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
-        <h2 class="fw-bold text-dark mb-1">Super Admin Portal</h2>
-        <p class="text-muted small mb-0">Multi-shop overview, global revenue tracking, and centralized branch management.</p>
+        <h2 class="fw-bold text-dark mb-1">{{ __('Super Admin Portal') }}</h2>
+        <p class="text-muted small mb-0">{{ __('Multi-shop overview, global revenue tracking, and centralized branch management.') }}</p>
     </div>
     <div class="d-flex align-items-center gap-2">
         <a href="{{ route('super_admin.users.index') }}" class="btn btn-outline-secondary d-flex align-items-center">
-            <i class="fas fa-users-cog me-2"></i>Users
+            <i class="fas fa-users-cog me-2"></i>{{ __('Users') }}
         </a>
         <a href="{{ route('super_admin.shops.create') }}" class="btn btn-primary-modern d-flex align-items-center">
-            <i class="fas fa-plus me-2"></i> Add New Shop
+            <i class="fas fa-plus me-2"></i> {{ __('Add New Shop') }}
         </a>
     </div>
 </div>
@@ -30,18 +30,18 @@
                         <i class="fas fa-store-alt fa-lg"></i>
                     </div>
                     <div>
-                        <div class="fw-bold text-dark">Currently Switched To: {{ $activeS->name }}</div>
-                        <div class="text-muted small">Sidebar modules (Quotes, Invoices, Job Orders, etc.) are currently scoped to this shop.</div>
+                        <div class="fw-bold text-dark">{{ __('Currently Switched To:') }} {{ $activeS->name }}</div>
+                        <div class="text-muted small">{{ __('Sidebar modules (Quotes, Invoices, Job Orders, etc.) are currently scoped to this shop.') }}</div>
                     </div>
                 </div>
                 <div class="d-flex gap-2">
                     <a href="{{ route('dashboard') }}" class="btn btn-sm btn-primary-modern d-flex align-items-center">
-                        <i class="fas fa-chart-line me-1"></i> Shop Dashboard
+                        <i class="fas fa-chart-line me-1"></i> {{ __('Shop Dashboard') }}
                     </a>
                     <form action="{{ route('super_admin.switch_shop_all') }}" method="POST" class="d-inline">
                         @csrf
                         <button type="submit" class="btn btn-sm btn-outline-secondary">
-                            <i class="fas fa-globe me-1"></i> Reset to All Shops
+                            <i class="fas fa-globe me-1"></i> {{ __('Reset to All Shops') }}
                         </button>
                     </form>
                 </div>
@@ -52,16 +52,16 @@
 
 <!-- Admin-Themed KPI Cards (5 in 1 row) -->
 <div class="row g-3 mb-4 kpi-row-5">
-    <!-- Total Shops -->
+    <!-- {{ __('Total Shops') }} -->
     <div class="kpi-col-5">
         <div class="card-modern kpi-card kpi-card-sm bg-gradient-indigo h-100">
             <div class="icon-box">
                 <i class="fas fa-store"></i>
             </div>
-            <h6 class="text-white-50 text-uppercase fw-semibold">Total Shops</h6>
+            <h6 class="text-white-50 text-uppercase fw-semibold">{{ __('Total Shops') }}</h6>
             <h2 class="mb-0 fw-bold">{{ $totalShops }}</h2>
             <div class="text-white-50 extra-small mt-1">
-                {{ $activeShops }} Active @if($inactiveShops > 0)&bull; {{ $inactiveShops }} Inactive @endif @if(isset($suspendedShops) && $suspendedShops > 0)&bull; {{ $suspendedShops }} Suspended @endif
+                {{ $activeShops }} {{ __('Active') }} @if($inactiveShops > 0)&bull; {{ $inactiveShops }} {{ __('Inactive') }} @endif @if(isset($suspendedShops) && $suspendedShops > 0)&bull; {{ $suspendedShops }} {{ __('Suspended') }} @endif
             </div>
         </div>
     </div>
@@ -72,9 +72,9 @@
             <div class="icon-box">
                 <i class="fas fa-wallet"></i>
             </div>
-            <h6 class="text-white-50 text-uppercase fw-semibold">Total Revenue</h6>
+            <h6 class="text-white-50 text-uppercase fw-semibold">{{ __('Total Revenue') }}</h6>
             <h2 class="mb-0 fw-bold">${{ number_format($totalRevenue ?? 0, 2) }}</h2>
-            <div class="text-white-50 extra-small mt-1">Across all branches</div>
+            <div class="text-white-50 extra-small mt-1">{{ __('Across all branches') }}</div>
         </div>
     </div>
 
@@ -84,9 +84,9 @@
             <div class="icon-box">
                 <i class="fas fa-clock"></i>
             </div>
-            <h6 class="text-white-50 text-uppercase fw-semibold">Pending Due</h6>
+            <h6 class="text-white-50 text-uppercase fw-semibold">{{ __('Pending Due') }}</h6>
             <h2 class="mb-0 fw-bold">${{ number_format($totalReceivable ?? 0, 2) }}</h2>
-            <div class="text-white-50 extra-small mt-1">Unpaid balances</div>
+            <div class="text-white-50 extra-small mt-1">{{ __('Unpaid balances') }}</div>
         </div>
     </div>
 
@@ -96,9 +96,9 @@
             <div class="icon-box">
                 <i class="fas fa-tasks"></i>
             </div>
-            <h6 class="text-white-50 text-uppercase fw-semibold">Quotes & Orders</h6>
+            <h6 class="text-white-50 text-uppercase fw-semibold">{{ __('Quotes & Orders') }}</h6>
             <h2 class="mb-0 fw-bold">{{ $totalQuotes }} <span class="fs-6 fw-normal opacity-75">/ {{ $totalJobOrders }}</span></h2>
-            <div class="text-white-50 extra-small mt-1">{{ $totalInvoices }} Invoices Generated</div>
+            <div class="text-white-50 extra-small mt-1">{{ $totalInvoices }} {{ __('Invoices Generated') }}</div>
         </div>
     </div>
 
@@ -108,28 +108,28 @@
             <div class="icon-box">
                 <i class="fas fa-users"></i>
             </div>
-            <h6 class="text-white-50 text-uppercase fw-semibold">Users & Clients</h6>
+            <h6 class="text-white-50 text-uppercase fw-semibold">{{ __('Users & Clients') }}</h6>
             <h2 class="mb-0 fw-bold">{{ $totalUsers }}</h2>
-            <div class="text-white-50 extra-small mt-1">{{ $totalCustomers }} Registered Customers</div>
+            <div class="text-white-50 extra-small mt-1">{{ $totalCustomers }} {{ __('Registered Customers') }}</div>
         </div>
     </div>
 </div>
 
 <!-- Shops Overview Table using x-card and x-table -->
-<x-card title="Registered Shops & Branches" :padding="false">
+<x-card :title="__('Registered Shops & Branches')" :padding="false">
     <x-slot name="headerActions">
-        <a href="{{ route('super_admin.shops.index') }}" class="btn btn-sm btn-link text-decoration-none fw-medium">View All Shops</a>
+        <a href="{{ route('super_admin.shops.index') }}" class="btn btn-sm btn-link text-decoration-none fw-medium">{{ __('View All Shops') }}</a>
     </x-slot>
 
     <x-table>
         <x-slot name="thead">
-            <th>Shop / Branch</th>
-            <th>Primary Admin</th>
-            <th>Quotes / Orders</th>
-            <th>Invoices</th>
-            <th>Collected Revenue</th>
-            <th>Status</th>
-            <th class="text-end pe-4">Action</th>
+            <th>{{ __('Shop / Branch') }}</th>
+            <th>{{ __('Primary Admin') }}</th>
+            <th>{{ __('Quotes / Orders') }}</th>
+            <th>{{ __('Invoices') }}</th>
+            <th>{{ __('Collected Revenue') }}</th>
+            <th>{{ __('Status') }}</th>
+            <th class="text-end pe-4">{{ __('Action') }}</th>
         </x-slot>
 
         @forelse($shops as $shop)
@@ -148,7 +148,7 @@
                             {{ $shop->name }}
                         </a>
                         <span class="text-muted small">
-                            <i class="fas fa-map-marker-alt me-1 text-danger"></i>{{ $shop->city ?? 'Main Location' }} 
+                            <i class="fas fa-map-marker-alt me-1 text-danger"></i>{{ $shop->city ?? __('Main Location') }} 
                             @if($shop->currency_symbol) &bull; <strong>{{ $shop->currency_symbol }}</strong>@endif
                         </span>
                     </div>
@@ -160,20 +160,20 @@
                     <div class="fw-semibold text-dark">{{ $admin->name }}</div>
                     <div class="text-muted small">{{ $admin->email }}</div>
                 @else
-                    <span class="badge-soft badge-soft-secondary">No Admin</span>
+                    <span class="badge-soft badge-soft-secondary">{{ __('No Admin') }}</span>
                 @endif
             </td>
             <td>
                 <span class="badge-soft badge-soft-primary">
-                    <i class="fas fa-file-invoice me-1"></i>{{ $shop->quotes_count }} Quotes
+                    <i class="fas fa-file-invoice me-1"></i>{{ $shop->quotes_count }} {{ __('Quotes') }}
                 </span>
                 <span class="badge-soft badge-soft-info ms-1">
-                    <i class="fas fa-tasks me-1"></i>{{ $shop->jobOrders_count ?? $shop->job_orders_count }} Orders
+                    <i class="fas fa-tasks me-1"></i>{{ $shop->jobOrders_count ?? $shop->job_orders_count }} {{ __('Orders') }}
                 </span>
             </td>
             <td>
                 <span class="fw-bold text-dark">{{ $shop->invoices_count }}</span>
-                <div class="text-muted small">Invoices</div>
+                <div class="text-muted small">{{ __('Invoices') }}</div>
             </td>
             <td>
                 <div class="fw-bold text-success">
@@ -181,19 +181,19 @@
                 </div>
                 @if(($shop->total_balance_due ?? 0) > 0)
                 <div class="text-danger extra-small">
-                    Due: {{ $shop->currency_symbol ?? '$' }} {{ number_format($shop->total_balance_due ?? 0, 2) }}
+                    {{ __('Due') }}: {{ $shop->currency_symbol ?? '$' }} {{ number_format($shop->total_balance_due ?? 0, 2) }}
                 </div>
                 @endif
             </td>
             <td>
                 @if($shop->isActive())
                     <span class="badge-soft badge-soft-success">
-                        <i class="fas fa-check-circle me-1"></i> Active
+                        <i class="fas fa-check-circle me-1"></i> {{ __('Active') }}
                     </span>
                 @elseif($shop->isInactive())
                     <div>
                         <span class="badge-soft badge-soft-warning">
-                            <i class="fas fa-pause-circle me-1"></i> Inactive
+                            <i class="fas fa-pause-circle me-1"></i> {{ __('Inactive') }}
                         </span>
                         @if($shop->status_reason)
                             <div class="text-muted extra-small mt-1 text-truncate" style="max-width: 170px;" title="{{ $shop->status_reason }}">
@@ -212,7 +212,7 @@
                 @else
                     <div>
                         <span class="badge-soft badge-soft-danger">
-                            <i class="fas fa-ban me-1"></i> Suspended
+                            <i class="fas fa-ban me-1"></i> {{ __('Suspended') }}
                         </span>
                         @if($shop->status_reason)
                             <div class="text-danger extra-small mt-1 text-truncate" style="max-width: 170px;" title="{{ $shop->status_reason }}">
@@ -227,8 +227,8 @@
                     <!-- Quick Enter Shop Button -->
                     <form action="{{ route('super_admin.switch_shop', $shop->id) }}" method="POST" class="d-inline">
                         @csrf
-                        <button type="submit" class="btn btn-sm btn-primary-modern" title="Enter / Switch to this Shop">
-                            <i class="fas fa-sign-in-alt me-1"></i> Enter Shop
+                        <button type="submit" class="btn btn-sm btn-primary-modern" title="{{ __('Enter / Switch to this Shop') }}">
+                            <i class="fas fa-sign-in-alt me-1"></i> {{ __('Enter Shop') }}
                         </button>
                     </form>
 
@@ -240,12 +240,12 @@
                         <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
                             <li>
                                 <a class="dropdown-item py-2" href="{{ route('super_admin.shops.edit', $shop->id) }}">
-                                    <i class="fas fa-edit me-2 text-info"></i> Edit Shop Details
+                                    <i class="fas fa-edit me-2 text-info"></i> {{ __('Edit Shop Details') }}
                                 </a>
                             </li>
                             <li>
                                 <a class="dropdown-item py-2" href="{{ route('super_admin.users.index') }}?shop_id={{ $shop->id }}">
-                                    <i class="fas fa-users me-2 text-primary"></i> View Shop Users
+                                    <i class="fas fa-users me-2 text-primary"></i> {{ __('View Shop Users') }}
                                 </a>
                             </li>
                             <li><hr class="dropdown-divider"></li>
@@ -253,34 +253,34 @@
                             @if($shop->isActive())
                                 <li>
                                     <button type="button" class="dropdown-item py-2 text-warning" onclick="openStatusModal({{ $shop->id }}, '{{ addslashes($shop->name) }}', 'inactive', '{{ addslashes($shop->status_reason ?? '') }}', {{ $shop->grace_period_days ?? 7 }}, '{{ $shop->action_deadline ? $shop->action_deadline->format('Y-m-d') : '' }}', '{{ addslashes($shop->status_message ?? '') }}')">
-                                        <i class="fas fa-pause-circle me-2"></i> Set Inactive (Payment Issue)
+                                        <i class="fas fa-pause-circle me-2"></i> {{ __('Set Inactive (Payment Issue)') }}
                                     </button>
                                 </li>
                                 <li>
                                     <button type="button" class="dropdown-item py-2 text-danger" onclick="openStatusModal({{ $shop->id }}, '{{ addslashes($shop->name) }}', 'suspended', '{{ addslashes($shop->status_reason ?? '') }}')">
-                                        <i class="fas fa-ban me-2"></i> Suspend Shop
+                                        <i class="fas fa-ban me-2"></i> {{ __('Suspend Shop') }}
                                     </button>
                                 </li>
                             @elseif($shop->isInactive())
                                 <li>
                                     <button type="button" class="dropdown-item py-2 text-success" onclick="openStatusModal({{ $shop->id }}, '{{ addslashes($shop->name) }}', 'active')">
-                                        <i class="fas fa-play-circle me-2"></i> Re-Activate Shop
+                                        <i class="fas fa-play-circle me-2"></i> {{ __('Re-Activate Shop') }}
                                     </button>
                                 </li>
                                 <li>
                                     <button type="button" class="dropdown-item py-2 text-info" onclick="openStatusModal({{ $shop->id }}, '{{ addslashes($shop->name) }}', 'inactive', '{{ addslashes($shop->status_reason ?? '') }}', {{ $shop->grace_period_days ?? 7 }}, '{{ $shop->action_deadline ? $shop->action_deadline->format('Y-m-d') : '' }}', '{{ addslashes($shop->status_message ?? '') }}')">
-                                        <i class="fas fa-envelope me-2"></i> Update Reason / Resend Notice
+                                        <i class="fas fa-envelope me-2"></i> {{ __('Update Reason / Resend Notice') }}
                                     </button>
                                 </li>
                                 <li>
                                     <button type="button" class="dropdown-item py-2 text-danger" onclick="openStatusModal({{ $shop->id }}, '{{ addslashes($shop->name) }}', 'suspended')">
-                                        <i class="fas fa-ban me-2"></i> Permanently Suspend
+                                        <i class="fas fa-ban me-2"></i> {{ __('Permanently Suspend') }}
                                     </button>
                                 </li>
                             @else
                                 <li>
                                     <button type="button" class="dropdown-item py-2 text-success" onclick="openStatusModal({{ $shop->id }}, '{{ addslashes($shop->name) }}', 'active')">
-                                        <i class="fas fa-redo me-2"></i> Lift Suspension (Re-Activate)
+                                        <i class="fas fa-redo me-2"></i> {{ __('Lift Suspension (Re-Activate)') }}
                                     </button>
                                 </li>
                             @endif
@@ -291,7 +291,7 @@
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="dropdown-item py-2 text-danger">
-                                        <i class="fas fa-trash-alt me-2"></i> Delete Shop
+                                        <i class="fas fa-trash-alt me-2"></i> {{ __('Delete Shop') }}
                                     </button>
                                 </form>
                             </li>
@@ -304,7 +304,7 @@
         <tr>
             <td colspan="7" class="text-center py-5 text-muted">
                 <i class="fas fa-store-slash fa-3x mb-3 text-secondary opacity-50 d-block"></i>
-                No shops registered yet. Click "Add New Shop" to get started!
+                {{ __('No shops registered yet. Click ":add" to get started!', ['add' => __('Add New Shop')]) }}
             </td>
         </tr>
         @endforelse

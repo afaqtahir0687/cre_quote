@@ -1,12 +1,12 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Create New Invoice')
+@section('title', __('Create New Invoice'))
 
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="fw-bold text-dark mb-0">Create Invoice</h2>
+    <h2 class="fw-bold text-dark mb-0">{{ __('Create Invoice') }}</h2>
     <div class="d-flex align-items-center bg-white px-3 py-2 rounded-3 shadow-sm border">
-        <span class="text-muted me-2 small fw-medium">Invoice Number:</span>
+        <span class="text-muted me-2 small fw-medium">{{ __('Invoice Number:') }}</span>
         <span class="fw-bold text-primary">{{ $invoiceNumber }}</span>
     </div>
 </div>
@@ -17,12 +17,12 @@
     
     <div class="row g-4">
         <div class="col-lg-12">
-            <x-card title="Invoice Details">
+            <x-card title="{{ __('Invoice Details') }}">
                 <div class="row">
                     <div class="col-md-4">
                         <input type="hidden" name="customer_company_id" id="customer_company_id" value="{{ old('customer_company_id') }}">
                         <select name="customer_id" id="customer_id" class="cust-select-hidden" required>
-                            <option value="">Select Customer</option>
+                            <option value="">{{ __('Select Customer') }}</option>
                             @foreach($customers as $customer)
                                 @php
                                     $displayPhone = $customer->formatted_phone ?: $customer->phone;
@@ -81,12 +81,12 @@
                                 <input type="text" id="cust-trigger" class="form-control cust-trigger @error('customer_id') is-invalid @enderror"
                                        placeholder="Customer *" autocomplete="off" readonly
                                        value="{{ $selTrigger }}">
-                                <label for="cust-trigger">Customer *</label>
+                                <label for="cust-trigger">{{ __('Customer') }} *</label>
                                 @error('customer_id')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
                             </div>
                             <div class="cust-panel" id="cust-panel">
                                 <div class="cust-search-wrap">
-                                    <input type="text" class="cust-search" id="cust-search" placeholder="Search by name, phone, or company...">
+                                    <input type="text" class="cust-search" id="cust-search" placeholder="{{ __('Search by name, phone, or company...') }}">
                                 </div>
                                 <div class="cust-list" id="cust-list"></div>
                             </div>
@@ -112,15 +112,15 @@
         </div>
 
         <div class="col-lg-12">
-            <x-card title="Invoice Items" :padding="false">
+            <x-card title="{{ __('Invoice Items') }}" :padding="false">
                 <x-table>
                     <x-slot name="thead">
-                        <th style="width: 25%">Description</th>
-                        <th style="width: 15%">Size and meter</th>
+                        <th style="width: 25%">{{ __('Description') }}</th>
+                        <th style="width: 15%">{{ __('Size and meter') }}</th>
                         <th style="width: 15%">Unit Price</th>
                         <th style="width: 10%">Qty</th>
-                        <th style="width: 10%">Tax %</th>
-                        <th style="width: 10%">Discount</th>
+                        <th style="width: 10%">{{ __('Tax %') }}</th>
+                        <th style="width: 10%">{{ __('Discount') }}</th>
                         <th style="width: 10%">Total</th>
                         <th style="width: 5%" class="text-center"></th>
                     </x-slot>
@@ -139,19 +139,15 @@
         </div>
 
         <div class="col-md-7">
-            <x-card title="Additional Information">
+            <x-card :title="__('Additional Information')">
                 <div class="mb-3">
-                    <label class="form-label text-muted fw-medium small">Payment Terms & Conditions</label>
-                    <textarea name="terms" class="form-control" rows="3">1. Payment is due within 15 days.
-2. Please include invoice number on your check.</textarea>
+                    <label class="form-label text-muted fw-medium small">{{ __('Payment Terms & Conditions') }}</label>
+                    <textarea name="terms" class="form-control" rows="3">{{ old('terms', "1. Payment is due within 15 days.\n2. Please include invoice number on your check.") }}</textarea>
                 </div>
                 
                 <div class="mb-0">
-                    <label class="form-label text-muted fw-medium small">Notes</label>
-                    <textarea name="notes" class="form-control" rows="8" placeholder="Additional notes for the customer...">Kindly be aware that this quotation may be reviewed, and the New Crelogics retains the right to amend the pricing if errors are identified. Additionally, the New Crelogics reserves the right to revise, reject, or cancel the work entirely if there is any misunderstanding regarding the customer's requirements.
-
-يرجى العلم أن هذا العرض قد يخضع للمراجعة، وتحتفظ وكالة نيو كريلوجيكس (New Crelogics) بالحق في تعديل الأسعار إذا تم اكتشاف أي أخطاء.
-بالإضافة إلى ذلك، تحتفظ وكالة نيو كريلوجيكس (New Crelogics) بالحق في تعديل السعر أو رفض العمل أو إلغائه بالكامل إذا كان هناك أي سوء فهم بخصوص متطلبات العميل.</textarea>
+                    <label class="form-label text-muted fw-medium small">{{ __('Notes') }}</label>
+                    <textarea name="notes" class="form-control" rows="5" placeholder="{{ __('Additional notes for the customer...') }}">{{ old('notes', 'Dear Customer attention, Please Check The Design, Printing material type Size, And All other Details Completely before Signature on Print Approval. However After the Signature ' . ($setting->company_name ?? 'New sign') . ' or Designer Is not Responsible For Any mistake Printing Colours can Be Different than Desktop Computer Screen. Please, ask for a color sample if it is necessary') }}</textarea>
                 </div>
             </x-card>
         </div>
@@ -160,7 +156,7 @@
             <x-card title="Summary">
                 <div class="d-flex flex-column gap-3">
                     <div class="d-flex justify-content-between align-items-center">
-                        <span class="text-muted">Subtotal</span>
+                        <span class="text-muted">{{ __('Subtotal') }}</span>
                         <div class="input-group input-group-sm w-50">
                             <span class="input-group-text border-0 bg-transparent">$</span>
                             <input type="number" step="0.01" name="subtotal" id="subtotal" class="form-control text-end border-0 bg-transparent fw-semibold" readonly value="0.00">
@@ -168,7 +164,7 @@
                     </div>
                     
                     <div class="d-flex justify-content-between align-items-center">
-                        <span class="text-muted">Total Tax</span>
+                        <span class="text-muted">{{ __('Total Tax') }}</span>
                         <div class="input-group input-group-sm w-50">
                             <span class="input-group-text border-0 bg-transparent">$</span>
                             <input type="number" step="0.01" name="total_tax" id="total_tax" class="form-control text-end border-0 bg-transparent fw-semibold" readonly value="0.00">
@@ -176,7 +172,7 @@
                     </div>
 
                     <div class="d-flex justify-content-between align-items-center">
-                        <span class="text-muted">Total Discount</span>
+                        <span class="text-muted">{{ __('Total Discount') }}</span>
                         <div class="input-group input-group-sm w-50">
                             <span class="input-group-text border-0 bg-transparent">-$</span>
                             <input type="number" step="0.01" name="total_discount" id="total_discount" class="form-control text-end border-0 bg-transparent fw-semibold" readonly value="0.00">
@@ -184,7 +180,7 @@
                     </div>
 
                     <div class="d-flex justify-content-between align-items-center pt-2 border-top">
-                        <span class="text-muted">Shipping</span>
+                        <span class="text-muted">{{ __('Shipping') }}</span>
                         <div class="input-group input-group-sm w-50">
                             <span class="input-group-text border-0 bg-light">$</span>
                             <input type="number" step="0.01" name="shipping" id="shipping" class="form-control text-end border-1 rounded-2" value="0.00">
@@ -192,7 +188,7 @@
                     </div>
 
                     <div class="d-flex justify-content-between align-items-center mt-3 p-3 bg-light rounded-3">
-                        <span class="fw-bold text-dark fs-5">Grand Total</span>
+                        <span class="fw-bold text-dark fs-5">{{ __('Grand Total') }}</span>
                         <div class="input-group w-50">
                             <span class="input-group-text border-0 bg-transparent fs-5 fw-bold">$</span>
                             <input type="number" step="0.01" name="grand_total" id="grand_total" class="form-control text-end border-0 bg-transparent fs-5 fw-bold" readonly value="0.00">
@@ -202,9 +198,9 @@
 
                 <div class="mt-4 d-grid gap-2">
                     <button type="submit" class="btn btn-primary-modern py-3">
-                        <i class="fas fa-save me-2"></i> Save Invoice
+                        <i class="fas fa-save me-2"></i> {{ __('Save Invoice') }}
                     </button>
-                    <a href="{{ route('invoices.index') }}" class="btn btn-link text-muted">Cancel and Go Back</a>
+                    <a href="{{ route('invoices.index') }}" class="btn btn-link text-muted">{{ __('Cancel and Go Back') }}</a>
                 </div>
             </x-card>
         </div>
@@ -279,7 +275,7 @@
                        matchPhone;
             });
             if (!filtered.length) {
-                listEl.innerHTML = '<div class="cust-empty"><i class="fas fa-search me-1"></i>No customers found</div>';
+                listEl.innerHTML = '<div class="cust-empty"><i class="fas fa-search me-1"></i>'+ window.__('No customers found', 'No customers found') +'</div>';
                 return;
             }
             listEl.innerHTML = filtered.map(function(c) {

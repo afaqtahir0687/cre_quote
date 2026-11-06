@@ -1,32 +1,32 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Manage Shops')
+@section('title', __('Manage Shops'))
 
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
-        <h2 class="fw-bold text-dark mb-1">Shops & Branches</h2>
-        <p class="text-muted small mb-0">Manage all business branches, configure prefixes, and control operational access.</p>
+        <h2 class="fw-bold text-dark mb-1">{{ __('Shops & Branches') }}</h2>
+        <p class="text-muted small mb-0">{{ __('Manage all business branches, configure prefixes, and control operational access.') }}</p>
     </div>
     <div class="d-flex align-items-center gap-3">
         <form action="{{ route('super_admin.shops.index') }}" method="GET" class="d-flex gap-2">
             <div class="input-group" style="min-width: 220px;">
-                <input type="text" name="search" class="form-control" placeholder="Search name, email, city..." value="{{ request('search') }}">
+                <input type="text" name="search" class="form-control" placeholder="{{ __('Search name, email, city...') }}" value="{{ request('search') }}">
                 <button class="btn btn-outline-secondary" type="submit"><i class="fas fa-search"></i></button>
             </div>
             <select name="status" class="form-select" style="min-width: 140px;" onchange="this.form.submit()">
-                <option value="">All Statuses</option>
-                <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>Active</option>
-                <option value="inactive" {{ request('status') === 'inactive' ? 'selected' : '' }}>Inactive (Temporary)</option>
-                <option value="suspended" {{ request('status') === 'suspended' ? 'selected' : '' }}>Suspended</option>
+                <option value="">{{ __('All Statuses') }}</option>
+                <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>{{ __('Active') }}</option>
+                <option value="inactive" {{ request('status') === 'inactive' ? 'selected' : '' }}>{{ __('Inactive (Temporary)') }}</option>
+                <option value="suspended" {{ request('status') === 'suspended' ? 'selected' : '' }}>{{ __('Suspended') }}</option>
             </select>
             @if(request()->hasAny(['search', 'status']))
-                <a href="{{ route('super_admin.shops.index') }}" class="btn btn-outline-danger" title="Clear Filters"><i class="fas fa-times"></i></a>
+                <a href="{{ route('super_admin.shops.index') }}" class="btn btn-outline-danger" title="{{ __('Clear Filters') }}"><i class="fas fa-times"></i></a>
             @endif
         </form>
 
         <a href="{{ route('super_admin.shops.create') }}" class="btn btn-primary-modern text-nowrap d-flex align-items-center">
-            <i class="fas fa-plus me-2"></i> Add New Shop
+            <i class="fas fa-plus me-2"></i> {{ __('Add New Shop') }}
         </a>
     </div>
 </div>
@@ -34,14 +34,14 @@
 <x-card :padding="false">
     <x-table>
         <x-slot name="thead">
-            <th>Shop / Branch</th>
-            <th>Primary Admin</th>
-            <th>Contact</th>
-            <th>Quotes / Orders</th>
-            <th>Invoices</th>
-            <th>Revenue</th>
-            <th>Status</th>
-            <th class="text-end pe-4">Action</th>
+            <th>{{ __('Shop / Branch') }}</th>
+            <th>{{ __('Primary Admin') }}</th>
+            <th>{{ __('Contact') }}</th>
+            <th>{{ __('Quotes / Orders') }}</th>
+            <th>{{ __('Invoices') }}</th>
+            <th>{{ __('Revenue') }}</th>
+            <th>{{ __('Status') }}</th>
+            <th class="text-end pe-4">{{ __('Action') }}</th>
         </x-slot>
 
         @forelse($shops as $shop)
@@ -57,20 +57,20 @@
                     @endif
                     <div>
                         <a href="{{ route('super_admin.shops.edit', $shop->id) }}" class="fw-bold text-dark text-decoration-none">
-                            {{ $shop->name }}
+                            {{ tdb($shop->name) }}
                         </a>
                         <div class="text-muted small">
-                            <i class="fas fa-map-marker-alt me-1 text-danger"></i>{{ $shop->city ?? 'Main Location' }}
+                            <i class="fas fa-map-marker-alt me-1 text-danger"></i>{{ $shop->city ? tdb($shop->city) : __('Main Location') }}
                             @if($shop->country) &bull; {{ $shop->country }}@endif
                         </div>
                         @if($shop->package)
                             <div class="mt-1">
                                 <span class="badge {{ $shop->package->badgeClass() }}" style="font-size: 0.7rem;">
-                                    {{ $shop->package->name }}
+                                    {{ tdb($shop->package->name) }}
                                     @if($shop->isSubscriptionExpired())
-                                        &bull; <span class="text-danger fw-bold">Expired</span>
+                                        &bull; <span class="text-danger fw-bold">{{ __('Expired') }}</span>
                                     @else
-                                        &bull; {{ $shop->subscriptionDaysRemaining() }}d left
+                                        &bull; {{ $shop->subscriptionDaysRemaining() }} {{ __('days left') }}
                                     @endif
                                 </span>
                             </div>
@@ -84,7 +84,7 @@
                     <div class="fw-bold text-dark">{{ $admin->name }}</div>
                     <div class="text-muted small">@<span>{{ $admin->username }}</span></div>
                 @else
-                    <span class="badge-soft badge-soft-secondary">No Admin</span>
+                    <span class="badge-soft badge-soft-secondary">{{ __('No Admin') }}</span>
                 @endif
             </td>
             <td>
@@ -100,33 +100,33 @@
             </td>
             <td>
                 <span class="badge-soft badge-soft-primary">
-                    <i class="fas fa-file-invoice me-1"></i>{{ $shop->quotes_count }} Quotes
+                    <i class="fas fa-file-invoice me-1"></i>{{ $shop->quotes_count }} {{ __('Quotes') }}
                 </span>
                 <span class="badge-soft badge-soft-info ms-1">
-                    <i class="fas fa-tasks me-1"></i>{{ $shop->jobOrders_count ?? $shop->job_orders_count }} Orders
+                    <i class="fas fa-tasks me-1"></i>{{ $shop->jobOrders_count ?? $shop->job_orders_count }} {{ __('Orders') }}
                 </span>
             </td>
             <td>
                 <span class="fw-bold text-dark">{{ $shop->invoices_count }}</span>
-                <div class="text-muted small">Invoices</div>
+                <div class="text-muted small">{{ __('Invoices') }}</div>
             </td>
             <td>
                 <div class="fw-bold text-success">
                     {{ $shop->currency_symbol ?? '$' }} {{ number_format($shop->total_revenue ?? 0, 2) }}
                 </div>
                 <div class="text-muted extra-small">
-                    Prefix: <code>{{ $shop->quote_prefix }}</code>
+                    {{ __('Prefix:') }} <code>{{ $shop->quote_prefix }}</code>
                 </div>
             </td>
             <td>
                 @if($shop->isActive())
                     <span class="badge-soft badge-soft-success">
-                        <i class="fas fa-check-circle me-1"></i> Active
+                        <i class="fas fa-check-circle me-1"></i> {{ __('Active') }}
                     </span>
                 @elseif($shop->isInactive())
                     <div>
                         <span class="badge-soft badge-soft-warning">
-                            <i class="fas fa-pause-circle me-1"></i> Inactive
+                            <i class="fas fa-pause-circle me-1"></i> {{ __('Inactive') }}
                         </span>
                         @if($shop->status_reason)
                             <div class="text-muted extra-small mt-1 text-truncate" style="max-width: 170px;" title="{{ $shop->status_reason }}">
@@ -145,7 +145,7 @@
                 @else
                     <div>
                         <span class="badge-soft badge-soft-danger">
-                            <i class="fas fa-ban me-1"></i> Suspended
+                            <i class="fas fa-ban me-1"></i> {{ __('Suspended') }}
                         </span>
                         @if($shop->status_reason)
                             <div class="text-danger extra-small mt-1 text-truncate" style="max-width: 170px;" title="{{ $shop->status_reason }}">
@@ -160,8 +160,8 @@
                     <!-- Quick Enter Shop Button -->
                     <form action="{{ route('super_admin.switch_shop', $shop->id) }}" method="POST" class="d-inline">
                         @csrf
-                        <button type="submit" class="btn btn-sm btn-primary-modern text-nowrap" title="Enter / Switch to this Shop">
-                            <i class="fas fa-sign-in-alt me-1"></i> Enter
+                        <button type="submit" class="btn btn-sm btn-primary-modern text-nowrap" title="{{ __('Enter / Switch to this Shop') }}">
+                            <i class="fas fa-sign-in-alt me-1"></i> {{ __('Enter') }}
                         </button>
                     </form>
 
@@ -173,17 +173,17 @@
                         <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
                             <li>
                                 <a class="dropdown-item py-2" href="{{ route('super_admin.shops.edit', $shop->id) }}">
-                                    <i class="fas fa-edit me-2 text-info"></i> Edit Shop Details
+                                    <i class="fas fa-edit me-2 text-info"></i> {{ __('Edit Shop Details') }}
                                 </a>
                             </li>
                             <li>
                                 <a class="dropdown-item py-2" href="{{ route('super_admin.users.index') }}?shop_id={{ $shop->id }}">
-                                    <i class="fas fa-users me-2 text-primary"></i> View Shop Users
+                                    <i class="fas fa-users me-2 text-primary"></i> {{ __('View Shop Users') }}
                                 </a>
                             </li>
                             <li>
                                 <a class="dropdown-item py-2" href="{{ route('super_admin.subscriptions.index') }}?search={{ urlencode($shop->name) }}">
-                                    <i class="fas fa-hand-holding-usd me-2 text-success"></i> Manage Package / Renew Cash
+                                    <i class="fas fa-hand-holding-usd me-2 text-success"></i> {{ __('Manage Package / Renew Cash') }}
                                 </a>
                             </li>
                             <li><hr class="dropdown-divider"></li>
@@ -191,34 +191,34 @@
                             @if($shop->isActive())
                                 <li>
                                     <button type="button" class="dropdown-item py-2 text-warning" onclick="openStatusModal({{ $shop->id }}, '{{ addslashes($shop->name) }}', 'inactive', '{{ addslashes($shop->status_reason ?? '') }}', {{ $shop->grace_period_days ?? 7 }}, '{{ $shop->action_deadline ? $shop->action_deadline->format('Y-m-d') : '' }}', '{{ addslashes($shop->status_message ?? '') }}')">
-                                        <i class="fas fa-pause-circle me-2"></i> Set Inactive (Payment Issue)
+                                        <i class="fas fa-pause-circle me-2"></i> {{ __('Set Inactive (Payment Issue)') }}
                                     </button>
                                 </li>
                                 <li>
                                     <button type="button" class="dropdown-item py-2 text-danger" onclick="openStatusModal({{ $shop->id }}, '{{ addslashes($shop->name) }}', 'suspended', '{{ addslashes($shop->status_reason ?? '') }}')">
-                                        <i class="fas fa-ban me-2"></i> Suspend Shop
+                                        <i class="fas fa-ban me-2"></i> {{ __('Suspend Shop') }}
                                     </button>
                                 </li>
                             @elseif($shop->isInactive())
                                 <li>
                                     <button type="button" class="dropdown-item py-2 text-success" onclick="openStatusModal({{ $shop->id }}, '{{ addslashes($shop->name) }}', 'active')">
-                                        <i class="fas fa-play-circle me-2"></i> Re-Activate Shop
+                                        <i class="fas fa-play-circle me-2"></i> {{ __('Re-Activate Shop') }}
                                     </button>
                                 </li>
                                 <li>
                                     <button type="button" class="dropdown-item py-2 text-info" onclick="openStatusModal({{ $shop->id }}, '{{ addslashes($shop->name) }}', 'inactive', '{{ addslashes($shop->status_reason ?? '') }}', {{ $shop->grace_period_days ?? 7 }}, '{{ $shop->action_deadline ? $shop->action_deadline->format('Y-m-d') : '' }}', '{{ addslashes($shop->status_message ?? '') }}')">
-                                        <i class="fas fa-envelope me-2"></i> Update Reason / Resend Notice
+                                        <i class="fas fa-envelope me-2"></i> {{ __('Update Reason / Resend Notice') }}
                                     </button>
                                 </li>
                                 <li>
                                     <button type="button" class="dropdown-item py-2 text-danger" onclick="openStatusModal({{ $shop->id }}, '{{ addslashes($shop->name) }}', 'suspended')">
-                                        <i class="fas fa-ban me-2"></i> Permanently Suspend
+                                        <i class="fas fa-ban me-2"></i> {{ __('Permanently Suspend') }}
                                     </button>
                                 </li>
                             @else
                                 <li>
                                     <button type="button" class="dropdown-item py-2 text-success" onclick="openStatusModal({{ $shop->id }}, '{{ addslashes($shop->name) }}', 'active')">
-                                        <i class="fas fa-redo me-2"></i> Lift Suspension (Re-Activate)
+                                        <i class="fas fa-redo me-2"></i> {{ __('Lift Suspension (Re-Activate)') }}
                                     </button>
                                 </li>
                             @endif
@@ -229,7 +229,7 @@
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="dropdown-item py-2 text-danger">
-                                        <i class="fas fa-trash-alt me-2"></i> Delete Shop
+                                        <i class="fas fa-trash-alt me-2"></i> {{ __('Delete Shop') }}
                                     </button>
                                 </form>
                             </li>
@@ -242,7 +242,7 @@
         <tr>
             <td colspan="8" class="text-center py-5 text-muted">
                 <i class="fas fa-store-slash fa-3x mb-3 text-secondary opacity-50 d-block"></i>
-                No shops registered yet.
+                {{ __('No shops registered yet.') }}
             </td>
         </tr>
         @endforelse

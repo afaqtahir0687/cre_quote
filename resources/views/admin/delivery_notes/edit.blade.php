@@ -14,7 +14,7 @@
 
             <div class="row">
                 <div class="col-md-6 mb-3">
-                    <label class="form-label">Customer *</label>
+                    <label class="form-label">{{ __('Customer') }} *</label>
                     <input type="hidden" name="customer_company_id" id="customer_company_id" value="{{ old('customer_company_id', $deliveryNote->customer_company_id) }}">
                     <select name="customer_id" id="delivery_customer_select" class="form-select" required>
                         <option value="">Select Customer</option>
@@ -50,7 +50,7 @@
                     </select>
                 </div>
                 <div class="col-md-6 mb-3">
-                    <label class="form-label">Invoice (Optional)</label>
+                    <label class="form-label">{{ __('Invoice (Optional)') }}</label>
                     <select name="invoice_id" class="form-select">
                         <option value="">Select Invoice (Optional)</option>
                         @foreach($invoices as $invoice)
@@ -61,7 +61,7 @@
                     </select>
                 </div>
                 <div class="col-md-6 mb-3">
-                    <label class="form-label">Employee (Optional)</label>
+                    <label class="form-label">{{ __('Employee (Optional)') }}</label>
                     <select name="employee_id" class="form-select">
                         <option value="">Select Employee (Optional)</option>
                         @foreach($employees as $employee)
@@ -72,29 +72,29 @@
                     </select>
                 </div>
                 <div class="col-md-6 mb-3">
-                    <label class="form-label">Delivery Date *</label>
+                    <label class="form-label">{{ __('Delivery Date') }} *</label>
                     <input type="date" name="delivery_date" class="form-control" value="{{ old('delivery_date', $deliveryNote->delivery_date) }}" required>
                 </div>
                 <div class="col-md-6 mb-3 d-flex align-items-center">
                     <div class="form-check form-switch pt-4">
                         <input class="form-check-input" type="checkbox" role="switch" name="show_customer_name" id="show_customer_name" value="1" {{ old('show_customer_name', $deliveryNote->show_customer_name ?? true) ? 'checked' : '' }}>
                         <label class="form-check-label fw-semibold text-dark small cursor-pointer" for="show_customer_name">
-                            <i class="fas fa-user-check text-primary me-1"></i> Show Customer Name on PDF
+                            <i class="fas fa-user-check text-primary me-1"></i> {{ __('Show Customer Name on PDF') }}
                         </label>
                     </div>
                 </div>
                 <div class="col-md-12 mb-3">
-                    <label class="form-label">Delivery Address</label>
-                    <textarea name="delivery_address" class="form-control" rows="3">{{ old('delivery_address', $deliveryNote->delivery_address) }}</textarea>
+                    <label class="form-label">{{ __('Delivery Address') }}</label>
+                    <textarea name="delivery_address" class="form-control" rows="3">{{ old('delivery_address', tdb($deliveryNote->delivery_address)) }}</textarea>
                 </div>
                 <div class="col-md-12 mb-3">
-                    <label class="form-label">Notes</label>
-                    <textarea name="notes" class="form-control" rows="2">{{ old('notes', $deliveryNote->notes) }}</textarea>
+                    <label class="form-label">{{ __('Notes') }}</label>
+                    <textarea name="notes" class="form-control" rows="2">{{ old('notes', tdb($deliveryNote->notes)) }}</textarea>
                 </div>
             </div>
 
             <div class="text-end mt-4">
-                <a href="{{ route('delivery_notes.index') }}" class="btn btn-secondary">Cancel</a>
+                <a href="{{ route('delivery_notes.index') }}" class="btn btn-secondary">{{ __('Cancel') }}</a>
                 <button type="submit" class="btn btn-primary">Update Delivery Note</button>
             </div>
         </form>

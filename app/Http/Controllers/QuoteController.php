@@ -254,6 +254,7 @@ class QuoteController extends Controller
                 'show_customer_name' => $quote->show_customer_name ?? true,
                 'status' => 'Unpaid',
                 'notes' => $quote->notes,
+                'terms' => $quote->terms,
             ]);
 
             foreach ($quote->items as $item) {
@@ -275,6 +276,9 @@ class QuoteController extends Controller
 
     public function downloadPdf(Quote $quote)
     {
+        if (request()->filled('lang')) {
+            app()->setLocale(request('lang'));
+        }
         $quote->load('customer', 'customerCompany', 'items', 'employee');
         $setting = ($quote->shop_id ? Setting::withoutGlobalScopes()->where('shop_id', $quote->shop_id)->first() : null) ?: current_setting();
 
@@ -289,6 +293,9 @@ class QuoteController extends Controller
             'autoScriptToLang' => true,
             'autoLangToFont' => true,
         ]);
+        if (app()->getLocale() === 'ar') {
+            $mpdf->SetDirectionality('rtl');
+        }
 
         $html = view('admin.quotes.pdf', compact('quote', 'setting'))->render();
         $mpdf->WriteHTML($html);

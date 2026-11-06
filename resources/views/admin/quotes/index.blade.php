@@ -1,23 +1,23 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Manage Quotes')
+@section('title', __('Manage Quotes'))
 
 @section('content')
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="fw-bold text-dark mb-0">Quotes</h2>
+        <h2 class="fw-bold text-dark mb-0">{{ __('Quotes') }}</h2>
         <div class="d-flex gap-2">
         <form action="{{ url()->current() }}" method="GET" class="d-flex gap-2 mb-0">
             <div class="input-group">
                 <span class="input-group-text bg-white border-end-0"><i class="fas fa-search text-muted"></i></span>
-                <input type="text" name="search" value="{{ request('search') }}" class="form-control border-start-0" placeholder="Search Name, Quote #..." onkeypress="if(event.keyCode == 13) this.form.submit()">
+                <input type="text" name="search" value="{{ request('search') }}" class="form-control border-start-0" placeholder="{{ __('Search Name, Quote #...') }}" onkeypress="if(event.keyCode == 13) this.form.submit()">
             </div>
-            <input type="date" name="date" value="{{ request('date') }}" class="form-control" style="max-width: 150px; cursor: pointer;" title="Filter by date" onclick="this.showPicker()" onchange="this.form.submit()">
+            <input type="date" name="date" value="{{ request('date') }}" class="form-control" style="max-width: 150px; cursor: pointer;" title="{{ __('Filter by date') }}" onclick="this.showPicker()" onchange="this.form.submit()">
             @if(request()->has('search') || request()->has('date'))
-                <a href="{{ url()->current() }}" class="btn btn-light border" title="Clear Filters"><i class="fas fa-times"></i></a>
+                <a href="{{ url()->current() }}" class="btn btn-light border" title="{{ __('Clear Filters') }}"><i class="fas fa-times"></i></a>
             @endif
         </form>
         <a href="{{ route('quotes.create') }}" class="btn btn-primary-modern text-nowrap">
-            <i class="fas fa-plus me-2"></i> Create New Quote
+            <i class="fas fa-plus me-2"></i> {{ __('Create New Quote') }}
         </a>
     </div>
 </div>
@@ -25,23 +25,23 @@
     <x-card :padding="false">
         <x-table>
             <x-slot name="thead">
-                <th>Quote #</th>
-                <th>Customer</th>
-                <th>Date</th>
-                <th>Employee</th>
-                <th>Grand Total</th>
-                <th>Status</th>
-                <th>Images</th>
-                <th class="text-end">Action</th>
+                <th class="text-nowrap">{{ __('Quote #') }}</th>
+                <th style="min-width: 180px;">{{ __('Customer') }}</th>
+                <th class="text-nowrap">{{ __('Date') }}</th>
+                <th class="text-nowrap">{{ __('Employee') }}</th>
+                <th class="text-nowrap">{{ __('Grand Total') }}</th>
+                <th class="text-nowrap">{{ __('Status') }}</th>
+                <th class="text-nowrap">{{ __('Images') }}</th>
+                <th class="text-end text-nowrap">{{ __('Action') }}</th>
             </x-slot>
 
             @foreach($quotes as $quote)
-                <tr class="quote-row">
-                    <td class="fw-bold text-primary">{{ $quote->quote_number }}</td>
+                <tr class="quote-row align-middle">
+                    <td class="fw-bold text-primary text-nowrap">{{ $quote->quote_number }}</td>
                     <td>
-                        <div class="fw-bold">{{ $quote->customer->name ?? '' }}</div>
+                        <div class="fw-semibold text-dark" style="font-size: 0.88rem; line-height: 1.35;">{{ tdb($quote->customer->name ?? '') }}</div>
                         @if(!empty($quote->customer->company_name))
-                            <div class="small text-muted"><i class="fas fa-building me-1"></i>{{ $quote->customer->company_name }}</div>
+                            <div class="small text-muted"><i class="fas fa-building me-1"></i>{{ tdb($quote->customer->company_name) }}</div>
                         @endif
                         @if(!empty($quote->customer->phone))
                             <div class="small text-muted mt-1"><i class="fas fa-phone-alt me-1 text-primary"></i>{{ $quote->customer->phone }}</div>
@@ -51,11 +51,11 @@
                     <td>
                         @if($quote->employee)
                             <span class="badge bg-light text-dark border">
-                                <i class="fas fa-user-circle text-primary me-1"></i>{{ $quote->employee->name }}
+                                <i class="fas fa-user-circle text-primary me-1"></i>{{ tdb($quote->employee->name) }}
                             </span>
                         @else
                             <span class="badge bg-light text-secondary border">
-                                <i class="fas fa-user-shield text-muted me-1"></i>Admin
+                                <i class="fas fa-user-shield text-muted me-1"></i>{{ __('Admin') }}
                             </span>
                         @endif
                     </td>
@@ -71,7 +71,7 @@
                             };
                         @endphp
                         <span class="badge-soft {{ $statusClass }}">
-                            {{ $quote->status }}
+                            {{ __($quote->status) }}
                         </span>
                     </td>
                     <td>
@@ -95,7 +95,7 @@
                             </div>
                         @else
                             <span class="badge bg-light text-muted border" style="font-size: 0.75rem;">
-                                <i class="fas fa-image me-1"></i> None
+                                <i class="fas fa-image me-1"></i> {{ __('None') }}
                             </span>
                         @endif
                     </td>
@@ -107,11 +107,11 @@
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
                                 <li><a class="dropdown-item py-2" href="{{ route('quotes.show', $quote) }}"><i
-                                            class="fas fa-eye me-2 text-primary"></i> View Detail</a></li>
+                                            class="fas fa-eye me-2 text-primary"></i> {{ __('View Detail') }}</a></li>
                                 <li><a class="dropdown-item py-2" href="{{ route('quotes.edit', $quote) }}"><i
-                                            class="fas fa-edit me-2 text-info"></i> Edit</a></li>
+                                            class="fas fa-edit me-2 text-info"></i> {{ __('Edit') }}</a></li>
                                 <li><a class="dropdown-item py-2" href="{{ route('quotes.pdf', $quote) }}"><i
-                                            class="fas fa-file-pdf me-2 text-danger"></i> Download PDF</a></li>
+                                            class="fas fa-file-pdf me-2 text-danger"></i> {{ __('Download PDF') }}</a></li>
                                 @if(auth()->user()->role !== 'employee')
                                 <li>
                                     <button type="button" class="dropdown-item py-2 assign-emp-trigger"
@@ -119,7 +119,7 @@
                                             data-id="{{ $quote->id }}"
                                             data-number="{{ $quote->quote_number }}"
                                             data-current-emp-id="{{ $quote->employee_id ?? '' }}">
-                                        <i class="fas fa-user-tag me-2 text-warning"></i> Assign / Reclaim
+                                        <i class="fas fa-user-tag me-2 text-warning"></i> {{ __('Assign / Reclaim') }}
                                     </button>
                                 </li>
                                 @endif
@@ -129,7 +129,7 @@
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="dropdown-item py-2 text-danger">
-                                            <i class="fas fa-trash me-2"></i> Delete
+                                            <i class="fas fa-trash me-2"></i> {{ __('Delete') }}
                                         </button>
                                     </form>
                                 </li>
@@ -171,18 +171,18 @@
             <div class="modal-content border-0 shadow">
                 <div class="modal-header bg-light">
                     <h5 class="modal-title fw-bold text-dark">
-                        <i class="fas fa-user-tag text-primary me-2"></i> Assign Quote <span id="modalQuoteNumber" class="text-primary"></span>
+                        <i class="fas fa-user-tag text-primary me-2"></i> {{ __('Assign Quote') }} <span id="modalQuoteNumber" class="text-primary"></span>
                     </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <form id="assignQuoteForm" method="POST" action="">
                     @csrf
                     <div class="modal-body p-4">
-                        <p class="text-muted small mb-3">Select an employee to assign this quote to, or choose <strong>Admin (Myself / Reclaim)</strong> to reclaim full control.</p>
+                        <p class="text-muted small mb-3">{{ __('Select an employee to assign this quote to, or choose Admin (Myself / Reclaim) to reclaim full control.') }}</p>
                         <div class="mb-3">
-                            <label class="form-label fw-semibold text-dark">Assignee / Owner</label>
+                            <label class="form-label fw-semibold text-dark">{{ __('Assignee / Owner') }}</label>
                             <select name="employee_id" id="modalQuoteEmployeeSelect" class="form-select">
-                                <option value="">-- Admin (Myself / Reclaim) --</option>
+                                <option value="">-- {{ __('Admin (Myself / Reclaim)') }} --</option>
                                 @foreach($employees as $emp)
                                     <option value="{{ $emp->id }}">
                                         {{ $emp->name }} ({{ $emp->designation ?? 'Staff' }})
@@ -190,14 +190,14 @@
                                 @endforeach
                             </select>
                             <div class="form-text text-muted">
-                                Selecting <em>Admin (Myself / Reclaim)</em> unassigns employees and keeps it under Admin ownership.
+                                {{ __('Selecting Admin (Myself / Reclaim) unassigns employees and keeps it under Admin ownership.') }}
                             </div>
                         </div>
                     </div>
                     <div class="modal-footer bg-light">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('Cancel') }}</button>
                         <button type="submit" class="btn btn-primary-modern">
-                            <i class="fas fa-save me-1"></i> Save Assignment
+                            <i class="fas fa-save me-1"></i> {{ __('Save Assignment') }}
                         </button>
                     </div>
                 </form>

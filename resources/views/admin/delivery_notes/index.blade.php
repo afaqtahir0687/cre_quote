@@ -1,24 +1,24 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Manage Delivery Notes')
+@section('title', __('Manage Delivery Notes'))
 
 @section('content')
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="fw-bold text-dark mb-0">Delivery Notes</h2>
+        <h2 class="fw-bold text-dark mb-0">{{ __('Delivery Notes') }}</h2>
             <div class="d-flex align-items-center gap-3">
         <form action="{{ url()->current() }}" method="GET" class="d-flex gap-2 mb-0">
             <div class="input-group">
                 <span class="input-group-text bg-white border-end-0"><i class="fas fa-search text-muted"></i></span>
-                <input type="text" name="search" value="{{ request('search') }}" class="form-control border-start-0" placeholder="Search DN..." onkeypress="if(event.keyCode == 13) this.form.submit()">
+                <input type="text" name="search" value="{{ request('search') }}" class="form-control border-start-0" placeholder="{{ __('Search DN...') }}" onkeypress="if(event.keyCode == 13) this.form.submit()">
             </div>
-            <input type="date" name="date" value="{{ request('date') }}" class="form-control" style="max-width: 150px; cursor: pointer;" title="Filter by date" onclick="this.showPicker()" onchange="this.form.submit()">
+            <input type="date" name="date" value="{{ request('date') }}" class="form-control" style="max-width: 150px; cursor: pointer;" title="{{ __('Filter by date') }}" onclick="this.showPicker()" onchange="this.form.submit()">
             @if(request()->has('search') || request()->has('date'))
-                <a href="{{ url()->current() }}" class="btn btn-light border" title="Clear Filters"><i class="fas fa-times"></i></a>
+                <a href="{{ url()->current() }}" class="btn btn-light border" title="{{ __('Clear Filters') }}"><i class="fas fa-times"></i></a>
             @endif
         </form>
 
         <a href="{{ route('delivery_notes.create') }}" class="btn btn-primary d-flex align-items-center">
-            <i class="fas fa-plus me-2"></i> Create Delivery Note
+            <i class="fas fa-plus me-2"></i> {{ __('Create Delivery Note') }}
         </a>
     </div>
     </div>
@@ -26,23 +26,23 @@
     <x-card :padding="false">
         <x-table>
             <x-slot name="thead">
-                <th>Delivery #</th>
-                <th>Date</th>
-                <th>Customer</th>
-                <th>Invoice #</th>
-                <th>Employee</th>
-                <th>Status</th>
-                <th class="text-end">Action</th>
+                <th class="text-nowrap">{{ __('Delivery #') }}</th>
+                <th class="text-nowrap">{{ __('Date') }}</th>
+                <th style="min-width: 180px;">{{ __('Customer') }}</th>
+                <th class="text-nowrap">{{ __('Invoice #') }}</th>
+                <th class="text-nowrap">{{ __('Employee') }}</th>
+                <th class="text-nowrap">{{ __('Status') }}</th>
+                <th class="text-end text-nowrap">{{ __('Action') }}</th>
             </x-slot>
 
             @foreach($deliveryNotes as $deliveryNote)
-                <tr>
-                    <td class="fw-bold text-primary">{{ $deliveryNote->delivery_number }}</td>
-                    <td class="text-muted">{{ $deliveryNote->delivery_date }}</td>
+                <tr class="align-middle">
+                    <td class="fw-bold text-primary text-nowrap">{{ $deliveryNote->delivery_number }}</td>
+                    <td class="text-muted text-nowrap">{{ $deliveryNote->delivery_date }}</td>
                     <td>
-                        <div class="fw-bold">{{ $deliveryNote->customer->name ?? '' }}</div>
+                        <div class="fw-semibold text-dark" style="font-size: 0.88rem; line-height: 1.35;">{{ tdb($deliveryNote->customer->name ?? '') }}</div>
                         @if(!empty($deliveryNote->customer->company_name))
-                            <div class="small text-muted"><i class="fas fa-building me-1"></i>{{ $deliveryNote->customer->company_name }}</div>
+                            <div class="small text-muted"><i class="fas fa-building me-1"></i>{{ tdb($deliveryNote->customer->company_name) }}</div>
                         @endif
                         @if(!empty($deliveryNote->customer->phone))
                             <div class="small text-muted mt-1"><i class="fas fa-phone-alt me-1 text-primary"></i>{{ $deliveryNote->customer->phone }}</div>
@@ -52,11 +52,11 @@
                     <td>
                         @if($deliveryNote->employee)
                             <span class="badge bg-light text-dark border">
-                                <i class="fas fa-user-circle text-primary me-1"></i>{{ $deliveryNote->employee->name }}
+                                <i class="fas fa-user-circle text-primary me-1"></i>{{ tdb($deliveryNote->employee->name) }}
                             </span>
                         @else
                             <span class="badge bg-light text-secondary border">
-                                <i class="fas fa-user-shield text-muted me-1"></i>Admin
+                                <i class="fas fa-user-shield text-muted me-1"></i>{{ __('Admin') }}
                             </span>
                         @endif
                     </td>
@@ -70,7 +70,7 @@
                             };
                         @endphp
                         <span class="badge-soft {{ $statusClass }}">
-                            {{ $deliveryNote->status }}
+                            {{ __($deliveryNote->status) }}
                         </span>
                     </td>
                     <td class="text-end">
@@ -81,11 +81,11 @@
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
                                 <li><a class="dropdown-item py-2" href="{{ route('delivery_notes.show', $deliveryNote) }}"><i
-                                            class="fas fa-eye me-2 text-primary"></i> View Detail</a></li>
+                                            class="fas fa-eye me-2 text-primary"></i> {{ __('View Detail') }}</a></li>
                                 <li><a class="dropdown-item py-2" href="{{ route('delivery_notes.edit', $deliveryNote) }}"><i
-                                            class="fas fa-edit me-2 text-info"></i> Edit</a></li>
+                                            class="fas fa-edit me-2 text-info"></i> {{ __('Edit') }}</a></li>
                                 <li><a class="dropdown-item py-2" href="{{ route('delivery_notes.pdf', $deliveryNote) }}"><i
-                                            class="fas fa-file-pdf me-2 text-danger"></i> Download PDF</a></li>
+                                            class="fas fa-file-pdf me-2 text-danger"></i> {{ __('Download PDF') }}</a></li>
                                 @if(auth()->user()->role !== 'employee')
                                 <li>
                                     <button type="button" class="dropdown-item py-2 assign-emp-trigger"
@@ -93,7 +93,7 @@
                                             data-id="{{ $deliveryNote->id }}"
                                             data-number="{{ $deliveryNote->delivery_number }}"
                                             data-current-emp-id="{{ $deliveryNote->employee_id ?? '' }}">
-                                        <i class="fas fa-user-tag me-2 text-warning"></i> Assign / Reclaim
+                                        <i class="fas fa-user-tag me-2 text-warning"></i> {{ __('Assign / Reclaim') }}
                                     </button>
                                 </li>
                                 @endif
@@ -104,7 +104,7 @@
                                         <input type="hidden" name="status" value="Delivered">
                                         <button type="submit" class="dropdown-item py-2 text-success"
                                             onclick="return confirm('Mark as Delivered?')">
-                                            <i class="fas fa-check me-2"></i> Mark Delivered
+                                            <i class="fas fa-check me-2"></i> {{ __('Mark Delivered') }}
                                         </button>
                                     </form>
                                 </li>
@@ -128,18 +128,18 @@
             <div class="modal-content border-0 shadow">
                 <div class="modal-header bg-light">
                     <h5 class="modal-title fw-bold text-dark">
-                        <i class="fas fa-user-tag text-primary me-2"></i> Assign Delivery Note <span id="modalDeliveryNoteNumber" class="text-primary"></span>
+                        <i class="fas fa-user-tag text-primary me-2"></i> {{ __('Assign Delivery Note') }} <span id="modalDeliveryNoteNumber" class="text-primary"></span>
                     </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <form id="assignDeliveryNoteForm" method="POST" action="">
                     @csrf
                     <div class="modal-body p-4">
-                        <p class="text-muted small mb-3">Select an employee to assign this delivery note to, or choose <strong>Admin (Myself / Reclaim)</strong> to reclaim full control.</p>
+                        <p class="text-muted small mb-3">{{ __('Select an employee to assign this delivery note to, or choose Admin (Myself / Reclaim) to reclaim full control.') }}</p>
                         <div class="mb-3">
-                            <label class="form-label fw-semibold text-dark">Assignee / Owner</label>
+                            <label class="form-label fw-semibold text-dark">{{ __('Assignee / Owner') }}</label>
                             <select name="employee_id" id="modalDeliveryNoteEmployeeSelect" class="form-select">
-                                <option value="">-- Admin (Myself / Reclaim) --</option>
+                                <option value="">-- {{ __('Admin (Myself / Reclaim)') }} --</option>
                                 @foreach($employees as $emp)
                                     <option value="{{ $emp->id }}">
                                         {{ $emp->name }} ({{ $emp->designation ?? 'Staff' }})
@@ -147,14 +147,14 @@
                                 @endforeach
                             </select>
                             <div class="form-text text-muted">
-                                Selecting <em>Admin (Myself / Reclaim)</em> unassigns employees and keeps it under Admin ownership.
+                                {{ __('Selecting Admin (Myself / Reclaim) unassigns employees and keeps it under Admin ownership.') }}
                             </div>
                         </div>
                     </div>
                     <div class="modal-footer bg-light">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('Cancel') }}</button>
                         <button type="submit" class="btn btn-primary-modern">
-                            <i class="fas fa-save me-1"></i> Save Assignment
+                            <i class="fas fa-save me-1"></i> {{ __('Save Assignment') }}
                         </button>
                     </div>
                 </form>

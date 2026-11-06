@@ -1,19 +1,19 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Manage Subscriptions & Packages')
+@section('title', __('Subscriptions & Cash Collection'))
 
 @section('content')
 <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
     <div>
-        <h2 class="fw-bold text-dark mb-1">Subscriptions & Cash Collection</h2>
-        <p class="text-muted small mb-0">Monitor shop plans, 1-week test accounts, cash in hand renewals, and multi-shop allocations.</p>
+        <h2 class="fw-bold text-dark mb-1">{{ __('Subscriptions & Cash Collection') }}</h2>
+        <p class="text-muted small mb-0">{{ __('Monitor shop plans, 1-week test accounts, cash in hand renewals, and multi-shop allocations.') }}</p>
     </div>
     <div class="d-flex align-items-center gap-2">
         <a href="{{ route('super_admin.packages.index') }}" class="btn btn-outline-secondary">
-            <i class="fas fa-boxes me-1"></i> Manage Packages & Pricing
+            <i class="fas fa-boxes me-1"></i> {{ __('Manage Packages & Pricing') }}
         </a>
         <a href="{{ route('super_admin.shops.create') }}" class="btn btn-primary-modern">
-            <i class="fas fa-plus me-1"></i> New Shop With Package
+            <i class="fas fa-plus me-1"></i> {{ __('New Shop With Package') }}
         </a>
     </div>
 </div>
@@ -27,7 +27,7 @@
                     <i class="fas fa-check-circle fs-4"></i>
                 </div>
                 <div>
-                    <div class="text-muted small">Active Subscriptions</div>
+                    <div class="text-muted small">{{ __('Active Subscriptions') }}</div>
                     <div class="fs-4 fw-bold text-dark">{{ $activeCount }} <span class="fs-6 text-muted fw-normal">/ {{ $totalShops }}</span></div>
                 </div>
             </div>
@@ -40,7 +40,7 @@
                     <i class="fas fa-clock fs-4"></i>
                 </div>
                 <div>
-                    <div class="text-muted small">Expired Shops</div>
+                    <div class="text-muted small">{{ __('Expired Shops') }}</div>
                     <div class="fs-4 fw-bold text-danger">{{ $expiredCount }}</div>
                 </div>
             </div>
@@ -53,7 +53,7 @@
                     <i class="fas fa-flask fs-4"></i>
                 </div>
                 <div>
-                    <div class="text-muted small">1-Week Test Accounts</div>
+                    <div class="text-muted small">{{ __('1-Week Test Accounts') }}</div>
                     <div class="fs-4 fw-bold text-dark">{{ $trialCount }}</div>
                 </div>
             </div>
@@ -66,7 +66,7 @@
                     <i class="fas fa-hand-holding-usd fs-4"></i>
                 </div>
                 <div>
-                    <div class="text-muted small">Total Cash Collected</div>
+                    <div class="text-muted small">{{ __('Total Cash Collected') }}</div>
                     <div class="fs-4 fw-bold text-primary">{{ format_subscription_currency($totalCashCollected) }}</div>
                 </div>
             </div>
@@ -80,18 +80,18 @@
         <div class="card-body p-4">
             <div class="d-flex align-items-center gap-2 mb-3">
                 <i class="fas fa-bell text-warning fs-5"></i>
-                <h5 class="fw-bold mb-0 text-dark">Pending Cash By Hand Verification Requests ({{ $pendingRequests->count() }})</h5>
+                <h5 class="fw-bold mb-0 text-dark">{{ __('Pending Cash By Hand Verification Requests') }} ({{ $pendingRequests->count() }})</h5>
             </div>
             <div class="table-responsive">
                 <table class="table table-sm align-middle mb-0">
                     <thead class="text-muted small">
                         <tr>
-                            <th>Shop</th>
-                            <th>Requested Package</th>
-                            <th>Amount</th>
-                            <th>Requested By</th>
-                            <th>Notes</th>
-                            <th class="text-end">Action</th>
+                            <th>{{ __('Shop') }}</th>
+                            <th>{{ __('Requested Package') }}</th>
+                            <th>{{ __('Amount') }}</th>
+                            <th>{{ __('Requested By') }}</th>
+                            <th>{{ __('Notes') }}</th>
+                            <th class="text-end">{{ __('Action') }}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -106,7 +106,7 @@
                                     <form action="{{ route('super_admin.subscriptions.approve', $req->id) }}" method="POST" class="d-inline">
                                         @csrf
                                         <button type="submit" class="btn btn-sm btn-success px-3 shadow-none">
-                                            <i class="fas fa-check me-1"></i> Cash Received & Activate
+                                            <i class="fas fa-check me-1"></i> {{ __('Cash Received & Activate') }}
                                         </button>
                                     </form>
                                 </td>
@@ -126,12 +126,12 @@
             <div class="col-md-5">
                 <div class="input-group">
                     <span class="input-group-text bg-white border-end-0"><i class="fas fa-search text-muted"></i></span>
-                    <input type="text" name="search" class="form-control border-start-0 ps-0" placeholder="Search shop name, phone, email..." value="{{ request('search') }}">
+                    <input type="text" name="search" class="form-control border-start-0 ps-0" placeholder="{{ __('Search shop name, phone, email...') }}" value="{{ request('search') }}">
                 </div>
             </div>
             <div class="col-md-3">
                 <select name="package_id" class="form-select" onchange="this.form.submit()">
-                    <option value="">All Packages</option>
+                    <option value="">{{ __('All Packages') }}</option>
                     @foreach($packages as $p)
                         <option value="{{ $p->id }}" {{ request('package_id') == $p->id ? 'selected' : '' }}>
                             {{ $p->name }}
@@ -140,10 +140,10 @@
                 </select>
             </div>
             <div class="col-md-4 d-flex gap-2">
-                <a href="{{ route('super_admin.subscriptions.index') }}" class="btn btn-outline-secondary {{ !request('filter') ? 'active' : '' }}">All</a>
-                <a href="{{ route('super_admin.subscriptions.index', ['filter' => 'active']) }}" class="btn btn-outline-success {{ request('filter') === 'active' ? 'active' : '' }}">Active</a>
-                <a href="{{ route('super_admin.subscriptions.index', ['filter' => 'trial']) }}" class="btn btn-outline-warning {{ request('filter') === 'trial' ? 'active' : '' }}">1-Wk Trial</a>
-                <a href="{{ route('super_admin.subscriptions.index', ['filter' => 'expired']) }}" class="btn btn-outline-danger {{ request('filter') === 'expired' ? 'active' : '' }}">Expired</a>
+                <a href="{{ route('super_admin.subscriptions.index') }}" class="btn btn-outline-secondary {{ !request('filter') ? 'active' : '' }}">{{ __('All') }}</a>
+                <a href="{{ route('super_admin.subscriptions.index', ['filter' => 'active']) }}" class="btn btn-outline-success {{ request('filter') === 'active' ? 'active' : '' }}">{{ __('Active') }}</a>
+                <a href="{{ route('super_admin.subscriptions.index', ['filter' => 'trial']) }}" class="btn btn-outline-warning {{ request('filter') === 'trial' ? 'active' : '' }}">{{ __('1-Wk Trial') }}</a>
+                <a href="{{ route('super_admin.subscriptions.index', ['filter' => 'expired']) }}" class="btn btn-outline-danger {{ request('filter') === 'expired' ? 'active' : '' }}">{{ __('Expired') }}</a>
             </div>
         </form>
     </div>
@@ -153,13 +153,13 @@
 <x-card :padding="false">
     <x-table>
         <x-slot name="thead">
-            <th>Shop Details</th>
-            <th>Account Status</th>
-            <th>Current Package</th>
-            <th>Subscription Validity</th>
-            <th>Days Left</th>
-            <th>Branches</th>
-            <th class="text-end pe-4">Action</th>
+            <th>{{ __('Shop Details') }}</th>
+            <th>{{ __('Account Status') }}</th>
+            <th>{{ __('Current Package') }}</th>
+            <th>{{ __('Subscription Validity') }}</th>
+            <th>{{ __('Days Left') }}</th>
+            <th>{{ __('Branches') }}</th>
+            <th class="text-end pe-4">{{ __('Action') }}</th>
         </x-slot>
 
         @forelse($shops as $shop)
@@ -189,11 +189,11 @@
                 </td>
                 <td>
                     @if($shop->isActive())
-                        <span class="badge-soft badge-soft-success">Active</span>
+                        <span class="badge-soft badge-soft-success">{{ __('Active') }}</span>
                     @elseif($shop->isInactive())
-                        <span class="badge-soft badge-soft-warning">Inactive</span>
+                        <span class="badge-soft badge-soft-warning">{{ __('Inactive') }}</span>
                     @elseif($shop->isSuspended())
-                        <span class="badge-soft badge-soft-danger">Suspended</span>
+                        <span class="badge-soft badge-soft-danger">{{ __('Suspended') }}</span>
                     @else
                         <span class="badge-soft badge-soft-secondary">{{ ucfirst($shop->status) }}</span>
                     @endif
@@ -211,7 +211,7 @@
                             {{ $pkg->name }}
                         </span>
                     @else
-                        <span class="badge-soft badge-soft-secondary">No Package</span>
+                        <span class="badge-soft badge-soft-secondary">{{ __('No Package') }}</span>
                     @endif
                 </td>
                 <td>
@@ -220,10 +220,10 @@
                             {{ $shop->subscription_expires_at->format('d-M-Y') }}
                         </div>
                         <div class="text-muted small">
-                            Started: {{ $shop->subscription_starts_at ? $shop->subscription_starts_at->format('d-M-Y') : 'N/A' }}
+                            {{ __('Started:') }} {{ $shop->subscription_starts_at ? $shop->subscription_starts_at->format('d-M-Y') : 'N/A' }}
                         </div>
                     @else
-                        <span class="text-muted small">Not set</span>
+                        <span class="text-muted small">{{ __('Not set') }}</span>
                     @endif
                 </td>
                 <td>
@@ -234,11 +234,11 @@
                     @else
                         @if($daysRemaining <= 7)
                             <span class="badge-soft badge-soft-warning">
-                                <i class="fas fa-hourglass-half me-1"></i> {{ $daysRemaining }} days left
+                                <i class="fas fa-hourglass-half me-1"></i> {{ $daysRemaining }} {{ __('days left') }}
                             </span>
                         @else
                             <span class="badge-soft badge-soft-success">
-                                <i class="fas fa-check me-1"></i> {{ $daysRemaining }} days left
+                                <i class="fas fa-check me-1"></i> {{ $daysRemaining }} {{ __('days left') }}
                             </span>
                         @endif
                     @endif
@@ -246,10 +246,10 @@
                 <td>
                     @if($pkg && $pkg->max_shops > 1)
                         <span class="badge-soft badge-soft-info">
-                            <i class="fas fa-code-branch me-1"></i> Up to {{ $pkg->max_shops }} Shops
+                            <i class="fas fa-code-branch me-1"></i> {{ __('Up to') }} {{ $pkg->max_shops }} {{ __('Shops') }}
                         </span>
                     @else
-                        <span class="text-muted small">Single Shop (1)</span>
+                        <span class="text-muted small">{{ __('Single Shop (1)') }}</span>
                     @endif
                 </td>
                 <td class="text-end pe-4">
@@ -265,12 +265,12 @@
                             data-current-expiry-raw="{{ $shop->subscription_expires_at ? $shop->subscription_expires_at->format('Y-m-d') : '' }}"
                             data-days-remaining="{{ $daysRemaining }}"
                             data-is-expired="{{ $isExpired ? '1' : '0' }}">
-                            <i class="fas fa-money-bill-wave me-1"></i> Renew / Assign Cash
+                            <i class="fas fa-money-bill-wave me-1"></i> {{ __('Renew / Assign Cash') }}
                         </button>
 
                         <!-- Admin Action Dropdown for Status Change (Inactive / Suspend / Reactivate) -->
                         <div class="dropdown">
-                            <button class="btn btn-light btn-sm rounded-circle shadow-none" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="More Actions">
+                            <button class="btn btn-light btn-sm rounded-circle shadow-none" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="{{ __('More Actions') }}">
                                 <i class="fas fa-ellipsis-v text-muted"></i>
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
@@ -286,7 +286,7 @@
                                         data-current-expiry-raw="{{ $shop->subscription_expires_at ? $shop->subscription_expires_at->format('Y-m-d') : '' }}"
                                         data-days-remaining="{{ $daysRemaining }}"
                                         data-is-expired="{{ $isExpired ? '1' : '0' }}">
-                                        <i class="fas fa-hand-holding-usd me-2 text-primary"></i> Renew / Assign Cash
+                                        <i class="fas fa-hand-holding-usd me-2 text-primary"></i> {{ __('Renew / Assign Cash') }}
                                     </button>
                                 </li>
                                 <li><hr class="dropdown-divider"></li>
@@ -297,7 +297,7 @@
                                             @csrf
                                             <input type="hidden" name="status" value="inactive">
                                             <button type="submit" class="dropdown-item py-2 text-warning">
-                                                <i class="fas fa-pause-circle me-2"></i> Set Inactive (Payment Issue)
+                                                <i class="fas fa-pause-circle me-2"></i> {{ __('Set Inactive (Payment Issue)') }}
                                             </button>
                                         </form>
                                     </li>
@@ -306,7 +306,7 @@
                                             @csrf
                                             <input type="hidden" name="status" value="suspended">
                                             <button type="submit" class="dropdown-item py-2 text-danger">
-                                                <i class="fas fa-ban me-2"></i> Suspend Shop
+                                                <i class="fas fa-ban me-2"></i> {{ __('Suspend Shop') }}
                                             </button>
                                         </form>
                                     </li>
@@ -316,7 +316,7 @@
                                             @csrf
                                             <input type="hidden" name="status" value="active">
                                             <button type="submit" class="dropdown-item py-2 text-success">
-                                                <i class="fas fa-play-circle me-2"></i> Re-Activate Shop
+                                                <i class="fas fa-play-circle me-2"></i> {{ __('Re-Activate Shop') }}
                                             </button>
                                         </form>
                                     </li>
@@ -325,7 +325,7 @@
                                             @csrf
                                             <input type="hidden" name="status" value="suspended">
                                             <button type="submit" class="dropdown-item py-2 text-danger">
-                                                <i class="fas fa-ban me-2"></i> Permanently Suspend
+                                                <i class="fas fa-ban me-2"></i> {{ __('Permanently Suspend') }}
                                             </button>
                                         </form>
                                     </li>
@@ -335,7 +335,7 @@
                                             @csrf
                                             <input type="hidden" name="status" value="active">
                                             <button type="submit" class="dropdown-item py-2 text-success">
-                                                <i class="fas fa-undo me-2"></i> Lift Suspension (Re-Activate)
+                                                <i class="fas fa-undo me-2"></i> {{ __('Lift Suspension (Re-Activate)') }}
                                             </button>
                                         </form>
                                     </li>
@@ -349,7 +349,7 @@
             <tr>
                 <td colspan="7" class="text-center py-5 text-muted">
                     <i class="fas fa-store-slash fa-2x mb-3 text-secondary"></i>
-                    <div>No shops found.</div>
+                    <div>{{ __('No shops found.') }}</div>
                 </td>
             </tr>
         @endforelse
@@ -371,7 +371,7 @@
                 <div class="modal-header border-0 pb-0 pt-4 px-4 d-flex justify-content-between align-items-center">
                     <div>
                         <h5 class="modal-title fw-bold text-dark mb-0" id="assignPackageModalLabel">
-                            <i class="fas fa-hand-holding-usd text-primary me-2"></i> Renew / Assign Package
+                            <i class="fas fa-hand-holding-usd text-primary me-2"></i> {{ __('Renew / Assign Package') }}
                         </h5>
                         <div class="small text-muted mt-1">
                             Shop: <strong id="modalShopNameDisplay" class="text-dark">--</strong> &bull; <span id="modalShopStatusBadge"></span>
@@ -383,7 +383,7 @@
                 <div class="modal-body p-4 pt-3">
                     <!-- Package Select -->
                     <div class="mb-3">
-                        <label class="form-label fw-bold text-dark small mb-1">Select Package <span class="text-danger">*</span></label>
+                        <label class="form-label fw-bold text-dark small mb-1">{{ __('Select Package') }} <span class="text-danger">*</span></label>
                         <select name="package_id" id="packageSelect" class="form-select form-select-sm" required>
                             @foreach($packages as $p)
                                 <option value="{{ $p->id }}" 
@@ -400,10 +400,10 @@
                     <!-- Duration & Cash Amount in 1 row -->
                     <div class="row g-2 mb-3">
                         <div class="col-6">
-                            <label class="form-label fw-bold text-dark small mb-1">Duration (Days) <span class="text-danger">*</span></label>
+                            <label class="form-label fw-bold text-dark small mb-1">{{ __('Duration (Days)') }} <span class="text-danger">*</span></label>
                             <input type="number" name="duration_days" id="durationDaysInput" class="form-control form-control-sm" value="365" min="1" max="3650" required>
                             <div class="d-flex gap-1 mt-1">
-                                <span class="text-muted" style="font-size: 0.7rem;">Quick:</span>
+                                <span class="text-muted" style="font-size: 0.7rem;">{{ __('Quick:') }}</span>
                                 <a href="javascript:void(0)" class="btn-day-preset text-decoration-none text-primary" data-days="7" style="font-size: 0.72rem;">7d</a>
                                 <span class="text-muted" style="font-size: 0.7rem;">|</span>
                                 <a href="javascript:void(0)" class="btn-day-preset text-decoration-none text-primary" data-days="30" style="font-size: 0.72rem;">30d</a>
@@ -412,54 +412,54 @@
                             </div>
                         </div>
                         <div class="col-6">
-                            <label class="form-label fw-bold text-dark small mb-1">Cash Amount (SAR) <span class="text-danger">*</span></label>
+                            <label class="form-label fw-bold text-dark small mb-1">{{ __('Cash Amount (SAR)') }} <span class="text-danger">*</span></label>
                             <input type="number" step="0.01" name="amount_paid" id="cashAmountInput" class="form-control form-control-sm fw-bold text-success" value="500" min="0" required>
-                            <div class="text-muted mt-1" style="font-size: 0.7rem;">0 for Free Test Trial, or SAR collected</div>
+                            <div class="text-muted mt-1" style="font-size: 0.7rem;">{{ __('0 for Free Test Trial, or SAR collected') }}</div>
                         </div>
                     </div>
 
                     <!-- Start Date & Live Expiry preview in 1 row -->
                     <div class="row g-2 mb-3">
                         <div class="col-6">
-                            <label class="form-label fw-bold text-dark small mb-1">Start From</label>
+                            <label class="form-label fw-bold text-dark small mb-1">{{ __('Start From') }}</label>
                             <select name="extend_from" id="extendFromSelect" class="form-select form-select-sm">
-                                <option value="today">Today (Reset Expiry)</option>
-                                <option value="current_expiry" id="optExtendCurrent" selected>Current Expiry (Extend)</option>
+                                <option value="today">{{ __('Today (Reset Expiry)') }}</option>
+                                <option value="current_expiry" id="optExtendCurrent" selected>{{ __('Current Expiry (Extend)') }}</option>
                             </select>
                         </div>
                         <div class="col-6">
-                            <label class="form-label fw-bold text-dark small mb-1">Calculated New Expiry</label>
+                            <label class="form-label fw-bold text-dark small mb-1">{{ __('Calculated New Expiry') }}</label>
                             <div class="form-control form-control-sm bg-light fw-bold text-success" id="calculatedExpiryDisplay">--</div>
                         </div>
                     </div>
 
                     <!-- Shop Account Status Selection -->
                     <div class="mb-3">
-                        <label class="form-label fw-bold text-dark small mb-1">Shop Status After Save</label>
+                        <label class="form-label fw-bold text-dark small mb-1">{{ __('Shop Status After Save') }}</label>
                         <select name="shop_status" id="shopStatusSelect" class="form-select form-select-sm">
-                            <option value="active" selected>Active (Normal Access)</option>
-                            <option value="inactive">Inactive (Payment Due / Warning)</option>
-                            <option value="suspended">Suspended (Blocked Access)</option>
+                            <option value="active" selected>{{ __('Active (Normal Access)') }}</option>
+                            <option value="inactive">{{ __('Inactive (Payment Due / Warning)') }}</option>
+                            <option value="suspended">{{ __('Suspended (Blocked Access)') }}</option>
                         </select>
                     </div>
 
                     <!-- Payment Memo Notes (Single row compact input) -->
                     <div class="mb-3">
-                        <label class="form-label fw-bold text-dark small mb-1">Payment Notes (Optional)</label>
+                        <label class="form-label fw-bold text-dark small mb-1">{{ __('Payment Notes (Optional)') }}</label>
                         <input type="text" name="payment_notes" id="paymentNotesInput" class="form-control form-control-sm" placeholder="e.g. Received SAR 500 cash by hand">
                     </div>
 
                     <!-- Compact notice -->
                     <div class="text-muted d-flex align-items-center gap-1" style="font-size: 0.75rem;">
                         <i class="fas fa-shield-alt text-primary"></i>
-                        <span>Instantly saves package & logs cash record in system.</span>
+                        <span>{{ __('Instantly saves package & logs cash record in system.') }}</span>
                     </div>
                 </div>
 
                 <div class="modal-footer border-0 p-4 pt-0 d-flex justify-content-between align-items-center">
-                    <button type="button" class="btn btn-link text-muted text-decoration-none" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-link text-muted text-decoration-none" data-bs-dismiss="modal">{{ __('Cancel') }}</button>
                     <button type="submit" id="btnSubmitAssign" class="btn btn-primary-modern px-4">
-                        <i class="fas fa-check-circle me-1"></i> Save & Activate Shop
+                        <i class="fas fa-check-circle me-1"></i> {{ __('Save & Activate Shop') }}
                     </button>
                 </div>
             </form>
@@ -552,7 +552,7 @@
         var submitBtn = document.getElementById('btnSubmitAssign');
         if (submitBtn) {
             submitBtn.disabled = false;
-            submitBtn.innerHTML = '<i class="fas fa-check-circle me-1"></i> Save & Activate Shop';
+            submitBtn.innerHTML = '<i class="fas fa-check-circle me-1"></i> {{ __('Save & Activate Shop') }}';
         }
 
         // Header Shop Display
@@ -562,11 +562,11 @@
         var statusBadge = document.getElementById('modalShopStatusBadge');
         if (statusBadge) {
             if (activeShop.status === 'active') {
-                statusBadge.innerHTML = '<span class="badge-soft badge-soft-success">Active</span>';
+                statusBadge.innerHTML = '<span class="badge-soft badge-soft-success">{{ __('Active') }}</span>';
             } else if (activeShop.status === 'inactive') {
-                statusBadge.innerHTML = '<span class="badge-soft badge-soft-warning">Inactive</span>';
+                statusBadge.innerHTML = '<span class="badge-soft badge-soft-warning">{{ __('Inactive') }}</span>';
             } else if (activeShop.status === 'suspended') {
-                statusBadge.innerHTML = '<span class="badge-soft badge-soft-danger">Suspended</span>';
+                statusBadge.innerHTML = '<span class="badge-soft badge-soft-danger">{{ __('Suspended') }}</span>';
             } else {
                 statusBadge.innerHTML = '<span class="badge-soft badge-soft-secondary">' + activeShop.status + '</span>';
             }

@@ -3,7 +3,7 @@
 <div {{ $attributes->merge(['class' => 'card-modern']) }}>
     @if($title)
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h5 class="mb-0 fw-bold text-dark">{{ $title }}</h5>
+            <h5 class="mb-0 fw-bold text-dark">{{ __($title) }}</h5>
             @if(isset($headerActions))
                 <div>{{ $headerActions }}</div>
             @endif

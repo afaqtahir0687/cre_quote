@@ -22,6 +22,7 @@ class JobOrder extends Model
         'order_date',
         'status',
         'notes',
+        'terms',
         'subtotal',
         'total_tax',
         'total_discount',
@@ -146,6 +147,28 @@ class JobOrder extends Model
             return 'Paid';
         }
         return ucfirst($this->payment_status);
+    }
+
+    public function getLocalizedNotesAttribute(): string
+    {
+        return tdb($this->notes);
+    }
+
+    public function getLocalizedTermsAttribute(): string
+    {
+        return tdb($this->terms);
+    }
+
+    protected static function booted()
+    {
+        static::saved(function ($order) {
+            if (!empty($order->notes)) {
+                \App\Services\TranslationService::warmCache($order->notes);
+            }
+            if (!empty($order->terms)) {
+                \App\Services\TranslationService::warmCache($order->terms);
+            }
+        });
     }
 }
 ?>

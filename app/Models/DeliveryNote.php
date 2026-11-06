@@ -51,4 +51,16 @@ class DeliveryNote extends Model
     {
         return $this->belongsTo(Employee::class);
     }
+
+    protected static function booted()
+    {
+        static::saved(function ($dn) {
+            if (!empty($dn->delivery_address)) {
+                \App\Services\TranslationService::warmCache($dn->delivery_address);
+            }
+            if (!empty($dn->notes)) {
+                \App\Services\TranslationService::warmCache($dn->notes);
+            }
+        });
+    }
 }

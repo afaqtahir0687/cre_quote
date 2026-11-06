@@ -1,12 +1,12 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Shop & Company Settings')
+@section('title', __('Shop & Company Settings'))
 
 @section('content')
 <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
     <div>
         <div class="d-flex align-items-center gap-2 mb-1">
-            <h2 class="fw-bold text-dark mb-0">Shop & Brand Settings</h2>
+            <h2 class="fw-bold text-dark mb-0">{{ __('Shop & Brand Settings') }}</h2>
             @if(isset($shop) && $shop)
                 <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-1 rounded-pill small">
                     <i class="fas fa-store me-1"></i> {{ $shop->name }} (Branch #{{ $shop->id }})
@@ -48,7 +48,7 @@
     <div class="row g-4">
         <!-- Card 1: Visual Brand & Logo Identity -->
         <div class="col-lg-12">
-            <x-card title="Brand Identity & Logo Configuration">
+            <x-card :title="__('Brand Identity & Logo Configuration')">
                 <div class="row g-4 align-items-center">
                     <div class="col-lg-4 text-center">
                         <div class="p-3 border rounded-4 bg-light d-flex flex-column align-items-center justify-content-center position-relative" style="min-height: 180px;">
@@ -67,7 +67,7 @@
                     <div class="col-lg-8">
                         <div class="mb-3">
                             <label class="form-label fw-bold text-dark">
-                                <i class="fas fa-cloud-upload-alt text-primary me-1"></i> Upload New Logo
+                                <i class="fas fa-cloud-upload-alt text-primary me-1"></i> {{ __('Upload New Logo') }}
                             </label>
                             <input type="file" name="company_logo" id="company_logo_input" class="form-control @error('company_logo') is-invalid @enderror" accept="image/png,image/jpeg,image/jpg,image/webp,image/svg+xml">
                             @error('company_logo') <div class="invalid-feedback">{{ $message }}</div> @enderror
@@ -80,7 +80,7 @@
                             <div class="form-check mt-3">
                                 <input class="form-check-input" type="checkbox" name="remove_logo" value="1" id="removeLogoCheck">
                                 <label class="form-check-label text-danger small fw-medium" for="removeLogoCheck">
-                                    <i class="fas fa-trash-alt me-1"></i> Remove custom logo and restore system default
+                                    <i class="fas fa-trash-alt me-1"></i> {{ __('Remove custom logo and restore system default') }}
                                 </label>
                             </div>
                         @endif
@@ -91,7 +91,7 @@
 
         <!-- Card: Bank Details & Official Stamp (PDF) -->
         <div class="col-lg-12">
-            <x-card title="Bank Account Details & Official Stamp (PDF Documents)">
+            <x-card :title="__('Bank Account Details & Official Stamp (PDF Documents)')">
                 <div class="row g-4 align-items-start">
                     <!-- Left: Live Preview of Bank Slip -->
                     <div class="col-lg-5">
@@ -193,7 +193,7 @@
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <label class="form-label fw-bold text-dark small">
-                                    Bank Name (English)
+                                    {{ __('Bank Name (English)') }}
                                 </label>
                                 <input type="text" name="bank_name" id="in_bank_name" class="form-control"
                                        value="{{ old('bank_name', $setting?->bank_name ?? 'SNB') }}" placeholder="e.g. SNB">
@@ -201,7 +201,7 @@
 
                             <div class="col-md-6">
                                 <label class="form-label fw-bold text-dark small">
-                                    Bank Name (Arabic)
+                                    {{ __('Bank Name (Arabic)') }}
                                 </label>
                                 <input type="text" name="bank_name_ar" id="in_bank_name_ar" class="form-control" dir="rtl"
                                        value="{{ old('bank_name_ar', $setting?->bank_name_ar ?? 'البنك الأهلي السعودي') }}" placeholder="البنك الأهلي السعودي">
@@ -209,7 +209,7 @@
 
                             <div class="col-12">
                                 <label class="form-label fw-bold text-dark small">
-                                    Account Holder / Company Name (Name / الإسم) *
+                                    {{ __('Account Holder / Company Name') }} *
                                 </label>
                                 <input type="text" name="bank_account_name" id="in_account_name" class="form-control"
                                        value="{{ old('bank_account_name', $setting?->bank_account_name ?? 'شركة وكالة الإعلان الجديد للدعاية والإعلان') }}" placeholder="e.g. شركة وكالة الإعلان الجديد للدعاية والإعلان">
@@ -217,7 +217,7 @@
 
                             <div class="col-md-6">
                                 <label class="form-label fw-bold text-dark small">
-                                    Account Number (A.C. No. / رقم الحساب) *
+                                    {{ __('Account Number') }} *
                                 </label>
                                 <input type="text" name="bank_account_no" id="in_account_no" class="form-control font-monospace"
                                        value="{{ old('bank_account_no', $setting?->bank_account_no ?? '24400001567203') }}" placeholder="24400001567203">
@@ -225,7 +225,7 @@
 
                             <div class="col-md-6">
                                 <label class="form-label fw-bold text-dark small">
-                                    SWIFT Code (رمز السويفت)
+                                    {{ __('SWIFT Code') }}
                                 </label>
                                 <input type="text" name="bank_swift" id="in_swift" class="form-control font-monospace"
                                        value="{{ old('bank_swift', $setting?->bank_swift ?? 'NCBKSAJE') }}" placeholder="NCBKSAJE">
@@ -233,7 +233,7 @@
 
                             <div class="col-12">
                                 <label class="form-label fw-bold text-dark small">
-                                    IBAN Number (رقم الآيبان) *
+                                    {{ __('IBAN Number') }} *
                                 </label>
                                 <input type="text" name="bank_iban" id="in_iban" class="form-control font-monospace"
                                        value="{{ old('bank_iban', $setting?->bank_iban ?? 'SA0210000024400001567203') }}" placeholder="SA0210000024400001567203">
@@ -243,7 +243,7 @@
 
                             <div class="col-md-6">
                                 <label class="form-label fw-bold text-dark small">
-                                    <i class="fas fa-stamp text-primary me-1"></i> Upload Company Stamp
+                                    <i class="fas fa-stamp text-primary me-1"></i> {{ __('Upload Official Stamp') }}
                                 </label>
                                 <input type="file" name="company_stamp" id="company_stamp_input" class="form-control form-control-sm" accept="image/png,image/jpeg,image/jpg,image/webp">
                                 <div class="form-text small">Upload transparent PNG/JPG official stamp.</div>
@@ -251,7 +251,7 @@
 
                             <div class="col-md-6">
                                 <label class="form-label fw-bold text-dark small">
-                                    <i class="fas fa-image text-muted me-1"></i> Or Full Graphic Card Image (Optional)
+                                    <i class="fas fa-image text-muted me-1"></i> {{ __('Or Full Graphic Card Image (Optional)') }}
                                 </label>
                                 <input type="file" name="bank_stamp_logo" id="bank_stamp_logo_input" class="form-control form-control-sm" accept="image/png,image/jpeg,image/jpg,image/webp">
                                 <div class="form-text small">If you prefer uploading a pre-made image instead.</div>
@@ -262,7 +262,7 @@
                                 <div class="form-check form-switch">
                                     <input class="form-check-input" type="checkbox" role="switch" name="use_custom_bank_image" value="1" id="useCustomBankImg" {{ old('use_custom_bank_image', $setting?->use_custom_bank_image) ? 'checked' : '' }}>
                                     <label class="form-check-label fw-semibold text-dark small" for="useCustomBankImg">
-                                        Use uploaded graphic card image instead of dynamic text card on PDFs
+                                        {{ __('Use uploaded graphic card image instead of dynamic text card on PDFs') }}
                                     </label>
                                 </div>
                             </div>
@@ -275,11 +275,11 @@
 
         <div class="col-lg-7">
             
-            <x-card title="Shop Profile & Company Details">
+            <x-card :title="__('Shop Profile & Company Details')">
                 <div class="row g-3">
                     <div class="col-md-12">
                         <label class="form-label fw-bold text-dark">
-                            Company / Shop Name *
+                            {{ __('Company / Shop Name') }} *
                         </label>
                         <input type="text" name="company_name" class="form-control @error('company_name') is-invalid @enderror" value="{{ old('company_name', $setting?->company_name ?? $shop?->name) }}" required placeholder="e.g. New Crelogics Signage">
                         <div class="form-text small">This title appears across the system header, browser title, and all printed documents.</div>
@@ -287,31 +287,31 @@
                     </div>
 
                     <div class="col-md-6">
-                        <label class="form-label fw-bold text-dark">Official Email *</label>
+                        <label class="form-label fw-bold text-dark">{{ __('Official Email') }} *</label>
                         <input type="email" name="company_email" class="form-control @error('company_email') is-invalid @enderror" value="{{ old('company_email', $setting?->company_email ?? $shop?->email) }}" required placeholder="info@crelogics.com">
                         @error('company_email') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
 
                     <div class="col-md-6">
-                        <label class="form-label fw-bold text-dark">Phone Number</label>
+                        <label class="form-label fw-bold text-dark">{{ __('Phone Number') }}</label>
                         <input type="text" name="company_phone" class="form-control @error('company_phone') is-invalid @enderror" value="{{ old('company_phone', $setting?->company_phone ?? $shop?->phone) }}" placeholder="+966 50 123 4567">
                         @error('company_phone') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
 
                     <div class="col-12">
-                        <label class="form-label fw-bold text-dark">Physical Address</label>
+                        <label class="form-label fw-bold text-dark">{{ __('Address') }}</label>
                         <textarea name="company_address" id="company_address" rows="2" class="form-control @error('company_address') is-invalid @enderror" placeholder="Street, Industrial Area, Building...">{{ old('company_address', $setting?->company_address ?? $shop?->address) }}</textarea>
                         @error('company_address') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
 
                     <div class="col-md-6">
-                        <label class="form-label fw-bold text-dark">City</label>
+                        <label class="form-label fw-bold text-dark">{{ __('City') }}</label>
                         <input type="text" name="company_city" class="form-control @error('company_city') is-invalid @enderror" value="{{ old('company_city', $setting?->company_city ?? $shop?->city) }}" placeholder="e.g. Riyadh">
                         @error('company_city') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
 
                     <div class="col-md-6">
-                        <label class="form-label fw-bold text-dark">Country</label>
+                        <label class="form-label fw-bold text-dark">{{ __('Country') }}</label>
                         <input type="text" name="company_country" class="form-control @error('company_country') is-invalid @enderror" value="{{ old('company_country', $setting?->company_country ?? $shop?->country ?? 'Saudi Arabia') }}" placeholder="Saudi Arabia">
                         @error('company_country') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
@@ -321,22 +321,22 @@
 
         <!-- Card 3: Billing, Prefixes & Legal Numbers -->
         <div class="col-lg-5">
-            <x-card title="Billing Prefixes & Tax Registration">
+            <x-card :title="__('Billing Prefixes & Tax Registration')">
                 <div class="row g-3">
                     <div class="col-md-4">
-                        <label class="form-label fw-bold text-dark">Currency *</label>
+                        <label class="form-label fw-bold text-dark">{{ __('Currency') }} *</label>
                         <input type="text" name="currency_symbol" class="form-control @error('currency_symbol') is-invalid @enderror" value="{{ old('currency_symbol', $setting?->currency_symbol ?? $shop?->currency_symbol ?? '$') }}" required placeholder="$">
                         @error('currency_symbol') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
 
                     <div class="col-md-4">
-                        <label class="form-label fw-bold text-dark">Quote Prefix *</label>
+                        <label class="form-label fw-bold text-dark">{{ __('Quote Prefix') }} *</label>
                         <input type="text" name="quote_prefix" class="form-control @error('quote_prefix') is-invalid @enderror" value="{{ old('quote_prefix', $setting?->quote_prefix ?? $shop?->quote_prefix ?? 'QT-') }}" required placeholder="QT-">
                         @error('quote_prefix') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
 
                     <div class="col-md-4">
-                        <label class="form-label fw-bold text-dark">Invoice Prefix *</label>
+                        <label class="form-label fw-bold text-dark">{{ __('Invoice Prefix') }} *</label>
                         <input type="text" name="invoice_prefix" class="form-control @error('invoice_prefix') is-invalid @enderror" value="{{ old('invoice_prefix', $setting?->invoice_prefix ?? $shop?->invoice_prefix ?? 'INV-') }}" required placeholder="INV-">
                         @error('invoice_prefix') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
@@ -344,19 +344,19 @@
                     <div class="col-12"><hr class="my-2 opacity-25"></div>
 
                     <div class="col-12">
-                        <label class="form-label fw-bold text-dark">Tax ID / GSTIN</label>
+                        <label class="form-label fw-bold text-dark">{{ __('Tax ID / GSTIN') }}</label>
                         <input type="text" name="company_tax_id" class="form-control @error('company_tax_id') is-invalid @enderror" value="{{ old('company_tax_id', $setting?->company_tax_id) }}" placeholder="Tax identification number">
                         @error('company_tax_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
 
                     <div class="col-md-6">
-                        <label class="form-label fw-bold text-dark">VAT Number</label>
+                        <label class="form-label fw-bold text-dark">{{ __('VAT Number') }}</label>
                         <input type="text" name="company_vat_no" class="form-control @error('company_vat_no') is-invalid @enderror" value="{{ old('company_vat_no', $setting?->company_vat_no) }}" placeholder="300XXXXXXXXXXXX">
                         @error('company_vat_no') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
 
                     <div class="col-md-6">
-                        <label class="form-label fw-bold text-dark">CR Number (Commercial Reg.)</label>
+                        <label class="form-label fw-bold text-dark">{{ __('CR Number (Commercial Reg.)') }}</label>
                         <input type="text" name="company_cr_no" class="form-control @error('company_cr_no') is-invalid @enderror" value="{{ old('company_cr_no', $setting?->company_cr_no) }}" placeholder="1010XXXXXX">
                         @error('company_cr_no') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
@@ -367,7 +367,7 @@
                         <div class="form-check form-switch">
                             <input class="form-check-input" type="checkbox" role="switch" name="show_customer_name_on_pdf" id="show_customer_name_on_pdf" value="1" {{ old('show_customer_name_on_pdf', $setting?->show_customer_name_on_pdf ?? true) ? 'checked' : '' }}>
                             <label class="form-check-label fw-bold text-dark" for="show_customer_name_on_pdf">
-                                Show Customer Name on PDF Documents by Default
+                                {{ __('Show Customer Name on PDF Documents by Default') }}
                             </label>
                         </div>
                         <div class="form-text small text-muted">When enabled, the Customer Name will be included on Quotes, Job Orders, Invoices, and Delivery Note PDFs by default. You can also customize this for individual documents.</div>
@@ -376,7 +376,7 @@
 
                 <div class="mt-4 pt-3 border-top text-end">
                     <button type="submit" class="btn btn-primary-modern px-4 py-2">
-                        <i class="fas fa-save me-2"></i> Save & Apply Settings
+                        <i class="fas fa-save me-2"></i> {{ __('Save Changes') }}
                     </button>
                 </div>
             </x-card>

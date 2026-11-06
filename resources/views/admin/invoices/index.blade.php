@@ -1,23 +1,23 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Manage Invoices')
+@section('title', __('Manage Invoices'))
 
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="fw-bold text-dark mb-0">Invoices</h2>
+    <h2 class="fw-bold text-dark mb-0">{{ __('Invoices') }}</h2>
     <div class="d-flex gap-2">
         <form action="{{ url()->current() }}" method="GET" class="d-flex gap-2 mb-0">
             <div class="input-group">
                 <span class="input-group-text bg-white border-end-0"><i class="fas fa-search text-muted"></i></span>
-                <input type="text" name="search" value="{{ request('search') }}" class="form-control border-start-0" placeholder="Search Name, Invoice #..." onkeypress="if(event.keyCode == 13) this.form.submit()">
+                <input type="text" name="search" value="{{ request('search') }}" class="form-control border-start-0" placeholder="{{ __('Search Name, Invoice #...') }}" onkeypress="if(event.keyCode == 13) this.form.submit()">
             </div>
-            <input type="date" name="date" value="{{ request('date') }}" class="form-control" style="max-width: 150px; cursor: pointer;" title="Filter by date" onclick="this.showPicker()" onchange="this.form.submit()">
+            <input type="date" name="date" value="{{ request('date') }}" class="form-control" style="max-width: 150px; cursor: pointer;" title="{{ __('Filter by date') }}" onclick="this.showPicker()" onchange="this.form.submit()">
             @if(request()->has('search') || request()->has('date'))
-                <a href="{{ url()->current() }}" class="btn btn-light border" title="Clear Filters"><i class="fas fa-times"></i></a>
+                <a href="{{ url()->current() }}" class="btn btn-light border" title="{{ __('Clear Filters') }}"><i class="fas fa-times"></i></a>
             @endif
         </form>
         <a href="{{ route('invoices.create') }}" class="btn btn-primary-modern text-nowrap">
-            <i class="fas fa-plus me-2"></i> Create New Invoice
+            <i class="fas fa-plus me-2"></i> {{ __('Create New Invoice') }}
         </a>
     </div>
 </div>
@@ -25,24 +25,24 @@
 <x-card :padding="false">
     <x-table>
         <x-slot name="thead">
-            <th>Invoice #</th>
-            <th>Customer</th>
-            <th>Date</th>
-            <th>Employee</th>
-            <th>Grand Total</th>
-            <th>Paid</th>
-            <th>Due</th>
-            <th>Status</th>
-            <th class="text-end">Action</th>
+            <th class="text-nowrap">{{ __('Invoice #') }}</th>
+            <th style="min-width: 180px;">{{ __('Customer') }}</th>
+            <th class="text-nowrap">{{ __('Date') }}</th>
+            <th class="text-nowrap">{{ __('Employee') }}</th>
+            <th class="text-nowrap">{{ __('Grand Total') }}</th>
+            <th class="text-nowrap">{{ __('Paid') }}</th>
+            <th class="text-nowrap">{{ __('Due') }}</th>
+            <th class="text-nowrap">{{ __('Status') }}</th>
+            <th class="text-end text-nowrap">{{ __('Action') }}</th>
         </x-slot>
 
         @foreach($invoices as $invoice)
-        <tr class="invoice-row">
-            <td class="fw-bold text-primary">{{ $invoice->invoice_number }}</td>
+        <tr class="invoice-row align-middle">
+            <td class="fw-bold text-primary text-nowrap">{{ $invoice->invoice_number }}</td>
             <td>
-                <div class="fw-bold">{{ $invoice->customer->name ?? '' }}</div>
+                <div class="fw-semibold text-dark" style="font-size: 0.88rem; line-height: 1.35;">{{ tdb($invoice->customer->name ?? '') }}</div>
                 @if(!empty($invoice->customer->company_name))
-                    <div class="small text-muted"><i class="fas fa-building me-1"></i>{{ $invoice->customer->company_name }}</div>
+                    <div class="small text-muted"><i class="fas fa-building me-1"></i>{{ tdb($invoice->customer->company_name) }}</div>
                 @endif
                 @if(!empty($invoice->customer->phone))
                     <div class="small text-muted mt-1"><i class="fas fa-phone-alt me-1 text-primary"></i>{{ $invoice->customer->phone }}</div>
@@ -58,9 +58,9 @@
                         data-id="{{ $invoice->id }}"
                         data-number="{{ $invoice->invoice_number }}"
                         data-current-emp-id="{{ $invoice->employee_id ?? '' }}"
-                        title="Click to assign / change employee">
+                        title="{{ __('Click to assign / change employee') }}">
                     <i class="fas {{ $invoice->employee ? 'fa-user-circle text-primary' : 'fa-user-plus text-primary' }}"></i>
-                    <span class="fw-medium">{{ $invoice->employee->name ?? 'Assign' }}</span>
+                    <span class="fw-medium">{{ $invoice->employee ? tdb($invoice->employee->name) : __('Assign') }}</span>
                     <i class="fas fa-edit text-muted ms-1" style="font-size: 0.65rem;"></i>
                 </button>
             </td>
@@ -78,7 +78,7 @@
                     };
                 @endphp
                 <span class="badge-soft {{ $statusClass }}">
-                    {{ $invoice->status }}
+                    {{ __($invoice->status) }}
                 </span>
             </td>
             <td class="text-end">
@@ -87,9 +87,9 @@
                         <i class="fas fa-ellipsis-v text-muted"></i>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
-                        <li><a class="dropdown-item py-2" href="{{ route('invoices.show', $invoice) }}"><i class="fas fa-eye me-2 text-primary"></i> View Detail</a></li>
-                        <li><a class="dropdown-item py-2" href="{{ route('invoices.edit', $invoice) }}"><i class="fas fa-edit me-2 text-info"></i> Edit</a></li>
-                        <li><a class="dropdown-item py-2" href="{{ route('invoices.pdf', $invoice) }}"><i class="fas fa-file-pdf me-2 text-danger"></i> Download PDF</a></li>
+                        <li><a class="dropdown-item py-2" href="{{ route('invoices.show', $invoice) }}"><i class="fas fa-eye me-2 text-primary"></i> {{ __('View Detail') }}</a></li>
+                        <li><a class="dropdown-item py-2" href="{{ route('invoices.edit', $invoice) }}"><i class="fas fa-edit me-2 text-info"></i> {{ __('Edit') }}</a></li>
+                        <li><a class="dropdown-item py-2" href="{{ route('invoices.pdf', $invoice) }}"><i class="fas fa-file-pdf me-2 text-danger"></i> {{ __('Download PDF') }}</a></li>
                         @if(auth()->user()->role !== 'employee')
                         <li>
                             <button type="button" class="dropdown-item py-2 assign-emp-trigger"
@@ -97,7 +97,7 @@
                                     data-id="{{ $invoice->id }}"
                                     data-number="{{ $invoice->invoice_number }}"
                                     data-current-emp-id="{{ $invoice->employee_id ?? '' }}">
-                                <i class="fas fa-user-tag me-2 text-warning"></i> Assign / Reclaim
+                                <i class="fas fa-user-tag me-2 text-warning"></i> {{ __('Assign / Reclaim') }}
                             </button>
                         </li>
                         @endif
@@ -107,7 +107,7 @@
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="dropdown-item py-2 text-danger">
-                                    <i class="fas fa-trash me-2"></i> Delete
+                                    <i class="fas fa-trash me-2"></i> {{ __('Delete') }}
                                 </button>
                             </form>
                         </li>
@@ -131,18 +131,18 @@
             <div class="modal-content border-0 shadow">
                 <div class="modal-header bg-light">
                     <h5 class="modal-title fw-bold text-dark">
-                        <i class="fas fa-user-tag text-primary me-2"></i> Assign Invoice <span id="modalInvoiceNumber" class="text-primary"></span>
+                        <i class="fas fa-user-tag text-primary me-2"></i> {{ __('Assign Invoice') }} <span id="modalInvoiceNumber" class="text-primary"></span>
                     </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <form id="assignInvoiceForm" method="POST" action="">
                     @csrf
                     <div class="modal-body p-4">
-                        <p class="text-muted small mb-3">Select an employee to assign this invoice to, or choose <strong>Admin (Myself / Reclaim)</strong> to reclaim full control.</p>
+                        <p class="text-muted small mb-3">{{ __('Select an employee to assign this invoice to, or choose Admin (Myself / Reclaim) to reclaim full control.') }}</p>
                         <div class="mb-3">
-                            <label class="form-label fw-semibold text-dark">Assignee / Owner</label>
+                            <label class="form-label fw-semibold text-dark">{{ __('Assignee / Owner') }}</label>
                             <select name="employee_id" id="modalInvoiceEmployeeSelect" class="form-select">
-                                <option value="">-- Admin (Myself / Reclaim) --</option>
+                                <option value="">-- {{ __('Admin (Myself / Reclaim)') }} --</option>
                                 @foreach($employees as $emp)
                                     <option value="{{ $emp->id }}">
                                         {{ $emp->name }} ({{ $emp->designation ?? 'Staff' }})
@@ -150,14 +150,14 @@
                                 @endforeach
                             </select>
                             <div class="form-text text-muted">
-                                Selecting <em>Admin (Myself / Reclaim)</em> unassigns employees and keeps it under Admin ownership.
+                                {{ __('Selecting Admin (Myself / Reclaim) unassigns employees and keeps it under Admin ownership.') }}
                             </div>
                         </div>
                     </div>
                     <div class="modal-footer bg-light">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('Cancel') }}</button>
                         <button type="submit" class="btn btn-primary-modern">
-                            <i class="fas fa-save me-1"></i> Save Assignment
+                            <i class="fas fa-save me-1"></i> {{ __('Save Assignment') }}
                         </button>
                     </div>
                 </form>

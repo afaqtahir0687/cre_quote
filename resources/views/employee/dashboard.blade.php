@@ -84,7 +84,7 @@
     <div class="col-lg-6">
         <x-card title="Recent Quotes" :padding="false">
             <x-slot name="headerActions">
-                <a href="{{ route('quotes.index') }}" class="btn btn-sm btn-link text-decoration-none fw-medium">View All</a>
+                <a href="{{ route('quotes.index') }}" class="btn btn-sm btn-link text-decoration-none fw-medium">{{ __('View All') }}</a>
             </x-slot>
 
             <x-table>
@@ -125,7 +125,7 @@
     <div class="col-lg-6">
         <x-card title="Recent Job Orders" :padding="false">
             <x-slot name="headerActions">
-                <a href="{{ route('job-orders.index') }}" class="btn btn-sm btn-link text-decoration-none fw-medium">View All</a>
+                <a href="{{ route('job-orders.index') }}" class="btn btn-sm btn-link text-decoration-none fw-medium">{{ __('View All') }}</a>
             </x-slot>
 
             <x-table>

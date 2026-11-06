@@ -98,4 +98,13 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    protected static function booted()
+    {
+        static::saved(function ($user) {
+            if (!empty($user->name)) {
+                \App\Services\TranslationService::warmCache($user->name);
+            }
+        });
+    }
 }

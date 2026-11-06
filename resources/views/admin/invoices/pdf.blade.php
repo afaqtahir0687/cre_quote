@@ -1,6 +1,6 @@
 @php $userTz = request()->cookie('user_timezone', config('app.timezone')); @endphp
 <!DOCTYPE html>
-<html dir="ltr">
+<html dir="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}">
 
 <head>
     <meta charset="utf-8">
@@ -32,7 +32,9 @@
         }
 
         body {
-            font-family: 'amiri', sans-serif;
+            font-family: 'amiri', 'Helvetica', 'Arial', sans-serif;
+            direction: {{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }};
+            text-align: {{ app()->getLocale() === 'ar' ? 'right' : 'left' }};
             color: #000;
             font-size: 12px;
             line-height: 1.4;
@@ -103,8 +105,8 @@
         }
 
         .items-table tbody tr td {
-            background-color: #f1f1f1;
-            vertical-align: top;
+            background-color: #ffffff;
+            vertical-align: middle;
         }
 
         .items-table tbody td.col-blue {
@@ -145,6 +147,32 @@
             background-color: #f8f9fa;
         }
 
+        @if(app()->getLocale() === 'ar')
+        .totals-label {
+            text-align: right !important;
+            font-weight: bold;
+            background-color: #fdfdfd;
+            border-left: 1px solid #e0e0e0 !important;
+            border-right: none !important;
+            width: 150px;
+            padding-right: 12px !important;
+        }
+        .totals-value {
+            text-align: left !important;
+            font-size: 14px;
+            padding-left: 12px !important;
+        }
+        .amount-in-words {
+            text-align: left !important;
+            font-weight: bold;
+            margin-top: 15px;
+            font-size: 14px;
+            padding-left: 10px !important;
+        }
+        .items-table th {
+            text-align: right;
+        }
+    @else
         .totals-label {
             text-align: left;
             font-weight: bold;
@@ -152,11 +180,18 @@
             border-right: 1px solid #e0e0e0;
             width: 140px;
         }
-
         .totals-value {
             text-align: right;
             font-size: 14px;
         }
+        .amount-in-words {
+            text-align: right;
+            font-weight: bold;
+            margin-top: 15px;
+            font-size: 14px;
+            padding-right: 10px;
+        }
+    @endif
 
         .payments-table {
             width: 100%;
@@ -207,147 +242,182 @@
 
 <body>
     <div class="invoice-box">
-        <table class="header-table">
-            <!-- Row 1: Logo (left) + Invoice Info (right) -->
+        <!-- Top Section: Logo + Company Details + Tax Invoice Header -->
+        <table class="header-table" style="margin-bottom: 5px;">
             <tr>
-                <td style="width: 50%; vertical-align: top;">
-                    <img src="{{ shop_logo_path(null, $setting) }}" class="logo" />
+                <td style="width: 25%; vertical-align: top;">
+                    <img src="{{ shop_logo_path(null, $setting) }}" class="logo" style="max-height: 80px; max-width: 160px; object-fit: contain; margin-bottom: 0;" />
                 </td>
-                <td style="width: 50%; vertical-align: top; padding-left: 30px;">
-                    <table class="info-table">
+                <td style="width: 45%; vertical-align: top; padding-left: 15px; padding-right: 15px;">
+                    <div style="color: #00aeef; font-weight: bold; font-size: 13px; text-transform: uppercase; margin-bottom: 5px; letter-spacing: 0.5px;">
+                        {{ __('COMPANY DETAILS') }}
+                    </div>
+                    <table class="info-table" style="font-size: 11px;">
                         <tr>
-                            <td style="width: 35%"><span class="info-label">Invoice No</span></td>
+                            <td style="width: 32%; font-weight: bold;"><span class="info-label">{{ __('Company') }}</span></td>
                             <td style="width: 5%">:</td>
-                            <td style="width: 60%" class="text-colored"><strong>{{ $invoice->invoice_number }}</strong></td>
+                            <td style="width: 63%"><strong>{{ tdb($setting->company_name ?? 'My Company') }}</strong></td>
                         </tr>
                         <tr>
-                            <td><span class="info-label">Invoice Date</span></td>
+                            <td style="font-weight: bold;"><span class="info-label">{{ __('Address') }}</span></td>
                             <td>:</td>
-                            <td>{{ $invoice->invoice_date }}</td>
+                            <td style="font-size: 10px;">{{ tdb($setting->company_address ?? 'Address not set') }}</td>
                         </tr>
                         <tr>
-                            <td><span class="info-label">Created At</span></td>
+                            <td style="font-weight: bold;"><span class="info-label">{{ __('City / Country') }}</span></td>
                             <td>:</td>
-                            <td>{{ $invoice->created_at ? $invoice->created_at->setTimezone($userTz)->format('Y-m-d h:i A') : '' }}</td>
-                        </tr>
-                        
-                        @if($invoice->updated_at && $invoice->created_at && $invoice->updated_at->setTimezone($userTz)->format('Y-m-d H:i') !== $invoice->created_at->setTimezone($userTz)->format('Y-m-d H:i'))
-                        <tr>
-                            <td><span class="info-label">Updated At</span></td>
-                            <td>:</td>
-                            <td>{{ $invoice->updated_at->setTimezone($userTz)->format('Y-m-d h:i A') }}</td>
-                        </tr>
-                        @endif
-                        <tr>
-                            <td><span class="info-label">Due Date</span></td>
-                            <td>:</td>
-                            <td>{{ $invoice->due_date }}</td>
+                            <td>{{ tdb($setting->company_city ?? '') }} - {{ tdb($setting->company_country ?? '') }}</td>
                         </tr>
                         <tr>
-                            <td><span class="info-label">Created By</span></td>
-                            <td>:</td>
-                            <td><span style="font-weight: bold; color: #D90D91 !important;">{{ $invoice->employee->name ?? 'Admin' }}</span></td>
-                        </tr>
-                        <tr>
-                            <td><span class="info-label">Status</span></td>
-                            <td>:</td>
-                            <td>
-                                @if(strtolower($invoice->status) === 'cancelled')
-                                    <span style="color: #dc3545; font-weight: bold; text-transform: uppercase;">Cancelled</span>
-                                @else
-                                    {{ ucfirst($invoice->status) }}
-                                @endif
-                            </td>
-                        </tr>
-                    </table>
-                </td>
-            </tr>
-            <!-- Row 2: Company Info (left) + Customer Info (right) -->
-            <tr>
-                <td style="width: 50%; vertical-align: top;">
-                    <table class="info-table" style="margin-top: 10px;">
-                        <tr>
-                            <td style="width: 35%"><span class="info-label">Company</span></td>
-                            <td style="width: 5%">:</td>
-                            <td style="width: 60%"><strong>{{ $setting->company_name ?? 'My Company' }}</strong></td>
-                        </tr>
-                        <tr>
-                            <td><span class="info-label">Address</span></td>
-                            <td>:</td>
-                            <td><strong>{{ $setting->company_address ?? 'Address not set' }}</strong></td>
-                        </tr>
-                        <tr>
-                            <td><span class="info-label">City / Country</span></td>
-                            <td>:</td>
-                            <td>{{ $setting->company_city ?? '' }} - {{ $setting->company_country ?? '' }}</td>
-                        </tr>
-                        <tr>
-                            <td><span class="info-label">Telephone</span></td>
+                            <td style="font-weight: bold;"><span class="info-label">{{ __('Telephone') }}</span></td>
                             <td>:</td>
                             <td>{{ $setting->company_phone ?? 'N/A' }}</td>
                         </tr>
                         <tr>
-                            <td><span class="info-label">VAT Number</span></td>
+                            <td style="font-weight: bold;"><span class="info-label">{{ __('VAT Number') }}</span></td>
                             <td>:</td>
                             <td>{{ $setting->company_vat_no ?? 'N/A' }}</td>
                         </tr>
                         <tr>
-                            <td><span class="info-label">CR Number</span></td>
+                            <td style="font-weight: bold;"><span class="info-label">{{ __('CR Number') }}</span></td>
                             <td>:</td>
                             <td>{{ $setting->company_cr_no ?? 'N/A' }}</td>
                         </tr>
                     </table>
                 </td>
-                <td style="width: 50%; vertical-align: top; padding-left: 30px;">
-                    <table class="info-table" style="margin-top: 10px;">
-                        @if($invoice->show_customer_name ?? true)
+                <td style="width: 30%; vertical-align: top;">
+                    <h1 style="margin: 0 0 15px 0; font-size: 20px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; color: #000; text-align: right;">
+                        {{ __('TAX INVOICE') }}
+                    </h1>
+                    <table style="width: 100%; border-collapse: collapse; font-size: 11px;">
                         <tr>
-                            <td style="width: 35%"><span class="info-label">Customer</span></td>
-                            <td style="width: 5%">:</td>
-                            <td style="width: 60%"><strong>{{ $invoice->customer->name ?? '' }}</strong></td>
-                        </tr>
-                        @endif
-                        <tr>
-                            <td><span class="info-label">Company</span></td>
-                            <td>:</td>
-                            <td>{{ $invoice->billing_company?->company_name ?? ($invoice->customer?->company_name ?? '') }}</td>
+                            <td style="text-align: left; font-weight: bold; width: 28%;">{{ __('Date') }} &nbsp;:</td>
+                            <td style="text-align: left; border-bottom: 1px solid #000; height: 16px;">&nbsp;</td>
                         </tr>
                         <tr>
-                            <td><span class="info-label">Telephone</span></td>
-                            <td>:</td>
-                            <td>{{ $invoice->customer?->formatted_phone ?: ($invoice->customer?->phone ?? '') }}</td>
+                            <td style="height: 12px;" colspan="2"></td>
                         </tr>
                         <tr>
-                            <td><span class="info-label">VAT Number</span></td>
-                            <td>:</td>
-                            <td>{{ $invoice->billing_company?->vat_no ?? ($invoice->customer?->vat_no ?? '') }}</td>
-                        </tr>
-                        <tr>
-                            <td><span class="info-label">CR Number</span></td>
-                            <td>:</td>
-                            <td>{{ $invoice->billing_company?->cr_no ?? ($invoice->customer?->cr_no ?? '') }}</td>
-                        </tr>
-                        <tr>
-                            <td><span class="info-label">Address</span></td>
-                            <td>:</td>
-                            <td>{{ $invoice->billing_company?->address ?? ($invoice->customer?->address ?? '') }}</td>
+                            <td style="text-align: left; font-weight: bold; width: 28%;">{{ __('Time') }} &nbsp;:</td>
+                            <td style="text-align: left; border-bottom: 1px solid #000; height: 16px;">&nbsp;</td>
                         </tr>
                     </table>
                 </td>
             </tr>
         </table>
 
+        <!-- Colored Gradient Divider Line -->
+        <div style="height: 3px; background: linear-gradient(to right, #00aeef, #d90d91); margin: 8px 0 15px 0;"></div>
+
+        <!-- Row 2: Invoice Details + Customer Details -->
+        <table class="header-table" style="margin-bottom: 15px;">
+            <tr>
+                <!-- Left: Invoice Details -->
+                <td style="width: 50%; vertical-align: top; padding-right: 15px;">
+                    <div style="color: #00aeef; font-weight: bold; font-size: 13px; text-transform: uppercase; margin-bottom: 5px; letter-spacing: 0.5px;">
+                        {{ __('TAX INVOICE DETAILS') }}
+                    </div>
+                    <table class="info-table" style="font-size: 11px;">
+                        <tr>
+                            <td style="width: 35%; font-weight: bold;"><span class="info-label">{{ __('Invoice No') }}</span></td>
+                            <td style="width: 5%">:</td>
+                            <td style="width: 60%; color: #00aeef; font-weight: bold;">{{ $invoice->invoice_number }}</td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: bold;"><span class="info-label">{{ __('Invoice Date') }}</span></td>
+                            <td>:</td>
+                            <td>{{ $invoice->invoice_date }}</td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: bold;"><span class="info-label">{{ __('Created At') }}</span></td>
+                            <td>:</td>
+                            <td>{{ $invoice->created_at ? $invoice->created_at->setTimezone($userTz)->format('Y-m-d h:i A') : '' }}</td>
+                        </tr>
+                        @if($invoice->updated_at && $invoice->created_at && $invoice->updated_at->setTimezone($userTz)->format('Y-m-d H:i') !== $invoice->created_at->setTimezone($userTz)->format('Y-m-d H:i'))
+                        <tr>
+                            <td style="font-weight: bold;"><span class="info-label">{{ __('Updated At') }}</span></td>
+                            <td>:</td>
+                            <td>{{ $invoice->updated_at->setTimezone($userTz)->format('Y-m-d h:i A') }}</td>
+                        </tr>
+                        @endif
+                        <tr>
+                            <td style="font-weight: bold;"><span class="info-label">{{ __('Due Date') }}</span></td>
+                            <td>:</td>
+                            <td>{{ $invoice->due_date }}</td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: bold;"><span class="info-label">{{ __('Status') }}</span></td>
+                            <td>:</td>
+                            <td>
+                                @if(strtolower($invoice->status) === 'cancelled')
+                                    <span style="color: #dc3545; font-weight: bold; text-transform: uppercase;">{{ __('Cancelled') }}</span>
+                                @else
+                                    {{ __(ucfirst($invoice->status)) }}
+                                @endif
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: bold;"><span class="info-label">{{ __('Created By') }}</span></td>
+                            <td>:</td>
+                            <td><span style="font-weight: bold; color: #D90D91 !important;">{{ $invoice->employee ? tdb($invoice->employee->name) : (Auth::user()?->name ? tdb(Auth::user()->name) : __('Admin')) }}</span></td>
+                        </tr>
+                    </table>
+                </td>
+
+                <!-- Right: Customer Details -->
+                <td style="width: 50%; vertical-align: top; padding-left: 15px;">
+                    <div style="color: #00aeef; font-weight: bold; font-size: 13px; text-transform: uppercase; margin-bottom: 5px; letter-spacing: 0.5px;">
+                        {{ __('CUSTOMER DETAILS') }}
+                    </div>
+                    <table class="info-table" style="font-size: 11px;">
+                        <tr>
+                            <td style="width: 35%; font-weight: bold;"><span class="info-label">{{ __('Customer Company') }}</span></td>
+                            <td style="width: 5%">:</td>
+                            <td style="width: 60%"><strong>{{ tdb($invoice->billing_company?->company_name ?? ($invoice->customer?->company_name ?? '')) }}</strong></td>
+                        </tr>
+                        @if($invoice->show_customer_name ?? true)
+                        <tr>
+                            <td style="font-weight: bold;"><span class="info-label">{{ __('Customer Name') }}</span></td>
+                            <td>:</td>
+                            <td><strong style="font-size: 13px;">{{ tdb($invoice->customer->name ?? '') }}</strong></td>
+                        </tr>
+                        @endif
+                        <tr>
+                            <td style="font-weight: bold;"><span class="info-label">{{ __('Telephone') }}</span></td>
+                            <td>:</td>
+                            <td style="color: #e11d48; font-weight: bold;">{{ $invoice->customer?->formatted_phone ?: ($invoice->customer?->phone ?? '') }}</td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: bold;"><span class="info-label">{{ __('VAT Number') }}</span></td>
+                            <td>:</td>
+                            <td>{{ $invoice->billing_company?->vat_no ?? ($invoice->customer?->vat_no ?? '') }}</td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: bold;"><span class="info-label">{{ __('CR Number') }}</span></td>
+                            <td>:</td>
+                            <td>{{ $invoice->billing_company?->cr_no ?? ($invoice->customer?->cr_no ?? '') }}</td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: bold;"><span class="info-label">{{ __('Address') }}</span></td>
+                            <td>:</td>
+                            <td>{{ tdb($invoice->billing_company?->address ?? ($invoice->customer?->address ?? '')) }}</td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+        
         <table class="items-table">
             <thead>
                 <tr>
                     <th style="width: 5%; text-align: center;">#</th>
-                    <th style="width: 25%;">Description</th>
-                    <th style="width: 15%; text-align: center;">Image</th>
-                    <th style="width: 7%;">Size/Meter</th>
-                    <th style="width: 9%; text-align: center;" class="bg-gray">Qty</th>
-                    <th style="width: 9%; text-align: center;" class="bg-gray">Unit Price</th>
-                                        <th style="width: 15%; text-align: center;" class="bg-gray">VAT Amount 15%</th>
-                    <th style="width: 9%; text-align: right;">Total Price</th>
+                    <th style="width: 25%;">{{ __('Description') }}</th>
+                    <th style="width: 15%; text-align: center;">{{ __('Image') }}</th>
+                    <th style="width: 7%;">{{ __('Size/Meter') }}</th>
+                    <th style="width: 9%; text-align: center;" class="bg-gray">{{ __('Qty') }}</th>
+                    <th style="width: 9%; text-align: center;" class="bg-gray">{{ __('Unit Price') }}</th>
+                                        <th style="width: 15%; text-align: center;" class="bg-gray">{{ __('VAT Amount 15%') }}</th>
+                    <th style="width: 9%; text-align: right;">{{ __('Total Price') }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -360,7 +430,7 @@
                     <tr>
                         <td class="col-blue center">{{ $index + 1 }}.</td>
                         <td>
-                            <span style="white-space: pre-line;">{{ $item->description }}</span>@if($item->updated_at && $invoice->created_at && $item->updated_at->setTimezone($userTz)->format('Y-m-d H:i') !== $invoice->created_at->setTimezone($userTz)->format('Y-m-d H:i'))<div style="font-size: 10px; color: #666; margin-top: 5px;">Updated At: {{ $item->updated_at->setTimezone($userTz)->format('Y-m-d h:i A') }}</div>@endif
+                            <span style="white-space: pre-line;">{{ tdb($item->description) }}</span>@if($item->updated_at && $invoice->created_at && $item->updated_at->setTimezone($userTz)->format('Y-m-d H:i') !== $invoice->created_at->setTimezone($userTz)->format('Y-m-d H:i'))<div style="font-size: 10px; color: #666; margin-top: 5px;">Updated At: {{ $item->updated_at->setTimezone($userTz)->format('Y-m-d h:i A') }}</div>@endif
                         </td>
                         <td class="center" style="vertical-align: top;">
                             @if(!empty($item->images))
@@ -384,39 +454,39 @@
 
         <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
             <tr>
-                <td style="width: 50%; vertical-align: middle; text-align: center; border: none; padding-right: 20px;">
+                <td style="width: 50%; vertical-align: middle; text-align: center; border: none; padding: 0 10px;">
                     @include('partials.pdf_bank_details', ['setting' => $setting])
                 </td>
                 <td style="width: 50%; vertical-align: top; border: none;">
                     <table class="totals-table" style="margin-top: 0; width: 100%;">
                         <tr>
-                            <td class="totals-label">Total (Excl. Tax)</td>
+                            <td class="totals-label">{{ __('Total (Excl. Tax)') }}</td>
                             <td class="totals-value">{{ number_format($invoice->subtotal, 2) }}</td>
                         </tr>
                         <tr>
-                            <td class="totals-label">Total TAX</td>
+                            <td class="totals-label">{{ __('Total TAX') }}</td>
                             <td class="totals-value">{{ number_format($invoice->total_tax, 2) }}</td>
                         </tr>
                         <tr>
-                            <td class="totals-label">Discount</td>
+                            <td class="totals-label">{{ __('Discount') }}</td>
                             <td class="totals-value">-{{ number_format($invoice->total_discount ?? 0, 2) }}</td>
                         </tr>
                         <tr>
-                            <td class="totals-label">Shipping</td>
+                            <td class="totals-label">{{ __('Shipping') }}</td>
                             <td class="totals-value">{{ number_format($invoice->shipping ?? 0, 2) }}</td>
                         </tr>
                         <tr>
-                            <td class="totals-label">Total (Incl. Tax)</td>
+                            <td class="totals-label">{{ __('Total (Incl. Tax)') }}</td>
                             <td class="totals-value text-colored" style="font-weight:bold;">
                                 {{ number_format($invoice->grand_total, 2) }}
                             </td>
                         </tr>
                         <tr>
-                            <td class="totals-label text-success">Amount Paid</td>
+                            <td class="totals-label text-success">{{ __('Amount Paid') }}</td>
                             <td class="totals-value text-success">{{ number_format($invoice->amount_paid, 2) }}</td>
                         </tr>
                         <tr>
-                            <td class="totals-label">Balance Due</td>
+                            <td class="totals-label">{{ __('Balance Due') }}</td>
                             <td class="totals-value text-colored" style="font-weight:bold;">
                                 {{ number_format($invoice->balance_due, 2) }}
                             </td>
@@ -431,14 +501,14 @@
             if (strtolower($invoice->status) === 'cancelled') {
                 $words = "cancelled";
             } elseif (class_exists('NumberFormatter')) {
-                $f = new \NumberFormatter("en", \NumberFormatter::SPELLOUT);
+                $isAr = app()->getLocale() === 'ar'; $f = new \NumberFormatter($isAr ? 'ar' : 'en', \NumberFormatter::SPELLOUT);
                 $whole = floor($invoice->grand_total);
                 $fraction = round(($invoice->grand_total - $whole) * 100);
                 $words = $f->format($whole);
                 if ($fraction > 0) {
-                    $words .= " point " . $f->format($fraction);
+                    $words .= ($isAr ? ' فاصلة ' : ' point ') . $f->format($fraction);
                 }
-                $words .= " S.R";
+                $words .= ($isAr ? ' ريال سعودي' : ' S.R');
             }
         @endphp
 
@@ -448,14 +518,26 @@
             </div>
         @endif
 
-
     </div>
 
-    <div style="height: 120px;"></div>
+    <div style="height: 140px;"></div>
     <div style="position: absolute; bottom: 0; left: 4px; right: 4px;">
+        {{-- Individual Note (directly above Note / .pdf-footer) --}}
+        @if(!empty($invoice->terms))
+            @php $isAr = app()->getLocale() === 'ar'; @endphp
+            <div style="margin: 0 4px 8px 4px; padding: 7px 14px; background-color: #f0f8fd; border-radius: 6px; border-{{ $isAr ? 'right' : 'left' }}: 3.5px solid #00aeef; border-top: 1px solid #d4ecf9; border-bottom: 1px solid #d4ecf9; border-{{ $isAr ? 'left' : 'right' }}: 1px solid #d4ecf9; text-align: {{ $isAr ? 'right' : 'left' }};">
+                <div style="color: #0098d9; font-weight: bold; font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 3px;">
+                    {{ __('Individual Note:') }}
+                </div>
+                <div style="color: #2c3e50; font-size: 10px; line-height: 1.4; white-space: pre-line;">
+                    {{ tdb($invoice->terms) }}
+                </div>
+            </div>
+        @endif
+
         @if(!empty($invoice->notes))
             @php
-                $notes = nl2br(e($invoice->notes));
+                $notes = nl2br(e(tdb($invoice->notes)));
                 $parts = explode('يرجى العلم', $notes, 2);
             @endphp
             <div class="pdf-footer">
@@ -466,12 +548,13 @@
                     <div style="font-size: 10px;">{!! $english !!}</div>
                     <div class="arabic" style="font-size: 14px; margin-top: 4px;">يرجى العلم{!! $parts[1] !!}</div>
                 @else
-                    <div class="arabic">{!! $notes !!}</div>
+                    <div class="arabic" style="font-size: 10px; text-align: center; color: red; line-height: 1.4;">{!! $notes !!}</div>
                 @endif
             </div>
         @endif
 
         <div class="powered-by">
+            <div style="font-size: 8.5px; color: #777; margin-bottom: 2px;">{{ __('Vat not available on this software in KSA just only use for shop inside use for account.') }}</div>
             Powered by <a href="https://www.crelogics.com/" style="text-decoration: none; color: #007bff;">crelogics.com</a> | <a href="https://rightfreelancer.com/" style="text-decoration: none; color: #007bff;">rightfreelancer.com</a>
         </div>
     </div>

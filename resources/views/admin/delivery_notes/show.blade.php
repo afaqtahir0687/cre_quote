@@ -1,6 +1,6 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Delivery Note Details')
+@section('title', __('Delivery Note Details'))
 
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-4">
@@ -8,7 +8,7 @@
     <div>
         <div class="btn-group">
             <a href="{{ route('delivery_notes.pdf', $deliveryNote) }}" class="btn btn-danger">
-                <i class="fas fa-file-pdf me-2"></i> Download PDF
+                <i class="fas fa-file-pdf me-2"></i> {{ __('Download PDF') }}
             </a>
             <button type="button" class="btn btn-danger dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false" title="PDF Options">
                 <span class="visually-hidden">Toggle Dropdown</span>
@@ -16,17 +16,29 @@
             <ul class="dropdown-menu dropdown-menu-end shadow-sm">
                 <li>
                     <a class="dropdown-item py-2" href="{{ route('delivery_notes.pdf', ['deliveryNote' => $deliveryNote->id, 'show_customer_name' => 1]) }}">
-                        <i class="fas fa-user-check text-success me-2"></i> With Customer Name
+                        <i class="fas fa-user-check text-success me-2"></i> {{ __('With Customer Name') }}
                     </a>
                 </li>
                 <li>
                     <a class="dropdown-item py-2" href="{{ route('delivery_notes.pdf', ['deliveryNote' => $deliveryNote->id, 'show_customer_name' => 0]) }}">
-                        <i class="fas fa-user-slash text-danger me-2"></i> Without Customer Name
+                        <i class="fas fa-user-slash text-danger me-2"></i> {{ __('Without Customer Name') }}
+                    </a>
+                </li>
+                <li><hr class="dropdown-divider"></li>
+                <li class="dropdown-header small text-muted">{{ __('Language Options') }}</li>
+                <li>
+                    <a class="dropdown-item py-2" href="{{ route('delivery_notes.pdf', ['deliveryNote' => $deliveryNote->id, 'lang' => 'ar']) }}">
+                        <i class="fas fa-language text-primary me-2"></i> {{ __('Download PDF (Arabic / العربية)') }}
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item py-2" href="{{ route('delivery_notes.pdf', ['deliveryNote' => $deliveryNote->id, 'lang' => 'en']) }}">
+                        <i class="fas fa-globe text-secondary me-2"></i> {{ __('Download PDF (English)') }}
                     </a>
                 </li>
             </ul>
         </div>
-        <a href="{{ route('delivery_notes.index') }}" class="btn btn-secondary">Back</a>
+        <a href="{{ route('delivery_notes.index') }}" class="btn btn-secondary">{{ __('Back') }}</a>
     </div>
 </div>
 
@@ -39,33 +51,33 @@
                         @php
                             $bComp = $deliveryNote->billing_company;
                         @endphp
-                        <h6 class="fw-bold mb-3">Customer Information</h6>
-                        <p class="mb-1"><strong>Name:</strong> {{ $deliveryNote->customer?->name ?? 'N/A' }}</p>
-                        <p class="mb-1"><strong>Company:</strong> {{ $bComp?->company_name ?? ($deliveryNote->customer?->company_name ?? 'N/A') }}</p>
-                        <p class="mb-1"><strong>Phone:</strong> {{ $deliveryNote->customer?->formatted_phone ?: ($deliveryNote->customer?->phone ?? 'N/A') }}</p>
-                        <p class="mb-1"><strong>Email:</strong> {{ $deliveryNote->customer?->email ?? 'N/A' }}</p>
+                        <h6 class="fw-bold mb-3">{{ __('Customer Information') }}</h6>
+                        <p class="mb-1"><strong>{{ __('Name') }}:</strong> {{ tdb($deliveryNote->customer?->name ?? 'N/A') }}</p>
+                        <p class="mb-1"><strong>{{ __('Company') }}:</strong> {{ tdb($bComp?->company_name ?? ($deliveryNote->customer?->company_name ?? 'N/A')) }}</p>
+                        <p class="mb-1"><strong>{{ __('Phone') }}:</strong> {{ $deliveryNote->customer?->formatted_phone ?: ($deliveryNote->customer?->phone ?? 'N/A') }}</p>
+                        <p class="mb-1"><strong>{{ __('Email') }}:</strong> {{ $deliveryNote->customer?->email ?? 'N/A' }}</p>
                         @if($bComp?->vat_no || $deliveryNote->customer?->vat_no)
                             <p class="mb-1"><strong>VAT:</strong> {{ $bComp?->vat_no ?? $deliveryNote->customer?->vat_no }}</p>
                         @endif
                         @if($bComp?->cr_no || $deliveryNote->customer?->cr_no)
                             <p class="mb-1"><strong>CR:</strong> {{ $bComp?->cr_no ?? $deliveryNote->customer?->cr_no }}</p>
                         @endif
-                        <p class="mb-0"><strong>Address:</strong> {{ $bComp?->address ?? ($deliveryNote->customer?->address ?? 'N/A') }}</p>
+                        <p class="mb-0"><strong>{{ __('Address') }}:</strong> {{ tdb($bComp?->address ?? ($deliveryNote->customer?->address ?? 'N/A')) }}</p>
                     </div>
                     <div class="col-md-6">
-                        <h6 class="fw-bold mb-3">Delivery Information</h6>
-                        <p class="mb-1"><strong>Delivery #:</strong> {{ $deliveryNote->delivery_number }}</p>
-                        <p class="mb-1"><strong>Date:</strong> {{ $deliveryNote->delivery_date }}</p>
-                        <p class="mb-1"><strong>Status:</strong> 
+                        <h6 class="fw-bold mb-3">{{ __('Delivery Information') }}</h6>
+                        <p class="mb-1"><strong>{{ __('Delivery #') }}:</strong> {{ $deliveryNote->delivery_number }}</p>
+                        <p class="mb-1"><strong>{{ __('Date') }}:</strong> {{ $deliveryNote->delivery_date }}</p>
+                        <p class="mb-1"><strong>{{ __('Status') }}:</strong> 
                             <span class="badge bg-{{ $deliveryNote->status == 'Delivered' ? 'success' : ($deliveryNote->status == 'Pending' ? 'warning' : 'danger') }}">
-                                {{ $deliveryNote->status }}
+                                {{ __($deliveryNote->status) }}
                             </span>
                         </p>
-                        <p class="mb-1"><strong>Invoice #:</strong> {{ $deliveryNote->invoice?->invoice_number ?? 'N/A' }}</p>
+                        <p class="mb-1"><strong>{{ __('Invoice #:') }}</strong> {{ $deliveryNote->invoice?->invoice_number ?? 'N/A' }}</p>
                         <p class="mb-0 d-flex align-items-center gap-2 flex-wrap">
-                            <span><strong>Assigned Employee:</strong> <span class="fw-bold text-dark">{{ $deliveryNote->employee?->name ?? 'Admin / Unassigned' }}</span></span>
+                            <span><strong>{{ __('Assigned Employee') }}:</strong> <span class="fw-bold text-dark">{{ $deliveryNote->employee ? tdb($deliveryNote->employee->name) : __('Admin / Unassigned') }}</span></span>
                             <button type="button" class="btn btn-outline-primary btn-sm py-0 px-2 rounded-pill small" data-bs-toggle="modal" data-bs-target="#assignDeliveryNoteModal" title="Reassign Employee">
-                                <i class="fas fa-user-edit small"></i> Assign
+                                <i class="fas fa-user-edit small"></i> {{ __('Assign') }}
                             </button>
                         </p>
                     </div>
@@ -73,15 +85,15 @@
 
                 @if($deliveryNote->delivery_address)
                     <div class="mb-4">
-                        <h6 class="fw-bold">Delivery Address</h6>
-                        <p>{{ $deliveryNote->delivery_address }}</p>
+                        <h6 class="fw-bold">{{ __('Delivery Address') }}</h6>
+                        <p>{{ tdb($deliveryNote->delivery_address) }}</p>
                     </div>
                 @endif
 
                 @if($deliveryNote->notes)
                     <div class="mb-4">
-                        <h6 class="fw-bold">Notes</h6>
-                        <p>{{ $deliveryNote->notes }}</p>
+                        <h6 class="fw-bold">{{ __('Notes') }}</h6>
+                        <p>{{ tdb($deliveryNote->notes) }}</p>
                     </div>
                 @endif
             </div>
@@ -89,13 +101,13 @@
 
         <x-card class="mt-4">
             <div class="card-body">
-                <h6 class="fw-bold mb-3">Invoice Items</h6>
+                <h6 class="fw-bold mb-3">{{ __('Invoice Items') }}</h6>
                 <table class="table table-bordered">
                     <thead>
                         <tr>
-                            <th>Description</th>
-                            <th class="text-end">Unit Price</th>
-                            <th class="text-center">Quantity</th>
+                            <th>{{ __('Description') }}</th>
+                            <th class="text-end">{{ __('Unit Price') }}</th>
+                            <th class="text-center">{{ __('Quantity') }}</th>
                             <th class="text-center">Tax %</th>
                             <th class="text-center">Tax Amount</th>
                             <th class="text-end">Total</th>
@@ -119,7 +131,7 @@
                             }
                         @endphp
                             <tr>
-                                <td>{{ $item->description }}</td>
+                                <td>{{ tdb($item->description) }}</td>
                                 <td class="text-end">{{ format_currency($item->unit_price) }}</td>
                                 <td class="text-center">{{ $item->quantity }}</td>
                                 <td class="text-center">{{ number_format($displayTaxPercentage, 2) }}%</td>
@@ -158,18 +170,18 @@
     <div class="col-md-4">
         <x-card>
             <div class="card-body">
-                <h6 class="fw-bold mb-3">Update Status</h6>
+                <h6 class="fw-bold mb-3">{{ __('Update Status') }}</h6>
                 <form action="{{ route('delivery_notes.update_status', $deliveryNote) }}" method="POST">
                     @csrf
                     <div class="mb-3">
-                        <label class="form-label">Status</label>
+                        <label class="form-label">{{ __('Status') }}</label>
                         <select name="status" class="form-select">
                             <option value="Pending" {{ $deliveryNote->status == 'Pending' ? 'selected' : '' }}>Pending</option>
                             <option value="Delivered" {{ $deliveryNote->status == 'Delivered' ? 'selected' : '' }}>Delivered</option>
                             <option value="Cancelled" {{ $deliveryNote->status == 'Cancelled' ? 'selected' : '' }}>Cancelled</option>
                         </select>
                     </div>
-                    <button type="submit" class="btn btn-primary w-100">Update Status</button>
+                    <button type="submit" class="btn btn-primary w-100">{{ __('Update Status') }}</button>
                 </form>
             </div>
         </x-card>
@@ -181,7 +193,7 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 shadow">
             <div class="modal-header bg-light">
-                <h5 class="modal-title fw-bold text-dark"><i class="fas fa-user-tag text-primary me-2"></i> Assign Delivery Note to Employee</h5>
+                <h5 class="modal-title fw-bold text-dark"><i class="fas fa-user-tag text-primary me-2"></i> {{ __('Assign Delivery Note to Employee') }}</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form action="{{ route('delivery_notes.assign_employee', $deliveryNote) }}" method="POST">
@@ -189,9 +201,9 @@
                 <div class="modal-body p-4">
                     <p class="text-muted small mb-3">Assign this delivery note to an employee who will handle the dispatch and customer handover.</p>
                     <div class="mb-3">
-                        <label class="form-label fw-semibold text-dark">Employee <span class="text-danger">*</span></label>
+                        <label class="form-label fw-semibold text-dark">{{ __('Employee') }} <span class="text-danger">*</span></label>
                         <select name="employee_id" class="form-select" required>
-                            <option value="">Select Employee</option>
+                            <option value="">{{ __('Select Employee') }}</option>
                             @foreach($employees as $emp)
                                 <option value="{{ $emp->id }}" {{ $deliveryNote->employee_id == $emp->id ? 'selected' : '' }}>
                                     {{ $emp->name }} ({{ $emp->designation ?? 'Employee' }})
@@ -201,9 +213,9 @@
                     </div>
                 </div>
                 <div class="modal-footer bg-light">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('Cancel') }}</button>
                     <button type="submit" class="btn btn-primary-modern">
-                        <i class="fas fa-save me-1"></i> Save Assignment
+                        <i class="fas fa-save me-1"></i> {{ __('Save Assignment') }}
                     </button>
                 </div>
             </form>

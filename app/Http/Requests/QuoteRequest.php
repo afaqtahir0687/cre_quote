@@ -27,6 +27,7 @@ class QuoteRequest extends FormRequest
             'reference' => 'nullable|string',
             'status' => 'nullable|string',
             'notes' => 'nullable|string',
+            'terms' => 'nullable|string',
             'items' => 'required|array|min:1',
             'items.*.description' => 'required|string',
             'items.*.item_text' => 'nullable|string',

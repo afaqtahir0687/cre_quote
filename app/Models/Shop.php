@@ -364,4 +364,19 @@ class Shop extends Model
 
         return $currentBranchesCount < $maxShops;
     }
+
+    protected static function booted()
+    {
+        static::saved(function ($shop) {
+            if (!empty($shop->name)) {
+                \App\Services\TranslationService::warmCache($shop->name);
+            }
+            if (!empty($shop->city)) {
+                \App\Services\TranslationService::warmCache($shop->city);
+            }
+            if (!empty($shop->notes)) {
+                \App\Services\TranslationService::warmCache($shop->notes);
+            }
+        });
+    }
 }

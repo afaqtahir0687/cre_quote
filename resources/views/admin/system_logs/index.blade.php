@@ -1,14 +1,14 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Activity Logs')
+@section('title', __('Activity Logs'))
 
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="fw-bold text-dark mb-0">Activity Logs (Deletions)</h2>
+    <h2 class="fw-bold text-dark mb-0">{{ __('Activity Logs (Deletions)') }}</h2>
     <div class="d-flex align-items-center gap-3">
         <form action="{{ route('system_logs.index') }}" method="GET" class="d-flex gap-2">
             <div class="input-group">
-                <input type="text" name="search" class="form-control" placeholder="Search logs..." value="{{ request('search') }}">
+                <input type="text" name="search" class="form-control" placeholder="{{ __('Search logs...') }}" value="{{ request('search') }}">
                 <button class="btn btn-outline-secondary" type="submit"><i class="fas fa-search"></i></button>
             </div>
             @if(request('search'))
@@ -25,9 +25,9 @@
                 <thead class="table-light">
                     <tr>
                         <th class="ps-4">Date & Time</th>
-                        <th>User / Employee</th>
-                        <th>Module</th>
-                        <th>Action Details</th>
+                        <th>{{ __('User / Employee') }}</th>
+                        <th>{{ __('Module') }}</th>
+                        <th>{{ __('Action Details') }}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -51,7 +51,7 @@
                     <tr>
                         <td colspan="4" class="text-center py-5 text-muted">
                             <i class="fas fa-clipboard-list fa-3x mb-3 text-light"></i>
-                            <p class="mb-0">No deletion logs found.</p>
+                            <p class="mb-0">{{ __('No deletion logs found.') }}</p>
                         </td>
                     </tr>
                     @endforelse

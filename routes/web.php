@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\UnitController;
 use App\Http\Controllers\QuoteController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\SettingController;
@@ -24,6 +26,9 @@ Route::get('/', function () {
     return redirect()->route('login');
 });
 
+// Language Switcher (Publicly accessible)
+Route::get('language/{locale}', [\App\Http\Controllers\LanguageController::class, 'switch'])->name('language.switch');
+
 Auth::routes();
 
 Route::group(['middleware' => 'auth'], function () {
@@ -35,7 +40,10 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('customers/ajax-store', [CustomerController::class, 'ajaxStore'])->name('customers.ajax_store');
     Route::get('customers/{customer}/statement', [CustomerController::class, 'statement'])->name('customers.statement');
     Route::get('customers/{customer}/statement/pdf', [CustomerController::class, 'statementPdf'])->name('customers.statement_pdf');
+    Route::get('products/generate-sku', [ProductController::class, 'generateSku'])->name('products.generate_sku');
     Route::resource('products', ProductController::class);
+    Route::resource('categories', CategoryController::class);
+    Route::resource('units', UnitController::class);
     Route::resource('quotes', QuoteController::class);
     Route::get('quotes/{quote}/convert', [QuoteController::class, 'convertToInvoice'])->name('quotes.convert');
     Route::get('quotes/{quote}/pdf', [QuoteController::class, 'downloadPdf'])->name('quotes.pdf');

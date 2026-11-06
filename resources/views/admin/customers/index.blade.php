@@ -1,14 +1,14 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Manage Customers')
+@section('title', __('Manage Customers'))
 
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="fw-bold text-dark mb-0">Customers</h2>
+    <h2 class="fw-bold text-dark mb-0">{{ __('Customers') }}</h2>
         <div class="d-flex align-items-center gap-3">
         <form action="{{ route('customers.index') }}" method="GET" class="d-flex gap-2">
             <div class="input-group" style="min-width: 290px;">
-                <input type="text" name="search" class="form-control" placeholder="Search name, phone, company..." value="{{ request('search') }}">
+                <input type="text" name="search" class="form-control" placeholder="{{ __('Search name, phone, company...') }}" value="{{ request('search') }}">
                 <button class="btn btn-outline-secondary" type="submit"><i class="fas fa-search"></i></button>
             </div>
             @if(request('search'))
@@ -17,7 +17,7 @@
         </form>
 
         <a href="{{ route('customers.create') }}" class="btn btn-primary-modern d-flex align-items-center">
-        <i class="fas fa-plus me-2"></i> Add New Customer
+        <i class="fas fa-plus me-2"></i> {{ __('Add New Customer') }}
     </a>
     </div>
 </div>
@@ -25,22 +25,20 @@
 <x-card :padding="false">
     <x-table>
         <x-slot name="thead">
-            <th>Name</th>
-            <th>Company</th>
-            <th>Email</th>
-            <th>Phone</th>
-            <th>Status</th>
-            <th class="text-end pe-4">Action</th>
+            <th style="min-width: 180px;">{{ __('Name') }}</th>
+            <th style="min-width: 160px;">{{ __('Company') }}</th>
+            <th>{{ __('Email') }}</th>
+            <th class="text-nowrap">{{ __('Phone') }}</th>
+            <th class="text-nowrap">{{ __('Status') }}</th>
+            <th class="text-end pe-4 text-nowrap">{{ __('Action') }}</th>
         </x-slot>
 
         @foreach($customers as $customer)
         <tr class="align-middle">
             <td>
-                <div class="d-flex align-items-center">
-                    <div>
-                        <div class="fw-bold text-dark">{{ $customer->name }}</div>
-                        <div class="text-muted small">ID: #{{ str_pad($customer->id, 4, '0', STR_PAD_LEFT) }}</div>
-                    </div>
+                <div>
+                    <div class="fw-semibold text-dark" style="font-size: 0.88rem; line-height: 1.35;">{{ tdb($customer->name) }}</div>
+                    <div class="text-muted" style="font-size: 0.78rem;">ID: #{{ str_pad($customer->id, 4, '0', STR_PAD_LEFT) }}</div>
                 </div>
             </td>
             <td class="text-muted">
@@ -50,7 +48,7 @@
                 @endphp
                 @if(!empty($primaryName))
                     <div class="fw-semibold text-dark">
-                        <i class="fas fa-building me-1 text-primary"></i>{{ $primaryName }}
+                        <i class="fas fa-building me-1 text-primary"></i>{{ tdb($primaryName) }}
                     </div>
                     @if(!empty($defComp?->phone))
                         <div class="small text-muted mt-1">
@@ -88,14 +86,14 @@
                         <i class="fas fa-ellipsis-v text-muted"></i>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
-                        <li><a class="dropdown-item py-2" href="{{ route('customers.statement', $customer) }}"><i class="fas fa-file-invoice-dollar me-2 text-success"></i> View Statement</a></li>
-                        <li><a class="dropdown-item py-2" href="{{ route('customers.edit', $customer) }}"><i class="fas fa-edit me-2 text-info"></i> Edit</a></li>
+                        <li><a class="dropdown-item py-2" href="{{ route('customers.statement', $customer) }}"><i class="fas fa-file-invoice-dollar me-2 text-success"></i> {{ __('View Statement') }}</a></li>
+                        <li><a class="dropdown-item py-2" href="{{ route('customers.edit', $customer) }}"><i class="fas fa-edit me-2 text-info"></i> {{ __('Edit') }}</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li>
                             <form action="{{ route('customers.destroy', $customer) }}" method="POST" class="d-inline delete-form">
                                 @csrf @method('DELETE')
                                 <button type="submit" class="dropdown-item py-2 text-danger">
-                                    <i class="fas fa-trash-alt me-2"></i> Delete
+                                    <i class="fas fa-trash-alt me-2"></i> {{ __('Delete') }}
                                 </button>
                             </form>
                         </li>

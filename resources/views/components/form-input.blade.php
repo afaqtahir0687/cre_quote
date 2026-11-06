@@ -8,7 +8,7 @@
            placeholder="{{ $placeholder }}" 
            value="{{ old($name, $value) }}"
            {{ $attributes }}>
-    <label for="{{ $name }}">{{ $label }}</label>
+    <label for="{{ $name }}">{{ __($label) }}</label>
     @error($name)
         <div class="invalid-feedback">{{ $message }}</div>
     @enderror

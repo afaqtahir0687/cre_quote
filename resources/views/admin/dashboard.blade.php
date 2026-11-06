@@ -1,9 +1,9 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Admin Dashboard')
+@section('title', __('Admin Dashboard'))
 
 @section('content')
-<!-- Active Shop Branding Banner -->
+<!-- {{ __('Active Shop') }} Branding Banner -->
 @php
     $dashLogo = shop_logo_url($currentShop, $setting);
     $dashTitle = shop_brand_name($currentShop, $setting);
@@ -27,11 +27,11 @@
                     <div class="d-flex align-items-center gap-2 flex-wrap">
                         <h4 class="fw-bold text-dark mb-0">{{ $dashTitle }}</h4>
                         <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1 rounded-pill small">
-                            <i class="fas fa-circle text-success me-1" style="font-size: 0.5rem;"></i> Active Shop
+                            <i class="fas fa-circle text-success me-1" style="font-size: 0.5rem;"></i> {{ __('Active Shop') }}
                         </span>
                         @if($currentShop)
                             <span class="badge bg-light text-secondary border px-2 py-1 rounded-pill small">
-                                <i class="fas fa-store me-1"></i>Branch #{{ $currentShop->id }}
+                                <i class="fas fa-store me-1"></i>{{ __('Branch') }} #{{ $currentShop->id }}
                             </span>
                             @if($currentShop->package)
                                 <a href="{{ route('subscription.index') }}" class="text-decoration-none">
@@ -44,7 +44,7 @@
                         @endif
                         @if($isSuper && $isSwitched)
                             <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle px-2 py-1 rounded-pill small">
-                                <i class="fas fa-exchange-alt me-1"></i>Switched View
+                                <i class="fas fa-exchange-alt me-1"></i>{{ __('Switched View') }}
                             </span>
                         @endif
                     </div>
@@ -58,7 +58,7 @@
                         @if($currentShop?->phone || $setting?->company_phone)
                             <span><i class="fas fa-phone-alt text-primary me-1"></i> {{ $currentShop->phone ?? $setting->company_phone }}</span>
                         @endif
-                        <span><i class="fas fa-coins text-warning me-1"></i> Currency: <strong>{{ $currentShop->currency_symbol ?? $setting->currency_symbol ?? '$' }}</strong></span>
+                        <span><i class="fas fa-coins text-warning me-1"></i> {{ __('Currency') }}: <strong>{{ $currentShop->currency_symbol ?? $setting->currency_symbol ?? '$' }}</strong></span>
                     </p>
                 </div>
             </div>
@@ -66,12 +66,12 @@
             <div class="d-flex align-items-center gap-2 flex-wrap">
                 @if($isSuper)
                     <a href="{{ route('super_admin.shops.index') }}" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
-                        <i class="fas fa-store-alt me-1"></i> Switch Shop
+                        <i class="fas fa-store-alt me-1"></i> {{ __('Switch Shop') }}
                     </a>
                 @endif
                 @if(in_array(auth()->user()->role, ['admin', 'super_admin']))
                     <a href="{{ route('settings.index') }}" class="btn btn-primary-modern btn-sm rounded-pill px-3">
-                        <i class="fas fa-paint-brush me-1"></i> Customize Logo & Title
+                        <i class="fas fa-paint-brush me-1"></i> {{ __('Customize Logo & Title') }}
                     </a>
                 @endif
             </div>
@@ -86,7 +86,7 @@
             <div class="icon-box">
                 <i class="fas fa-users"></i>
             </div>
-            <h6 class="text-white-50 text-uppercase fw-semibold">Total Customers</h6>
+            <h6 class="text-white-50 text-uppercase fw-semibold">{{ __('Total Customers') }}</h6>
             <h2 class="mb-0 fw-bold">{{ $stats['customers_count'] }}</h2>
         </div>
     </div>
@@ -96,7 +96,7 @@
             <div class="icon-box">
                 <i class="fas fa-file-invoice-dollar"></i>
             </div>
-            <h6 class="text-white-50 text-uppercase fw-semibold">Total Invoices</h6>
+            <h6 class="text-white-50 text-uppercase fw-semibold">{{ __('Total Invoices') }}</h6>
             <h2 class="mb-0 fw-bold">{{ $stats['invoices_count'] }}</h2>
         </div>
     </div>
@@ -106,7 +106,7 @@
             <div class="icon-box">
                 <i class="fas fa-check-circle"></i>
             </div>
-            <h6 class="text-white-50 text-uppercase fw-semibold">Paid Amount</h6>
+            <h6 class="text-white-50 text-uppercase fw-semibold">{{ __('Paid Amount') }}</h6>
             <h2 class="mb-0 fw-bold">{{ format_currency($stats['total_paid']) }}</h2>
         </div>
     </div>
@@ -116,7 +116,7 @@
             <div class="icon-box">
                 <i class="fas fa-clock"></i>
             </div>
-            <h6 class="text-white-50 text-uppercase fw-semibold">Pending Amount</h6>
+            <h6 class="text-white-50 text-uppercase fw-semibold">{{ __('Pending Amount') }}</h6>
             <h2 class="mb-0 fw-bold">{{ format_currency($stats['total_pending']) }}</h2>
         </div>
     </div>
@@ -126,7 +126,7 @@
             <div class="icon-box">
                 <i class="fas fa-tags"></i>
             </div>
-            <h6 class="text-white-50 text-uppercase fw-semibold">Total Discount</h6>
+            <h6 class="text-white-50 text-uppercase fw-semibold">{{ __('Total Discount') }}</h6>
             <h2 class="mb-0 fw-bold">{{ format_currency($stats['total_discount']) }}</h2>
         </div>
     </div>
@@ -134,17 +134,17 @@
 
 <div class="row g-4">
     <div class="col-lg-8">
-        <x-card title="Recent Invoices" :padding="false">
+        <x-card title="{{ __('Recent Invoices') }}" :padding="false">
             <x-slot name="headerActions">
-                <a href="{{ route('invoices.index') }}" class="btn btn-sm btn-link text-decoration-none fw-medium">View All</a>
+                <a href="{{ route('invoices.index') }}" class="btn btn-sm btn-link text-decoration-none fw-medium">{{ __('View All') }}</a>
             </x-slot>
 
             <x-table>
                 <x-slot name="thead">
-                    <th>Invoice #</th>
-                    <th>Customer</th>
-                    <th>Total</th>
-                    <th>Status</th>
+                    <th>{{ __('Invoice #') }}</th>
+                    <th>{{ __('Customer') }}</th>
+                    <th>{{ __('Total') }}</th>
+                    <th>{{ __('Status') }}</th>
                     <th class="text-end">Action</th>
                 </x-slot>
 
@@ -159,7 +159,7 @@
                     <td class="fw-semibold text-dark">{{ format_currency($invoice->grand_total) }}</td>
                     <td>
                         <span class="badge-soft {{ $invoice->status == 'Paid' ? 'badge-soft-success' : 'badge-soft-warning' }}">
-                            {{ $invoice->status }}
+                            {{ __($invoice->status) }}
                         </span>
                     </td>
                     <td class="text-end">
@@ -174,37 +174,37 @@
     </div>
 
     <div class="col-lg-4">
-        <x-card title="Quick Actions">
+        <x-card title="{{ __('Quick Actions') }}">
             <div class="d-grid gap-3">
                 <a href="{{ route('quotes.create') }}" class="btn btn-primary-modern text-start d-flex align-items-center">
                     <i class="fas fa-file-invoice me-3"></i> 
                     <div>
-                        <span class="d-block fw-bold">Create New Quote</span>
-                        <small class="text-white-50 fw-normal">Generate a professional quote</small>
+                        <span class="d-block fw-bold">{{ __('Create New Quote') }}</span>
+                        <small class="text-white-50 fw-normal">{{ __('Generate a professional quote') }}</small>
                     </div>
                 </a>
                 
                 <a href="{{ route('invoices.create') }}" class="btn btn-outline-primary border-2 text-start d-flex align-items-center py-3 rounded-3 group">
                     <i class="fas fa-file-invoice-dollar me-3 fa-lg opacity-75"></i>
                     <div>
-                        <span class="d-block fw-bold text-dark">Create New Invoice</span>
-                        <small class="text-muted fw-normal">Bill your customers easily</small>
+                        <span class="d-block fw-bold text-dark">{{ __('Create New Invoice') }}</span>
+                        <small class="text-muted fw-normal">{{ __('Bill your customers easily') }}</small>
                     </div>
                 </a>
 
                 <a href="{{ route('customers.create') }}" class="btn btn-outline-info border-2 text-start d-flex align-items-center py-3 rounded-3">
                     <i class="fas fa-user-plus me-3 fa-lg opacity-75"></i>
                     <div>
-                        <span class="d-block fw-bold text-dark">Add New Customer</span>
-                        <small class="text-muted fw-normal">Expand your client base</small>
+                        <span class="d-block fw-bold text-dark">{{ __('Add New Customer') }}</span>
+                        <small class="text-muted fw-normal">{{ __('Expand your client base') }}</small>
                     </div>
                 </a>
 
                 <a href="{{ route('settings.index') }}" class="btn btn-outline-secondary border-2 text-start d-flex align-items-center py-3 rounded-3">
                     <i class="fas fa-cog me-3 fa-lg opacity-75"></i>
                     <div>
-                        <span class="d-block fw-bold text-dark">System Settings</span>
-                        <small class="text-muted fw-normal">Configure your system</small>
+                        <span class="d-block fw-bold text-dark">{{ __('System Settings') }}</span>
+                        <small class="text-muted fw-normal">{{ __('Configure your system') }}</small>
                     </div>
                 </a>
             </div>

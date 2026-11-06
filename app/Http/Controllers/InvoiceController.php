@@ -170,6 +170,9 @@ class InvoiceController extends Controller
 
     public function downloadPdf(Invoice $invoice)
     {
+        if (request()->filled('lang')) {
+            app()->setLocale(request('lang'));
+        }
         $invoice->load('customer', 'customerCompany', 'items', 'employee');
         $setting = ($invoice->shop_id ? Setting::withoutGlobalScopes()->where('shop_id', $invoice->shop_id)->first() : null) ?: current_setting();
         
@@ -184,6 +187,9 @@ class InvoiceController extends Controller
             'autoScriptToLang' => true,
             'autoLangToFont'   => true,
         ]);
+        if (app()->getLocale() === 'ar') {
+            $mpdf->SetDirectionality('rtl');
+        }
         
         $html = view('admin.invoices.pdf', compact('invoice', 'setting'))->render();
         $mpdf->WriteHTML($html);

@@ -26,4 +26,18 @@ class JobOrderItem extends Model
     {
         return $this->belongsTo(JobOrder::class);
     }
+
+    public function getLocalizedDescriptionAttribute(): string
+    {
+        return tdb($this->description);
+    }
+
+    protected static function booted()
+    {
+        static::saved(function ($item) {
+            if (!empty($item->description)) {
+                \App\Services\TranslationService::warmCache($item->description);
+            }
+        });
+    }
 }

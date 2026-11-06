@@ -369,4 +369,19 @@ class Customer extends Model
 
         return $phone;
     }
+
+    protected static function booted()
+    {
+        static::saved(function ($customer) {
+            if (!empty($customer->name)) {
+                \App\Services\TranslationService::warmCache($customer->name);
+            }
+            if (!empty($customer->company_name)) {
+                \App\Services\TranslationService::warmCache($customer->company_name);
+            }
+            if (!empty($customer->city)) {
+                \App\Services\TranslationService::warmCache($customer->city);
+            }
+        });
+    }
 }

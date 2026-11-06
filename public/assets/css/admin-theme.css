@@ -215,19 +215,21 @@ html, body {
 
 .table-modern thead th {
     background: var(--table-header-bg);
-    padding: 1rem;
+    padding: 0.85rem 1rem;
     font-weight: 600;
-    font-size: 0.875rem;
+    font-size: 0.8rem;
     color: #475569;
     text-transform: uppercase;
-    letter-spacing: 0.025em;
+    letter-spacing: 0.03em;
     border-bottom: 1px solid #e2e8f0;
+    white-space: nowrap;
 }
 
 .table-modern tbody td {
-    padding: 1rem;
+    padding: 0.8rem 1rem;
     vertical-align: middle;
     border-bottom: 1px solid #f1f5f9;
+    font-size: 0.865rem;
 }
 
 .table-modern tr:hover {
@@ -236,10 +238,15 @@ html, body {
 
 /* Badges */
 .badge-soft {
-    padding: 0.4rem 0.8rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    padding: 0.35rem 0.75rem;
     border-radius: 9999px;
     font-weight: 500;
     font-size: 0.75rem;
+    line-height: 1.25;
 }
 
 .badge-soft-success {

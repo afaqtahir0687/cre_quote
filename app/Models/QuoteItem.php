@@ -18,4 +18,18 @@ class QuoteItem extends Model
     {
         return $this->belongsTo(Quote::class);
     }
+
+    public function getLocalizedDescriptionAttribute(): string
+    {
+        return tdb($this->description);
+    }
+
+    protected static function booted()
+    {
+        static::saved(function ($item) {
+            if (!empty($item->description)) {
+                \App\Services\TranslationService::warmCache($item->description);
+            }
+        });
+    }
 }

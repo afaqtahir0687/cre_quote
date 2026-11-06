@@ -25,4 +25,18 @@ class Department extends Model
     {
         return $this->hasMany(JobAssignment::class);
     }
+
+    public function getLocalizedNameAttribute(): string
+    {
+        return __($this->name) !== $this->name ? __($this->name) : tdb($this->name);
+    }
+
+    protected static function booted()
+    {
+        static::saved(function ($dept) {
+            if (!empty($dept->name)) {
+                \App\Services\TranslationService::warmCache($dept->name);
+            }
+        });
+    }
 }
