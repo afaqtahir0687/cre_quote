@@ -78,9 +78,9 @@
 </div>
 
 <!-- 5-Col ERPGo KPI Cards -->
-<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-xl-5 g-3 mb-4 kpi-row-5">
+<div class="row g-3 mb-4 kpi-row-5">
     <!-- Total Customers -->
-    <div class="col kpi-col-5">
+    <div class="col-12 col-sm-6 col-md-4 col-xl-custom kpi-col-5">
         <div class="kpi-card bg-gradient-indigo h-100">
             <div class="icon-box">
                 <i class="fas fa-users"></i>
@@ -94,7 +94,7 @@
     </div>
     
     <!-- Total Invoices -->
-    <div class="col kpi-col-5">
+    <div class="col-12 col-sm-6 col-md-4 col-xl-custom kpi-col-5">
         <div class="kpi-card bg-gradient-emerald h-100">
             <div class="icon-box">
                 <i class="fas fa-file-invoice-dollar"></i>
@@ -108,7 +108,7 @@
     </div>
 
     <!-- Paid Amount -->
-    <div class="col kpi-col-5">
+    <div class="col-12 col-sm-6 col-md-4 col-xl-custom kpi-col-5">
         <div class="kpi-card bg-gradient-amber h-100">
             <div class="icon-box">
                 <i class="fas fa-wallet"></i>
@@ -122,7 +122,7 @@
     </div>
 
     <!-- Pending Due -->
-    <div class="col kpi-col-5">
+    <div class="col-12 col-sm-6 col-md-4 col-xl-custom kpi-col-5">
         <div class="kpi-card bg-gradient-rose h-100">
             <div class="icon-box">
                 <i class="fas fa-clock"></i>
@@ -136,7 +136,7 @@
     </div>
 
     <!-- Job Orders -->
-    <div class="col kpi-col-5">
+    <div class="col-12 col-sm-6 col-md-4 col-xl-custom kpi-col-5">
         <div class="kpi-card bg-gradient-purple h-100">
             <div class="icon-box">
                 <i class="fas fa-tasks"></i>

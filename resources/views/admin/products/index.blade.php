@@ -77,17 +77,9 @@
         @forelse($products as $product)
         <tr class="align-middle">
             <td>
-                <div class="d-flex align-items-center gap-2">
-                    @if($product->image)
-                        <img src="{{ $product->image_url }}" alt="{{ $product->name }}" 
-                             class="rounded border object-fit-cover flex-shrink-0" 
-                             style="width: 32px; height: 32px;"
-                             onerror="this.style.display='none'">
-                    @endif
-                    <div>
-                        <div class="fw-semibold text-dark text-break" style="font-size: 0.88rem; line-height: 1.35;">{{ tdb($product->name) }}</div>
-                        <div class="text-muted" style="font-size: 0.78rem;">SKU: <span class="font-monospace text-secondary">{{ $product->sku }}</span></div>
-                    </div>
+                <div>
+                    <div class="fw-semibold text-dark text-break" style="font-size: 0.84rem; line-height: 1.3;">{{ tdb($product->name) }}</div>
+                    <div class="text-muted" style="font-size: 0.72rem;">SKU: <span class="font-monospace text-secondary">{{ $product->sku }}</span></div>
                 </div>
             </td>
 

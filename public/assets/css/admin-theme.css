@@ -212,6 +212,90 @@ a:hover {
     color: #FFFFFF !important;
 }
 
+/* Sidebar Nested Dropdowns (ERPGo SaaS Architecture) */
+.sidebar-parent {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    cursor: pointer;
+}
+.sidebar-parent .sidebar-parent-label {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    min-width: 0;
+}
+.sidebar-arrow {
+    font-size: 0.7rem;
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    opacity: 0.65;
+    margin-left: auto;
+    width: 14px;
+    text-align: center;
+}
+[dir="rtl"] .sidebar-arrow {
+    margin-left: 0;
+    margin-right: auto;
+    transform: rotate(180deg);
+}
+.sidebar-parent[aria-expanded="true"] .sidebar-arrow,
+.sidebar-parent:not(.collapsed) .sidebar-arrow {
+    transform: rotate(90deg) !important;
+    opacity: 1;
+    color: #FFFFFF;
+}
+.sidebar-submenu {
+    padding-left: 1.5rem;
+    padding-right: 0.25rem;
+    margin-bottom: 0.35rem;
+}
+[dir="rtl"] .sidebar-submenu {
+    padding-left: 0.25rem;
+    padding-right: 1.5rem;
+}
+.submenu-link {
+    display: flex;
+    align-items: center;
+    padding: 0.42rem 0.75rem;
+    color: #8792A5;
+    text-decoration: none;
+    font-size: 0.825rem;
+    border-radius: var(--erp-radius-sm);
+    margin-bottom: 2px;
+    font-weight: 500;
+    transition: all 0.18s ease;
+    position: relative;
+}
+.submenu-link:hover {
+    color: #FFFFFF;
+    background: rgba(255, 255, 255, 0.08);
+}
+.submenu-link.active {
+    color: #FFFFFF;
+    background: var(--erp-primary);
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(67, 97, 238, 0.35);
+}
+.submenu-bullet {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+    opacity: 0.45;
+    margin-right: 0.65rem;
+    flex-shrink: 0;
+    display: inline-block;
+}
+[dir="rtl"] .submenu-bullet {
+    margin-right: 0;
+    margin-left: 0.65rem;
+}
+.submenu-link:hover .submenu-bullet,
+.submenu-link.active .submenu-bullet {
+    opacity: 1;
+}
+
 /* Top Navbar */
 .top-navbar {
     margin-left: var(--erp-sidebar-width);
@@ -453,27 +537,35 @@ a:hover {
     flex-wrap: wrap;
 }
 
-.kpi-col-5 {
-    flex: 0 0 100%;
-    max-width: 100%;
+.kpi-col-5,
+.col-xl-custom {
+    flex: 0 0 100% !important;
+    max-width: 100% !important;
+    width: 100% !important;
 }
 
 @media (min-width: 576px) {
-    .kpi-col-5 {
-        flex: 0 0 50%;
-        max-width: 50%;
+    .kpi-col-5,
+    .col-xl-custom {
+        flex: 0 0 50% !important;
+        max-width: 50% !important;
+        width: 50% !important;
     }
 }
 @media (min-width: 768px) {
-    .kpi-col-5 {
-        flex: 0 0 33.333333%;
-        max-width: 33.333333%;
+    .kpi-col-5,
+    .col-xl-custom {
+        flex: 0 0 33.333333% !important;
+        max-width: 33.333333% !important;
+        width: 33.333333% !important;
     }
 }
 @media (min-width: 1200px) {
-    .kpi-col-5 {
-        flex: 0 0 20%;
-        max-width: 20%;
+    .kpi-col-5,
+    .col-xl-custom {
+        flex: 0 0 20% !important;
+        max-width: 20% !important;
+        width: 20% !important;
     }
 }
 
@@ -489,9 +581,9 @@ a:hover {
 
 .table-modern thead th {
     background: #F8FAFC;
-    padding: 0.85rem 1rem;
+    padding: 0.65rem 0.85rem;
     font-weight: 600;
-    font-size: 0.775rem;
+    font-size: 0.75rem;
     color: var(--erp-text-muted);
     text-transform: uppercase;
     letter-spacing: 0.04em;
@@ -502,10 +594,10 @@ a:hover {
 }
 
 .table-modern tbody td {
-    padding: 0.9rem 1rem;
+    padding: 0.65rem 0.85rem;
     vertical-align: middle;
     border-bottom: 1px solid var(--erp-border-color);
-    font-size: 0.865rem;
+    font-size: 0.835rem;
     color: var(--erp-text-main);
     background: #FFFFFF;
 }

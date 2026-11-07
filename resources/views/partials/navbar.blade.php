@@ -7,13 +7,13 @@
 
         <!-- Current View Title & Dynamic Breadcrumb -->
         <div>
-            <h5 class="mb-0 text-dark fw-bold" style="font-size: 1.1rem;">
-                {!! __(trim($__env->yieldContent('title', 'Dashboard'))) !!}
+            <h5 class="mb-0 text-dark fw-bold" style="font-size: 1.05rem;">
+                {!! html_entity_decode(e(__(trim($__env->yieldContent('title', 'Dashboard')))), ENT_QUOTES, 'UTF-8') !!}
             </h5>
             <div class="d-none d-md-flex align-items-center gap-1 text-muted extra-small" style="font-size: 0.75rem;">
                 <a href="{{ route('dashboard') }}" class="text-muted"><i class="fas fa-home me-1"></i>{{ __('Home') }}</a>
                 <span>/</span>
-                <span class="text-primary fw-medium">{!! __(trim($__env->yieldContent('title', 'Overview'))) !!}</span>
+                <span class="text-primary fw-medium">{!! html_entity_decode(e(__(trim($__env->yieldContent('title', 'Overview')))), ENT_QUOTES, 'UTF-8') !!}</span>
             </div>
         </div>
     </div>

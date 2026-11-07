@@ -42,13 +42,51 @@
                             <input type="text" name="sku" id="product_sku"
                                 class="form-control @error('sku') is-invalid @enderror" value="{{ old('sku') }}"
                                 placeholder="e.g. PRD-849201">
-                                <button class="btn btn-outline-primary d-flex align-items-center" type="button"
-                                    id="btn-generate-sku" onclick="generateProductSku()"
-                                    title="{{ __('Auto Generate SKU') }}">
-                                    <i class="fas fa-magic me-1" id="sku-magic-icon"></i>
-                                    <span>{{ __('Generate') }}</span>
-                                </button>
+                            <button class="btn btn-outline-primary d-flex align-items-center" type="button"
+                                id="btn-generate-sku" onclick="if(window.generateProductSku){window.generateProductSku();}return false;"
+                                title="{{ __('Auto Generate SKU') }}">
+                                <i class="fas fa-magic me-1" id="sku-magic-icon"></i>
+                                <span>{{ __('Generate') }}</span>
+                            </button>
                         </div>
+                        <script>
+                            window.generateProductSku = function() {
+                                var skuInput = document.getElementById('product_sku');
+                                var magicIcon = document.getElementById('sku-magic-icon');
+                                var typeSelect = document.getElementById('product_type');
+                                if (!skuInput) return;
+                                if (magicIcon) magicIcon.classList.add('fa-spin');
+                                var pType = typeSelect ? typeSelect.value : 'product';
+                                var prefix = (pType === 'service') ? 'SRV' : 'PRD';
+                                var fallback = prefix + '-' + Math.floor(100000 + Math.random() * 900000);
+                                var url = '{{ route("products.generate_sku") }}' + '?type=' + encodeURIComponent(pType);
+                                fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' } })
+                                    .then(function(res) { if (!res.ok) throw new Error('HTTP ' + res.status); return res.json(); })
+                                    .then(function(data) {
+                                        skuInput.value = (data && data.sku) ? data.sku : fallback;
+                                        skuInput.classList.remove('is-invalid');
+                                        skuInput.classList.add('is-valid');
+                                        setTimeout(function() { skuInput.classList.remove('is-valid'); }, 1200);
+                                    })
+                                    .catch(function(err) {
+                                        console.warn('SKU fetch fallback:', err);
+                                        skuInput.value = fallback;
+                                        skuInput.classList.remove('is-invalid');
+                                    })
+                                    .finally(function() {
+                                        if (magicIcon) magicIcon.classList.remove('fa-spin');
+                                    });
+                            };
+                            document.addEventListener('DOMContentLoaded', function() {
+                                var btn = document.getElementById('btn-generate-sku');
+                                if (btn) {
+                                    btn.addEventListener('click', function(e) {
+                                        e.preventDefault();
+                                        window.generateProductSku();
+                                    });
+                                }
+                            });
+                        </script>
                         @error('sku')
                             <div class="text-danger small mt-1">{{ $message }}</div>
                         @enderror

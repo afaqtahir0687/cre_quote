@@ -127,9 +127,36 @@
         }
     </script>
     <script>
-        document.getElementById('sidebar-toggle')?.addEventListener('click', function () {
-            document.getElementById('sidebar').classList.toggle('show');
-        });
+        (function() {
+            var sidebar = document.getElementById('sidebar');
+            var backdrop = document.getElementById('sidebarBackdrop');
+            var toggleBtn = document.getElementById('sidebar-toggle');
+            
+            function toggleSidebar() {
+                if (!sidebar) return;
+                var isOpen = sidebar.classList.toggle('show');
+                if (backdrop) {
+                    if (isOpen) {
+                        backdrop.classList.remove('d-none');
+                    } else {
+                        backdrop.classList.add('d-none');
+                    }
+                }
+            }
+
+            if (toggleBtn) {
+                toggleBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    toggleSidebar();
+                });
+            }
+            if (backdrop) {
+                backdrop.addEventListener('click', function() {
+                    if (sidebar) sidebar.classList.remove('show');
+                    backdrop.classList.add('d-none');
+                });
+            }
+        })();
 
         /**
          * Global toast helper — modern SweetAlert2 Toast notification
