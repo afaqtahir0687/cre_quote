@@ -42,6 +42,9 @@
         <link rel="stylesheet" href="{{ asset('assets/css/rtl.css') }}">
     @endif
 
+    <!-- Chart.js for ERP Analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
     @yield('styles')
 </head>
 
@@ -59,6 +62,8 @@
 
             @yield('content')
         </main>
+
+        @include('partials.footer')
     </div>
 
     <!-- Scripts (Local First for Offline/Slow Network Resilience, CDN as Fallback) -->
@@ -306,10 +311,28 @@
                 }
             }
         });
+        // Mobile Sidebar Toggle and Backdrop Handling
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebar = document.getElementById('sidebar');
+            const toggleBtn = document.getElementById('sidebar-toggle');
+            const backdrop = document.getElementById('sidebarBackdrop');
+
+            if (toggleBtn && sidebar) {
+                toggleBtn.addEventListener('click', function() {
+                    sidebar.classList.toggle('show');
+                    if (backdrop) backdrop.classList.toggle('d-none');
+                });
+            }
+
+            if (backdrop) {
+                backdrop.addEventListener('click', function() {
+                    if (sidebar) sidebar.classList.remove('show');
+                    backdrop.classList.add('d-none');
+                });
+            }
+        });
     </script>
 </body>
-
-</html>
 
 </html>
 

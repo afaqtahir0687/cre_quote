@@ -1,5 +1,5 @@
 <aside class="sidebar" id="sidebar">
-    <div class="brand text-center py-3 px-2 border-bottom">
+    <div class="brand">
         @php
             $isSuperAdmin = auth()->check() && auth()->user()->isSuperAdmin();
             $isGlobalView = $isSuperAdmin && (!session('active_shop_id') || session('active_shop_id') === 'all');
@@ -7,54 +7,51 @@
         @endphp
 
         @if($isSuperAdmin && ($isGlobalView || $isInSuperAdminSection))
-            {{-- Super Admin in Global Platform View or Super Admin Section: ALWAYS show Platform / Crelogics Logo --}}
-            <a href="{{ route('super_admin.dashboard') }}" class="text-decoration-none d-block">
+            {{-- Super Admin in Global Platform View or Super Admin Section --}}
+            <a href="{{ route('super_admin.dashboard') }}" class="d-flex align-items-center gap-2 text-decoration-none w-100 overflow-hidden">
                 @php $platLogo = platform_logo_url(); @endphp
                 @if($platLogo)
-                    <img src="{{ $platLogo }}" alt="Platform Logo" class="img-fluid mb-2"
-                        style="max-height: 60px; max-width: 180px; object-fit: contain;">
+                    <img src="{{ $platLogo }}" alt="Platform Logo" style="max-height: 42px; max-width: 140px; object-fit: contain;">
                 @else
-                    <div class="d-inline-flex align-items-center justify-content-center bg-warning text-dark rounded-3 mb-2 shadow-sm"
-                        style="width: 52px; height: 52px; font-size: 1.5rem;">
+                    <div class="d-inline-flex align-items-center justify-content-center bg-warning text-dark rounded-3 shadow-sm flex-shrink-0"
+                        style="width: 40px; height: 40px; font-size: 1.25rem;">
                         <i class="fas fa-crown"></i>
                     </div>
+                    <div class="overflow-hidden">
+                        <div class="fw-bold text-white small text-truncate" style="font-size: 0.9rem;" title="{{ platform_brand_name() }}">
+                            {{ platform_brand_name() }}
+                        </div>
+                        <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle extra-small py-0 px-1">
+                            {{ __('Super Admin') }}
+                        </span>
+                    </div>
                 @endif
-                <div class="fw-bold text-dark small text-truncate px-2" style="font-size: 0.85rem;"
-                    title="{{ platform_brand_name() }}">
-                    {{ platform_brand_name() }}
-                </div>
-                <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle mt-1"
-                    style="font-size: 0.65rem; font-weight: 500;">
-                    <i class="fas fa-crown text-warning me-1"></i> {{ __('Super Admin Portal') }}
-                </span>
             </a>
         @else
             {{-- Shop Context (Shop Admin, Employee, or Super Admin switched to a specific Shop) --}}
-            <a href="{{ route('dashboard') }}" class="text-decoration-none d-block">
+            <a href="{{ route('dashboard') }}" class="d-flex align-items-center gap-2 text-decoration-none w-100 overflow-hidden">
                 @php
                     $sidebarLogo = shop_logo_url($currentShop, $setting);
                     $sidebarTitle = shop_brand_name($currentShop, $setting);
                 @endphp
 
                 @if($sidebarLogo)
-                    <img src="{{ $sidebarLogo }}" alt="{{ $sidebarTitle }}" class="img-fluid mb-2"
-                        style="max-height: 60px; max-width: 180px; object-fit: contain;">
+                    <img src="{{ $sidebarLogo }}" alt="{{ $sidebarTitle }}" style="max-height: 42px; max-width: 140px; object-fit: contain;">
                 @else
-                    <div class="d-inline-flex align-items-center justify-content-center bg-primary text-white rounded-3 mb-2 shadow-sm"
-                        style="width: 52px; height: 52px; font-size: 1.5rem;">
+                    <div class="d-inline-flex align-items-center justify-content-center text-white rounded-3 shadow-sm flex-shrink-0"
+                        style="width: 40px; height: 40px; font-size: 1.25rem; background: var(--erp-primary);">
                         <i class="fas fa-store"></i>
                     </div>
-                @endif
-
-                <div class="fw-bold text-dark small text-truncate px-2" style="font-size: 0.85rem;"
-                    title="{{ $sidebarTitle }}">
-                    {{ $sidebarTitle }}
-                </div>
-
-                @if($currentShop)
-                    <span class="badge bg-light text-secondary border mt-1" style="font-size: 0.65rem; font-weight: 500;">
-                        <i class="fas fa-store text-primary me-1"></i> {{ __('Branch') }} #{{ $currentShop->id }}
-                    </span>
+                    <div class="overflow-hidden">
+                        <div class="fw-bold text-white small text-truncate" style="font-size: 0.9rem;" title="{{ $sidebarTitle }}">
+                            {{ $sidebarTitle }}
+                        </div>
+                        @if($currentShop)
+                            <span class="badge bg-light text-dark extra-small py-0 px-1">
+                                {{ __('Branch') }} #{{ $currentShop->id }}
+                            </span>
+                        @endif
+                    </div>
                 @endif
             </a>
         @endif
@@ -62,81 +59,56 @@
 
     <nav class="sidebar-nav">
         @if(auth()->check() && auth()->user()->isSuperAdmin())
-            <!-- Super Admin Control Panel -->
-            <div class="px-3 pt-2 pb-1 text-uppercase text-muted fw-bold"
-                style="font-size: 0.7rem; letter-spacing: 0.05em;">
+            <!-- ================= SUPER ADMIN CONTROL ================= -->
+            <div class="sidebar-group-title">
                 <i class="fas fa-crown text-warning me-1"></i> {{ __('Super Admin') }}
             </div>
 
             <a href="{{ route('super_admin.dashboard') }}"
                 class="sidebar-link {{ request()->routeIs('super_admin.dashboard') ? 'active' : '' }}">
-                <i class="fas fa-tachometer-alt text-warning"></i>
+                <i class="fas fa-tachometer-alt"></i>
                 <span>{{ __('Overview') }}</span>
             </a>
 
             <a href="{{ route('super_admin.shops.index') }}"
                 class="sidebar-link {{ request()->routeIs('super_admin.shops.*') ? 'active' : '' }}">
-                <i class="fas fa-store text-primary"></i>
+                <i class="fas fa-store"></i>
                 <span>{{ __('Manage Shops') }}</span>
             </a>
 
             <a href="{{ route('super_admin.users.index') }}"
                 class="sidebar-link {{ request()->routeIs('super_admin.users.*') ? 'active' : '' }}">
-                <i class="fas fa-users-cog text-info"></i>
+                <i class="fas fa-users-cog"></i>
                 <span>{{ __('Users') }}</span>
             </a>
 
             <a href="{{ route('super_admin.subscriptions.index') }}"
                 class="sidebar-link {{ request()->routeIs('super_admin.subscriptions.*') ? 'active' : '' }}">
-                <i class="fas fa-hand-holding-usd text-success"></i>
+                <i class="fas fa-hand-holding-usd"></i>
                 <span>{{ __('Subscriptions') }}</span>
             </a>
 
             <a href="{{ route('super_admin.packages.index') }}"
                 class="sidebar-link {{ request()->routeIs('super_admin.packages.*') ? 'active' : '' }}">
-                <i class="fas fa-boxes text-primary"></i>
+                <i class="fas fa-boxes"></i>
                 <span>{{ __('Packages') }}</span>
             </a>
 
             <a href="{{ route('super_admin.platform_settings') }}"
-                class="sidebar-link {{ request()->routeIs('super_admin.platform_settings*') ? 'active' : '' }}">
-                <i class="fas fa-paint-brush text-warning"></i>
-                <span>{{ __('Branding') }}</span>
+                class="sidebar-link {{ request()->routeIs('super_admin.platform_settings') ? 'active' : '' }}">
+                <i class="fas fa-paint-brush"></i>
+                <span>{{ __('Branding & Mail') }}</span>
             </a>
-
-            <hr class="my-2 text-secondary opacity-25">
         @endif
 
-        <!-- Shop Operations Section -->
-        @if(auth()->check() && auth()->user()->isSuperAdmin())
-            <div class="px-3 pt-1 pb-1 text-uppercase text-muted fw-bold"
-                style="font-size: 0.7rem; letter-spacing: 0.05em;">
-                <i class="fas fa-store-alt text-secondary me-1"></i> {{ __('Active Shop') }}
-            </div>
-        @endif
+        <!-- ================= ACTIVE SHOP OPERATIONS ================= -->
+        <div class="sidebar-group-title">
+            <i class="fas fa-briefcase me-1"></i> {{ __('Business Operations') }}
+        </div>
 
         <a href="{{ route('dashboard') }}" class="sidebar-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
-            <i class="fas fa-home"></i>
+            <i class="fas fa-th-large"></i>
             <span>{{ __('Dashboard') }}</span>
-        </a>
-
-        @if(auth()->check() && in_array(auth()->user()->role, ['admin', 'super_admin']))
-            <a href="{{ route('employees.index') }}"
-                class="sidebar-link {{ request()->routeIs('employees.*') ? 'active' : '' }}">
-                <i class="fas fa-user-tie"></i>
-                <span>{{ __('Employees') }}</span>
-            </a>
-        @endif
-
-        <a href="{{ route('customers.index') }}"
-            class="sidebar-link {{ request()->routeIs('customers.*') ? 'active' : '' }}">
-            <i class="fas fa-users"></i>
-            <span>{{ __('Customers') }}</span>
-        </a>
-
-        <a href="{{ route('quotes.index') }}" class="sidebar-link {{ request()->routeIs('quotes.*') ? 'active' : '' }}">
-            <i class="fas fa-file-invoice"></i>
-            <span>{{ __('Quotes') }}</span>
         </a>
 
         <a href="{{ route('job-orders.index') }}"
@@ -145,10 +117,10 @@
             <span>{{ __('Job Orders') }}</span>
         </a>
 
-        <a href="{{ route('departments.index') }}"
-            class="sidebar-link {{ request()->routeIs('departments.*') ? 'active' : '' }}">
-            <i class="fas fa-sitemap"></i>
-            <span>{{ __('Department') }}</span>
+        <a href="{{ route('quotes.index') }}"
+            class="sidebar-link {{ request()->routeIs('quotes.*') ? 'active' : '' }}">
+            <i class="fas fa-file-invoice"></i>
+            <span>{{ __('Quotations') }}</span>
         </a>
 
         <a href="{{ route('invoices.index') }}"
@@ -163,10 +135,21 @@
             <span>{{ __('Delivery Notes') }}</span>
         </a>
 
+        <!-- ================= CRM & INVENTORY ================= -->
+        <div class="sidebar-group-title">
+            <i class="fas fa-warehouse me-1"></i> {{ __('CRM & Catalog') }}
+        </div>
+
+        <a href="{{ route('customers.index') }}"
+            class="sidebar-link {{ request()->routeIs('customers.*') ? 'active' : '' }}">
+            <i class="fas fa-user-friends"></i>
+            <span>{{ __('Customers') }}</span>
+        </a>
+
         <a href="{{ route('products.index') }}"
             class="sidebar-link {{ request()->routeIs('products.*') ? 'active' : '' }}">
-            <i class="fas fa-box"></i>
-            <span>{{ __('Products') }}</span>
+            <i class="fas fa-box-open"></i>
+            <span>{{ __('Products & Services') }}</span>
         </a>
 
         <a href="{{ route('categories.index') }}"
@@ -181,7 +164,49 @@
             <span>{{ __('Units') }}</span>
         </a>
 
-        <hr class="my-3 text-secondary opacity-25">
+        <!-- ================= STAFF & WORKSHOP ================= -->
+        <div class="sidebar-group-title">
+            <i class="fas fa-users-cog me-1"></i> {{ __('HRM & Workshop') }}
+        </div>
+
+        @if(auth()->check() && (auth()->user()->isAdmin() || auth()->user()->isSuperAdmin()))
+            <a href="{{ route('employees.index') }}"
+                class="sidebar-link {{ request()->routeIs('employees.*') ? 'active' : '' }}">
+                <i class="fas fa-id-badge"></i>
+                <span>{{ __('Employees') }}</span>
+            </a>
+        @endif
+
+        <a href="{{ route('departments.index') }}"
+            class="sidebar-link {{ request()->routeIs('departments.*') ? 'active' : '' }}">
+            <i class="fas fa-cogs"></i>
+            <span>{{ __('Departments / Units') }}</span>
+        </a>
+
+        <!-- ================= SHOP CONFIGURATION ================= -->
+        <div class="sidebar-group-title">
+            <i class="fas fa-sliders-h me-1"></i> {{ __('Configuration') }}
+        </div>
+
+        @if(auth()->check() && (auth()->user()->isAdmin() || auth()->user()->isSuperAdmin()))
+            <a href="{{ route('branches.index') }}"
+                class="sidebar-link {{ request()->routeIs('branches.*') ? 'active' : '' }}">
+                <i class="fas fa-store-alt"></i>
+                <span>{{ __('Branches / Multi-Shop') }}</span>
+            </a>
+
+            <a href="{{ route('subscription.index') }}"
+                class="sidebar-link {{ request()->routeIs('subscription.*') ? 'active' : '' }}">
+                <i class="fas fa-gem"></i>
+                <span>{{ __('My Subscription') }}</span>
+            </a>
+
+            <a href="{{ route('settings.index') }}"
+                class="sidebar-link {{ request()->routeIs('settings.*') ? 'active' : '' }}">
+                <i class="fas fa-cog"></i>
+                <span>{{ __('Shop Settings') }}</span>
+            </a>
+        @endif
 
         <a href="{{ route('recycle_bin.index') }}"
             class="sidebar-link {{ request()->routeIs('recycle_bin.*') ? 'active' : '' }}">
@@ -192,48 +217,8 @@
         <a href="{{ route('system_logs.index') }}"
             class="sidebar-link {{ request()->routeIs('system_logs.*') ? 'active' : '' }}">
             <i class="fas fa-history"></i>
-            <span>{{ __('Activity Logs') }}</span>
+            <span>{{ __('System Logs') }}</span>
         </a>
-
-        @if(auth()->check() && auth()->user()->isSuperAdmin())
-            <a href="{{ route('super_admin.platform_settings') }}"
-                class="sidebar-link {{ request()->routeIs('super_admin.platform_settings*') ? 'active' : '' }}">
-                <i class="fas fa-paint-brush text-warning"></i>
-                <span>{{ __('Platform Branding') }}</span>
-            </a>
-
-            <a href="{{ route('settings.index') }}"
-                class="sidebar-link {{ request()->routeIs('settings.*') ? 'active' : '' }}">
-                <i class="fas fa-cog text-primary"></i>
-                <span>{{ __('Settings') }}</span>
-            </a>
-        @elseif(auth()->check() && auth()->user()->isAdmin())
-            <a href="{{ route('branches.index') }}"
-                class="sidebar-link {{ request()->routeIs('branches.*') ? 'active' : '' }}">
-                <i class="fas fa-code-branch text-info"></i>
-                <span>{{ __('Branches') }}</span>
-            </a>
-
-            <a href="{{ route('subscription.index') }}"
-                class="sidebar-link {{ request()->routeIs('subscription.*') ? 'active' : '' }}">
-                <i class="fas fa-gem text-warning"></i>
-                <span>{{ __('Subscription') }}</span>
-            </a>
-
-            <a href="{{ route('settings.index') }}"
-                class="sidebar-link {{ request()->routeIs('settings.*') ? 'active' : '' }}">
-                <i class="fas fa-cog"></i>
-                <span>{{ __('Settings') }}</span>
-            </a>
-        @endif
-
-        <div class="mt-auto pt-4 px-3 mb-3">
-            <form action="{{ route('logout') }}" method="POST">
-                @csrf
-                <button type="submit" class="btn btn-outline-danger w-100 btn-sm">
-                    <i class="fas fa-sign-out-alt me-2"></i> {{ __('Logout') }}
-                </button>
-            </form>
-        </div>
     </nav>
 </aside>
+<div class="sidebar-backdrop d-none" id="sidebarBackdrop"></div>
