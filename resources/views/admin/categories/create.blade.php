@@ -17,12 +17,21 @@
         @csrf
 
         <div class="row">
-            <div class="col-md-12 mb-3">
+            <div class="col-md-8 mb-3">
                 <label class="form-label fw-semibold text-dark">{{ __('Category Name') }} <span class="text-danger">*</span></label>
                 <input type="text" name="name" class="form-control @error('name') is-invalid @enderror" value="{{ old('name') }}" placeholder="{{ __('e.g. Printing, Signage, Stationery') }}" required>
                 @error('name')
                     <div class="invalid-feedback">{{ $message }}</div>
                 @enderror
+            </div>
+
+            <div class="col-md-4 mb-3">
+                <label class="form-label fw-semibold text-dark">{{ __('Category Code') }}</label>
+                <input type="text" name="code" class="form-control text-uppercase @error('code') is-invalid @enderror" value="{{ old('code') }}" placeholder="{{ __('e.g. CAT-PRN or SGN') }}">
+                @error('code')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+                <small class="text-muted" style="font-size: 0.75rem;">{{ __('Leave blank to auto-generate from name.') }}</small>
             </div>
 
             <div class="col-md-12 mb-3">

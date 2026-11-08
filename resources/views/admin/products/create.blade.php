@@ -347,6 +347,12 @@
                         <input type="text" id="quick_cat_name" class="form-control"
                             placeholder="{{ __('e.g. Banners, Printing, Stationery') }}">
                     </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">{{ __('Category Code') }}</label>
+                        <input type="text" id="quick_cat_code" class="form-control text-uppercase"
+                            placeholder="{{ __('e.g. CAT-PRN or SGN') }}">
+                        <small class="text-muted" style="font-size: 0.75rem;">{{ __('Leave blank to auto-generate.') }}</small>
+                    </div>
                     <div id="quick_cat_error" class="alert alert-danger py-2 small d-none"></div>
                 </div>
                 <div class="modal-footer">
@@ -528,6 +534,8 @@
                 if (btnSaveQuickCat) {
                     btnSaveQuickCat.addEventListener('click', function () {
                         const name = document.getElementById('quick_cat_name').value.trim();
+                        const codeInput = document.getElementById('quick_cat_code');
+                        const code = codeInput ? codeInput.value.trim() : '';
                         const errBox = document.getElementById('quick_cat_error');
 
                         if (!name) {
@@ -544,7 +552,7 @@
                                 'X-CSRF-TOKEN': '{{ csrf_token() }}',
                                 'X-Requested-With': 'XMLHttpRequest'
                             },
-                            body: JSON.stringify({ name: name, status: 1 })
+                            body: JSON.stringify({ name: name, code: code, status: 1 })
                         })
                             .then(res => res.json())
                             .then(data => {
@@ -561,6 +569,7 @@
                                     if (modal) modal.hide();
 
                                     document.getElementById('quick_cat_name').value = '';
+                                    if (codeInput) codeInput.value = '';
                                     errBox.classList.add('d-none');
                                 } else {
                                     errBox.textContent = data.message || 'Error creating category';

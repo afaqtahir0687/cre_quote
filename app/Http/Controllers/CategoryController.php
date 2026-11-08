@@ -16,7 +16,7 @@ class CategoryController extends Controller
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('name_ar', 'like', "%{$search}%")
+                  ->orWhere('code', 'like', "%{$search}%")
                   ->orWhere('description', 'like', "%{$search}%");
             });
         }
@@ -34,11 +34,25 @@ class CategoryController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
+            'code' => 'nullable|string|max:50',
             'description' => 'nullable|string',
             'status' => 'nullable|boolean',
         ]);
 
         $validated['status'] = $request->has('status') ? $request->boolean('status') : true;
+
+        if (empty($validated['code']) && !empty($validated['name'])) {
+            $words = explode(' ', trim($validated['name']));
+            $abbr = '';
+            foreach ($words as $w) {
+                if (!empty($w)) $abbr .= strtoupper(substr($w, 0, 1));
+            }
+            if (strlen($abbr) < 2) {
+                $clean = preg_replace('/[^A-Za-z0-9]/', '', $validated['name']);
+                $abbr = strtoupper(substr($clean, 0, 4));
+            }
+            $validated['code'] = 'CAT-' . ($abbr ?: 'GEN');
+        }
 
         $category = Category::create($validated);
 
@@ -62,6 +76,7 @@ class CategoryController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
+            'code' => 'nullable|string|max:50',
             'description' => 'nullable|string',
             'status' => 'nullable|boolean',
         ]);

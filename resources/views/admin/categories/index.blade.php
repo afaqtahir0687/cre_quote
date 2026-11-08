@@ -26,6 +26,7 @@
     <x-table>
         <x-slot name="thead">
             <th style="min-width: 200px;">{{ __('Category Name') }}</th>
+            <th class="text-nowrap" style="min-width: 110px;">{{ __('Code') }}</th>
             <th>{{ __('Description') }}</th>
             <th class="text-center text-nowrap">{{ __('Products Count') }}</th>
             <th class="text-center text-nowrap">{{ __('Status') }}</th>
@@ -36,9 +37,16 @@
         <tr class="align-middle">
             <td>
                 <div>
-                    <div class="fw-semibold text-dark" style="font-size: 0.88rem; line-height: 1.35;">{{ tdb($category->name) }}</div>
-                    <div class="text-muted" style="font-size: 0.78rem;">{{ $category->slug }}</div>
+                    <div class="fw-semibold text-dark" style="font-size: 0.85rem; line-height: 1.35;">{{ tdb($category->name) }}</div>
+                    <div class="text-muted" style="font-size: 0.75rem;">{{ $category->slug }}</div>
                 </div>
+            </td>
+            <td>
+                @if($category->code)
+                    <span class="badge-soft badge-soft-info font-monospace fw-semibold" style="font-size: 0.78rem;">{{ $category->code }}</span>
+                @else
+                    <span class="text-muted small">---</span>
+                @endif
             </td>
             <td>
                 <span class="text-muted" style="font-size: 0.85rem;">{{ $category->description ? tdb(Str::limit($category->description, 60)) : '---' }}</span>
@@ -81,7 +89,7 @@
         </tr>
         @empty
         <tr>
-            <td colspan="5" class="text-center py-5 text-muted">
+            <td colspan="6" class="text-center py-5 text-muted">
                 <i class="fas fa-tags fa-3x text-muted mb-3 d-block opacity-25"></i>
                 <h5 class="text-muted">{{ __('No categories found.') }}</h5>
                 <div class="mt-3">
