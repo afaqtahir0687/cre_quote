@@ -13,11 +13,11 @@
 
     /* Secondary & Dark Accents */
     --erp-sidebar-bg: #17243A;
-    --erp-sidebar-text: #8792A5;
-    --erp-sidebar-hover: #1E2D47;
+    --erp-sidebar-text: #FFFFFF;
+    --erp-sidebar-hover: rgba(255, 255, 255, 0.08);
     --erp-sidebar-active: #4361EE;
     --erp-sidebar-active-text: #FFFFFF;
-    --erp-sidebar-heading: #58657B;
+    --erp-sidebar-heading: #94A3B8;
 
     /* Backgrounds */
     --erp-body-bg: #F5F7FB;
@@ -159,25 +159,63 @@ a:hover {
     border-radius: 4px;
 }
 
+/* Sidebar Search Box */
+.sidebar-search-box {
+    padding: 0.75rem 0.85rem 0.35rem 0.85rem;
+}
+.sidebar-search-box .input-group {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: var(--erp-radius-sm);
+    overflow: hidden;
+    transition: all 0.2s ease;
+}
+.sidebar-search-box .input-group:focus-within {
+    border-color: var(--erp-primary);
+    background: rgba(255, 255, 255, 0.1);
+}
+.sidebar-search-box .input-group-text {
+    background: transparent;
+    border: none;
+    color: #94A3B8;
+    padding-left: 0.75rem;
+    padding-right: 0.35rem;
+    font-size: 0.8rem;
+}
+.sidebar-search-box .form-control {
+    background: transparent;
+    border: none;
+    color: #FFFFFF;
+    font-size: 0.82rem;
+    padding: 0.42rem 0.6rem;
+    box-shadow: none;
+}
+.sidebar-search-box .form-control::placeholder {
+    color: #94A3B8;
+    opacity: 0.75;
+}
+
 .sidebar-group-title {
-    font-size: 0.675rem;
+    font-size: 0.7rem;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.075em;
-    color: var(--erp-sidebar-heading);
-    padding: 1rem 0.75rem 0.35rem 0.75rem;
+    letter-spacing: 0.08em;
+    color: #94A3B8;
+    padding: 1.15rem 0.85rem 0.35rem 0.85rem;
+    display: flex;
+    align-items: center;
 }
 
 .sidebar-link {
     display: flex;
     align-items: center;
-    padding: 0.65rem 0.85rem;
-    color: var(--erp-sidebar-text);
+    padding: 0.62rem 0.85rem;
+    color: #FFFFFF;
     text-decoration: none;
     border-radius: var(--erp-radius-sm);
     margin-bottom: 0.2rem;
     font-weight: 500;
-    font-size: 0.85rem;
+    font-size: 0.86rem;
     transition: all 0.18s ease;
     position: relative;
 }
@@ -187,14 +225,21 @@ a:hover {
     width: 20px;
     font-size: 0.95rem;
     margin-right: 0.75rem;
-    opacity: 0.8;
+    opacity: 0.95;
+    color: #FFFFFF;
     text-align: center;
     transition: all 0.18s ease;
 }
 
+[dir="rtl"] .sidebar-link i,
+[dir="rtl"] .sidebar-link svg {
+    margin-right: 0;
+    margin-left: 0.75rem;
+}
+
 .sidebar-link:hover {
     color: #FFFFFF;
-    background: var(--erp-sidebar-hover);
+    background: rgba(255, 255, 255, 0.09);
 }
 .sidebar-link:hover i {
     opacity: 1;
@@ -202,14 +247,19 @@ a:hover {
 }
 
 .sidebar-link.active {
-    background: var(--erp-primary);
-    color: var(--erp-sidebar-active-text);
+    background: rgba(67, 97, 238, 0.22);
+    color: #FFFFFF;
     font-weight: 600;
-    box-shadow: 0 4px 12px rgba(67, 97, 238, 0.35);
+    border-left: 3px solid var(--erp-primary);
+    box-shadow: none;
 }
 .sidebar-link.active i {
     opacity: 1;
-    color: #FFFFFF !important;
+    color: #7289FF !important;
+}
+[dir="rtl"] .sidebar-link.active {
+    border-left: none;
+    border-right: 3px solid var(--erp-primary);
 }
 
 /* Sidebar Nested Dropdowns (ERPGo SaaS Architecture) */
@@ -219,32 +269,44 @@ a:hover {
     justify-content: space-between;
     width: 100%;
     cursor: pointer;
+    color: #FFFFFF;
 }
 .sidebar-parent .sidebar-parent-label {
     display: flex;
     align-items: center;
     flex: 1;
     min-width: 0;
+    color: #FFFFFF;
 }
 .sidebar-arrow {
-    font-size: 0.7rem;
+    font-size: 0.68rem;
     transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-    opacity: 0.65;
+    opacity: 0.7;
     margin-left: auto;
     width: 14px;
     text-align: center;
+    color: #CBD5E1;
 }
 [dir="rtl"] .sidebar-arrow {
     margin-left: 0;
     margin-right: auto;
-    transform: rotate(180deg);
 }
-.sidebar-parent[aria-expanded="true"] .sidebar-arrow,
-.sidebar-parent:not(.collapsed) .sidebar-arrow {
-    transform: rotate(90deg) !important;
+.sidebar-parent:not(.collapsed) .sidebar-arrow,
+.sidebar-parent[aria-expanded="true"] .sidebar-arrow {
+    transform: rotate(0deg) !important;
     opacity: 1;
     color: #FFFFFF;
 }
+.sidebar-parent.collapsed .sidebar-arrow,
+.sidebar-parent[aria-expanded="false"] .sidebar-arrow {
+    transform: rotate(-90deg) !important;
+    opacity: 0.55;
+}
+[dir="rtl"] .sidebar-parent.collapsed .sidebar-arrow,
+[dir="rtl"] .sidebar-parent[aria-expanded="false"] .sidebar-arrow {
+    transform: rotate(90deg) !important;
+}
+
 .sidebar-submenu {
     padding-left: 1.5rem;
     padding-right: 0.25rem;
@@ -257,10 +319,10 @@ a:hover {
 .submenu-link {
     display: flex;
     align-items: center;
-    padding: 0.42rem 0.75rem;
-    color: #8792A5;
+    padding: 0.44rem 0.75rem;
+    color: #CBD5E1;
     text-decoration: none;
-    font-size: 0.825rem;
+    font-size: 0.83rem;
     border-radius: var(--erp-radius-sm);
     margin-bottom: 2px;
     font-weight: 500;
@@ -281,11 +343,19 @@ a:hover {
     width: 6px;
     height: 6px;
     border-radius: 50%;
-    background: currentColor;
-    opacity: 0.45;
+    background: #CBD5E1;
+    opacity: 0.6;
     margin-right: 0.65rem;
     flex-shrink: 0;
     display: inline-block;
+}
+[dir="rtl"] .submenu-bullet {
+    margin-right: 0;
+    margin-left: 0.65rem;
+}
+.submenu-link.active .submenu-bullet {
+    opacity: 1;
+    background: #FFFFFF;
 }
 [dir="rtl"] .submenu-bullet {
     margin-right: 0;
