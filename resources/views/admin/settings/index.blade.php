@@ -19,7 +19,7 @@
     @if(auth()->user()->isSuperAdmin())
         <div class="d-flex align-items-center gap-2">
             <a href="{{ route('super_admin.platform_settings') }}" class="btn btn-warning-subtle text-warning-emphasis border border-warning-subtle btn-sm">
-                <i class="fas fa-paint-brush me-1 text-warning"></i> Platform Branding (Super Admin)
+                <i class="fas fa-paint-brush me-1 text-warning"></i> Master Branding (Super Admin)
             </a>
             <a href="{{ route('super_admin.shops.index') }}" class="btn btn-outline-secondary btn-sm">
                 <i class="fas fa-store-alt me-1"></i> Manage All Shops
@@ -36,7 +36,7 @@
         <i class="fas fa-info-circle fa-2x text-info me-3"></i>
         <div>
             <div class="fw-bold text-dark">Currently Configuring: {{ $shop->name }} (Branch #{{ $shop->id }})</div>
-            <div class="small text-muted">All logo and branding changes saved on this page apply <strong>strictly to this shop</strong>. To change the master system logo for the Super Admin portal and login page, please visit <a href="{{ route('super_admin.platform_settings') }}" class="fw-bold text-primary text-decoration-underline">Platform Branding</a>.</div>
+            <div class="small text-muted">All logo and branding changes saved on this page apply <strong>strictly to this shop</strong>. To change the master system logo for the Super Admin portal and login page, please visit <a href="{{ route('super_admin.platform_settings') }}" class="fw-bold text-primary text-decoration-underline">Master Branding</a>.</div>
         </div>
     </div>
 @endif
@@ -59,7 +59,7 @@
                                 <img id="logoPreviewImg" src="{{ $logoUrl ?: asset('uploads/logo/crelogics-logo.png') }}" alt="Shop Logo" class="img-fluid" style="max-height: 90px; max-width: 190px; object-fit: contain;">
                             </div>
                             <span class="badge bg-white text-secondary border px-2 py-1 small" id="logoPreviewBadge">
-                                {{ $logoUrl ? 'Current Active Logo' : 'Default Platform Logo' }}
+                                {{ $logoUrl ? 'Current Active Logo' : 'Default System Logo' }}
                             </span>
                         </div>
                     </div>

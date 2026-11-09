@@ -114,7 +114,7 @@ class SuperAdminController extends Controller
         if (!$platformSetting) {
             $platformSetting = \App\Models\Setting::withoutGlobalScopes()->create([
                 'shop_id' => null,
-                'company_name' => 'Crelogics Platform',
+                'company_name' => 'Crelogics',
                 'company_email' => 'creelogics@gmail.com',
                 'company_phone' => '+966 50 000 0000',
                 'company_country' => 'Saudi Arabia',
@@ -158,6 +158,6 @@ class SuperAdminController extends Controller
         $platformSetting->fill($data);
         $platformSetting->save();
 
-        return redirect()->back()->with('success', 'Super Admin platform branding and central logo updated successfully!');
+        return redirect()->back()->with('success', 'Super Admin branding and central logo updated successfully!');
     }
 }

@@ -11,7 +11,7 @@
             <a href="{{ route('super_admin.dashboard') }}" class="d-flex align-items-center gap-2 text-decoration-none w-100 overflow-hidden">
                 @php $platLogo = platform_logo_url(); @endphp
                 @if($platLogo)
-                    <img src="{{ $platLogo }}" alt="Platform Logo" style="max-height: 40px; max-width: 140px; object-fit: contain;">
+                    <img src="{{ $platLogo }}" alt="{{ platform_brand_name() }}" style="max-height: 40px; max-width: 140px; object-fit: contain;">
                 @else
                     <div class="d-inline-flex align-items-center justify-content-center bg-warning text-dark rounded-3 shadow-sm flex-shrink-0"
                         style="width: 38px; height: 38px; font-size: 1.2rem;">
@@ -78,7 +78,7 @@
                    data-bs-toggle="collapse" role="button" aria-expanded="{{ $isSuperActive ? 'true' : 'false' }}" aria-controls="menuSuperAdmin">
                     <div class="sidebar-parent-label">
                         <i class="fas fa-shield-alt text-warning"></i>
-                        <span>{{ __('Platform Admin') }}</span>
+                        <span>{{ __('Super Admin Panel') }}</span>
                     </div>
                     <i class="fas fa-chevron-down sidebar-arrow"></i>
                 </a>

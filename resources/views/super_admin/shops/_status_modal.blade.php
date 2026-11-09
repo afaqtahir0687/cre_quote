@@ -38,7 +38,7 @@
                             <div class="col-md-6">
                                 <label class="form-label fw-bold text-dark">{{ __('Primary Reason *') }}</label>
                                 <select class="form-select" id="presetReasonSelect" onchange="applyPresetReason(this.value)">
-                                    <option value="Overdue Monthly Subscription / Platform Fee">{{ __('Overdue Monthly Subscription / Platform Fee') }}</option>
+                                    <option value="Overdue Monthly Subscription / Service Fee">{{ __('Overdue Monthly Subscription / Service Fee') }}</option>
                                     <option value="Pending Invoice Payment / Unpaid Dues">{{ __('Pending Invoice Payment / Unpaid Dues') }}</option>
                                     <option value="Commercial Registration / ID Verification Pending">{{ __('Commercial Registration / ID Verification Pending') }}</option>
                                     <option value="Terms of Service & Policy Review">{{ __('Terms of Service & Policy Review') }}</option>
@@ -50,7 +50,7 @@
                             <!-- Custom Reason Input -->
                             <div class="col-md-6">
                                 <label class="form-label fw-bold text-dark">{{ __('Reason Description *') }}</label>
-                                <input type="text" name="status_reason" id="statusReasonInput" class="form-control" placeholder="e.g. Unpaid subscription invoice #INV-102" value="Overdue Monthly Subscription / Platform Fee" required>
+                                <input type="text" name="status_reason" id="statusReasonInput" class="form-control" placeholder="e.g. Unpaid subscription invoice #INV-102" value="Overdue Monthly Subscription / Service Fee" required>
                             </div>
 
                             <!-- Grace Period / Deadline Section (Shown only for Inactive) -->
@@ -151,7 +151,7 @@
             submitBtn.className = "btn btn-warning text-dark fw-bold px-4";
             submitBtn.innerHTML = '<i class="fas fa-pause me-1"></i> ' + (window.__ ? window.__("Set Inactive & Send Notice") : "Set Inactive & Send Notice");
 
-            reasonInput.value = currentReason || "Overdue Monthly Subscription / Platform Fee";
+            reasonInput.value = currentReason || "Overdue Monthly Subscription / Service Fee";
             msgInput.value = currentMsg || `Dear ${shopName} Team,\nYour branch account access has been temporarily placed on hold due to pending payment. Please clear the pending balance within the grace period to avoid permanent suspension. Thank you.`;
             
             if (currentDeadline) {
@@ -172,7 +172,7 @@
             submitBtn.innerHTML = '<i class="fas fa-ban me-1"></i> ' + (window.__ ? window.__("Suspend Shop Permanently") : "Suspend Shop Permanently");
 
             reasonInput.value = currentReason || "Unresolved Payment Default / Policy Violation";
-            msgInput.value = currentMsg || `Dear ${shopName} Team,\nYour branch operations and access have been suspended by Platform Super Admin due to non-payment or terms violation.`;
+            msgInput.value = currentMsg || `Dear ${shopName} Team,\nYour branch operations and access have been suspended by Super Admin due to non-payment or terms violation.`;
         } else if (targetStatus === 'active') {
             titleText.innerText = window.__ ? window.__("Re-Activate Shop") : "Re-Activate Shop";
             modalIcon.className = "fas fa-play-circle me-2 text-success";

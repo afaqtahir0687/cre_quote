@@ -52,7 +52,7 @@ if (!function_exists('platform_brand_name')) {
             return $platformSetting->company_name;
         }
 
-        return config('app.name', 'Crelogics Platform');
+        return config('app.name', 'Crelogics');
     }
 }
 

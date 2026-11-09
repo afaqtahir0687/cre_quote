@@ -1,12 +1,12 @@
 @extends('admin.layouts.app')
 
-@section('title', __('Platform Branding & Super Admin Logo'))
+@section('title', __('System Branding & Super Admin Logo'))
 
 @section('content')
 <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
     <div>
         <div class="d-flex align-items-center gap-2 mb-1">
-            <h2 class="fw-bold text-dark mb-0">{{ __('Platform Branding & Super Admin Logo') }}</h2>
+            <h2 class="fw-bold text-dark mb-0">{{ __('System Branding & Super Admin Logo') }}</h2>
             <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle px-2 py-1 rounded-pill small">
                 <i class="fas fa-crown me-1 text-warning"></i> Super Admin Only
             </span>
@@ -27,7 +27,7 @@
     <div class="row g-4">
         <!-- Central Logo Card -->
         <div class="col-lg-12">
-            <x-card title="{{ __('Central Platform Logo & Identity') }}">
+            <x-card title="{{ __('Central System Logo & Identity') }}">
                 <div class="row g-4 align-items-center">
                     <div class="col-lg-4 text-center">
                         <div class="p-3 border rounded-4 bg-light d-flex flex-column align-items-center justify-content-center position-relative" style="min-height: 180px;">
@@ -35,10 +35,10 @@
                                 $currentPlatLogo = platform_logo_url();
                             @endphp
                             <div class="bg-white p-3 rounded-3 shadow-sm border mb-2 d-flex align-items-center justify-content-center" style="width: 220px; height: 110px;">
-                                <img id="platformLogoPreviewImg" src="{{ $currentPlatLogo }}" alt="Platform Logo" class="img-fluid" style="max-height: 90px; max-width: 190px; object-fit: contain;">
+                                <img id="platformLogoPreviewImg" src="{{ $currentPlatLogo }}" alt="{{ platform_brand_name() }}" class="img-fluid" style="max-height: 90px; max-width: 190px; object-fit: contain;">
                             </div>
                             <span class="badge bg-white text-dark border px-2 py-1 small" id="platPreviewBadge">
-                                <i class="fas fa-check-circle text-success me-1"></i> {{ __('Active Platform Logo') }}
+                                <i class="fas fa-check-circle text-success me-1"></i> {{ __('Active System Logo') }}
                             </span>
                         </div>
                     </div>
@@ -46,7 +46,7 @@
                     <div class="col-lg-8">
                         <div class="mb-3">
                             <label class="form-label fw-bold text-dark">
-                                <i class="fas fa-cloud-upload-alt text-primary me-1"></i> {{ __('Upload Central Platform Logo') }}
+                                <i class="fas fa-cloud-upload-alt text-primary me-1"></i> {{ __('Upload Central System Logo') }}
                             </label>
                             <input type="file" name="company_logo" id="platform_logo_input" class="form-control @error('company_logo') is-invalid @enderror" accept="image/png,image/jpeg,image/jpg,image/webp,image/svg+xml">
                             @error('company_logo') <div class="invalid-feedback">{{ $message }}</div> @enderror
@@ -64,25 +64,25 @@
             </x-card>
         </div>
 
-        <!-- Platform General Info -->
+        <!-- System General Info -->
         <div class="col-lg-7">
-            <x-card :title="__('Platform Profile Details')">
+            <x-card :title="__('System Profile Details')">
                 <div class="row g-3">
                     <div class="col-12">
-                        <label class="form-label fw-bold text-dark">{{ __('Platform System Name') }} *</label>
-                        <input type="text" name="company_name" class="form-control @error('company_name') is-invalid @enderror" value="{{ old('company_name', $platformSetting->company_name) }}" required placeholder="e.g. Crelogics Platform">
+                        <label class="form-label fw-bold text-dark">{{ __('System Name') }} *</label>
+                        <input type="text" name="company_name" class="form-control @error('company_name') is-invalid @enderror" value="{{ old('company_name', $platformSetting->company_name) }}" required placeholder="e.g. Crelogics">
                         <div class="form-text small">{{ __('Displayed on Super Admin dashboard and central page titles.') }}</div>
                         @error('company_name') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
 
                     <div class="col-md-6">
-                        <label class="form-label fw-bold text-dark">{{ __('Platform Support Email') }} *</label>
+                        <label class="form-label fw-bold text-dark">{{ __('Support Email') }} *</label>
                         <input type="email" name="company_email" class="form-control @error('company_email') is-invalid @enderror" value="{{ old('company_email', $platformSetting->company_email) }}" required placeholder="support@crelogics.com">
                         @error('company_email') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
 
                     <div class="col-md-6">
-                        <label class="form-label fw-bold text-dark">{{ __('Platform Support Phone') }}</label>
+                        <label class="form-label fw-bold text-dark">{{ __('Support Phone') }}</label>
                         <input type="text" name="company_phone" class="form-control @error('company_phone') is-invalid @enderror" value="{{ old('company_phone', $platformSetting->company_phone) }}" placeholder="+966 50 000 0000">
                         @error('company_phone') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
@@ -90,7 +90,7 @@
 
                 <div class="mt-4 pt-3 border-top text-end">
                     <button type="submit" class="btn btn-primary-modern px-4 py-2">
-                        <i class="fas fa-save me-2"></i> {{ __('Save Platform Branding') }}
+                        <i class="fas fa-save me-2"></i> {{ __('Save System Branding') }}
                     </button>
                 </div>
             </x-card>
@@ -104,7 +104,7 @@
                         <i class="fas fa-crown text-warning mt-1"></i>
                         <div>
                             <strong>{{ __('Super Admin Logo:') }}</strong>
-                            <p class="text-muted mb-0">{{ __('Belongs to the platform system. Seen on Super Admin Portal and central Login page.') }}</p>
+                            <p class="text-muted mb-0">{{ __('Belongs to the central system. Seen on Super Admin Portal and central Login page.') }}</p>
                         </div>
                     </li>
                     <li class="mb-3 d-flex align-items-start gap-2">

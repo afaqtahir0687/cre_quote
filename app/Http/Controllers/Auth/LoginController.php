@@ -87,7 +87,7 @@ class LoginController extends Controller
             auth()->logout();
 
             if ($shop->isSuspended()) {
-                $msg = "Your shop ('{$shop->name}') has been permanently suspended. Please contact the platform Super Admin.";
+                $msg = "Your shop ('{$shop->name}') has been permanently suspended. Please contact the Super Admin.";
             } else {
                 $reason = $shop->status_reason ?: 'Payment or policy compliance required';
                 $deadlineInfo = '';

@@ -20,7 +20,7 @@
                                 {{ config('app.name', 'Crelogics') }}
                             </div>
                             <div style="font-size: 13px; color: #94a3b8; margin-top: 4px;">
-                                Central Platform &amp; Subscription Administration
+                                Central &amp; Subscription Administration
                             </div>
                         </td>
                     </tr>
@@ -151,7 +151,7 @@
                             <!-- Support Helpdesk Footer -->
                             <div style="border-top: 1px solid #e2e8f0; padding-top: 18px; font-size: 12px; color: #94a3b8; text-align: center;">
                                 Need assistance or have questions regarding your plan?<br>
-                                Contact platform administrator: 
+                                Contact system administrator: 
                                 <strong style="color: #64748b;">{{ config('mail.from.address', 'support@crelogics.com') }}</strong>
                             </div>
                         </td>

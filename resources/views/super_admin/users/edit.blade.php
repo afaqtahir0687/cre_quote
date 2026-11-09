@@ -55,7 +55,7 @@
                         <select name="role" class="form-select @error('role') is-invalid @enderror" required id="roleSelector">
                             <option value="admin" {{ old('role', $user->role) === 'admin' ? 'selected' : '' }}>{{ __('Shop Admin (Branch Owner / Manager)') }}</option>
                             <option value="employee" {{ old('role', $user->role) === 'employee' ? 'selected' : '' }}>{{ __('Employee (Shop Staff)') }}</option>
-                            <option value="super_admin" {{ old('role', $user->role) === 'super_admin' ? 'selected' : '' }}>{{ __('Super Admin (Full Platform Control)') }}</option>
+                            <option value="super_admin" {{ old('role', $user->role) === 'super_admin' ? 'selected' : '' }}>{{ __('Super Admin (Full Access)') }}</option>
                         </select>
                         @error('role') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>

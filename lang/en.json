@@ -859,5 +859,22 @@
     "Customer:": "Customer:",
     "Company:": "Company:",
     "Assigned To:": "Assigned To:",
-    "Invoice #:": "Invoice #:"
+    "Invoice #:": "Invoice #:",
+    "System Branding & Super Admin Logo": "System Branding & Super Admin Logo",
+    "Central System Logo & Identity": "Central System Logo & Identity",
+    "Active System Logo": "Active System Logo",
+    "Upload Central System Logo": "Upload Central System Logo",
+    "System Profile Details": "System Profile Details",
+    "System Name": "System Name",
+    "Support Email": "Support Email",
+    "Support Phone": "Support Phone",
+    "Save System Branding": "Save System Branding",
+    "System Users": "System Users",
+    "Add System User": "Add System User",
+    "Super Admin (Full Access)": "Super Admin (Full Access)",
+    "Super Admin Panel": "Super Admin Panel",
+    "Master Branding (Super Admin)": "Master Branding (Super Admin)",
+    "Default System Logo": "Default System Logo",
+    "Global (All Shops)": "Global (All Shops)",
+    "Overdue Monthly Subscription \/ Service Fee": "Overdue Monthly Subscription \/ Service Fee"
 }

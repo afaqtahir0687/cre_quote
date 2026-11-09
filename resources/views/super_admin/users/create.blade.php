@@ -1,11 +1,11 @@
 @extends('admin.layouts.app')
 
-@section('title', '{{ __('Add Platform User') }}')
+@section('title', __('Add System User'))
 
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
-        <h2 class="fw-bold text-dark mb-1">{{ __('Add Platform User') }}</h2>
+        <h2 class="fw-bold text-dark mb-1">{{ __('Add System User') }}</h2>
         <p class="text-muted small mb-0">{{ __('Create a Super Admin, Shop Owner/Admin, or Staff member and assign them to a branch.') }}</p>
     </div>
     <a href="{{ route('super_admin.users.index') }}" class="btn btn-outline-secondary">
@@ -54,7 +54,7 @@
                         <select name="role" class="form-select @error('role') is-invalid @enderror" required id="roleSelector">
                             <option value="admin" {{ old('role') === 'admin' ? 'selected' : '' }}>{{ __('Shop Admin (Branch Owner / Manager)') }}</option>
                             <option value="employee" {{ old('role') === 'employee' ? 'selected' : '' }}>{{ __('Employee (Shop Staff)') }}</option>
-                            <option value="super_admin" {{ old('role') === 'super_admin' ? 'selected' : '' }}>{{ __('Super Admin (Full Platform Control)') }}</option>
+                            <option value="super_admin" {{ old('role') === 'super_admin' ? 'selected' : '' }}>{{ __('Super Admin (Full Access)') }}</option>
                         </select>
                         @error('role') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>

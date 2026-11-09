@@ -138,7 +138,7 @@
                     @if(auth()->user()->isSuperAdmin())
                         <li>
                             <a class="dropdown-item py-2" href="{{ route('super_admin.platform_settings') }}">
-                                <i class="fas fa-paint-brush me-2 text-warning"></i> {{ __('Platform Settings') }}
+                                <i class="fas fa-paint-brush me-2 text-warning"></i> {{ __('System Settings') }}
                             </a>
                         </li>
                     @endif

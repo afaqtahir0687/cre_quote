@@ -20,7 +20,7 @@
                                 {{ config('app.name', 'Quote & Management System') }}
                             </div>
                             <div style="font-size: 13px; color: #94a3b8; margin-top: 4px;">
-                                Central Platform Administration
+                                Central Administration
                             </div>
                         </td>
                     </tr>
@@ -43,7 +43,7 @@
                                         &#128683; Notice: Branch Account Suspended
                                     </div>
                                     <div style="color: #991b1b; font-size: 14px;">
-                                        Your shop has been suspended by the platform Super Administrator.
+                                        Your shop has been suspended by the Super Administrator.
                                     </div>
                                 </div>
                             @else
@@ -66,7 +66,7 @@
                                 Hello <strong>{{ $recipientName ?? 'Shop Administrator' }}</strong>,
                             </p>
                             <p style="font-size: 14px; color: #475569; margin-bottom: 20px;">
-                                This is an official notice regarding the operating status of <strong>{{ $shop->name }}</strong> on our platform.
+                                This is an official notice regarding the operating status of <strong>{{ $shop->name }}</strong> in our system.
                             </p>
 
                             <!-- Key Details Card -->
@@ -155,7 +155,7 @@
                     <tr>
                         <td align="center" style="padding: 20px; background-color: #f8fafc; border-top: 1px solid #e2e8f0; font-size: 12px; color: #94a3b8;">
                             <div>&copy; {{ date('Y') }} {{ config('app.name') }}. All rights reserved.</div>
-                            <div style="margin-top: 4px;">Automated system notification dispatched on behalf of Platform Super Admin.</div>
+                            <div style="margin-top: 4px;">Automated system notification dispatched on behalf of Super Admin.</div>
                         </td>
                     </tr>
 

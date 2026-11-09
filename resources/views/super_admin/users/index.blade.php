@@ -1,12 +1,12 @@
 @extends('admin.layouts.app')
 
-@section('title', __('Platform Users'))
+@section('title', __('System Users'))
 
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
-        <h2 class="fw-bold text-dark mb-1">{{ __('Platform Users') }}</h2>
-        <p class="text-muted small mb-0">{{ __('Manage global super admins, branch owners, and shop employees across the platform.') }}</p>
+        <h2 class="fw-bold text-dark mb-1">{{ __('System Users') }}</h2>
+        <p class="text-muted small mb-0">{{ __('Manage global super admins, branch owners, and shop employees across all shops.') }}</p>
     </div>
     <div class="d-flex align-items-center gap-3">
         <form action="{{ route('super_admin.users.index') }}" method="GET" class="d-flex gap-2">
@@ -74,7 +74,7 @@
                         <i class="fas fa-store me-1 text-primary"></i>{{ $user->shop->name }}
                     </a>
                 @else
-                    <span class="text-muted small">{{ __('Global (Platform Wide)') }}</span>
+                    <span class="text-muted small">{{ __('Global (All Shops)') }}</span>
                 @endif
             </td>
             <td class="small text-muted">
