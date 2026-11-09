@@ -575,16 +575,34 @@ a:hover {
     border: none;
 }
 
-.kpi-card[class*="bg-gradient-"] .kpi-title {
-    color: rgba(255, 255, 255, 0.8);
+.kpi-card[class*="bg-gradient-"],
+.card-modern.kpi-card[class*="bg-gradient-"] {
+    color: #FFFFFF !important;
 }
+
+.kpi-card[class*="bg-gradient-"] h1,
+.kpi-card[class*="bg-gradient-"] h2,
+.kpi-card[class*="bg-gradient-"] h3,
+.kpi-card[class*="bg-gradient-"] h4,
+.kpi-card[class*="bg-gradient-"] h5,
+.kpi-card[class*="bg-gradient-"] h6,
 .kpi-card[class*="bg-gradient-"] .kpi-value {
-    color: #FFFFFF;
+    color: #FFFFFF !important;
+    font-weight: 800 !important;
+    letter-spacing: -0.02em;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
 }
+
+.kpi-card[class*="bg-gradient-"] .kpi-title,
+.kpi-card[class*="bg-gradient-"] h6 {
+    color: rgba(255, 255, 255, 0.88) !important;
+    font-weight: 600 !important;
+}
+
 .kpi-card[class*="bg-gradient-"] .icon-box,
 .kpi-card[class*="bg-gradient-"] .kpi-icon-wrap {
-    background: rgba(255, 255, 255, 0.2);
-    color: #FFFFFF;
+    background: rgba(255, 255, 255, 0.22) !important;
+    color: #FFFFFF !important;
 }
 
 .kpi-card .icon-box {

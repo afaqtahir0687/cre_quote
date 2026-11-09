@@ -82,7 +82,6 @@
         <div class="text-center mb-4">
             <img src="{{ platform_logo_url() ?: asset('uploads/logo/crelogics-logo.png') }}" alt="{{ platform_brand_name() }}" class="mb-3 mx-auto d-block" style="max-height: 60px; max-width: 190px; object-fit: contain;">
             <h4 class="fw-bold text-dark mb-1">{{ __('Sign In to Your Account') }}</h4>
-            <p class="text-muted small mb-0">{{ platform_brand_name() }} Enterprise ERP</p>
         </div>
         
         @if ($errors->any())
@@ -116,14 +115,7 @@
             </div>
 
             <div class="mb-3">
-                <div class="d-flex justify-content-between align-items-center mb-1">
-                    <label for="password" class="form-label fw-semibold text-dark small mb-0">{{ __('Password') }}</label>
-                    @if (Route::has('password.request'))
-                        <a href="{{ route('password.request') }}" class="extra-small text-decoration-none text-primary" style="font-size: 0.775rem;">
-                            {{ __('Forgot Password?') }}
-                        </a>
-                    @endif
-                </div>
+               
                 <div class="password-wrapper input-group">
                     <span class="input-group-text bg-light border-end-0 text-muted"><i class="fas fa-lock"></i></span>
                     <input id="password" type="password" class="form-control erp-auth-input border-start-0 @error('password') is-invalid @enderror" name="password" required autocomplete="current-password" placeholder="••••••••">
@@ -163,10 +155,6 @@
                 </button>
             </div>
         </form>
-
-        <div class="text-center mt-4 pt-3 border-top text-muted extra-small" style="font-size: 0.775rem;">
-            &copy; {{ date('Y') }} {{ platform_brand_name() }}. {{ __('Secure Enterprise Portal') }}
-        </div>
     </div>
 </div>
 

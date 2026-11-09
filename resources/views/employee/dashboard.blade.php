@@ -45,7 +45,7 @@
                 <i class="fas fa-file-invoice fa-lg"></i>
             </div>
             <h6 class="text-white-50 text-uppercase mb-2 fw-semibold">My Quotes</h6>
-            <h2 class="mb-0 fw-bold">{{ $stats['quotes_count'] }}</h2>
+            <h2 class="mb-0 fw-bold text-white kpi-value" style="color: #ffffff !important;">{{ $stats['quotes_count'] }}</h2>
         </div>
     </div>
     
@@ -55,7 +55,7 @@
                 <i class="fas fa-file-invoice-dollar fa-lg"></i>
             </div>
             <h6 class="text-white-50 text-uppercase mb-2 fw-semibold">My Invoices</h6>
-            <h2 class="mb-0 fw-bold">{{ $stats['invoices_count'] }}</h2>
+            <h2 class="mb-0 fw-bold text-white kpi-value" style="color: #ffffff !important;">{{ $stats['invoices_count'] }}</h2>
         </div>
     </div>
 
@@ -65,7 +65,7 @@
                 <i class="fas fa-tasks fa-lg"></i>
             </div>
             <h6 class="text-white-50 text-uppercase mb-2 fw-semibold">My Job Orders</h6>
-            <h2 class="mb-0 fw-bold">{{ $stats['job_orders_count'] }}</h2>
+            <h2 class="mb-0 fw-bold text-white kpi-value" style="color: #ffffff !important;">{{ $stats['job_orders_count'] }}</h2>
         </div>
     </div>
 
@@ -75,7 +75,7 @@
                 <i class="fas fa-tags fa-lg"></i>
             </div>
             <h6 class="text-white-50 text-uppercase mb-2 fw-semibold">Total Customer Discount</h6>
-            <h2 class="mb-0 fw-bold">{{ format_currency($stats['total_discount']) }}</h2>
+            <h2 class="mb-0 fw-bold text-white kpi-value" style="color: #ffffff !important;">{{ format_currency($stats['total_discount']) }}</h2>
         </div>
     </div>
 </div>

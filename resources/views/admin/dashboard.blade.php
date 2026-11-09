@@ -86,7 +86,7 @@
                 <i class="fas fa-users"></i>
             </div>
             <div class="kpi-title">{{ __('Total Customers') }}</div>
-            <h2 class="kpi-value">{{ $stats['customers_count'] }}</h2>
+            <h2 class="kpi-value text-white" style="color: #ffffff !important;">{{ $stats['customers_count'] }}</h2>
             <div class="small opacity-75 mt-2">
                 <i class="fas fa-check-circle me-1"></i> {{ __('Active Clients') }}
             </div>
@@ -100,7 +100,7 @@
                 <i class="fas fa-file-invoice-dollar"></i>
             </div>
             <div class="kpi-title">{{ __('Total Invoices') }}</div>
-            <h2 class="kpi-value">{{ $stats['invoices_count'] }}</h2>
+            <h2 class="kpi-value text-white" style="color: #ffffff !important;">{{ $stats['invoices_count'] }}</h2>
             <div class="small opacity-75 mt-2">
                 <span class="text-white fw-bold">{{ $stats['paid_invoices_count'] }}</span> {{ __('Paid') }} &bull; <span class="text-white-50">{{ $stats['unpaid_invoices_count'] }}</span> {{ __('Unpaid') }}
             </div>
@@ -114,7 +114,7 @@
                 <i class="fas fa-wallet"></i>
             </div>
             <div class="kpi-title">{{ __('Collected Revenue') }}</div>
-            <h2 class="kpi-value">{{ format_currency($stats['total_paid']) }}</h2>
+            <h2 class="kpi-value text-white" style="color: #ffffff !important;">{{ format_currency($stats['total_paid']) }}</h2>
             <div class="small opacity-75 mt-2">
                 <i class="fas fa-arrow-up me-1"></i> {{ __('Total Paid') }}
             </div>
@@ -128,7 +128,7 @@
                 <i class="fas fa-clock"></i>
             </div>
             <div class="kpi-title">{{ __('Pending Due') }}</div>
-            <h2 class="kpi-value">{{ format_currency($stats['total_pending']) }}</h2>
+            <h2 class="kpi-value text-white" style="color: #ffffff !important;">{{ format_currency($stats['total_pending']) }}</h2>
             <div class="small opacity-75 mt-2">
                 <i class="fas fa-exclamation-triangle me-1"></i> {{ __('Outstanding Balance') }}
             </div>
@@ -142,7 +142,7 @@
                 <i class="fas fa-tasks"></i>
             </div>
             <div class="kpi-title">{{ __('Job Orders') }}</div>
-            <h2 class="kpi-value">{{ $stats['job_orders_count'] }}</h2>
+            <h2 class="kpi-value text-white" style="color: #ffffff !important;">{{ $stats['job_orders_count'] }}</h2>
             <div class="small opacity-75 mt-2">
                 <span class="text-white fw-bold">{{ $stats['pending_job_orders_count'] }}</span> {{ __('Pending') }} &bull; <span class="text-white-50">{{ $stats['completed_job_orders_count'] }}</span> {{ __('Done') }}
             </div>

@@ -58,9 +58,9 @@
             <div class="icon-box">
                 <i class="fas fa-store"></i>
             </div>
-            <h6 class="text-white-50 text-uppercase fw-semibold">{{ __('Total Shops') }}</h6>
-            <h2 class="mb-0 fw-bold">{{ $totalShops }}</h2>
-            <div class="text-white-50 extra-small mt-1">
+            <h6 class="text-white opacity-75 text-uppercase fw-semibold mb-1" style="font-size: 0.72rem; letter-spacing: 0.5px;">{{ __('Total Shops') }}</h6>
+            <h2 class="mb-0 fw-bold text-white kpi-value" style="color: #ffffff !important; font-weight: 800; font-size: 1.6rem;">{{ $totalShops }}</h2>
+            <div class="text-white opacity-75 extra-small mt-1" style="font-size: 0.75rem;">
                 {{ $activeShops }} {{ __('Active') }} @if($inactiveShops > 0)&bull; {{ $inactiveShops }} {{ __('Inactive') }} @endif @if(isset($suspendedShops) && $suspendedShops > 0)&bull; {{ $suspendedShops }} {{ __('Suspended') }} @endif
             </div>
         </div>
@@ -72,9 +72,9 @@
             <div class="icon-box">
                 <i class="fas fa-wallet"></i>
             </div>
-            <h6 class="text-white-50 text-uppercase fw-semibold">{{ __('Total Revenue') }}</h6>
-            <h2 class="mb-0 fw-bold">${{ number_format($totalRevenue ?? 0, 2) }}</h2>
-            <div class="text-white-50 extra-small mt-1">{{ __('Across all branches') }}</div>
+            <h6 class="text-white opacity-75 text-uppercase fw-semibold mb-1" style="font-size: 0.72rem; letter-spacing: 0.5px;">{{ __('Total Revenue') }}</h6>
+            <h2 class="mb-0 fw-bold text-white kpi-value" style="color: #ffffff !important; font-weight: 800; font-size: 1.6rem;">${{ number_format($totalRevenue ?? 0, 2) }}</h2>
+            <div class="text-white opacity-75 extra-small mt-1" style="font-size: 0.75rem;">{{ __('Across all branches') }}</div>
         </div>
     </div>
 
@@ -84,9 +84,9 @@
             <div class="icon-box">
                 <i class="fas fa-clock"></i>
             </div>
-            <h6 class="text-white-50 text-uppercase fw-semibold">{{ __('Pending Due') }}</h6>
-            <h2 class="mb-0 fw-bold">${{ number_format($totalReceivable ?? 0, 2) }}</h2>
-            <div class="text-white-50 extra-small mt-1">{{ __('Unpaid balances') }}</div>
+            <h6 class="text-white opacity-75 text-uppercase fw-semibold mb-1" style="font-size: 0.72rem; letter-spacing: 0.5px;">{{ __('Pending Due') }}</h6>
+            <h2 class="mb-0 fw-bold text-white kpi-value" style="color: #ffffff !important; font-weight: 800; font-size: 1.6rem;">${{ number_format($totalReceivable ?? 0, 2) }}</h2>
+            <div class="text-white opacity-75 extra-small mt-1" style="font-size: 0.75rem;">{{ __('Unpaid balances') }}</div>
         </div>
     </div>
 
@@ -96,21 +96,21 @@
             <div class="icon-box">
                 <i class="fas fa-tasks"></i>
             </div>
-            <h6 class="text-white-50 text-uppercase fw-semibold">{{ __('Quotes & Orders') }}</h6>
-            <h2 class="mb-0 fw-bold">{{ $totalQuotes }} <span class="fs-6 fw-normal opacity-75">/ {{ $totalJobOrders }}</span></h2>
-            <div class="text-white-50 extra-small mt-1">{{ $totalInvoices }} {{ __('Invoices Generated') }}</div>
+            <h6 class="text-white opacity-75 text-uppercase fw-semibold mb-1" style="font-size: 0.72rem; letter-spacing: 0.5px;">{{ __('Quotes & Orders') }}</h6>
+            <h2 class="mb-0 fw-bold text-white kpi-value" style="color: #ffffff !important; font-weight: 800; font-size: 1.6rem;">{{ $totalQuotes }} <span class="fs-6 fw-normal text-white" style="opacity: 0.7;">/ {{ $totalJobOrders }}</span></h2>
+            <div class="text-white opacity-75 extra-small mt-1" style="font-size: 0.75rem;">{{ $totalInvoices }} {{ __('Invoices Generated') }}</div>
         </div>
     </div>
 
-    <!-- Platform Users & Clients -->
+    <!-- Users & Clients -->
     <div class="col-12 col-sm-6 col-md-4 col-xl-custom kpi-col-5">
         <div class="card-modern kpi-card kpi-card-sm bg-gradient-purple h-100">
             <div class="icon-box">
                 <i class="fas fa-users"></i>
             </div>
-            <h6 class="text-white-50 text-uppercase fw-semibold">{{ __('Users & Clients') }}</h6>
-            <h2 class="mb-0 fw-bold">{{ $totalUsers }}</h2>
-            <div class="text-white-50 extra-small mt-1">{{ $totalCustomers }} {{ __('Registered Customers') }}</div>
+            <h6 class="text-white opacity-75 text-uppercase fw-semibold mb-1" style="font-size: 0.72rem; letter-spacing: 0.5px;">{{ __('Users & Clients') }}</h6>
+            <h2 class="mb-0 fw-bold text-white kpi-value" style="color: #ffffff !important; font-weight: 800; font-size: 1.6rem;">{{ $totalUsers }}</h2>
+            <div class="text-white opacity-75 extra-small mt-1" style="font-size: 0.75rem;">{{ $totalCustomers }} {{ __('Registered Customers') }}</div>
         </div>
     </div>
 </div>
