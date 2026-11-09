@@ -2,6 +2,115 @@
 
 @section('title', __('Create New Invoice'))
 
+@section('styles')
+<style>
+    .cust-dropdown { position: relative; width: 100%; }
+    .cust-select-hidden, select.cust-select-hidden, #customer_id.cust-select-hidden {
+        display: none !important;
+        position: absolute !important;
+        width: 0 !important;
+        height: 0 !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
+    }
+    .cust-trigger {
+        cursor: pointer;
+        background-color: #FFFFFF !important;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e") !important;
+        background-repeat: no-repeat !important;
+        background-position: right 0.85rem center !important;
+        background-size: 14px 10px !important;
+        padding-right: 2.5rem !important;
+        font-weight: 500;
+    }
+    .cust-trigger:focus, .cust-trigger.is-focused {
+        border-color: var(--erp-primary, #4361EE) !important;
+        box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.15) !important;
+    }
+    .cust-panel {
+        display: none; position: absolute; top: calc(100% + 4px); left: 0; right: 0;
+        z-index: 1055; background: #FFFFFF; border: 1px solid #E9EDF3;
+        border-radius: 10px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.12), 0 8px 10px -6px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+    }
+    .cust-panel.open { display: block !important; }
+    .cust-search-wrap { padding: 8px 12px; border-bottom: 1px solid #F1F4F9; background: #F8FAFC; }
+    .cust-search {
+        width: 100%; border: 1px solid #DCE3EC; border-radius: 6px;
+        padding: 7px 12px 7px 34px; font-size: 0.86rem; outline: none;
+        background: #FFFFFF url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' fill='%236c757d' viewBox='0 0 16 16'%3e%3cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398l3.85 3.85a1 1 0 0 0 1.415-1.415zm-5.242 1.156a5 5 0 1 1 0-10 5 5 0 0 1 0 10'/%3e%3c/svg%3e") no-repeat 11px center;
+    }
+    .cust-search:focus { border-color: var(--erp-primary, #4361EE); box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.12); }
+    .cust-list { max-height: 220px; overflow-y: auto; padding: 4px 0; }
+    .cust-list::-webkit-scrollbar { width: 5px; }
+    .cust-list::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 4px; }
+    .cust-option {
+        padding: 8px 14px; font-size: 0.88rem; cursor: pointer; border-left: 3px solid transparent;
+        transition: background 0.12s, border-color 0.12s;
+    }
+    .cust-option:hover, .cust-option.focused { background: #F0F4FF; border-left-color: var(--erp-primary, #4361EE); }
+    .cust-option.selected { background: #EEF2FF; border-left-color: var(--erp-primary, #4361EE); font-weight: 600; }
+    .cust-option .opt-name { display: block; color: #1E293B; font-weight: 600; }
+    .cust-option .opt-company { display: block; font-size: 0.78rem; color: #64748B; margin-top: 1px; }
+    .cust-empty { padding: 14px; text-align: center; color: #94A3B8; font-size: 0.86rem; }
+    #customer_id { display: none !important; }
+
+    /* ERP Items Table styling */
+    .erp-items-table {
+        border-collapse: separate;
+        border-spacing: 0;
+        width: 100%;
+        margin-bottom: 0;
+    }
+    .erp-items-table thead th {
+        background: #F8FAFC !important;
+        color: #475569;
+        font-weight: 600;
+        font-size: 0.76rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        padding: 0.85rem 0.75rem;
+        border-bottom: 2px solid #E2E8F0;
+        border-top: none;
+    }
+    .erp-items-table tbody td {
+        padding: 0.75rem 0.6rem;
+        vertical-align: top;
+        border-bottom: 1px solid #EDF2F7;
+    }
+    .erp-items-table .form-control,
+    .erp-items-table .form-select {
+        border-color: #DCE3EC;
+        border-radius: 6px;
+        font-size: 0.88rem;
+    }
+    .erp-items-table .form-control:focus,
+    .erp-items-table .form-select:focus {
+        border-color: var(--erp-primary, #4361EE);
+        box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.12);
+    }
+    .erp-items-table .btn-delete-row {
+        width: 32px;
+        height: 32px;
+        padding: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 6px;
+        color: #EF4444;
+        background: #FEE2E2;
+        border: 1px solid #FECACA;
+        transition: all 0.15s ease;
+        cursor: pointer;
+    }
+    .erp-items-table .btn-delete-row:hover {
+        background: #EF4444;
+        color: #FFFFFF;
+        border-color: #EF4444;
+    }
+</style>
+@endsection
+
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2 class="fw-bold text-dark mb-0">{{ __('Create Invoice') }}</h2>
@@ -113,26 +222,29 @@
 
         <div class="col-lg-12">
             <x-card title="{{ __('Invoice Items') }}" :padding="false">
-                <x-table>
-                    <x-slot name="thead">
-                        <th style="width: 25%">{{ __('Description') }}</th>
-                        <th style="width: 15%">{{ __('Size and meter') }}</th>
-                        <th style="width: 15%">Unit Price</th>
-                        <th style="width: 10%">Qty</th>
-                        <th style="width: 10%">{{ __('Tax %') }}</th>
-                        <th style="width: 10%">{{ __('Discount') }}</th>
-                        <th style="width: 10%">Total</th>
-                        <th style="width: 5%" class="text-center"></th>
-                    </x-slot>
-
-                    <tbody id="item-rows">
-                        <!-- Items will be added here via JS -->
-                    </tbody>
-                </x-table>
+                <div class="table-responsive">
+                    <table class="erp-items-table">
+                        <thead>
+                            <tr>
+                                <th style="min-width: 320px;">{{ __('Description') }}</th>
+                                <th style="min-width: 130px;">{{ __('Size and meter') }}</th>
+                                <th style="min-width: 120px;" class="text-end">{{ __('Unit Price') }}</th>
+                                <th style="min-width: 85px;" class="text-center">{{ __('Qty') }}</th>
+                                <th style="min-width: 85px;" class="text-center">{{ __('Tax %') }}</th>
+                                <th style="min-width: 100px;" class="text-end">{{ __('Discount') }}</th>
+                                <th style="min-width: 120px;" class="text-end">{{ __('Total') }}</th>
+                                <th style="width: 50px;" class="text-center"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="item-rows">
+                            <!-- Items will be added here via JS -->
+                        </tbody>
+                    </table>
+                </div>
                 
                 <div class="p-3 border-top bg-light-subtle rounded-bottom-4">
-                    <button type="button" class="btn btn-outline-primary btn-sm d-flex align-items-center" id="add-item">
-                        <i class="fas fa-plus me-2"></i> Add Item Row
+                    <button type="button" class="btn btn-outline-primary btn-sm d-inline-flex align-items-center" id="add-item">
+                        <i class="fas fa-plus me-2"></i> {{ __('Add Item Row') }}
                     </button>
                 </div>
             </x-card>
@@ -194,11 +306,50 @@
                             <input type="number" step="0.01" name="grand_total" id="grand_total" class="form-control text-end border-0 bg-transparent fs-5 fw-bold" readonly value="0.00">
                         </div>
                     </div>
+
+                    <!-- Instant Payment on Sale Section -->
+                    <div class="border rounded-3 p-3 mt-3 bg-white shadow-sm">
+                        <div class="form-check form-switch mb-2">
+                            <input class="form-check-input" type="checkbox" id="immediate_payment_switch" name="receive_payment" value="1">
+                            <label class="form-check-label fw-bold text-dark small" for="immediate_payment_switch">
+                                <i class="fas fa-money-bill-wave text-success me-1"></i> {{ __('Record Payment on Sale') }}
+                            </label>
+                        </div>
+                        <div id="payment_details_box" style="display: none;" class="pt-2 border-top">
+                            <div class="mb-2">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <label class="form-label small fw-semibold text-muted mb-0">{{ __('Amount Paid') }}</label>
+                                    <button type="button" class="btn btn-xs btn-outline-success py-0 px-2" id="btn-pay-full" style="font-size: 0.72rem;">
+                                        {{ __('Pay Full Amount') }}
+                                    </button>
+                                </div>
+                                <div class="input-group input-group-sm">
+                                    <span class="input-group-text">$</span>
+                                    <input type="number" step="0.01" name="amount_paid" id="amount_paid_input" class="form-control text-end fw-bold text-success" value="0.00">
+                                </div>
+                            </div>
+                            <div class="mb-2">
+                                <label class="form-label small fw-semibold text-muted mb-1">{{ __('Payment Method') }}</label>
+                                <select name="payment_method" class="form-select form-select-sm">
+                                    <option value="Cash">{{ __('Cash') }}</option>
+                                    <option value="Bank Transfer">{{ __('Bank Transfer') }}</option>
+                                    <option value="Credit Card">{{ __('Credit Card') }}</option>
+                                    <option value="Debit Card">{{ __('Debit Card') }}</option>
+                                    <option value="Online / POS">{{ __('Online / POS') }}</option>
+                                    <option value="Cheque">{{ __('Cheque') }}</option>
+                                </select>
+                            </div>
+                            <div class="mb-1">
+                                <label class="form-label small fw-semibold text-muted mb-1">{{ __('Transaction / Reference #') }}</label>
+                                <input type="text" name="payment_reference" class="form-control form-control-sm" placeholder="{{ __('e.g. TXN-84920 or POS receipt') }}">
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="mt-4 d-grid gap-2">
                     <button type="submit" class="btn btn-primary-modern py-3">
-                        <i class="fas fa-save me-2"></i> {{ __('Save Invoice') }}
+                        <i class="fas fa-save me-2"></i> {{ __('Generate & Save Invoice') }}
                     </button>
                     <a href="{{ route('invoices.index') }}" class="btn btn-link text-muted">{{ __('Cancel and Go Back') }}</a>
                 </div>
@@ -208,16 +359,41 @@
 </form>
 
 <template id="item-template">
-    <tr class="item-row">
-        <td><textarea name="items[INDEX][description]" class="form-control bg-white border p-2 fs-6 shadow-sm" rows="2" style="resize: vertical; min-height: 80px;" placeholder="Enter item description" required></textarea></td>
-        <td><input type="text" name="items[INDEX][item_text]" class="form-control bg-white border p-2 fs-6 shadow-sm" placeholder="Size / Meter"></td>
-        <td><input type="number" step="0.01" name="items[INDEX][unit_price]" class="form-control p-2 fs-6 shadow-sm unit-price text-end rounded-2" value="0.00" required></td>
-        <td><input type="number" name="items[INDEX][quantity]" class="form-control p-2 fs-6 shadow-sm quantity text-center rounded-2" value="1" required></td>
-        <td><input type="number" step="0.01" name="items[INDEX][tax_percentage]" class="form-control p-2 fs-6 shadow-sm tax-percentage text-center rounded-2" value="0.00"></td>
-        <td><input type="number" step="0.01" name="items[INDEX][discount]" class="form-control p-2 fs-6 shadow-sm discount text-end rounded-2" value="0.00"></td>
-        <td><input type="number" step="0.01" name="items[INDEX][total]" class="form-control p-2 fs-6 shadow-sm line-total border-0 bg-transparent text-end fw-semibold" readonly value="0.00"></td>
-        <td class="text-center">
-            <button type="button" class="btn btn-sm btn-link text-danger remove-item p-0">
+    <tr class="item-row align-top">
+        <td>
+            <div class="mb-1">
+                <select name="items[INDEX][product_id]" class="form-select form-select-sm product-picker bg-light border" style="font-size: 0.82rem;">
+                    <option value="">-- {{ __('Select Product / Service (or custom below)') }} --</option>
+                    @foreach($products as $prod)
+                        <option value="{{ $prod->id }}"
+                                data-name="{{ $prod->name }}"
+                                data-sku="{{ $prod->sku }}"
+                                data-price="{{ $prod->sale_price ?? $prod->price }}"
+                                data-tax="{{ $prod->tax_percentage ?? ($setting->default_tax_rate ?? 0) }}"
+                                data-stock="{{ $prod->stock }}"
+                                data-type="{{ $prod->type }}"
+                                data-unit="{{ $prod->unit?->name }}">
+                            {{ $prod->name }} [{{ $prod->sku }}] &bull; {{ format_currency($prod->sale_price ?? $prod->price) }}
+                            @if($prod->type === 'product')
+                                ({{ __('Stock:') }} {{ $prod->stock }})
+                            @else
+                                ({{ __('Service') }})
+                            @endif
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+            <textarea name="items[INDEX][description]" class="form-control item-desc bg-white border p-2 shadow-sm" rows="2" style="font-size: 0.88rem; resize: vertical; min-height: 52px;" placeholder="{{ __('Enter item description...') }}" required></textarea>
+            <div class="stock-badge-wrap mt-1"></div>
+        </td>
+        <td><input type="text" name="items[INDEX][item_text]" class="form-control item-unit-text bg-white border p-2 shadow-sm" placeholder="Size / Meter"></td>
+        <td><input type="number" step="0.01" name="items[INDEX][unit_price]" class="form-control p-2 shadow-sm unit-price text-end rounded-2" value="0.00" required></td>
+        <td><input type="number" name="items[INDEX][quantity]" class="form-control p-2 shadow-sm quantity text-center rounded-2" value="1" min="1" required></td>
+        <td><input type="number" step="0.01" name="items[INDEX][tax_percentage]" class="form-control p-2 shadow-sm tax-percentage text-center rounded-2" value="{{ $setting->default_tax_rate ?? 0 }}"></td>
+        <td><input type="number" step="0.01" name="items[INDEX][discount]" class="form-control p-2 shadow-sm discount text-end rounded-2" value="0.00"></td>
+        <td><input type="number" step="0.01" name="items[INDEX][total]" class="form-control p-2 shadow-sm line-total border-0 bg-transparent text-end fw-bold text-dark" readonly value="0.00"></td>
+        <td class="text-center align-middle">
+            <button type="button" class="btn-delete-row remove-item" title="{{ __('Remove Item') }}">
                 <i class="fas fa-trash-alt"></i>
             </button>
         </td>
@@ -380,7 +556,101 @@
         document.getElementById('total_tax').value = totalTax.toFixed(2);
         document.getElementById('total_discount').value = totalDiscount.toFixed(2);
         document.getElementById('grand_total').value = grandTotal.toFixed(2);
+
+        if (typeof syncPaidAmount === 'function') {
+            syncPaidAmount();
+        }
     }
+
+    // Instant Payment Toggle
+    const paySwitch = document.getElementById('immediate_payment_switch');
+    const payBox = document.getElementById('payment_details_box');
+    const paidInput = document.getElementById('amount_paid_input');
+    const btnPayFull = document.getElementById('btn-pay-full');
+
+    function syncPaidAmount() {
+        if (paySwitch && paySwitch.checked && paidInput) {
+            const gt = parseFloat(document.getElementById('grand_total').value) || 0;
+            paidInput.value = gt.toFixed(2);
+        }
+    }
+
+    if (paySwitch && payBox) {
+        paySwitch.addEventListener('change', function() {
+            if (this.checked) {
+                payBox.style.display = 'block';
+                const gt = parseFloat(document.getElementById('grand_total').value) || 0;
+                paidInput.value = gt.toFixed(2);
+            } else {
+                payBox.style.display = 'none';
+                paidInput.value = '0.00';
+            }
+        });
+    }
+
+    if (btnPayFull && paidInput) {
+        btnPayFull.addEventListener('click', function() {
+            const gt = parseFloat(document.getElementById('grand_total').value) || 0;
+            paidInput.value = gt.toFixed(2);
+        });
+    }
+
+    // Product Picker change event: auto-populate line details
+    itemRows.addEventListener('change', function(e) {
+        if (e.target.classList.contains('product-picker')) {
+            const select = e.target;
+            const row = select.closest('.item-row');
+            const opt = select.options[select.selectedIndex];
+            const badgeWrap = row.querySelector('.stock-badge-wrap');
+
+            if (!opt || !opt.value) {
+                if (badgeWrap) badgeWrap.innerHTML = '';
+                return;
+            }
+
+            const name = opt.getAttribute('data-name') || '';
+            const sku = opt.getAttribute('data-sku') || '';
+            const price = parseFloat(opt.getAttribute('data-price')) || 0;
+            const tax = parseFloat(opt.getAttribute('data-tax')) || 0;
+            const stock = parseInt(opt.getAttribute('data-stock')) || 0;
+            const type = opt.getAttribute('data-type') || 'product';
+            const unit = opt.getAttribute('data-unit') || '';
+
+            const descArea = row.querySelector('.item-desc');
+            if (descArea) {
+                descArea.value = (sku ? '[' + sku + '] ' : '') + name;
+            }
+
+            const priceInput = row.querySelector('.unit-price');
+            if (priceInput) {
+                priceInput.value = price.toFixed(2);
+            }
+
+            const taxInput = row.querySelector('.tax-percentage');
+            if (taxInput) {
+                taxInput.value = tax.toFixed(2);
+            }
+
+            const unitTextInput = row.querySelector('.item-unit-text');
+            if (unitTextInput && unit) {
+                unitTextInput.value = unit;
+            }
+
+            if (badgeWrap) {
+                if (type === 'service') {
+                    badgeWrap.innerHTML = '<span class="badge bg-light text-secondary border"><i class="fas fa-concierge-bell me-1"></i>{{ __("Service Item") }}</span>';
+                } else if (stock <= 0) {
+                    badgeWrap.innerHTML = '<span class="badge bg-danger-subtle text-danger border border-danger-subtle"><i class="fas fa-exclamation-triangle me-1"></i>{{ __("Out of Stock") }} (0 {{ __("in stock") }})</span>';
+                } else if (stock <= 5) {
+                    badgeWrap.innerHTML = '<span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle"><i class="fas fa-exclamation-circle me-1"></i>{{ __("Low Stock:") }} ' + stock + ' {{ __("available") }}</span>';
+                } else {
+                    badgeWrap.innerHTML = '<span class="badge bg-success-subtle text-success border border-success-subtle"><i class="fas fa-check-circle me-1"></i>{{ __("In Stock:") }} ' + stock + ' {{ __("available") }}</span>';
+                }
+            }
+
+            calculate();
+        }
+    });
 
     document.getElementById('add-item').addEventListener('click', addRow);
     document.getElementById('invoice-form').addEventListener('submit', function(e) {
@@ -464,6 +734,19 @@
 
     // Add initial row
     addRow();
+
+    @if(isset($selectedProduct) && $selectedProduct)
+        setTimeout(function() {
+            const firstRow = document.querySelector('.item-row');
+            if (firstRow) {
+                const picker = firstRow.querySelector('.product-picker');
+                if (picker) {
+                    picker.value = "{{ $selectedProduct->id }}";
+                    picker.dispatchEvent(new Event('change'));
+                }
+            }
+        }, 120);
+    @endif
 </script>
 @endsection
 @endsection

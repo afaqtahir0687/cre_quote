@@ -29,6 +29,29 @@ Route::get('/', function () {
 // Language Switcher (Publicly accessible)
 Route::get('language/{locale}', [\App\Http\Controllers\LanguageController::class, 'switch'])->name('language.switch');
 
+// Quick Cache Clear Route for Live Server Deployment
+Route::get('/clear-cache', function () {
+    \Illuminate\Support\Facades\Artisan::call('view:clear');
+    \Illuminate\Support\Facades\Artisan::call('route:clear');
+    \Illuminate\Support\Facades\Artisan::call('config:clear');
+    \Illuminate\Support\Facades\Artisan::call('cache:clear');
+
+    // Also manually wipe storage/framework/views compiled files
+    $files = glob(storage_path('framework/views/*.php'));
+    foreach ($files as $file) {
+        if (is_file($file)) {
+            @unlink($file);
+        }
+    }
+
+    return '<div style="font-family: Arial, sans-serif; text-align: center; padding: 50px;">
+        <h2 style="color: #16A579;">✔ All Laravel Caches Cleared Successfully!</h2>
+        <p>Compiled views, route cache, config cache, and application cache have been cleared.</p>
+        <p>Now press <b>Ctrl + F5</b> on your browser to see the new UI.</p>
+        <a href="' . url('/dashboard') . '" style="display: inline-block; margin-top: 15px; padding: 10px 20px; background: #4361EE; color: #fff; text-decoration: none; border-radius: 6px;">Go to Dashboard</a>
+    </div>';
+});
+
 Auth::routes();
 
 Route::group(['middleware' => 'auth'], function () {

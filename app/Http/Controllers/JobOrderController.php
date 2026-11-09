@@ -706,6 +706,7 @@ class JobOrderController extends Controller
 
             foreach ($jobOrder->items as $item) {
                 $invoice->items()->create([
+                    'product_id' => $item->product_id,
                     'description' => $item->description,
                     'item_text' => $item->item_text,
                     'unit_price' => $item->unit_price,
@@ -714,6 +715,13 @@ class JobOrderController extends Controller
                     'discount' => $item->discount ?? 0,
                     'total' => $item->total,
                 ]);
+
+                if (!empty($item->product_id)) {
+                    $prod = \App\Models\Product::find($item->product_id);
+                    if ($prod && $prod->type === 'product') {
+                        $prod->decrement('stock', (int)$item->quantity);
+                    }
+                }
             }
 
             $jobOrder->update([

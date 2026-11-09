@@ -7,8 +7,13 @@ use Illuminate\Database\Eloquent\Model;
 class QuoteItem extends Model
 {
     protected $fillable = [
-        'quote_id', 'description', 'item_text', 'unit_price', 'quantity', 'tax_percentage', 'discount', 'total', 'images'
+        'quote_id', 'product_id', 'description', 'item_text', 'unit_price', 'quantity', 'tax_percentage', 'discount', 'total', 'images'
     ];
+
+    public function product()
+    {
+        return $this->belongsTo(Product::class);
+    }
 
     protected $casts = [
         'images' => 'array',

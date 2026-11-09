@@ -153,6 +153,11 @@
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
                         <li>
+                            <a class="dropdown-item py-2 text-primary fw-medium" href="{{ route('invoices.create', ['product_id' => $product->id]) }}">
+                                <i class="fas fa-cash-register me-2 text-primary"></i> {{ __('Sell / Create Invoice') }}
+                            </a>
+                        </li>
+                        <li>
                             <a class="dropdown-item py-2" href="{{ route('products.edit', $product) }}">
                                 <i class="fas fa-edit me-2 text-info"></i> {{ __('Edit') }}
                             </a>

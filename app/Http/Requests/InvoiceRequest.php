@@ -28,7 +28,9 @@ class InvoiceRequest extends FormRequest
             'notes' => 'nullable|string',
             'terms' => 'nullable|string',
             'items' => 'required|array|min:1',
+            'items.*.product_id' => 'nullable|exists:products,id',
             'items.*.description' => 'required|string',
+            'items.*.item_text' => 'nullable|string',
             'items.*.unit_price' => 'required|numeric|min:0',
             'items.*.quantity' => 'required|integer|min:1',
             'items.*.tax_percentage' => 'nullable|numeric|min:0',
@@ -39,6 +41,10 @@ class InvoiceRequest extends FormRequest
             'total_discount' => 'required|numeric',
             'shipping' => 'nullable|numeric|min:0',
             'grand_total' => 'required|numeric',
+            'amount_paid' => 'nullable|numeric|min:0',
+            'payment_method' => 'nullable|string',
+            'payment_reference' => 'nullable|string',
+            'payment_note' => 'nullable|string',
         ];
     }
 }

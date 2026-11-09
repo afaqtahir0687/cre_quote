@@ -259,6 +259,8 @@ class QuoteController extends Controller
 
             foreach ($quote->items as $item) {
                 $invoice->items()->create([
+                    'product_id' => $item->product_id,
+                    'item_text' => $item->item_text,
                     'description' => $item->description,
                     'unit_price' => $item->unit_price,
                     'quantity' => $item->quantity,
@@ -266,6 +268,13 @@ class QuoteController extends Controller
                     'discount' => $item->discount,
                     'total' => $item->total,
                 ]);
+
+                if (!empty($item->product_id)) {
+                    $prod = \App\Models\Product::find($item->product_id);
+                    if ($prod && $prod->type === 'product') {
+                        $prod->decrement('stock', (int)$item->quantity);
+                    }
+                }
             }
 
             $quote->update(['status' => 'Invoiced']);

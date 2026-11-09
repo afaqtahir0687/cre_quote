@@ -55,7 +55,7 @@ class InvoiceController extends Controller
     public function create()
     {
         $customers = Customer::where('is_active', true)->with('companies')->latest()->get();
-        $products = Product::all();
+        $products = Product::with(['category', 'unit'])->orderBy('name')->get();
         $employees = \App\Models\Employee::orderBy('name')->get();
         $currentEmployee = \App\Models\Employee::where('user_id', auth()->id())->first();
         $setting = current_setting();
@@ -74,12 +74,16 @@ class InvoiceController extends Controller
             $invoiceNumber = ($setting->invoice_prefix ?? 'INV-') . $nextNumber;
         }
 
-        return view('admin.invoices.create', compact('customers', 'products', 'invoiceNumber', 'setting', 'employees', 'currentEmployee'));
+        $selectedProduct = request()->filled('product_id') ? Product::find(request('product_id')) : null;
+
+        return view('admin.invoices.create', compact('customers', 'products', 'invoiceNumber', 'setting', 'employees', 'currentEmployee', 'selectedProduct'));
     }
 
     public function store(InvoiceRequest $request)
     {
-        DB::transaction(function () use ($request) {
+        $invoice = null;
+
+        DB::transaction(function () use ($request, &$invoice) {
             $data = $request->validated();
             
             $setting = current_setting();
@@ -100,14 +104,46 @@ class InvoiceController extends Controller
             
             $data['show_customer_name'] = $request->boolean('show_customer_name', true);
             $invoice = Invoice::create($data);
-            $invoice->update(['balance_due' => $invoice->grand_total]);
+            // Balance will be calculated with payments below
             
             foreach ($request->items as $item) {
                 $invoice->items()->create($item);
+
+                if (!empty($item['product_id'])) {
+                    $product = Product::find($item['product_id']);
+                    if ($product && $product->type === 'product') {
+                        $product->decrement('stock', (int)$item['quantity']);
+                    }
+                }
+            }
+
+            // Immediate payment handling upon sale
+            $paidAmount = (float) $request->input('amount_paid', 0);
+            if ($paidAmount > 0) {
+                $paidAmount = min((float)$invoice->grand_total, $paidAmount);
+                $invoice->payments()->create([
+                    'payment_date' => $invoice->invoice_date,
+                    'amount' => $paidAmount,
+                    'payment_method' => $request->input('payment_method', 'Cash'),
+                    'transaction_id' => $request->input('payment_reference'),
+                    'note' => $request->input('payment_note') ?: 'Payment received on sale',
+                ]);
+                $balanceDue = max(0, (float)$invoice->grand_total - $paidAmount);
+                $invoice->update([
+                    'amount_paid' => $paidAmount,
+                    'balance_due' => $balanceDue,
+                    'status' => ($balanceDue <= 0 && $invoice->grand_total > 0) ? 'Paid' : 'Partially Paid',
+                ]);
+            } else {
+                $invoice->update([
+                    'amount_paid' => 0,
+                    'balance_due' => $invoice->grand_total,
+                    'status' => 'Unpaid',
+                ]);
             }
         });
 
-        return redirect()->route('invoices.index')->with('success', 'Invoice created successfully.');
+        return redirect()->route('invoices.show', $invoice->id)->with('success', __('Invoice created successfully.'));
     }
 
     public function show(Invoice $invoice)
@@ -121,7 +157,7 @@ class InvoiceController extends Controller
     {
         $invoice->load('items', 'customerCompany', 'employee');
         $customers = Customer::where('is_active', true)->with('companies')->latest()->get();
-        $products = Product::all();
+        $products = Product::with(['category', 'unit'])->orderBy('name')->get();
         $employees = \App\Models\Employee::orderBy('name')->get();
         $setting = current_setting();
         return view('admin.invoices.edit', compact('invoice', 'customers', 'products', 'setting', 'employees'));
@@ -141,10 +177,52 @@ class InvoiceController extends Controller
             $invoice->update($data);
             $invoice->touch();
             $invoice->update(['balance_due' => $invoice->grand_total - $invoice->amount_paid]);
+
+            // Revert previously deducted stock before recreating items
+            foreach ($invoice->items as $oldItem) {
+                if (!empty($oldItem->product_id)) {
+                    $oldProd = Product::find($oldItem->product_id);
+                    if ($oldProd && $oldProd->type === 'product') {
+                        $oldProd->increment('stock', (int)$oldItem->quantity);
+                    }
+                }
+            }
             $invoice->items()->delete();
             
             foreach ($request->items as $item) {
                 $invoice->items()->create($item);
+
+                if (!empty($item['product_id'])) {
+                    $product = Product::find($item['product_id']);
+                    if ($product && $product->type === 'product') {
+                        $product->decrement('stock', (int)$item['quantity']);
+                    }
+                }
+            }
+
+            // Immediate payment handling upon sale
+            $paidAmount = (float) $request->input('amount_paid', 0);
+            if ($paidAmount > 0) {
+                $paidAmount = min((float)$invoice->grand_total, $paidAmount);
+                $invoice->payments()->create([
+                    'payment_date' => $invoice->invoice_date,
+                    'amount' => $paidAmount,
+                    'payment_method' => $request->input('payment_method', 'Cash'),
+                    'transaction_id' => $request->input('payment_reference'),
+                    'note' => $request->input('payment_note') ?: 'Payment received on sale',
+                ]);
+                $balanceDue = max(0, (float)$invoice->grand_total - $paidAmount);
+                $invoice->update([
+                    'amount_paid' => $paidAmount,
+                    'balance_due' => $balanceDue,
+                    'status' => ($balanceDue <= 0 && $invoice->grand_total > 0) ? 'Paid' : 'Partially Paid',
+                ]);
+            } else {
+                $invoice->update([
+                    'amount_paid' => 0,
+                    'balance_due' => $invoice->grand_total,
+                    'status' => 'Unpaid',
+                ]);
             }
         });
 
@@ -155,6 +233,16 @@ class InvoiceController extends Controller
     {
         $invoiceNumber = $invoice->invoice_number;
         $customerName = $invoice->customer->name ?? 'Unknown';
+
+        // Revert product inventory
+        foreach ($invoice->items as $item) {
+            if (!empty($item->product_id)) {
+                $product = Product::find($item->product_id);
+                if ($product && $product->type === 'product') {
+                    $product->increment('stock', (int)$item->quantity);
+                }
+            }
+        }
 
         $invoice->delete();
 

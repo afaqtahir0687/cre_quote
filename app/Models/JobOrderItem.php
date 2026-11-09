@@ -8,6 +8,7 @@ class JobOrderItem extends Model
 {
     protected $fillable = [
         'job_order_id',
+        'product_id',
         'description',
         'item_text',
         'quantity',
@@ -17,6 +18,11 @@ class JobOrderItem extends Model
         'total',
         'images',
     ];
+
+    public function product()
+    {
+        return $this->belongsTo(Product::class);
+    }
 
     protected $casts = [
         'images' => 'array',
