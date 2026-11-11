@@ -21,10 +21,14 @@ use App\Http\Controllers\SuperAdmin\SuperAdminController;
 use App\Http\Controllers\SuperAdmin\ShopController;
 use App\Http\Controllers\SuperAdmin\UserController as SuperAdminUserController;
 use App\Http\Controllers\SuperAdmin\SubscriptionController as SuperAdminSubscriptionController;
+use App\Http\Controllers\WebsiteController;
 
-Route::get('/', function () {
-    return redirect()->route('login');
-});
+Route::get('/', [WebsiteController::class, 'index'])->name('home');
+Route::get('/services', [WebsiteController::class, 'services'])->name('website.services');
+Route::get('/products', [WebsiteController::class, 'products'])->name('website.products');
+Route::get('/products-catalog', [WebsiteController::class, 'products']);
+Route::post('/contact-us', [WebsiteController::class, 'contactSubmit'])->name('contact.submit');
+Route::post('/submit-proposal', [\App\Http\Controllers\ProposalSubmissionController::class, 'submit'])->name('proposal.submit');
 
 // Language Switcher (Publicly accessible)
 Route::get('language/{locale}', [\App\Http\Controllers\LanguageController::class, 'switch'])->name('language.switch');
@@ -63,8 +67,14 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('customers/ajax-store', [CustomerController::class, 'ajaxStore'])->name('customers.ajax_store');
     Route::get('customers/{customer}/statement', [CustomerController::class, 'statement'])->name('customers.statement');
     Route::get('customers/{customer}/statement/pdf', [CustomerController::class, 'statementPdf'])->name('customers.statement_pdf');
-    Route::get('products/generate-sku', [ProductController::class, 'generateSku'])->name('products.generate_sku');
-    Route::resource('products', ProductController::class);
+    Route::get('admin/products/generate-sku', [ProductController::class, 'generateSku'])->name('products.generate_sku');
+    Route::get('products/generate-sku', [ProductController::class, 'generateSku']);
+    Route::resource('admin/products', ProductController::class, ['names' => 'products']);
+    // Fallback legacy admin routes
+    Route::get('products/{product}/edit', [ProductController::class, 'edit']);
+    Route::put('products/{product}', [ProductController::class, 'update']);
+    Route::delete('products/{product}', [ProductController::class, 'destroy']);
+    Route::post('products', [ProductController::class, 'store']);
     Route::resource('categories', CategoryController::class);
     Route::resource('units', UnitController::class);
     Route::resource('quotes', QuoteController::class);
@@ -176,6 +186,48 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('subscriptions/{subscription}/approve', [SuperAdminSubscriptionController::class, 'approveRequest'])->name('subscriptions.approve');
         Route::get('packages', [SuperAdminSubscriptionController::class, 'packages'])->name('packages.index');
         Route::put('packages/{package}', [SuperAdminSubscriptionController::class, 'updatePackage'])->name('packages.update');
+
+        // Website CMS Management
+        Route::prefix('cms')->as('cms.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\SuperAdmin\CmsController::class, 'index'])->name('index');
+            Route::get('settings', [\App\Http\Controllers\SuperAdmin\CmsController::class, 'settings'])->name('settings');
+            Route::post('settings', [\App\Http\Controllers\SuperAdmin\CmsController::class, 'updateSettings'])->name('settings.update');
+            Route::get('sections', [\App\Http\Controllers\SuperAdmin\CmsController::class, 'sections'])->name('sections');
+            Route::post('sections', [\App\Http\Controllers\SuperAdmin\CmsController::class, 'updateSections'])->name('sections.update');
+
+            // CMS Resources
+            Route::resource('modules', \App\Http\Controllers\SuperAdmin\CmsAppModuleController::class)->except(['show']);
+            Route::resource('features', \App\Http\Controllers\SuperAdmin\CmsFeatureController::class)->except(['show']);
+            Route::resource('showcase', \App\Http\Controllers\SuperAdmin\CmsShowcaseController::class)->only(['index', 'edit', 'update']);
+            Route::resource('solutions', \App\Http\Controllers\SuperAdmin\CmsSolutionController::class)->except(['show']);
+            Route::resource('testimonials', \App\Http\Controllers\SuperAdmin\CmsTestimonialController::class)->except(['show']);
+            Route::post('testimonials/{testimonial}/toggle-approval', [\App\Http\Controllers\SuperAdmin\CmsTestimonialController::class, 'toggleApproval'])->name('testimonials.toggle_approval');
+            Route::resource('faqs', \App\Http\Controllers\SuperAdmin\CmsFaqController::class)->except(['show']);
+            Route::resource('nav', \App\Http\Controllers\SuperAdmin\CmsNavController::class)->only(['index', 'store', 'update', 'destroy']);
+            
+            // Homepage Hero Slider Manager
+            Route::post('slides/update-order', [\App\Http\Controllers\SuperAdmin\HomepageSlideController::class, 'updateOrder'])->name('slides.update_order');
+            Route::post('slides/reorder', [\App\Http\Controllers\SuperAdmin\HomepageSlideController::class, 'updateOrder'])->name('slides.reorder');
+            Route::post('slides/{slide}/toggle-active', [\App\Http\Controllers\SuperAdmin\HomepageSlideController::class, 'toggleActive'])->name('slides.toggle_active');
+            Route::resource('slides', \App\Http\Controllers\SuperAdmin\HomepageSlideController::class)->except(['show']);
+
+            // Proposal Form Settings & Dropdown Options
+            Route::get('proposals/settings', [\App\Http\Controllers\SuperAdmin\ProposalSettingController::class, 'index'])->name('proposals.settings');
+            Route::post('proposals/settings', [\App\Http\Controllers\SuperAdmin\ProposalSettingController::class, 'updateSettings'])->name('proposals.settings.update');
+            Route::post('proposals/options', [\App\Http\Controllers\SuperAdmin\ProposalSettingController::class, 'storeOption'])->name('proposals.options.store');
+            Route::put('proposals/options/{option}', [\App\Http\Controllers\SuperAdmin\ProposalSettingController::class, 'updateOption'])->name('proposals.options.update');
+            Route::delete('proposals/options/{option}', [\App\Http\Controllers\SuperAdmin\ProposalSettingController::class, 'destroyOption'])->name('proposals.options.destroy');
+            Route::post('proposals/options/{option}/toggle-active', [\App\Http\Controllers\SuperAdmin\ProposalSettingController::class, 'toggleOptionActive'])->name('proposals.options.toggle_active');
+
+            Route::get('messages', [\App\Http\Controllers\SuperAdmin\ContactMessageController::class, 'index'])->name('messages.index');
+            Route::post('messages/{message}/read', [\App\Http\Controllers\SuperAdmin\ContactMessageController::class, 'markRead'])->name('messages.read');
+            Route::delete('messages/{message}', [\App\Http\Controllers\SuperAdmin\ContactMessageController::class, 'destroy'])->name('messages.destroy');
+        });
+
+        // Marketing: Proposal Requests Management
+        Route::get('proposals/export-csv', [\App\Http\Controllers\SuperAdmin\ProposalRequestController::class, 'exportCsv'])->name('proposals.export_csv');
+        Route::resource('proposals', \App\Http\Controllers\SuperAdmin\ProposalRequestController::class)->only(['index', 'show', 'destroy']);
+        Route::put('proposals/{proposal}/status', [\App\Http\Controllers\SuperAdmin\ProposalRequestController::class, 'updateStatus'])->name('proposals.status.update');
     });
 
     // Shop Admin Subscriptions & Multi-Shop Branches

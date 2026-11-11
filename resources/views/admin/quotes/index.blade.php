@@ -135,8 +135,7 @@
                                 </li>
                                 <!-- @if($quote->status != 'Invoiced')
                                     <li><hr class="dropdown-divider"></li>
-                                    <li><a class="dropdown-item py-2 text-success" href="{{ route('quotes.convert', $quote) }}"
-                                            onclick="return confirm('Convert this quote to an Invoice?')"><i
+                                    <li><a class="dropdown-item py-2 text-success" href="{{ route('quotes.convert', $quote) }}"><i
                                                 class="fas fa-exchange-alt me-2"></i> Convert to Invoice</a></li>
                                 @endif -->
                             </ul>

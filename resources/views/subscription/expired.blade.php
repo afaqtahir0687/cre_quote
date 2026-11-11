@@ -175,10 +175,13 @@
 
                     <div class="mb-3">
                         <span class="display-6 fw-bold text-dark">
-                            {{ $pkg->price == 0 ? 'Free' : 'SAR ' . number_format($pkg->price, 0) }}
+                            {{ $pkg->price == 0 ? 'Free' : '$' . number_format($pkg->price, 0) . ' USD' }}
                         </span>
                         @if($pkg->price > 0)
-                            <span class="text-muted fw-normal">/ {{ $pkg->duration_days }} days (Cash)</span>
+                            <span class="text-muted fw-normal">/ {{ $pkg->duration_days }} days</span>
+                            <div class="text-success small fw-semibold mt-1">
+                                <i class="fas fa-coins me-1"></i> ≈ SAR {{ number_format($pkg->price * 3.75, 2) }}
+                            </div>
                         @endif
                     </div>
 
@@ -250,7 +253,7 @@
                             @foreach($packages as $pkg)
                                 @if(!$pkg->isTrial())
                                     <option value="{{ $pkg->id }}" {{ $pkg->slug === 'yearly' ? 'selected' : '' }}>
-                                        {{ $pkg->name }} — SAR {{ number_format($pkg->price, 0) }} ({{ $pkg->duration_days }} Days, {{ $pkg->max_shops > 1 ? $pkg->max_shops . ' Shops' : '1 Shop' }})
+                                        {{ $pkg->name }} — ${{ number_format($pkg->price, 0) }} USD (≈ SAR {{ number_format($pkg->price * 3.75, 2) }}) ({{ $pkg->duration_days }} Days, {{ $pkg->max_shops > 1 ? $pkg->max_shops . ' Shops' : '1 Shop' }})
                                     </option>
                                 @endif
                             @endforeach

@@ -3,7 +3,6 @@
 @section('title', __('Dashboard'))
 
 @section('content')
-<!-- Active Shop Branding Banner -->
 @php
     $dashLogo = shop_logo_url($currentShop, $setting);
     $dashTitle = shop_brand_name($currentShop, $setting);
@@ -11,15 +10,42 @@
     $isSwitched = session('active_shop_id') && session('active_shop_id') !== 'all';
 @endphp
 
-<div class="card border-0 shadow-sm rounded-4 mb-4 overflow-hidden position-relative" style="background: linear-gradient(135deg, #ffffff 0%, #f4f7fc 100%); border-left: 4px solid var(--erp-primary) !important;">
-    <div class="card-body p-4">
+<!-- ERPGo-Style Page Header with Title, Breadcrumb & Actions -->
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+    <div>
+        <h3 class="fw-bold text-dark mb-1">{{ __('Dashboard Overview') }}</h3>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0 extra-small">
+                <li class="breadcrumb-item"><a href="{{ route('dashboard') }}" class="text-decoration-none text-muted"><i class="fas fa-home me-1"></i>{{ __('Home') }}</a></li>
+                <li class="breadcrumb-item active text-primary fw-semibold" aria-current="page">{{ __('Dashboard') }}</li>
+            </ol>
+        </nav>
+    </div>
+
+    <!-- Quick Action Buttons -->
+    <div class="d-flex align-items-center gap-2 flex-wrap">
+        <a href="{{ route('job-orders.create') }}" class="btn btn-primary-modern btn-sm shadow-sm">
+            <i class="fas fa-plus me-1"></i> {{ __('New Job Order') }}
+        </a>
+        <a href="{{ route('quotes.create') }}" class="btn btn-secondary-modern btn-sm shadow-sm">
+            <i class="fas fa-file-invoice me-1"></i> {{ __('New Quote') }}
+        </a>
+        <a href="{{ route('invoices.create') }}" class="btn btn-secondary-modern btn-sm shadow-sm">
+            <i class="fas fa-receipt me-1"></i> {{ __('New Invoice') }}
+        </a>
+    </div>
+</div>
+
+<!-- Active Shop & Context Banner -->
+<div class="card border-0 shadow-sm rounded-4 mb-4 overflow-hidden position-relative" style="background: linear-gradient(135deg, #ffffff 0%, #f8faff 100%); border-left: 4px solid var(--erp-primary, #4361EE) !important;">
+    <div class="card-body p-3 p-md-4">
         <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
             <div class="d-flex align-items-center gap-3">
-                <div class="bg-white p-2 rounded-3 shadow-sm border d-flex align-items-center justify-content-center" style="width: 68px; height: 68px; min-width: 68px;">
+                <div class="bg-white p-2 rounded-3 shadow-sm border d-flex align-items-center justify-content-center flex-shrink-0" style="width: 64px; height: 64px;">
                     @if($dashLogo)
-                        <img src="{{ $dashLogo }}" alt="{{ $dashTitle }}" class="img-fluid" style="max-height: 52px; max-width: 52px; object-fit: contain;">
+                        <img src="{{ $dashLogo }}" alt="{{ $dashTitle }}" class="img-fluid" style="max-height: 48px; max-width: 48px; object-fit: contain;">
                     @else
-                        <div class="w-100 h-100 rounded text-white d-flex align-items-center justify-content-center fs-3" style="background: var(--erp-primary);">
+                        <div class="w-100 h-100 rounded text-white d-flex align-items-center justify-content-center fs-3" style="background: var(--erp-primary, #4361EE);">
                             <i class="fas fa-store"></i>
                         </div>
                     @endif
@@ -61,100 +87,113 @@
                 </div>
             </div>
 
-            <!-- ERP Quick Action Shortcuts -->
-            <div class="d-flex align-items-center gap-2 flex-wrap">
-                <a href="{{ route('job-orders.create') }}" class="btn btn-primary-modern btn-sm">
-                    <i class="fas fa-plus"></i> {{ __('New Job Order') }}
-                </a>
-                <a href="{{ route('quotes.create') }}" class="btn btn-secondary-modern btn-sm">
-                    <i class="fas fa-file-invoice"></i> {{ __('New Quote') }}
-                </a>
-                <a href="{{ route('invoices.create') }}" class="btn btn-secondary-modern btn-sm">
-                    <i class="fas fa-receipt"></i> {{ __('New Invoice') }}
-                </a>
+            <div class="d-flex align-items-center gap-2">
+                <span class="badge bg-white text-muted border px-3 py-2 rounded-3 shadow-xs">
+                    <i class="fas fa-calendar-day text-primary me-1"></i> {{ date('l, d M Y') }}
+                </span>
             </div>
         </div>
     </div>
 </div>
 
-<!-- 5-Col ERPGo KPI Cards -->
-<div class="row g-3 mb-4 kpi-row-5">
-    <!-- Total Customers -->
-    <div class="col-12 col-sm-6 col-md-4 col-xl-custom kpi-col-5">
-        <div class="kpi-card bg-gradient-indigo h-100">
-            <div class="icon-box">
-                <i class="fas fa-users"></i>
+<!-- 5-Column ERPGo Metric Cards (Clean Grid & Balanced Heights) -->
+<div class="row g-3 mb-4">
+    <!-- 1. Total Customers -->
+    <div class="col-12 col-sm-6 col-lg-custom-5 col-xl">
+        <div class="kpi-card bg-gradient-indigo h-100 d-flex flex-column justify-content-between shadow-sm">
+            <div>
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <div class="kpi-title mb-0">{{ __('Total Customers') }}</div>
+                    <div class="icon-box">
+                        <i class="fas fa-users"></i>
+                    </div>
+                </div>
+                <h2 class="kpi-value text-white mb-1" style="color: #ffffff !important;">{{ $stats['customers_count'] }}</h2>
             </div>
-            <div class="kpi-title">{{ __('Total Customers') }}</div>
-            <h2 class="kpi-value text-white" style="color: #ffffff !important;">{{ $stats['customers_count'] }}</h2>
-            <div class="small opacity-75 mt-2">
-                <i class="fas fa-check-circle me-1"></i> {{ __('Active Clients') }}
+            <div class="small opacity-75 mt-2 pt-2 border-top border-white border-opacity-10">
+                <i class="fas fa-check-circle me-1"></i> {{ __('Active Registered Clients') }}
             </div>
         </div>
     </div>
     
-    <!-- Total Invoices -->
-    <div class="col-12 col-sm-6 col-md-4 col-xl-custom kpi-col-5">
-        <div class="kpi-card bg-gradient-emerald h-100">
-            <div class="icon-box">
-                <i class="fas fa-file-invoice-dollar"></i>
+    <!-- 2. Total Invoices -->
+    <div class="col-12 col-sm-6 col-lg-custom-5 col-xl">
+        <div class="kpi-card bg-gradient-emerald h-100 d-flex flex-column justify-content-between shadow-sm">
+            <div>
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <div class="kpi-title mb-0">{{ __('Total Invoices') }}</div>
+                    <div class="icon-box">
+                        <i class="fas fa-file-invoice-dollar"></i>
+                    </div>
+                </div>
+                <h2 class="kpi-value text-white mb-1" style="color: #ffffff !important;">{{ $stats['invoices_count'] }}</h2>
             </div>
-            <div class="kpi-title">{{ __('Total Invoices') }}</div>
-            <h2 class="kpi-value text-white" style="color: #ffffff !important;">{{ $stats['invoices_count'] }}</h2>
-            <div class="small opacity-75 mt-2">
+            <div class="small opacity-75 mt-2 pt-2 border-top border-white border-opacity-10">
                 <span class="text-white fw-bold">{{ $stats['paid_invoices_count'] }}</span> {{ __('Paid') }} &bull; <span class="text-white-50">{{ $stats['unpaid_invoices_count'] }}</span> {{ __('Unpaid') }}
             </div>
         </div>
     </div>
 
-    <!-- Paid Amount -->
-    <div class="col-12 col-sm-6 col-md-4 col-xl-custom kpi-col-5">
-        <div class="kpi-card bg-gradient-amber h-100">
-            <div class="icon-box">
-                <i class="fas fa-wallet"></i>
+    <!-- 3. Collected Revenue -->
+    <div class="col-12 col-sm-6 col-lg-custom-5 col-xl">
+        <div class="kpi-card bg-gradient-amber h-100 d-flex flex-column justify-content-between shadow-sm">
+            <div>
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <div class="kpi-title mb-0">{{ __('Collected Revenue') }}</div>
+                    <div class="icon-box">
+                        <i class="fas fa-wallet"></i>
+                    </div>
+                </div>
+                <h2 class="kpi-value text-white mb-1" style="color: #ffffff !important;">{{ format_currency($stats['total_paid']) }}</h2>
             </div>
-            <div class="kpi-title">{{ __('Collected Revenue') }}</div>
-            <h2 class="kpi-value text-white" style="color: #ffffff !important;">{{ format_currency($stats['total_paid']) }}</h2>
-            <div class="small opacity-75 mt-2">
-                <i class="fas fa-arrow-up me-1"></i> {{ __('Total Paid') }}
-            </div>
-        </div>
-    </div>
-
-    <!-- Pending Due -->
-    <div class="col-12 col-sm-6 col-md-4 col-xl-custom kpi-col-5">
-        <div class="kpi-card bg-gradient-rose h-100">
-            <div class="icon-box">
-                <i class="fas fa-clock"></i>
-            </div>
-            <div class="kpi-title">{{ __('Pending Due') }}</div>
-            <h2 class="kpi-value text-white" style="color: #ffffff !important;">{{ format_currency($stats['total_pending']) }}</h2>
-            <div class="small opacity-75 mt-2">
-                <i class="fas fa-exclamation-triangle me-1"></i> {{ __('Outstanding Balance') }}
+            <div class="small opacity-75 mt-2 pt-2 border-top border-white border-opacity-10">
+                <i class="fas fa-arrow-up me-1"></i> {{ __('Total Realized Cash') }}
             </div>
         </div>
     </div>
 
-    <!-- Job Orders -->
-    <div class="col-12 col-sm-6 col-md-4 col-xl-custom kpi-col-5">
-        <div class="kpi-card bg-gradient-purple h-100">
-            <div class="icon-box">
-                <i class="fas fa-tasks"></i>
+    <!-- 4. Pending Due -->
+    <div class="col-12 col-sm-6 col-lg-custom-5 col-xl">
+        <div class="kpi-card bg-gradient-rose h-100 d-flex flex-column justify-content-between shadow-sm">
+            <div>
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <div class="kpi-title mb-0">{{ __('Pending Due') }}</div>
+                    <div class="icon-box">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                </div>
+                <h2 class="kpi-value text-white mb-1" style="color: #ffffff !important;">{{ format_currency($stats['total_pending']) }}</h2>
             </div>
-            <div class="kpi-title">{{ __('Job Orders') }}</div>
-            <h2 class="kpi-value text-white" style="color: #ffffff !important;">{{ $stats['job_orders_count'] }}</h2>
-            <div class="small opacity-75 mt-2">
+            <div class="small opacity-75 mt-2 pt-2 border-top border-white border-opacity-10">
+                <i class="fas fa-exclamation-triangle me-1"></i> {{ __('Outstanding Receivables') }}
+            </div>
+        </div>
+    </div>
+
+    <!-- 5. Job Orders -->
+    <div class="col-12 col-sm-6 col-lg-custom-5 col-xl">
+        <div class="kpi-card bg-gradient-purple h-100 d-flex flex-column justify-content-between shadow-sm">
+            <div>
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <div class="kpi-title mb-0">{{ __('Job Orders') }}</div>
+                    <div class="icon-box">
+                        <i class="fas fa-tasks"></i>
+                    </div>
+                </div>
+                <h2 class="kpi-value text-white mb-1" style="color: #ffffff !important;">{{ $stats['job_orders_count'] }}</h2>
+            </div>
+            <div class="small opacity-75 mt-2 pt-2 border-top border-white border-opacity-10">
                 <span class="text-white fw-bold">{{ $stats['pending_job_orders_count'] }}</span> {{ __('Pending') }} &bull; <span class="text-white-50">{{ $stats['completed_job_orders_count'] }}</span> {{ __('Done') }}
             </div>
         </div>
     </div>
 </div>
 
-<!-- ERPGo Charts Row (Revenue Trends & Activity Breakdown) -->
+<!-- ERPGo Charts Row (Monthly Trends & Workflow Breakdown) -->
 <div class="row g-4 mb-4">
-    <!-- Monthly Revenue Trend Chart -->
+    <!-- Left: 6-Month Revenue Trend Line Chart -->
     <div class="col-lg-8">
-        <div class="card h-100">
+        <div class="card border-0 shadow-sm rounded-4 h-100">
             <div class="card-body p-4">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <div>
@@ -165,18 +204,18 @@
                         <i class="fas fa-chart-line me-1"></i> {{ __('Monthly Analytics') }}
                     </span>
                 </div>
-                <div style="height: 270px; position: relative;">
+                <div style="height: 280px; position: relative;">
                     <canvas id="revenueTrendChart"></canvas>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Business Activity Ratio Chart -->
+    <!-- Right: Business Activity Ratio Doughnut Chart -->
     <div class="col-lg-4">
-        <div class="card h-100">
+        <div class="card border-0 shadow-sm rounded-4 h-100">
             <div class="card-body p-4 d-flex flex-column">
-                <div class="d-flex justify-content-between align-items-center mb-3">
+                <div class="d-flex justify-content-between align-items-center mb-2">
                     <h5 class="fw-bold text-dark mb-0">{{ __('Workflow Breakdown') }}</h5>
                     <span class="badge-soft badge-soft-info"><i class="fas fa-pie-chart me-1"></i>{{ __('Ratio') }}</span>
                 </div>
@@ -187,15 +226,15 @@
                 <div class="d-flex justify-content-around text-center pt-3 border-top mt-3">
                     <div>
                         <div class="text-muted extra-small">{{ __('Quotes') }}</div>
-                        <div class="fw-bold text-dark">{{ $stats['quotes_count'] }}</div>
+                        <div class="fw-bold text-dark fs-6">{{ $stats['quotes_count'] }}</div>
                     </div>
                     <div>
                         <div class="text-muted extra-small">{{ __('Job Orders') }}</div>
-                        <div class="fw-bold text-dark">{{ $stats['job_orders_count'] }}</div>
+                        <div class="fw-bold text-dark fs-6">{{ $stats['job_orders_count'] }}</div>
                     </div>
                     <div>
                         <div class="text-muted extra-small">{{ __('Invoices') }}</div>
-                        <div class="fw-bold text-dark">{{ $stats['invoices_count'] }}</div>
+                        <div class="fw-bold text-dark fs-6">{{ $stats['invoices_count'] }}</div>
                     </div>
                 </div>
             </div>
@@ -203,11 +242,11 @@
     </div>
 </div>
 
-<!-- Recent Data Tables (Job Orders & Invoices) -->
+<!-- Recent Job Orders & Invoices Tables Row -->
 <div class="row g-4 mb-4">
-    <!-- Recent Job Orders Table -->
+    <!-- Recent Job Orders -->
     <div class="col-lg-6">
-        <div class="card h-100">
+        <div class="card border-0 shadow-sm rounded-4 h-100">
             <div class="card-body p-0">
                 <div class="p-3 px-4 d-flex justify-content-between align-items-center border-bottom">
                     <div>
@@ -272,9 +311,9 @@
         </div>
     </div>
 
-    <!-- Recent Invoices Table -->
+    <!-- Recent Invoices -->
     <div class="col-lg-6">
-        <div class="card h-100">
+        <div class="card border-0 shadow-sm rounded-4 h-100">
             <div class="card-body p-0">
                 <div class="p-3 px-4 d-flex justify-content-between align-items-center border-bottom">
                     <div>
@@ -340,11 +379,11 @@
     </div>
 </div>
 
-<!-- Recent Quotations & Customers Quick Grid -->
+<!-- Recent Quotations & Registered Customers Row -->
 <div class="row g-4">
     <!-- Recent Quotations -->
     <div class="col-lg-7">
-        <div class="card h-100">
+        <div class="card border-0 shadow-sm rounded-4 h-100">
             <div class="card-body p-0">
                 <div class="p-3 px-4 d-flex justify-content-between align-items-center border-bottom">
                     <div>
@@ -389,7 +428,7 @@
                                         <span class="badge-soft {{ $qBadge }}">{{ __($quote->status) }}</span>
                                     </td>
                                     <td class="text-end">
-                                        <a href="{{ route('quotes.show', $quote) }}" class="btn btn-sm btn-light border p-1 px-2">
+                                        <a href="{{ route('quotes.show', $quote) }}" class="btn btn-sm btn-light border p-1 px-2" title="{{ __('View') }}">
                                             <i class="fas fa-eye text-primary"></i>
                                         </a>
                                     </td>
@@ -411,7 +450,7 @@
 
     <!-- Recent Registered Customers -->
     <div class="col-lg-5">
-        <div class="card h-100">
+        <div class="card border-0 shadow-sm rounded-4 h-100">
             <div class="card-body p-0">
                 <div class="p-3 px-4 d-flex justify-content-between align-items-center border-bottom">
                     <div>
@@ -427,13 +466,13 @@
                         <div class="d-flex align-items-center justify-content-between p-2 rounded-3 hover-bg-light mb-2">
                             <div class="d-flex align-items-center gap-3">
                                 <div class="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold shadow-sm"
-                                    style="width: 38px; height: 38px; font-size: 0.85rem; background: var(--erp-primary);">
+                                    style="width: 40px; height: 40px; font-size: 0.88rem; background: var(--erp-primary, #4361EE);">
                                     {{ strtoupper(substr($cust->name, 0, 1)) }}
                                 </div>
                                 <div>
                                     <div class="fw-semibold text-dark">{{ tdb($cust->name) }}</div>
                                     <div class="text-muted extra-small">
-                                        {{ $cust->phone ?: ($cust->email ?: 'No contact') }}
+                                        {{ $cust->phone ?: ($cust->email ?: __('No contact number')) }}
                                     </div>
                                 </div>
                             </div>
@@ -452,7 +491,6 @@
         </div>
     </div>
 </div>
-
 @endsection
 
 @push('scripts')
@@ -523,7 +561,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 labels: ['{{ __("Quotes") }}', '{{ __("Job Orders") }}', '{{ __("Invoices") }}'],
                 datasets: [{
                     data: [qCount, joCount, invCount],
-                    backgroundColor: ['#17A2B8', '#8B5CF6', '#16A579'],
+                    backgroundColor: ['#17A2B8', '#8B5CF6', '#10B981'],
                     borderWidth: 2,
                     borderColor: '#FFFFFF',
                     hoverOffset: 4

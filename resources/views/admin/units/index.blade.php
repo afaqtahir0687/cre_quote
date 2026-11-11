@@ -67,7 +67,7 @@
                         <li>
                             <form action="{{ route('units.destroy', $unit) }}" method="POST" class="d-inline delete-form">
                                 @csrf @method('DELETE')
-                                <button type="submit" class="dropdown-item py-2 text-danger" onclick="return confirm('{{ __('Are you sure you want to delete this unit?') }}')">
+                                <button type="submit" class="dropdown-item py-2 text-danger">
                                     <i class="fas fa-trash-alt me-2"></i> {{ __('Delete') }}
                                 </button>
                             </form>

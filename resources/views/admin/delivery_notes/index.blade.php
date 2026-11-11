@@ -99,11 +99,10 @@
                                 @endif
                                 <li><hr class="dropdown-divider"></li>
                                 <li>
-                                    <form action="{{ route('delivery_notes.update_status', $deliveryNote) }}" method="POST" class="d-inline">
+                                    <form action="{{ route('delivery_notes.update_status', $deliveryNote) }}" method="POST" class="d-inline" data-confirm="Are you sure you want to mark this delivery note as Delivered?">
                                         @csrf
                                         <input type="hidden" name="status" value="Delivered">
-                                        <button type="submit" class="dropdown-item py-2 text-success"
-                                            onclick="return confirm('Mark as Delivered?')">
+                                        <button type="submit" class="dropdown-item py-2 text-success">
                                             <i class="fas fa-check me-2"></i> {{ __('Mark Delivered') }}
                                         </button>
                                     </form>

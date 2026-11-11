@@ -803,6 +803,172 @@ a:hover {
 .btn-outline-primary:hover {
     background-color: var(--erp-primary) !important;
     color: #FFFFFF !important;
+    box-shadow: 0 4px 10px rgba(67, 97, 238, 0.25);
+}
+
+.btn-outline-secondary {
+    color: var(--erp-text-muted) !important;
+    border-color: var(--erp-border-color) !important;
+    background: #FFFFFF;
+}
+.btn-outline-secondary:hover {
+    background-color: #F8FAFC !important;
+    border-color: #CBD5E1 !important;
+    color: var(--erp-text-main) !important;
+}
+
+.btn-outline-danger {
+    color: var(--erp-danger) !important;
+    border-color: rgba(239, 68, 68, 0.35) !important;
+    background: transparent;
+}
+.btn-outline-danger:hover {
+    background-color: var(--erp-danger) !important;
+    border-color: var(--erp-danger) !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 4px 10px rgba(239, 68, 68, 0.25);
+}
+
+.btn-outline-success {
+    color: var(--erp-success) !important;
+    border-color: rgba(16, 185, 129, 0.35) !important;
+    background: transparent;
+}
+.btn-outline-success:hover {
+    background-color: var(--erp-success) !important;
+    border-color: var(--erp-success) !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 4px 10px rgba(16, 185, 129, 0.25);
+}
+
+.btn-outline-info {
+    color: var(--erp-info) !important;
+    border-color: rgba(6, 182, 212, 0.35) !important;
+    background: transparent;
+}
+.btn-outline-info:hover {
+    background-color: var(--erp-info) !important;
+    border-color: var(--erp-info) !important;
+    color: #FFFFFF !important;
+}
+
+.btn-outline-warning {
+    color: var(--erp-warning) !important;
+    border-color: rgba(245, 158, 11, 0.35) !important;
+    background: transparent;
+}
+.btn-outline-warning:hover {
+    background-color: var(--erp-warning) !important;
+    border-color: var(--erp-warning) !important;
+    color: #FFFFFF !important;
+}
+
+.btn-icon-action {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    border: 1px solid var(--erp-border-color);
+    background: #FFFFFF;
+    color: var(--erp-text-muted);
+    transition: all 0.18s ease;
+    cursor: pointer;
+}
+.btn-icon-action:hover {
+    background: var(--erp-primary);
+    border-color: var(--erp-primary);
+    color: #FFFFFF;
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(67, 97, 238, 0.2);
+}
+.btn-icon-action.btn-action-delete:hover {
+    background: var(--erp-danger);
+    border-color: var(--erp-danger);
+    color: #FFFFFF;
+    box-shadow: 0 3px 8px rgba(239, 68, 68, 0.2);
+}
+.btn-icon-action.btn-action-success:hover {
+    background: var(--erp-success);
+    border-color: var(--erp-success);
+    color: #FFFFFF;
+    box-shadow: 0 3px 8px rgba(16, 185, 129, 0.2);
+}
+
+/* ==========================================================================
+   CMS & Landing Page Hub Card Styles
+   ========================================================================== */
+.cms-hub-card {
+    background: #FFFFFF;
+    border: 1px solid var(--erp-border-color);
+    border-radius: 14px;
+    transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+}
+.cms-hub-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 28px rgba(67, 97, 238, 0.08), 0 4px 10px rgba(0, 0, 0, 0.04);
+    border-color: rgba(67, 97, 238, 0.35);
+}
+.cms-hub-card .cms-icon-box {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    transition: transform 0.2s ease;
+}
+.cms-hub-card:hover .cms-icon-box {
+    transform: scale(1.08);
+}
+.cms-hub-card .cms-title {
+    font-size: 1.02rem;
+    font-weight: 700;
+    color: var(--erp-text-main);
+    margin-bottom: 0.35rem;
+}
+.cms-hub-card .cms-desc {
+    font-size: 0.825rem;
+    color: var(--erp-text-muted);
+    line-height: 1.5;
+    margin-bottom: 1.25rem;
+    flex-grow: 1;
+}
+.cms-hub-card .cms-btn {
+    background: #F8FAFC;
+    border: 1px solid var(--erp-border-color);
+    color: var(--erp-primary);
+    font-weight: 600;
+    font-size: 0.825rem;
+    padding: 0.55rem 1rem;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    text-decoration: none;
+    transition: all 0.18s ease;
+    width: 100%;
+}
+.cms-hub-card .cms-btn i.fa-arrow-right {
+    transition: transform 0.18s ease;
+}
+.cms-hub-card:hover .cms-btn {
+    background: var(--erp-primary);
+    border-color: var(--erp-primary);
+    color: #FFFFFF !important;
+    box-shadow: 0 4px 12px rgba(67, 97, 238, 0.25);
+}
+.cms-hub-card:hover .cms-btn i.fa-arrow-right {
+    transform: translateX(3px);
 }
 
 .btn-secondary-modern,

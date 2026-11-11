@@ -50,9 +50,9 @@
             </ul>
         </div>
         @if(strtolower($invoice->status) !== 'cancelled' && $invoice->status != 'Paid')
-            <form action="{{ route('invoices.convert_to_delivery_note', $invoice) }}" method="POST" style="display:inline;">
+            <form action="{{ route('invoices.convert_to_delivery_note', $invoice) }}" method="POST" style="display:inline;" data-confirm="Are you sure you want to convert this Invoice to Delivery Note?">
                 @csrf
-                <button type="submit" class="btn btn-success d-flex align-items-center fw-medium" onclick="return confirm('Convert this Invoice to Delivery Note?')">
+                <button type="submit" class="btn btn-success d-flex align-items-center fw-medium">
                     <i class="fas fa-exchange-alt me-2"></i> {{ __('Convert to Delivery Note') }}
                 </button>
             </form>

@@ -643,18 +643,33 @@
                 const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
 
                 if (selectedFiles.length + files.length > maxFiles) {
-                    alert(`You can only upload a maximum of ${maxFiles} images.`);
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Upload Limit Exceeded',
+                        text: `You can only upload a maximum of ${maxFiles} images.`,
+                        confirmButtonColor: '#4361EE'
+                    });
                     return;
                 }
 
                 Array.from(files).forEach(file => {
                     if (!allowedTypes.includes(file.type)) {
-                        alert(`${file.name} is not a valid image type.`);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Invalid File Type',
+                            text: `${file.name} is not a valid image type (JPG, PNG, GIF allowed).`,
+                            confirmButtonColor: '#4361EE'
+                        });
                         return;
                     }
 
                     if (file.size > maxSize) {
-                        alert(`${file.name} is too large.`);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'File Too Large',
+                            text: `${file.name} exceeds the 2MB size limit.`,
+                            confirmButtonColor: '#4361EE'
+                        });
                         return;
                     }
 

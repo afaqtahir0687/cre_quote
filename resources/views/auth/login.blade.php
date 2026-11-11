@@ -154,6 +154,15 @@
                     <i class="fas fa-arrow-right ms-1"></i>
                 </button>
             </div>
+
+            @if(Route::has('register'))
+                <div class="mt-3 text-center">
+                    <span class="text-muted small">{{ __("Don't have an account?") }}</span>
+                    <a href="{{ route('register') }}" class="fw-bold text-primary small text-decoration-none ms-1">
+                        {{ __('Get Started Free') }} &rarr;
+                    </a>
+                </div>
+            @endif
         </form>
     </div>
 </div>

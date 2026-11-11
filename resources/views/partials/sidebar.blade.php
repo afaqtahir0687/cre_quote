@@ -107,6 +107,33 @@
                         <span class="submenu-bullet"></span>
                         <span>{{ __('Branding & Mail') }}</span>
                     </a>
+                    <a href="{{ route('super_admin.cms.index') }}" class="submenu-link {{ request()->routeIs('super_admin.cms.*') ? 'active' : '' }}">
+                        <span class="submenu-bullet"></span>
+                        <span class="d-flex align-items-center justify-content-between w-100">
+                            <span>{{ __('Website CMS') }}</span>
+                            <span class="badge bg-primary rounded-pill" style="font-size: 0.65rem;">CMS</span>
+                        </span>
+                    </a>
+                    <a href="{{ route('super_admin.cms.slides.index') }}" class="submenu-link {{ request()->routeIs('super_admin.cms.slides.*') ? 'active' : '' }}">
+                        <span class="submenu-bullet"></span>
+                        <span>{{ __('Hero Slider') }}</span>
+                    </a>
+                    @php
+                        $pendingProposalsCount = class_exists(\App\Models\ProposalRequest::class) ? \App\Models\ProposalRequest::where('status', 'Pending')->count() : 0;
+                    @endphp
+                    <a href="{{ route('super_admin.proposals.index') }}" class="submenu-link {{ request()->routeIs('super_admin.proposals.*') ? 'active' : '' }}">
+                        <span class="submenu-bullet"></span>
+                        <span class="d-flex align-items-center justify-content-between w-100">
+                            <span>{{ __('Proposal Requests') }}</span>
+                            @if($pendingProposalsCount > 0)
+                                <span class="badge bg-warning text-dark rounded-pill" style="font-size: 0.65rem;">{{ $pendingProposalsCount }}</span>
+                            @endif
+                        </span>
+                    </a>
+                    <a href="{{ route('super_admin.cms.proposals.settings') }}" class="submenu-link {{ request()->routeIs('super_admin.cms.proposals.*') ? 'active' : '' }}">
+                        <span class="submenu-bullet"></span>
+                        <span>{{ __('Proposal Settings') }}</span>
+                    </a>
                 </div>
             </div>
         @endif
@@ -240,6 +267,17 @@
                     <span class="submenu-bullet"></span>
                     <span>{{ __('Add Customer') }}</span>
                 </a>
+                @if(auth()->user()->is_super_admin ?? false)
+                    <a href="{{ route('super_admin.proposals.index') }}" class="submenu-link {{ request()->routeIs('super_admin.proposals.*') ? 'active' : '' }}">
+                        <span class="submenu-bullet"></span>
+                        <span class="d-flex align-items-center justify-content-between w-100">
+                            <span>{{ __('Proposal Leads') }}</span>
+                            @if(($pendingProposalsCount ?? 0) > 0)
+                                <span class="badge bg-warning text-dark rounded-pill" style="font-size: 0.65rem;">{{ $pendingProposalsCount }}</span>
+                            @endif
+                        </span>
+                    </a>
+                @endif
             </div>
         </div>
 

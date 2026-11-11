@@ -656,7 +656,12 @@
         form.addEventListener('submit', function(e) {
             if (!form.action || form.action.endsWith('/subscriptions') || form.action.endsWith('/subscriptions/')) {
                 e.preventDefault();
-                alert('Shop not detected. Please close and re-open the popup.');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Shop Not Detected',
+                    text: 'Please close and re-open the popup window.',
+                    confirmButtonColor: '#4361EE'
+                });
                 return false;
             }
         });
@@ -684,10 +689,8 @@
                     }
                 });
             } else {
-                if (confirm('Are you sure you want to ' + actionLabel + '?')) {
-                    statusForm.dataset.confirmed = 'true';
-                    statusForm.submit();
-                }
+                statusForm.dataset.confirmed = 'true';
+                statusForm.submit();
             }
         }
     });

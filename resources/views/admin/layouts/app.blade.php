@@ -218,6 +218,99 @@
             });
         @endif
 
+        /**
+         * Global Native alert() replacement with SweetAlert2
+         * Prevents browser default alert dialogs across the entire admin panel
+         */
+        window.alert = function(msg) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Notice',
+                text: msg,
+                confirmButtonColor: '#4361EE',
+                confirmButtonText: 'OK',
+                customClass: {
+                    popup: 'rounded-4 shadow-lg'
+                }
+            });
+        };
+
+        /**
+         * Global modern SweetAlert confirmation dialog for forms & actions
+         */
+        window.confirmAction = function(options) {
+            var defaults = {
+                title: 'Are you sure?',
+                text: 'Do you really want to proceed with this action?',
+                icon: 'warning',
+                confirmButtonText: 'Yes, proceed',
+                cancelButtonText: 'Cancel',
+                confirmButtonColor: '#4361EE',
+                cancelButtonColor: '#6c757d'
+            };
+            var config = Object.assign({}, defaults, options);
+            return Swal.fire({
+                title: config.title,
+                text: config.text,
+                icon: config.icon,
+                showCancelButton: true,
+                confirmButtonColor: config.confirmButtonColor,
+                cancelButtonColor: config.cancelButtonColor,
+                confirmButtonText: config.confirmButtonText,
+                cancelButtonText: config.cancelButtonText,
+                reverseButtons: true,
+                customClass: {
+                    popup: 'rounded-4 shadow-lg'
+                }
+            });
+        };
+
+        // Automatic Global Confirmation Interceptor for forms with onsubmit or data-confirm
+        document.addEventListener('submit', function(e) {
+            var form = e.target;
+            if (!form || form.tagName !== 'FORM') return;
+
+            // If already confirmed via SweetAlert, let it submit
+            if (form.dataset.swalConfirmed === 'true') {
+                return;
+            }
+
+            var confirmMsg = form.dataset.confirm || null;
+            var isDelete = form.classList.contains('delete-form') || 
+                           (form.querySelector('input[name="_method"]') && form.querySelector('input[name="_method"]').value.toUpperCase() === 'DELETE') ||
+                           form.action.includes('destroy') || form.action.includes('delete');
+
+            if (!confirmMsg && isDelete) {
+                confirmMsg = 'Are you sure you want to delete this record? This action cannot be undone.';
+            }
+
+            if (confirmMsg) {
+                e.preventDefault();
+                e.stopImmediatePropagation();
+
+                Swal.fire({
+                    title: isDelete ? 'Delete Confirmation' : 'Are you sure?',
+                    text: confirmMsg,
+                    icon: isDelete ? 'error' : 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: isDelete ? '#E45B65' : '#4361EE',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: isDelete ? '<i class="fas fa-trash-alt me-1"></i> Yes, Delete' : 'Yes, proceed',
+                    cancelButtonText: 'Cancel',
+                    reverseButtons: true,
+                    customClass: {
+                        popup: 'rounded-4 shadow-lg'
+                    }
+                }).then(function(result) {
+                    if (result.isConfirmed) {
+                        form.dataset.swalConfirmed = 'true';
+                        form.submit();
+                    }
+                });
+                return false;
+            }
+        }, true); // Use capture phase so it runs before any inline submit handlers
+
         // Global form submit loader
         document.addEventListener('submit', function(e) {
             var form = e.target;

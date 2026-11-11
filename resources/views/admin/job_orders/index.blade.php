@@ -141,7 +141,7 @@
                                     </a>
                                 </li>
                                 <li>
-                                    <form action="{{ route('job-orders.cancel', $jobOrder->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to cancel Job Order #{{ $jobOrder->order_number }}? All amounts and totals will be set to 0.00.');">
+                                    <form action="{{ route('job-orders.cancel', $jobOrder->id) }}" method="POST" data-confirm="{{ __('Are you sure you want to cancel Job Order #') }}{{ $jobOrder->order_number }}? {{ __('All amounts and totals will be set to 0.00.') }}">
                                         @csrf
                                         <button type="submit" class="dropdown-item text-danger">
                                             <i class="fas fa-ban me-2"></i> {{ __('Cancel Order') }}

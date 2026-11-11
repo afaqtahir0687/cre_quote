@@ -77,9 +77,20 @@
         @forelse($products as $product)
         <tr class="align-middle">
             <td>
-                <div>
-                    <div class="fw-semibold text-dark text-break" style="font-size: 0.84rem; line-height: 1.3;">{{ tdb($product->name) }}</div>
-                    <div class="text-muted" style="font-size: 0.72rem;">SKU: <span class="font-monospace text-secondary">{{ $product->sku }}</span></div>
+                <div class="d-flex align-items-center gap-3">
+                    @if(!empty($product->image) && file_exists(public_path($product->image)))
+                        <img src="{{ asset($product->image) }}" alt="{{ $product->name }}" 
+                             class="rounded-3 border shadow-xs" 
+                             style="width: 44px; height: 44px; object-fit: cover; flex-shrink: 0;">
+                    @else
+                        <div class="rounded-3 border bg-light d-flex align-items-center justify-content-center text-muted" style="width: 44px; height: 44px; flex-shrink: 0;">
+                            <i class="fas fa-box text-secondary opacity-50"></i>
+                        </div>
+                    @endif
+                    <div>
+                        <div class="fw-semibold text-dark text-break" style="font-size: 0.85rem; line-height: 1.3;">{{ tdb($product->name) }}</div>
+                        <div class="text-muted" style="font-size: 0.72rem;">SKU: <span class="font-monospace text-secondary">{{ $product->sku }}</span></div>
+                    </div>
                 </div>
             </td>
 
@@ -166,7 +177,7 @@
                         <li>
                             <form action="{{ route('products.destroy', $product) }}" method="POST" class="d-inline delete-form">
                                 @csrf @method('DELETE')
-                                <button type="submit" class="dropdown-item py-2 text-danger" onclick="return confirm('{{ __('Are you sure you want to delete this product?') }}')">
+                                <button type="submit" class="dropdown-item py-2 text-danger">
                                     <i class="fas fa-trash-alt me-2"></i> {{ __('Delete') }}
                                 </button>
                             </form>

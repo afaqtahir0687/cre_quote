@@ -82,6 +82,35 @@ class Package extends Model
     }
 
     /**
+     * Official Saudi Riyal exchange rate (1 USD = 3.75 SAR pegged).
+     */
+    public const USD_TO_SAR_RATE = 3.75;
+
+    /**
+     * Get price converted to Saudi Riyal (SAR).
+     */
+    public function getPriceSarAttribute(): float
+    {
+        return round(((float) ($this->price ?? 0)) * self::USD_TO_SAR_RATE, 2);
+    }
+
+    /**
+     * Formatted SAR price string.
+     */
+    public function formattedSarPrice(): string
+    {
+        return number_format($this->price_sar, 2) . ' SAR';
+    }
+
+    /**
+     * Formatted USD price string.
+     */
+    public function formattedUsdPrice(): string
+    {
+        return '$' . number_format((float) ($this->price ?? 0), 2) . ' USD';
+    }
+
+    /**
      * Badge class for UI.
      */
     public function badgeClass(): string
