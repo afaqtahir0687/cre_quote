@@ -56,6 +56,37 @@ Route::get('/clear-cache', function () {
     </div>';
 });
 
+// Seamless asset delivery for uploads (handles live cPanel/shared-hosting root mismatches)
+Route::get('/uploads/{path}', function ($path) {
+    // 1. Check in public/uploads/
+    $publicPath = public_path('uploads/' . $path);
+    if (file_exists($publicPath) && !is_dir($publicPath)) {
+        return response()->file($publicPath, [
+            'Cache-Control' => 'public, max-age=2592000',
+        ]);
+    }
+
+    // 2. Fallback check in root uploads/
+    $rootPath = base_path('uploads/' . $path);
+    if (file_exists($rootPath) && !is_dir($rootPath)) {
+        return response()->file($rootPath, [
+            'Cache-Control' => 'public, max-age=2592000',
+        ]);
+    }
+
+    abort(404);
+})->where('path', '.*');
+
+Route::get('/public/uploads/{path}', function ($path) {
+    $publicPath = public_path('uploads/' . $path);
+    if (file_exists($publicPath) && !is_dir($publicPath)) {
+        return response()->file($publicPath, [
+            'Cache-Control' => 'public, max-age=2592000',
+        ]);
+    }
+    abort(404);
+})->where('path', '.*');
+
 Auth::routes();
 
 Route::group(['middleware' => 'auth'], function () {

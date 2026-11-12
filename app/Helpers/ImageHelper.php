@@ -58,6 +58,16 @@ class ImageHelper
                 // Fallback to basic move if not an image type we can process
                 $originalName = time() . '_' . $file->getClientOriginalName();
                 $file->move($destinationPath, $originalName);
+
+                // Mirror to root destination if base_path contains uploads directory
+                $rootDestinationPath = base_path($destination);
+                if (File::isDirectory(base_path('uploads')) && $rootDestinationPath !== $destinationPath) {
+                    if (!File::exists($rootDestinationPath)) {
+                        File::makeDirectory($rootDestinationPath, 0755, true);
+                    }
+                    @File::copy($destinationPath . '/' . $originalName, $rootDestinationPath . '/' . $originalName);
+                }
+
                 return $originalName;
         }
 
@@ -84,6 +94,15 @@ class ImageHelper
         }
 
         imagedestroy($image);
+
+        // Mirror to root destination if base_path contains uploads directory
+        $rootDestinationPath = base_path($destination);
+        if (File::isDirectory(base_path('uploads')) && $rootDestinationPath !== $destinationPath) {
+            if (!File::exists($rootDestinationPath)) {
+                File::makeDirectory($rootDestinationPath, 0755, true);
+            }
+            @File::copy($targetPath, $rootDestinationPath . '/' . $filename);
+        }
 
         return $filename;
     }

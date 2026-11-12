@@ -3,6 +3,16 @@ Options -Indexes
 <IfModule mod_rewrite.c>
     RewriteEngine On
 
+    # 1. Rewrite requests for /uploads/... to /public/uploads/... if not found in root uploads
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^uploads/(.*)$ public/uploads/$1 [L,NC]
+
+    # 2. Rewrite requests for /assets/, /build/, /css/, /js/ to /public/... if not found in root
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{DOCUMENT_ROOT}/public/$1 -f
+    RewriteRule ^(.*)$ public/$1 [L]
+
+    # 3. Standard Laravel front-controller routing to index.php
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteRule ^ index.php [L]
