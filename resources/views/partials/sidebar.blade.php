@@ -118,6 +118,10 @@
                         <span class="submenu-bullet"></span>
                         <span>{{ __('Hero Slider') }}</span>
                     </a>
+                    <a href="{{ route('super_admin.cms.pages.index') }}" class="submenu-link {{ request()->routeIs('super_admin.cms.pages.*') ? 'active' : '' }}">
+                        <span class="submenu-bullet"></span>
+                        <span>{{ __('Footer & Pages') }}</span>
+                    </a>
                     @php
                         $pendingProposalsCount = class_exists(\App\Models\ProposalRequest::class) ? \App\Models\ProposalRequest::where('status', 'Pending')->count() : 0;
                     @endphp
@@ -286,14 +290,14 @@
             <span>{{ __('Purchase & Inventory') }}</span>
         </div>
 
-        <!-- Products & Services -->
+        <!-- Products -->
         @php $isProdActive = request()->routeIs('products.*'); @endphp
         <div class="menu-item-wrapper">
             <a href="#menuProducts" class="sidebar-link sidebar-parent {{ $isProdActive ? 'active' : 'collapsed' }}"
                data-bs-toggle="collapse" role="button" aria-expanded="{{ $isProdActive ? 'true' : 'false' }}" aria-controls="menuProducts">
                 <div class="sidebar-parent-label">
                     <i class="fas fa-boxes"></i>
-                    <span>{{ __('Product & Services') }}</span>
+                    <span>{{ __('Products') }}</span>
                 </div>
                 <i class="fas fa-chevron-down sidebar-arrow"></i>
             </a>
@@ -304,7 +308,30 @@
                 </a>
                 <a href="{{ route('products.create') }}" class="submenu-link {{ request()->routeIs('products.create') ? 'active' : '' }}">
                     <span class="submenu-bullet"></span>
-                    <span>{{ __('Add Product / Service') }}</span>
+                    <span>{{ __('Add Product') }}</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Dedicated Services Module -->
+        @php $isServActive = request()->routeIs('services.*'); @endphp
+        <div class="menu-item-wrapper">
+            <a href="#menuServices" class="sidebar-link sidebar-parent {{ $isServActive ? 'active' : 'collapsed' }}"
+               data-bs-toggle="collapse" role="button" aria-expanded="{{ $isServActive ? 'true' : 'false' }}" aria-controls="menuServices">
+                <div class="sidebar-parent-label">
+                    <i class="fas fa-concierge-bell"></i>
+                    <span>{{ __('Services') }}</span>
+                </div>
+                <i class="fas fa-chevron-down sidebar-arrow"></i>
+            </a>
+            <div class="collapse sidebar-submenu {{ $isServActive ? 'show' : '' }}" id="menuServices">
+                <a href="{{ route('services.index') }}" class="submenu-link {{ request()->routeIs('services.index') ? 'active' : '' }}">
+                    <span class="submenu-bullet"></span>
+                    <span>{{ __('All Services') }}</span>
+                </a>
+                <a href="{{ route('services.create') }}" class="submenu-link {{ request()->routeIs('services.create') ? 'active' : '' }}">
+                    <span class="submenu-bullet"></span>
+                    <span>{{ __('Add New Service') }}</span>
                 </a>
             </div>
         </div>

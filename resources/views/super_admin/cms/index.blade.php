@@ -355,6 +355,50 @@
         </div>
     </div>
 
+    <!-- 10. Dynamic CMS & Footer Pages -->
+    <div class="col-lg-4 col-md-6">
+        <div class="cms-hub-card" style="border: 2px solid #10B981 !important; box-shadow: 0 10px 25px rgba(16, 185, 129, 0.08) !important;">
+            <div class="p-4 d-flex flex-column h-100">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div class="cms-icon-box" style="background: rgba(16, 185, 129, 0.15); color: #10B981;">
+                        <i class="fas fa-file-invoice"></i>
+                    </div>
+                    <span class="badge bg-success text-white px-2 py-1 rounded-pill small">{{ $stats['pages'] ?? 0 }} Pages</span>
+                </div>
+                <h5 class="cms-title">{{ __('Footer & Dynamic Pages') }}</h5>
+                <p class="cms-desc">{{ __('Manage company pages (About Us, Contact Us) and legal policies (Privacy Policy, Terms, Refund Policy).') }}</p>
+                <div class="mt-auto pt-3 border-top">
+                    <a href="{{ route('super_admin.cms.pages.index') }}" class="cms-btn">
+                        <span><i class="fas fa-edit me-1"></i> {{ __('Manage Pages & Footer') }}</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dedicated Services Catalog Module -->
+    <div class="col-lg-4 col-md-6">
+        <div class="cms-hub-card" style="border: 2px solid #0A6FB7 !important; box-shadow: 0 10px 25px rgba(10, 111, 183, 0.08) !important;">
+            <div class="p-4 d-flex flex-column h-100">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div class="cms-icon-box" style="background: rgba(10, 111, 183, 0.15); color: #0A6FB7;">
+                        <i class="fas fa-concierge-bell"></i>
+                    </div>
+                    <span class="badge bg-primary text-white px-2 py-1 rounded-pill small">{{ class_exists(\App\Models\Service::class) ? \App\Models\Service::count() : 0 }} Services</span>
+                </div>
+                <h5 class="cms-title">{{ __('Services Portfolio') }}</h5>
+                <p class="cms-desc">{{ __('Manage all services across Creativity, Marketing, and Advertising with custom pricing and features.') }}</p>
+                <div class="mt-auto pt-3 border-top">
+                    <a href="{{ route('services.index') }}" class="cms-btn">
+                        <span><i class="fas fa-cogs me-1"></i> {{ __('Manage Services') }}</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- 10. Contact Inquiries -->
     <div class="col-lg-4 col-md-6">
         <div class="cms-hub-card">

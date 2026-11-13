@@ -30,5 +30,16 @@ class AppServiceProvider extends ServiceProvider
                 $view->with('allShops', \App\Models\Shop::orderBy('name')->get());
             }
         });
+
+        // Share categorized services with website views for header dropdown
+        view()->composer('website.*', function ($view) {
+            try {
+                if (\Illuminate\Support\Facades\Schema::hasTable('services')) {
+                    $view->with('websiteServices', \App\Models\Service::active()->orderBy('category')->orderBy('sort_order')->get()->groupBy('category'));
+                }
+            } catch (\Throwable $e) {
+                // Graceful fallback
+            }
+        });
     }
 }

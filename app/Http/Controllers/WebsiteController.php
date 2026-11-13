@@ -24,6 +24,8 @@ use App\Models\HomepageSlide;
 use App\Models\ProposalOption;
 use App\Models\Product;
 use App\Models\Category;
+use App\Models\CmsPage;
+use App\Models\Service;
 use Illuminate\Http\Request;
 
 class WebsiteController extends Controller
@@ -221,10 +223,9 @@ class WebsiteController extends Controller
         $footerNav = CmsNavItem::where('location', 'footer_nav')->active()->get();
         $footerModules = CmsNavItem::where('location', 'footer_modules')->active()->get();
 
-        // 1. Dynamic Services (Products of type 'service')
-        $services = Product::where('type', 'service')
-            ->with(['category', 'unit'])
-            ->get();
+        // 1. Dynamic Dedicated Services (From services table)
+        $services = Service::active()->orderBy('category')->orderBy('sort_order')->get();
+        $servicesByCategory = $services->groupBy('category');
 
         // 2. Dynamic Industry Solutions
         $solutions = CmsSolution::where('is_active', true)
@@ -234,14 +235,83 @@ class WebsiteController extends Controller
         // 3. Dynamic Categories
         $categories = Category::where('status', true)->get();
 
+        // 4. Dynamic Proposal Modal Options
+        $proposalServices = ProposalOption::ofType('service')->active()->get();
+        $proposalLocations = ProposalOption::ofType('location')->active()->get();
+        $proposalGoals = ProposalOption::ofType('goal')->active()->get();
+        $proposalBudgets = ProposalOption::ofType('budget')->active()->get();
+        $proposalTimelines = ProposalOption::ofType('timeline')->active()->get();
+        $proposalSettings = CmsSetting::where('group', 'proposal')->pluck('value', 'key')->toArray();
+
         return view('website.services', compact(
             'settings',
             'headerNav',
             'footerNav',
             'footerModules',
             'services',
+            'servicesByCategory',
             'solutions',
-            'categories'
+            'categories',
+            'proposalServices',
+            'proposalLocations',
+            'proposalGoals',
+            'proposalBudgets',
+            'proposalTimelines',
+            'proposalSettings'
+        ));
+    }
+
+    /**
+     * Display a dedicated inner page for a specific service.
+     */
+    public function serviceDetail($slug)
+    {
+        $settings = CmsSetting::allKeyed();
+        $headerNav = CmsNavItem::where('location', 'header')->active()->get();
+        $footerNav = CmsNavItem::where('location', 'footer_nav')->active()->get();
+        $footerModules = CmsNavItem::where('location', 'footer_modules')->active()->get();
+
+        $service = Service::where('slug', $slug)->first();
+
+        if (!$service) {
+            // Also try matching slug with hyphens or spaces
+            $service = Service::all()->first(function ($s) use ($slug) {
+                return \Illuminate\Support\Str::slug($s->name) === $slug || $s->slug === $slug;
+            });
+        }
+
+        if (!$service) {
+            abort(404, 'Service not found');
+        }
+
+        // Related services in the same department
+        $relatedServices = Service::active()
+            ->where('category', $service->category)
+            ->where('id', '!=', $service->id)
+            ->take(6)
+            ->get();
+
+        // Dynamic Proposal Modal Options
+        $proposalServices = ProposalOption::ofType('service')->active()->get();
+        $proposalLocations = ProposalOption::ofType('location')->active()->get();
+        $proposalGoals = ProposalOption::ofType('goal')->active()->get();
+        $proposalBudgets = ProposalOption::ofType('budget')->active()->get();
+        $proposalTimelines = ProposalOption::ofType('timeline')->active()->get();
+        $proposalSettings = CmsSetting::where('group', 'proposal')->pluck('value', 'key')->toArray();
+
+        return view('website.service_detail', compact(
+            'settings',
+            'headerNav',
+            'footerNav',
+            'footerModules',
+            'service',
+            'relatedServices',
+            'proposalServices',
+            'proposalLocations',
+            'proposalGoals',
+            'proposalBudgets',
+            'proposalTimelines',
+            'proposalSettings'
         ));
     }
 
@@ -287,6 +357,39 @@ class WebsiteController extends Controller
             'footerModules',
             'categories',
             'products'
+        ));
+    }
+
+    /**
+     * Display a dynamic CMS page (e.g., About Us, Privacy Policy, Terms, etc.).
+     */
+    public function showPage(string $slug)
+    {
+        $settings = CmsSetting::allKeyed();
+        $headerNav = CmsNavItem::where('location', 'header')->active()->get();
+        $footerNav = CmsNavItem::where('location', 'footer_nav')->active()->get();
+        $footerModules = CmsNavItem::where('location', 'footer_modules')->active()->get();
+
+        $page = CmsPage::where('slug', $slug)->firstOrFail();
+
+        // If inactive, only allow authenticated super_admin or admin to preview
+        if (!$page->is_active && !auth()->check()) {
+            abort(404);
+        }
+
+        $otherPages = CmsPage::active()->where('id', '!=', $page->id)->get();
+        $companyPages = CmsPage::forFooter('company')->get();
+        $legalPages = CmsPage::forFooter('legal')->get();
+
+        return view('website.page', compact(
+            'page',
+            'settings',
+            'headerNav',
+            'footerNav',
+            'footerModules',
+            'otherPages',
+            'companyPages',
+            'legalPages'
         ));
     }
 }

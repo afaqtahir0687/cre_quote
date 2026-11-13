@@ -22,11 +22,19 @@ use App\Http\Controllers\SuperAdmin\ShopController;
 use App\Http\Controllers\SuperAdmin\UserController as SuperAdminUserController;
 use App\Http\Controllers\SuperAdmin\SubscriptionController as SuperAdminSubscriptionController;
 use App\Http\Controllers\WebsiteController;
+use App\Http\Controllers\ServiceController;
 
 Route::get('/', [WebsiteController::class, 'index'])->name('home');
 Route::get('/services', [WebsiteController::class, 'services'])->name('website.services');
+Route::get('/service/{slug}', [WebsiteController::class, 'serviceDetail'])->name('website.service_detail');
+Route::get('/services/{slug}', [WebsiteController::class, 'serviceDetail']);
 Route::get('/products', [WebsiteController::class, 'products'])->name('website.products');
 Route::get('/products-catalog', [WebsiteController::class, 'products']);
+Route::get('/page/{slug}', [WebsiteController::class, 'showPage'])->name('website.page');
+Route::get('/about-us', fn() => redirect()->route('website.page', 'about-us'));
+Route::get('/privacy-policy', fn() => redirect()->route('website.page', 'privacy-policy'));
+Route::get('/terms-and-conditions', fn() => redirect()->route('website.page', 'terms-conditions'));
+Route::get('/refund-policy', fn() => redirect()->route('website.page', 'refund-policy'));
 Route::post('/contact-us', [WebsiteController::class, 'contactSubmit'])->name('contact.submit');
 Route::post('/submit-proposal', [\App\Http\Controllers\ProposalSubmissionController::class, 'submit'])->name('proposal.submit');
 
@@ -106,6 +114,9 @@ Route::group(['middleware' => 'auth'], function () {
     Route::put('products/{product}', [ProductController::class, 'update']);
     Route::delete('products/{product}', [ProductController::class, 'destroy']);
     Route::post('products', [ProductController::class, 'store']);
+
+    // Dedicated Services Management Module
+    Route::resource('admin/services', ServiceController::class)->names('services');
     Route::resource('categories', CategoryController::class);
     Route::resource('units', UnitController::class);
     Route::resource('quotes', QuoteController::class);
@@ -236,6 +247,10 @@ Route::group(['middleware' => 'auth'], function () {
             Route::resource('faqs', \App\Http\Controllers\SuperAdmin\CmsFaqController::class)->except(['show']);
             Route::resource('nav', \App\Http\Controllers\SuperAdmin\CmsNavController::class)->only(['index', 'store', 'update', 'destroy']);
             
+            // Dynamic CMS Pages Manager
+            Route::post('pages/{page}/toggle-active', [\App\Http\Controllers\SuperAdmin\CmsPageController::class, 'toggleActive'])->name('pages.toggle_active');
+            Route::resource('pages', \App\Http\Controllers\SuperAdmin\CmsPageController::class)->except(['show']);
+
             // Homepage Hero Slider Manager
             Route::post('slides/update-order', [\App\Http\Controllers\SuperAdmin\HomepageSlideController::class, 'updateOrder'])->name('slides.update_order');
             Route::post('slides/reorder', [\App\Http\Controllers\SuperAdmin\HomepageSlideController::class, 'updateOrder'])->name('slides.reorder');

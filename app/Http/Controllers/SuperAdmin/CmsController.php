@@ -36,6 +36,7 @@ class CmsController extends Controller
             'pending_testimonials' => CmsTestimonial::where('is_approved', false)->count(),
             'faqs' => CmsFaq::count(),
             'nav_items' => CmsNavItem::count(),
+            'pages' => class_exists(\App\Models\CmsPage::class) ? \App\Models\CmsPage::count() : 0,
             'unread_messages' => ContactMessage::where('is_read', false)->count(),
         ];
 
