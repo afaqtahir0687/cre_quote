@@ -9,8 +9,8 @@
         $logo = !empty($settings['website_logo']) ? asset($settings['website_logo']) : (platform_logo_url() ?: asset('uploads/logo/crelogics-logo.png'));
         $waNum = preg_replace('/[^0-9]/', '', $settings['whatsapp_number'] ?? '996598500143');
     @endphp
-    <title>{{ $siteTitle }}</title>
-    <meta name="description" content="{{ $siteDesc }}">
+    <title>@hasSection('title')@yield('title')@else{{ $siteTitle }}@endif</title>
+    <meta name="description" content="@hasSection('meta_description')@yield('meta_description')@else{{ $siteDesc }}@endif">
 
     @if($logo)
         <link rel="icon" type="image/png" href="{{ $logo }}">

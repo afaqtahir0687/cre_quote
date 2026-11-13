@@ -370,7 +370,17 @@ class WebsiteController extends Controller
         $footerNav = CmsNavItem::where('location', 'footer_nav')->active()->get();
         $footerModules = CmsNavItem::where('location', 'footer_modules')->active()->get();
 
-        $page = CmsPage::where('slug', $slug)->firstOrFail();
+        $page = CmsPage::where('slug', $slug)->first();
+        if (!$page) {
+            $altSlug = str_contains($slug, '-') ? str_replace('-', '_', $slug) : str_replace('_', '-', $slug);
+            $page = CmsPage::where('slug', $altSlug)->first();
+        }
+        if (!$page && ($slug === 'terms-conditions' || $slug === 'terms-and-conditions')) {
+            $page = CmsPage::whereIn('slug', ['terms-conditions', 'terms-and-conditions'])->first();
+        }
+        if (!$page) {
+            abort(404);
+        }
 
         // If inactive, only allow authenticated super_admin or admin to preview
         if (!$page->is_active && !auth()->check()) {

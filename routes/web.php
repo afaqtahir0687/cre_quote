@@ -34,7 +34,9 @@ Route::get('/page/{slug}', [WebsiteController::class, 'showPage'])->name('websit
 Route::get('/about-us', fn() => redirect()->route('website.page', 'about-us'));
 Route::get('/privacy-policy', fn() => redirect()->route('website.page', 'privacy-policy'));
 Route::get('/terms-and-conditions', fn() => redirect()->route('website.page', 'terms-conditions'));
+Route::get('/terms-conditions', fn() => redirect()->route('website.page', 'terms-conditions'));
 Route::get('/refund-policy', fn() => redirect()->route('website.page', 'refund-policy'));
+Route::get('/contact-us', fn() => redirect()->route('website.page', 'contact-us'));
 Route::post('/contact-us', [WebsiteController::class, 'contactSubmit'])->name('contact.submit');
 Route::post('/submit-proposal', [\App\Http\Controllers\ProposalSubmissionController::class, 'submit'])->name('proposal.submit');
 

@@ -35,14 +35,13 @@
                             @if($isServices && $groupedServices->count() > 0)
                                 <!-- Multi-Level Services Dropdown (crelogics.com structure) -->
                                 <li class="nav-item dropdown services-nav-dropdown">
-                                    <a class="nav-link nav-link-erp dropdown-toggle d-flex align-items-center gap-1 {{ request()->is('services*') ? 'active fw-bold text-primary' : '' }}" 
+                                    <a class="nav-link nav-link-erp dropdown-toggle d-flex align-items-center {{ request()->is('services*') ? 'active fw-bold text-primary' : '' }}" 
                                        href="{{ url('/services') }}" 
                                        id="servicesNavbarDropdown" 
                                        role="button" 
                                        data-bs-toggle="dropdown" 
                                        aria-expanded="false">
                                         <span>Services</span>
-                                        <i class="fas fa-caret-down text-muted" style="font-size: 0.8rem;"></i>
                                     </a>
                                     <ul class="dropdown-menu services-menu-parent border-0 shadow-lg rounded-3" aria-labelledby="servicesNavbarDropdown">
                                         @foreach(['Creativity', 'Marketing', 'Advertising'] as $catKey)
@@ -87,14 +86,13 @@
                         
                         <!-- Fallback Services Dropdown -->
                         <li class="nav-item dropdown services-nav-dropdown">
-                            <a class="nav-link nav-link-erp dropdown-toggle d-flex align-items-center gap-1 {{ request()->is('services*') ? 'active fw-bold text-primary' : '' }}" 
+                            <a class="nav-link nav-link-erp dropdown-toggle d-flex align-items-center {{ request()->is('services*') ? 'active fw-bold text-primary' : '' }}" 
                                href="{{ url('/services') }}" 
                                id="servicesNavbarDropdownFallback" 
                                role="button" 
                                data-bs-toggle="dropdown" 
                                aria-expanded="false">
                                 <span>Services</span>
-                                <i class="fas fa-caret-down text-muted" style="font-size: 0.8rem;"></i>
                             </a>
                             <ul class="dropdown-menu services-menu-parent border-0 shadow-lg rounded-3" aria-labelledby="servicesNavbarDropdownFallback">
                                 @foreach(['Creativity', 'Marketing', 'Advertising'] as $catKey)
@@ -163,6 +161,14 @@
 /* Multi-Level Services Dropdown (crelogics.com style) */
 .services-nav-dropdown {
     position: relative;
+}
+.services-nav-dropdown .dropdown-toggle::after {
+    margin-left: 6px;
+    vertical-align: 0.15em;
+    transition: transform 0.2s ease, color 0.2s ease;
+}
+.services-nav-dropdown:hover .dropdown-toggle::after {
+    color: #FA7436;
 }
 .services-menu-parent {
     min-width: 210px;

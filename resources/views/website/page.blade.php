@@ -1,6 +1,7 @@
 @extends('website.layouts.app')
 
 @section('title', ($page->meta_title ?: $page->title) . ' - ' . ($settings['site_name'] ?? 'CreLogics ERP'))
+@section('meta_description', $page->meta_description ?: ($page->subtitle ?: Str::limit(strip_tags($page->content), 160)))
 
 @push('styles')
 <style>
@@ -274,9 +275,12 @@
                 <h1 class="display-6 fw-bold text-dark mb-2">
                     {{ $page->title }}
                 </h1>
-                @if($page->subtitle)
+                @php
+                    $leadDesc = $page->subtitle ?: $page->meta_description;
+                @endphp
+                @if(!empty($leadDesc))
                     <p class="lead text-muted mb-0" style="font-size: 1.1rem;">
-                        {{ $page->subtitle }}
+                        {{ $leadDesc }}
                     </p>
                 @endif
             </div>
