@@ -7,13 +7,13 @@
 <section class="hero-section py-5 position-relative overflow-hidden" style="background: radial-gradient(circle at 10% 20%, rgba(67, 97, 238, 0.08) 0%, transparent 45%), radial-gradient(circle at 90% 80%, rgba(0, 184, 148, 0.06) 0%, transparent 45%), #FFFFFF;">
     <div class="container py-4 text-center">
         <span class="badge-pill-soft mb-3">
-            <i class="fas fa-boxes text-primary me-1"></i> Products & Materials Catalog
+            <i class="fas fa-boxes text-primary me-1"></i> {{ __('Products & Materials Catalog') }}
         </span>
         <h1 class="section-title text-dark fw-bold mb-3">
-            Premium Signage, Print & <span class="gradient-text-primary">Raw Materials</span>
+            {{ __('Premium Signage, Print &') }} <span class="gradient-text-primary">{{ __('Raw Materials') }}</span>
         </h1>
         <p class="section-subtitle text-muted mx-auto" style="max-width: 720px;">
-            Explore our certified commercial inventory including outdoor flex, acrylic sheets, ACP panels, 3D channel letters, vinyl, and promotional displays.
+            {{ __('Explore our certified commercial inventory including outdoor flex, acrylic sheets, ACP panels, 3D channel letters, vinyl, and promotional displays.') }}
         </p>
 
         <!-- Search Bar -->
@@ -26,9 +26,9 @@
                     <span class="input-group-text bg-white border-0 ps-3 text-muted">
                         <i class="fas fa-search"></i>
                     </span>
-                    <input type="text" name="search" value="{{ request('search') }}" class="form-control border-0 shadow-none" placeholder="Search by product name, SKU or keyword..." style="font-size: 0.95rem;">
+                    <input type="text" name="search" value="{{ request('search') }}" class="form-control border-0 shadow-none" placeholder="{{ __('Search by product name, SKU or keyword...') }}" style="font-size: 0.95rem;">
                     <button class="btn btn-erp-primary px-4 rounded-pill m-1" type="submit">
-                        <span>Search</span>
+                        <span>{{ __('Search') }}</span>
                     </button>
                 </div>
             </form>
@@ -44,13 +44,13 @@
             <a href="{{ url('/products' . (request('search') ? '?search=' . urlencode(request('search')) : '')) }}" 
                class="btn btn-sm rounded-pill px-3 py-2 fw-semibold {{ !request('category') ? 'btn-primary' : 'btn-outline-secondary bg-white' }}"
                style="font-size: 0.85rem;">
-                All Categories
+                {{ __('All Categories') }}
             </a>
             @foreach($categories as $cat)
                 <a href="{{ url('/products?category=' . $cat->id . (request('search') ? '&search=' . urlencode(request('search')) : '')) }}" 
                    class="btn btn-sm rounded-pill px-3 py-2 fw-semibold {{ request('category') == $cat->id ? 'btn-primary' : 'btn-outline-secondary bg-white' }}"
                    style="font-size: 0.85rem;">
-                    {{ $cat->name }}
+                    {{ __($cat->name) }}
                     <span class="badge bg-light text-muted border rounded-pill ms-1">{{ $cat->products_count }}</span>
                 </a>
             @endforeach
@@ -59,15 +59,15 @@
         @if(request('search') || request('category'))
             <div class="d-flex justify-content-between align-items-center mb-4 p-3 bg-white rounded-3 border">
                 <span class="text-muted small">
-                    Showing results for: 
+                    {{ __('Showing results for:') }} 
                     @if(request('search')) <strong>"{{ request('search') }}"</strong> @endif
                     @if(request('category')) 
                         @php $activeCat = $categories->firstWhere('id', request('category')); @endphp
-                        in <strong>{{ $activeCat->name ?? 'Category' }}</strong>
+                        {{ __('in') }} <strong>{{ $activeCat ? __($activeCat->name) : __('Category') }}</strong>
                     @endif
                 </span>
                 <a href="{{ url('/products') }}" class="btn btn-sm btn-outline-danger py-1 px-3 rounded-pill" style="font-size: 0.78rem;">
-                    <i class="fas fa-times me-1"></i> Clear Filters
+                    <i class="fas fa-times me-1"></i> {{ __('Clear Filters') }}
                 </a>
             </div>
         @endif
@@ -89,7 +89,7 @@
                                 </div>
                             @endif
                             <span class="badge-soft badge-soft-primary position-absolute top-0 end-0 m-3" style="font-size: 0.72rem; z-index: 2;">
-                                {{ $product->category->name ?? 'Materials' }}
+                                {{ $product->category ? __($product->category->name) : __('Materials') }}
                             </span>
                         </div>
 
@@ -101,23 +101,23 @@
                                 </span>
                                 @if($product->stock > 0)
                                     <span class="badge-soft badge-soft-success" style="font-size: 0.72rem;">
-                                        <i class="fas fa-check-circle me-1"></i> In Stock ({{ $product->stock }})
+                                        <i class="fas fa-check-circle me-1"></i> {{ __('In Stock') }} ({{ $product->stock }})
                                     </span>
                                 @else
                                     <span class="badge-soft badge-soft-warning" style="font-size: 0.72rem;">
-                                        Custom Order
+                                        {{ __('Custom Order') }}
                                     </span>
                                 @endif
                             </div>
 
                             <h5 class="fw-bold text-dark mt-2 mb-2 fs-6" style="line-height: 1.35;">{{ $product->name }}</h5>
                             <p class="text-muted small mb-3 flex-grow-1" style="font-size: 0.84rem; line-height: 1.5;">
-                                {{ Str::limit($product->description, 75) ?: 'Industrial grade certified material engineered for architectural and commercial signage.' }}
+                                {{ Str::limit($product->description, 75) ?: __('Industrial grade certified material engineered for architectural and commercial signage.') }}
                             </p>
 
                             <div class="mt-auto pt-3 border-top d-flex justify-content-between align-items-center">
                                 <div>
-                                    <span class="text-muted extra-small d-block" style="font-size: 0.72rem;">Rate / Unit:</span>
+                                    <span class="text-muted extra-small d-block" style="font-size: 0.72rem;">{{ __('Rate / Unit:') }}</span>
                                     <strong class="text-primary fs-5">{{ format_currency($product->sale_price ?: $product->price) }}</strong>
                                     <span class="text-muted extra-small" style="font-size: 0.75rem;">/ {{ $product->unit->name ?? 'pc' }}</span>
                                 </div>
@@ -125,7 +125,7 @@
                                    target="_blank" 
                                    class="btn-erp-secondary btn-sm px-3 py-2"
                                    title="Inquire via WhatsApp">
-                                    <i class="fab fa-whatsapp text-success me-1"></i> Inquire
+                                    <i class="fab fa-whatsapp text-success me-1"></i> {{ __('Inquire') }}
                                 </a>
                             </div>
                         </div>
@@ -135,10 +135,10 @@
                 <div class="col-12 text-center py-5">
                     <div class="p-4 rounded-4 bg-white border mx-auto shadow-sm" style="max-width: 480px;">
                         <i class="fas fa-search fa-3x text-muted opacity-50 mb-3"></i>
-                        <h5 class="fw-bold text-dark">No Products Found</h5>
-                        <p class="text-muted small mb-3">No products matched your selected criteria or search term.</p>
+                        <h5 class="fw-bold text-dark">{{ __('No Products Found') }}</h5>
+                        <p class="text-muted small mb-3">{{ __('No products matched your selected criteria or search term.') }}</p>
                         <a href="{{ url('/products') }}" class="btn-erp-primary btn-sm px-4">
-                            View All Products
+                            {{ __('View All Products') }}
                         </a>
                     </div>
                 </div>
@@ -158,15 +158,15 @@
         <div class="p-4 p-lg-5 rounded-4 border shadow-sm" style="background: linear-gradient(135deg, #F8FAFC 0%, #EDF2F7 100%);">
             <div class="row align-items-center g-4">
                 <div class="col-lg-8">
-                    <span class="badge-soft badge-soft-primary mb-2">Custom Dimensions Supported</span>
-                    <h3 class="fw-bold text-dark mb-2">Need Custom Cut Sizing or Square Feet Billing?</h3>
+                    <span class="badge-soft badge-soft-primary mb-2">{{ __('Custom Dimensions Supported') }}</span>
+                    <h3 class="fw-bold text-dark mb-2">{{ __('Need Custom Cut Sizing or Square Feet Billing?') }}</h3>
                     <p class="text-muted mb-0" style="line-height: 1.6;">
-                        Our CreLogics automated dimension calculator calculates width &times; height area formulas, waste margins, edge welding, and frame fabrication automatically on every quotation.
+                        {{ __('Our CreLogics automated dimension calculator calculates width × height area formulas, waste margins, edge welding, and frame fabrication automatically on every quotation.') }}
                     </p>
                 </div>
                 <div class="col-lg-4 text-lg-end">
                     <a href="{{ url('/#contact') }}" class="btn-erp-primary px-4 py-3">
-                        <i class="fas fa-calculator me-2"></i> Request Custom Cut Quote
+                        <i class="fas fa-calculator me-2"></i> {{ __('Request Custom Cut Quote') }}
                     </a>
                 </div>
             </div>

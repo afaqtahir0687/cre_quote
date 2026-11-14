@@ -55,23 +55,23 @@
                             @if(!empty($slide->badge_text))
                                 <div class="mb-3 d-inline-block">
                                     <span class="badge-pill-soft">
-                                        <i class="fas fa-sparkles text-primary me-1"></i> {{ $slide->badge_text }}
+                                        <i class="fas fa-sparkles text-primary me-1"></i> {{ __($slide->badge_text) }}
                                     </span>
                                 </div>
                             @endif
 
                             <!-- Main Bold Headline -->
                             <h1 class="hero-heading text-center">
-                                {{ $slide->heading }}
+                                {{ __($slide->heading) }}
                                 @if(!empty($slide->heading_highlight))
-                                    <span class="gradient-text d-block d-sm-inline">{{ $slide->heading_highlight }}</span>
+                                    <span class="gradient-text d-block d-sm-inline">{{ __($slide->heading_highlight) }}</span>
                                 @endif
                             </h1>
 
                             <!-- Subheading / Description -->
                             @if(!empty($slide->description))
                                 <p class="hero-lead text-center mx-auto mb-4" style="max-width: 680px;">
-                                    {{ $slide->description }}
+                                    {{ __($slide->description) }}
                                 </p>
                             @endif
 
@@ -81,23 +81,23 @@
                                     <button type="button" class="btn-erp-orange btn-lg shadow-lg pulse-btn"
                                         data-bs-toggle="modal" data-bs-target="#proposalModal"
                                         style="padding: 13px 34px; font-size: 1.05rem;">
-                                        <span>{{ $slide->primary_btn_text ?: 'GET YOUR FREE PROPOSAL' }}</span>
+                                        <span>{{ __($slide->primary_btn_text ?: 'GET YOUR FREE PROPOSAL') }}</span>
                                         <i class="fas fa-arrow-right ms-2"></i>
                                     </button>
                                 @else
                                     @auth
                                         <a href="{{ route('dashboard') }}" class="btn-erp-primary">
-                                            <i class="fas fa-th-large me-1"></i> {{ $slide->primary_btn_text ?: 'Open ERP Portal' }}
+                                            <i class="fas fa-th-large me-1"></i> {{ __($slide->primary_btn_text ?: 'Open ERP Portal') }}
                                         </a>
                                     @else
                                         @if(Route::has('register') && $slide->primary_btn_url === '/register')
                                             <a href="{{ route('register') }}" class="btn-erp-primary">
-                                                <span>{{ $slide->primary_btn_text ?: 'Get Started' }}</span>
+                                                <span>{{ __($slide->primary_btn_text ?: 'Get Started') }}</span>
                                                 <i class="fas fa-arrow-right ms-1"></i>
                                             </a>
                                         @else
                                             <a href="{{ url($slide->primary_btn_url ?: '/dashboard') }}" class="btn-erp-primary">
-                                                <span>{{ $slide->primary_btn_text ?: 'Open ERP Portal' }}</span>
+                                                <span>{{ __($slide->primary_btn_text ?: 'Open ERP Portal') }}</span>
                                                 <i class="fas fa-arrow-right ms-1"></i>
                                             </a>
                                         @endif
@@ -106,7 +106,7 @@
 
                                 @if(!empty($slide->secondary_btn_text))
                                     <a href="{{ url($slide->secondary_btn_url ?: '#modules') }}" class="btn-erp-secondary">
-                                        <i class="fas fa-compass text-primary me-1"></i> {{ $slide->secondary_btn_text }}
+                                        <i class="fas fa-compass text-primary me-1"></i> {{ __($slide->secondary_btn_text) }}
                                     </a>
                                 @endif
                             </div>
@@ -115,7 +115,7 @@
                             @if(count($bullets) > 0)
                                 <div class="hero-trust-bullets justify-content-center">
                                     @foreach($bullets as $bullet)
-                                        <span><i class="fas fa-check-circle text-success"></i> {{ $bullet }}</span>
+                                        <span><i class="fas fa-check-circle text-success"></i> {{ __($bullet) }}</span>
                                     @endforeach
                                 </div>
                             @endif

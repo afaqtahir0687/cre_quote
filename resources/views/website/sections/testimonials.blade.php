@@ -8,9 +8,9 @@
 <section class="testimonials-section py-5 bg-light-soft position-relative" id="testimonials">
     <div class="container py-4">
         <div class="text-center mb-4">
-            <span class="section-tag">Verified Customer Reviews</span>
-            <h2 class="section-title">{{ $testTitle }}</h2>
-            <p class="section-subtitle">{{ $testSub }}</p>
+            <span class="section-tag">{{ __('Verified Customer Reviews') }}</span>
+            <h2 class="section-title">{{ __($testTitle) }}</h2>
+            <p class="section-subtitle">{{ __($testSub) }}</p>
         </div>
 
         <div class="row g-4 justify-content-center">
@@ -23,16 +23,16 @@
                             @endfor
                         </div>
                         <p class="text-muted flex-grow-1" style="font-size: 0.95rem; line-height: 1.6;">
-                            "{{ $t->content }}"
+                            "{{ __($t->content) }}"
                         </p>
                         <div class="d-flex align-items-center gap-3 pt-3 border-top mt-auto">
                             <div class="rounded-circle bg-primary-subtle text-primary fw-bold d-flex align-items-center justify-content-center" style="width: 44px; height: 44px; font-size: 1.1rem; flex-shrink: 0;">
                                 {{ substr($t->name, 0, 1) }}
                             </div>
                             <div>
-                                <h6 class="fw-bold text-dark mb-0">{{ $t->name }}</h6>
+                                <h6 class="fw-bold text-dark mb-0">{{ __($t->name) }}</h6>
                                 <div class="text-muted small">
-                                    {{ $t->designation ? $t->designation . ' • ' : '' }}<strong>{{ $t->company }}</strong>
+                                    {{ $t->designation ? __($t->designation) . ' • ' : '' }}<strong>{{ __($t->company) }}</strong>
                                 </div>
                             </div>
                         </div>

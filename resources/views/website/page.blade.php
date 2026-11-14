@@ -250,9 +250,9 @@
         <!-- Breadcrumb -->
         <nav aria-label="breadcrumb" class="mb-3">
             <ol class="breadcrumb cms-breadcrumb mb-0">
-                <li class="breadcrumb-item"><a href="{{ route('home') }}"><i class="fas fa-home me-1"></i> Home</a></li>
-                <li class="breadcrumb-item"><a href="{{ route('home') }}#footer">Pages</a></li>
-                <li class="breadcrumb-item active text-dark fw-bold" aria-current="page">{{ $page->title }}</li>
+                <li class="breadcrumb-item"><a href="{{ route('home') }}"><i class="fas fa-home me-1"></i> {{ __('Home') }}</a></li>
+                <li class="breadcrumb-item"><a href="{{ route('home') }}#footer">{{ __('Pages') }}</a></li>
+                <li class="breadcrumb-item active text-dark fw-bold" aria-current="page">{{ __($page->title) }}</li>
             </ol>
         </nav>
 
@@ -261,33 +261,33 @@
                 <div class="d-inline-flex align-items-center gap-2 mb-2">
                     <span class="badge px-3 py-1 rounded-pill fw-semibold text-uppercase" style="background: rgba(250, 116, 54, 0.12); color: #FA7436; border: 1px solid rgba(250, 116, 54, 0.25); font-size: 0.75rem; letter-spacing: 0.05em;">
                         @if($page->footer_column === 'company')
-                            <i class="fas fa-building me-1"></i> Company
+                            <i class="fas fa-building me-1"></i> {{ __('Company') }}
                         @elseif($page->footer_column === 'legal')
-                            <i class="fas fa-balance-scale me-1"></i> Legal & Policy
+                            <i class="fas fa-balance-scale me-1"></i> {{ __('Legal & Policy') }}
                         @else
-                            <i class="fas fa-file-alt me-1"></i> Information
+                            <i class="fas fa-file-alt me-1"></i> {{ __('Information') }}
                         @endif
                     </span>
                     <span class="text-muted small">
-                        <i class="far fa-clock me-1"></i> Updated {{ $page->updated_at->format('M d, Y') }}
+                        <i class="far fa-clock me-1"></i> {{ __('Updated') }} {{ $page->updated_at->format('M d, Y') }}
                     </span>
                 </div>
                 <h1 class="display-6 fw-bold text-dark mb-2">
-                    {{ $page->title }}
+                    {{ __($page->title) }}
                 </h1>
                 @php
                     $leadDesc = $page->subtitle ?: $page->meta_description;
                 @endphp
                 @if(!empty($leadDesc))
                     <p class="lead text-muted mb-0" style="font-size: 1.1rem;">
-                        {{ $leadDesc }}
+                        {{ __($leadDesc) }}
                     </p>
                 @endif
             </div>
 
             <div class="col-lg-4 text-lg-end">
                 <a href="{{ route('register') }}" class="btn-crelogics-cta">
-                    <i class="fas fa-rocket me-1"></i> Start 7-Day Free Trial
+                    <i class="fas fa-rocket me-1"></i> {{ __('Start 7-Day Free Trial') }}
                 </a>
             </div>
         </div>
@@ -315,10 +315,10 @@
                                         <div style="width: 44px; height: 44px; border-radius: 12px; background: rgba(10, 111, 183, 0.12); color: #0A6FB7; display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
                                             <i class="fas fa-bullseye"></i>
                                         </div>
-                                        <h4 class="m-0 fw-bold text-dark" style="font-size: 1.2rem;">Our Mission</h4>
+                                        <h4 class="m-0 fw-bold text-dark" style="font-size: 1.2rem;">{{ __('Our Mission') }}</h4>
                                     </div>
                                     <p class="text-muted m-0" style="line-height: 1.7;">
-                                        To empower manufacturers and custom-order businesses with transparent, automated workflows that turn slow quotes into signed contracts, streamline shop floor production, and deliver real-time financial profitability.
+                                        {{ __('To empower manufacturers and custom-order businesses with transparent, automated workflows that turn slow quotes into signed contracts, streamline shop floor production, and deliver real-time financial profitability.') }}
                                     </p>
                                 </div>
                             </div>
@@ -328,10 +328,10 @@
                                         <div style="width: 44px; height: 44px; border-radius: 12px; background: rgba(250, 116, 54, 0.12); color: #FA7436; display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
                                             <i class="fas fa-eye"></i>
                                         </div>
-                                        <h4 class="m-0 fw-bold text-dark" style="font-size: 1.2rem;">Our Vision</h4>
+                                        <h4 class="m-0 fw-bold text-dark" style="font-size: 1.2rem;">{{ __('Our Vision') }}</h4>
                                     </div>
                                     <p class="text-muted m-0" style="line-height: 1.7;">
-                                        To become the global gold standard ERP for personalized production, providing an intuitive, multi-branch platform accessible on any device with zero cumbersome installation.
+                                        {{ __('To become the global gold standard ERP for personalized production, providing an intuitive, multi-branch platform accessible on any device with zero cumbersome installation.') }}
                                     </p>
                                 </div>
                             </div>
@@ -343,8 +343,8 @@
                                 <div class="d-flex align-items-start gap-3 p-3 rounded-3" style="background: #FFFFFF; border: 1px solid #EDF2F7;">
                                     <i class="fas fa-check-circle text-success fs-5 mt-1"></i>
                                     <div>
-                                        <h5 class="fw-bold text-dark mb-1" style="font-size: 1rem;">Lightning-Fast Quotations</h5>
-                                        <p class="text-muted small m-0">Generate polished, branded PDF quotes with accurate square-foot or unit pricing in under 60 seconds.</p>
+                                        <h5 class="fw-bold text-dark mb-1" style="font-size: 1rem;">{{ __('Lightning-Fast Quotations') }}</h5>
+                                        <p class="text-muted small m-0">{{ __('Generate polished, branded PDF quotes with accurate square-foot or unit pricing in under 60 seconds.') }}</p>
                                     </div>
                                 </div>
                             </div>
@@ -352,8 +352,8 @@
                                 <div class="d-flex align-items-start gap-3 p-3 rounded-3" style="background: #FFFFFF; border: 1px solid #EDF2F7;">
                                     <i class="fas fa-check-circle text-success fs-5 mt-1"></i>
                                     <div>
-                                        <h5 class="fw-bold text-dark mb-1" style="font-size: 1rem;">Complete Job Order Tracking</h5>
-                                        <p class="text-muted small m-0">From pre-press artwork proofing to fabrication, quality check, and dispatch delivery notes.</p>
+                                        <h5 class="fw-bold text-dark mb-1" style="font-size: 1rem;">{{ __('Complete Job Order Tracking') }}</h5>
+                                        <p class="text-muted small m-0">{{ __('From pre-press artwork proofing to fabrication, quality check, and dispatch delivery notes.') }}</p>
                                     </div>
                                 </div>
                             </div>
@@ -361,8 +361,8 @@
                                 <div class="d-flex align-items-start gap-3 p-3 rounded-3" style="background: #FFFFFF; border: 1px solid #EDF2F7;">
                                     <i class="fas fa-check-circle text-success fs-5 mt-1"></i>
                                     <div>
-                                        <h5 class="fw-bold text-dark mb-1" style="font-size: 1rem;">Multi-Branch & Central Control</h5>
-                                        <p class="text-muted small m-0">Manage multiple shop outlets or workshops from a single centralized dashboard with branch-level permissions.</p>
+                                        <h5 class="fw-bold text-dark mb-1" style="font-size: 1rem;">{{ __('Multi-Branch & Central Control') }}</h5>
+                                        <p class="text-muted small m-0">{{ __('Manage multiple shop outlets or workshops from a single centralized dashboard with branch-level permissions.') }}</p>
                                     </div>
                                 </div>
                             </div>
@@ -370,8 +370,8 @@
                                 <div class="d-flex align-items-start gap-3 p-3 rounded-3" style="background: #FFFFFF; border: 1px solid #EDF2F7;">
                                     <i class="fas fa-check-circle text-success fs-5 mt-1"></i>
                                     <div>
-                                        <h5 class="fw-bold text-dark mb-1" style="font-size: 1rem;">99.9% Cloud Reliability</h5>
-                                        <p class="text-muted small m-0">Bank-grade data encryption, automated offsite backups, and high-availability cloud hosting.</p>
+                                        <h5 class="fw-bold text-dark mb-1" style="font-size: 1rem;">{{ __('99.9% Cloud Reliability') }}</h5>
+                                        <p class="text-muted small m-0">{{ __('Bank-grade data encryption, automated offsite backups, and high-availability cloud hosting.') }}</p>
                                     </div>
                                 </div>
                             </div>
@@ -379,9 +379,9 @@
 
                         <!-- Global Operations Banner in Code -->
                         <div class="p-4 rounded-4 mt-4 text-white" style="background: linear-gradient(135deg, #17243A 0%, #1e3a5f 100%);">
-                            <h4 class="fw-bold text-white mb-2">Global Operations & Support</h4>
+                            <h4 class="fw-bold text-white mb-2">{{ __('Global Operations & Support') }}</h4>
                             <p class="text-white-50 mb-3" style="line-height: 1.7;">
-                                CreLogics maintains active technology engineering and customer success operations across Pakistan and the United States, providing around-the-clock implementation support, training, and custom workflow consultations.
+                                {{ __('CreLogics maintains active technology engineering and customer success operations across Pakistan and the United States, providing around-the-clock implementation support, training, and custom workflow consultations.') }}
                             </p>
                             <div class="d-flex flex-wrap gap-4 text-white small">
                                 <div><i class="fas fa-map-marker-alt text-warning me-2"></i><strong>Lahore, Pakistan:</strong> Airline Housing Society</div>
@@ -400,10 +400,10 @@
                                 <div class="card border-0 shadow-sm p-4 h-100 rounded-4" style="background: #FFFFFF; border: 1px solid #E2E8F0 !important;">
                                     <div class="d-flex align-items-center gap-3 mb-3">
                                         <span class="badge px-3 py-2 text-white fw-bold" style="background: #16A579; font-size: 0.85rem; border-radius: 8px;">
-                                            PAKISTAN HEADQUARTERS
+                                            {{ __('PAKISTAN HEADQUARTERS') }}
                                         </span>
                                     </div>
-                                    <h5 class="fw-bold text-dark mb-3">Lahore Commercial Office</h5>
+                                    <h5 class="fw-bold text-dark mb-3">{{ __('Lahore Commercial Office') }}</h5>
                                     <p class="text-muted mb-3" style="line-height: 1.6;">
                                         <i class="fas fa-map-marked-alt text-primary me-2"></i>
                                         First Floor, Building No. 184-Commercial,<br>
@@ -425,10 +425,10 @@
                                 <div class="card border-0 shadow-sm p-4 h-100 rounded-4" style="background: #FFFFFF; border: 1px solid #E2E8F0 !important;">
                                     <div class="d-flex align-items-center gap-3 mb-3">
                                         <span class="badge px-3 py-2 text-white fw-bold" style="background: #FA7436; font-size: 0.85rem; border-radius: 8px;">
-                                            UNITED STATES OFFICE
+                                            {{ __('UNITED STATES OFFICE') }}
                                         </span>
                                     </div>
-                                    <h5 class="fw-bold text-dark mb-3">Montana Regional Hub</h5>
+                                    <h5 class="fw-bold text-dark mb-3">{{ __('Montana Regional Hub') }}</h5>
                                     <p class="text-muted mb-3" style="line-height: 1.6;">
                                         <i class="fas fa-map-marked-alt text-primary me-2"></i>
                                         KALISPELL, MT 59901 USA.
@@ -447,21 +447,21 @@
 
                         <!-- Direct Support Channels in Code -->
                         <div class="p-4 rounded-4 my-4" style="background: #F1F5F9;">
-                            <h4 class="fw-bold text-dark mb-3" style="font-size: 1.15rem;">Fast Support Channels</h4>
+                            <h4 class="fw-bold text-dark mb-3" style="font-size: 1.15rem;">{{ __('Fast Support Channels') }}</h4>
                             <div class="row g-3">
                                 <div class="col-md-4">
                                     <a href="https://wa.me/923451438102" target="_blank" class="btn-action-whatsapp w-100 py-3">
-                                        <i class="fab fa-whatsapp fs-5"></i> Chat on WhatsApp
+                                        <i class="fab fa-whatsapp fs-5"></i> {{ __('Chat on WhatsApp') }}
                                     </a>
                                 </div>
                                 <div class="col-md-4">
                                     <a href="mailto:info@crelogics.com" class="btn-action-email w-100 py-3">
-                                        <i class="fas fa-envelope fs-5"></i> Send Email
+                                        <i class="fas fa-envelope fs-5"></i> {{ __('Send Email') }}
                                     </a>
                                 </div>
                                 <div class="col-md-4">
                                     <a href="{{ route('home') }}#contact" class="btn-action-orange w-100 py-3">
-                                        <i class="fas fa-paper-plane fs-5"></i> Submit Web Inquiry
+                                        <i class="fas fa-paper-plane fs-5"></i> {{ __('Submit Web Inquiry') }}
                                     </a>
                                 </div>
                             </div>
@@ -472,11 +472,11 @@
                     <div class="mt-5 pt-4 border-top d-flex flex-wrap align-items-center justify-content-between gap-3 text-muted small">
                         <div>
                             <i class="fas fa-check-shield text-success me-1"></i>
-                            Official Documentation &bull; <strong>CreLogics Cloud ERP</strong>
+                            {{ __('Official Documentation') }} &bull; <strong>CreLogics Cloud ERP</strong>
                         </div>
                         <div class="d-flex align-items-center gap-2">
                             <a href="{{ route('home') }}" class="text-decoration-none text-muted">
-                                <i class="fas fa-arrow-left me-1"></i> Back to Homepage
+                                <i class="fas fa-arrow-left me-1"></i> {{ __('Back to Homepage') }}
                             </a>
                         </div>
                     </div>
@@ -492,7 +492,7 @@
                 @if($allActivePages->count() > 0)
                     <div class="cms-sidebar-widget">
                         <h5 class="fw-bold text-dark mb-3" style="font-size: 1.05rem;">
-                            <i class="fas fa-book-open text-primary me-2"></i> Company & Legal Pages
+                            <i class="fas fa-book-open text-primary me-2"></i> {{ __('Company & Legal Pages') }}
                         </h5>
                         <div class="cms-nav-list">
                             @foreach($allActivePages as $p)
@@ -505,7 +505,7 @@
                                         @else
                                             <i class="fas fa-file-alt text-muted me-2" style="font-size: 0.85rem;"></i>
                                         @endif
-                                        {{ $p->title }}
+                                        {{ __($p->title) }}
                                     </span>
                                     <i class="fas fa-chevron-right fa-xs"></i>
                                 </a>
@@ -517,16 +517,16 @@
                 <!-- 2. Fast Help & Regional Support Widget -->
                 <div class="cms-sidebar-widget">
                     <h5 class="fw-bold text-dark mb-3" style="font-size: 1.05rem;">
-                        <i class="fas fa-phone-volume text-success me-2"></i> Need Direct Assistance?
+                        <i class="fas fa-phone-volume text-success me-2"></i> {{ __('Need Direct Assistance?') }}
                     </h5>
                     <p class="text-muted small mb-3">
-                        Our regional support engineers are available across Pakistan and USA time zones.
+                        {{ __('Our regional support engineers are available across Pakistan and USA time zones.') }}
                     </p>
 
                     <!-- Pakistan Contact -->
                     <div class="p-3 rounded-3 mb-2" style="background: #F8FAFC; border: 1px solid #E2E8F0;">
                         <div class="d-flex align-items-center justify-content-between mb-1">
-                            <span class="badge bg-success-subtle text-success fw-bold" style="font-size: 0.7rem;">PAKISTAN</span>
+                            <span class="badge bg-success-subtle text-success fw-bold" style="font-size: 0.7rem;">{{ __('PAKISTAN') }}</span>
                             <span class="text-muted small">+92 3451438102</span>
                         </div>
                         <div class="small text-muted">First Floor, Bldg 184-Commercial, Airline Housing, Lahore</div>
@@ -535,7 +535,7 @@
                     <!-- USA Contact -->
                     <div class="p-3 rounded-3 mb-3" style="background: #F8FAFC; border: 1px solid #E2E8F0;">
                         <div class="d-flex align-items-center justify-content-between mb-1">
-                            <span class="badge bg-primary-subtle text-primary fw-bold" style="font-size: 0.7rem;">USA</span>
+                            <span class="badge bg-primary-subtle text-primary fw-bold" style="font-size: 0.7rem;">{{ __('USA') }}</span>
                             <span class="text-muted small">+14062251210</span>
                         </div>
                         <div class="small text-muted">KALISPELL, MT 59901 USA</div>
@@ -543,7 +543,7 @@
 
                     <div class="d-grid gap-2">
                         <a href="https://wa.me/923451438102" target="_blank" class="btn-action-whatsapp w-100 py-2">
-                            <i class="fab fa-whatsapp me-1"></i> WhatsApp Live Chat
+                            <i class="fab fa-whatsapp me-1"></i> {{ __('Chat on WhatsApp') }}
                         </a>
                         <a href="mailto:info@crelogics.com" class="btn-action-email w-100 py-2">
                             <i class="fas fa-envelope me-1"></i> info@crelogics.com
@@ -556,12 +556,12 @@
                     <div class="mb-3" style="width: 52px; height: 52px; border-radius: 50%; background: rgba(250, 116, 54, 0.2); color: #FA7436; display: inline-flex; align-items: center; justify-content: center; font-size: 1.5rem;">
                         <i class="fas fa-gift"></i>
                     </div>
-                    <h5 class="fw-bold text-white mb-2">7-Day Free Trial</h5>
+                    <h5 class="fw-bold text-white mb-2">{{ __('7-Day Free Trial') }}</h5>
                     <p class="text-white-50 small mb-4">
-                        Experience quotes, job sheets, delivery notes, and multi-branch features without any commitment.
+                        {{ __('Experience quotes, job sheets, delivery notes, and multi-branch features without any commitment.') }}
                     </p>
                     <a href="{{ route('register') }}" class="btn-crelogics-cta w-100 py-3">
-                        Create Free Account
+                        {{ __('Create Free Account') }}
                     </a>
                 </div>
             </div>

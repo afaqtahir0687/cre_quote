@@ -8,9 +8,9 @@
     <div class="container">
         <!-- Section Header -->
         <div class="text-center">
-            <span class="section-tag">Common Inquiries</span>
-            <h2 class="section-title">{{ $faqTitle }}</h2>
-            <p class="section-subtitle">{{ $faqSub }}</p>
+            <span class="section-tag">{{ __('Common Inquiries') }}</span>
+            <h2 class="section-title">{{ __($faqTitle) }}</h2>
+            <p class="section-subtitle">{{ __($faqSub) }}</p>
         </div>
 
         <div class="row justify-content-center mt-3">
@@ -18,15 +18,15 @@
                 @forelse($faqs as $f)
                     <div class="faq-card">
                         <div class="faq-header">
-                            <span>{{ $f->question }}</span>
+                            <span>{{ __($f->question) }}</span>
                             <div class="faq-icon"><i class="fas fa-chevron-down"></i></div>
                         </div>
                         <div class="faq-content">
-                            {{ $f->answer }}
+                            {{ __($f->answer) }}
                         </div>
                     </div>
                 @empty
-                    <div class="text-center text-muted">No FAQs found.</div>
+                    <div class="text-center text-muted">{{ __('No FAQs found.') }}</div>
                 @endforelse
             </div>
         </div>

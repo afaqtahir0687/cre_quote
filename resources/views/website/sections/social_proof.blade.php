@@ -14,24 +14,24 @@
                 <!-- Verified Network Pill -->
                 <div class="mb-3">
                     <span class="badge bg-primary-subtle text-primary border px-3 py-1 rounded-pill fw-bold" style="font-size: 0.8rem;">
-                        <i class="fas fa-shield-alt me-1"></i> Verified Business Network
+                        <i class="fas fa-shield-alt me-1"></i> {{ __('Verified Business Network') }}
                     </span>
                 </div>
 
                 <!-- Main Dynamic Headline -->
                 <h2 class="crelogics-proof-title mb-2">
-                    Join <span class="counter-highlight" data-count="{{ $businessCount }}">{{ $businessCount }}+</span> {{ $headingEntity }}
+                    {{ __('Join') }} <span class="counter-highlight" data-count="{{ $businessCount }}">{{ $businessCount }}+</span> {{ __($headingEntity) }}
                 </h2>
                 
                 <p class="crelogics-proof-subtitle text-muted mb-3 mx-auto" style="max-width: 520px;">
-                    {{ $proofSub }}
+                    {{ __($proofSub) }}
                 </p>
 
                 <!-- Dynamic Verified Client Badges (From Database) -->
                 @if(isset($customers) && $customers->count() > 0)
                     <div class="verified-clients-row d-none d-md-flex align-items-center justify-content-center gap-2 mb-3">
                         <span class="badge bg-light text-muted border px-2 py-1 rounded-pill" style="font-size: 0.72rem;">
-                            <i class="fas fa-check-circle text-success me-1"></i> Verified Clients:
+                            <i class="fas fa-check-circle text-success me-1"></i> {{ __('Verified Clients:') }}
                         </span>
                         @foreach($customers->take(4) as $client)
                             <span class="badge bg-white text-dark border px-2 py-1 rounded-pill shadow-xs" style="font-size: 0.72rem;">
@@ -45,18 +45,18 @@
                 <div>
                     @auth
                         <a href="{{ route('dashboard') }}" class="btn-erp-primary btn-sm px-4 py-2 rounded-pill">
-                            <span>Open ERP Portal</span>
+                            <span>{{ __('Open ERP Portal') }}</span>
                             <i class="fas fa-arrow-right ms-1"></i>
                         </a>
                     @else
                         @if(Route::has('register'))
                             <a href="{{ route('register') }}" class="btn-erp-primary btn-sm px-4 py-2 rounded-pill">
-                                <span>Start 7-Day Free Trial</span>
+                                <span>{{ __('Start 7-Day Free Trial') }}</span>
                                 <i class="fas fa-arrow-right ms-1"></i>
                             </a>
                         @else
                             <a href="{{ route('login') }}" class="btn-erp-primary btn-sm px-4 py-2 rounded-pill">
-                                <span>Sign In to Get Started</span>
+                                <span>{{ __('Sign In to Get Started') }}</span>
                                 <i class="fas fa-arrow-right ms-1"></i>
                             </a>
                         @endif

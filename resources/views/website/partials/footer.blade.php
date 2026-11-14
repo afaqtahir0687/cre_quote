@@ -29,61 +29,61 @@
 
             <!-- Col 2: Dynamic Company Pages -->
             <div class="col-lg-2 col-md-3 col-6">
-                <h5 class="footer-col-title">Company</h5>
+                <h5 class="footer-col-title">{{ __('Company') }}</h5>
                 <ul class="footer-links">
                     @if($cmsCompanyPages->count() > 0)
                         @foreach($cmsCompanyPages as $cPage)
                             <li>
                                 <a href="{{ route('website.page', $cPage->slug) }}">
-                                    {{ $cPage->title }}
+                                    {{ __($cPage->title) }}
                                 </a>
                             </li>
                         @endforeach
                     @else
-                        <li><a href="{{ route('website.page', 'about-us') }}">About Us</a></li>
-                        <li><a href="{{ route('website.page', 'contact-us') }}">Contact Us</a></li>
+                        <li><a href="{{ route('website.page', 'about-us') }}">{{ __('About Us') }}</a></li>
+                        <li><a href="{{ route('website.page', 'contact-us') }}">{{ __('Contact Us') }}</a></li>
                     @endif
-                    <li><a href="{{ url('/services') }}">Services</a></li>
-                    <li><a href="{{ url('/products') }}">Products Catalog</a></li>
+                    <li><a href="{{ url('/services') }}">{{ __('Services') }}</a></li>
+                    <li><a href="{{ url('/products') }}">{{ __('Products Catalog') }}</a></li>
                 </ul>
             </div>
 
             <!-- Col 3: ERP Solutions & Modules -->
             <div class="col-lg-2 col-md-3 col-6">
-                <h5 class="footer-col-title">Solutions</h5>
+                <h5 class="footer-col-title">{{ __('Solutions') }}</h5>
                 <ul class="footer-links">
                     @if(isset($footerModules) && $footerModules->count() > 0)
                         @foreach($footerModules as $fmod)
-                            <li><a href="{{ $fmod->url }}">{{ $fmod->label }}</a></li>
+                            <li><a href="{{ $fmod->url }}">{{ __($fmod->label) }}</a></li>
                         @endforeach
                     @else
-                        <li><a href="{{ route('home') }}#modules">Job Orders</a></li>
-                        <li><a href="{{ route('home') }}#modules">Quotations</a></li>
-                        <li><a href="{{ route('home') }}#modules">Invoices</a></li>
-                        <li><a href="{{ route('home') }}#modules">Delivery Notes</a></li>
-                        <li><a href="{{ route('home') }}#modules">Multi-Branch</a></li>
+                        <li><a href="{{ route('home') }}#modules">{{ __('Job Orders') }}</a></li>
+                        <li><a href="{{ route('home') }}#modules">{{ __('Quotations') }}</a></li>
+                        <li><a href="{{ route('home') }}#modules">{{ __('Invoices') }}</a></li>
+                        <li><a href="{{ route('home') }}#modules">{{ __('Delivery Notes') }}</a></li>
+                        <li><a href="{{ route('home') }}#modules">{{ __('Multi-Branch') }}</a></li>
                     @endif
                 </ul>
             </div>
 
             <!-- Col 4: Dynamic Legal & Policies -->
             <div class="col-lg-2 col-md-4 col-6">
-                <h5 class="footer-col-title">Legal & Trust</h5>
+                <h5 class="footer-col-title">{{ __('Legal & Trust') }}</h5>
                 <ul class="footer-links">
                     @if($cmsLegalPages->count() > 0)
                         @foreach($cmsLegalPages as $lPage)
                             <li>
                                 <a href="{{ route('website.page', $lPage->slug) }}">
-                                    {{ $lPage->title }}
+                                    {{ __($lPage->title) }}
                                 </a>
                             </li>
                         @endforeach
                     @else
-                        <li><a href="{{ route('website.page', 'privacy-policy') }}">Privacy Policy</a></li>
-                        <li><a href="{{ route('website.page', 'terms-conditions') }}">Terms & Conditions</a></li>
-                        <li><a href="{{ route('website.page', 'refund-policy') }}">Refund Policy</a></li>
+                        <li><a href="{{ route('website.page', 'privacy-policy') }}">{{ __('Privacy Policy') }}</a></li>
+                        <li><a href="{{ route('website.page', 'terms-conditions') }}">{{ __('Terms & Conditions') }}</a></li>
+                        <li><a href="{{ route('website.page', 'refund-policy') }}">{{ __('Refund Policy') }}</a></li>
                     @endif
-                    <li><a href="{{ route('home') }}#faq">Help & FAQ</a></li>
+                    <li><a href="{{ route('home') }}#faq">{{ __('Help & FAQ') }}</a></li>
                 </ul>
             </div>
 
@@ -91,16 +91,16 @@
             <div class="col-lg-3 col-md-8 col-12">
                 <div class="footer-contact-info-widget">
                     <h5 class="footer-col-title mb-3" style="font-size: 1.15rem; font-weight: 800; color: #FFFFFF; letter-spacing: -0.01em;">
-                        Contact Information
+                        {{ __('Contact Information') }}
                     </h5>
 
                     <!-- Regional Pill Switcher (Pakistan & USA) -->
                     <div class="footer-region-pills d-flex align-items-center gap-2 mb-3">
                         <button type="button" class="region-pill-btn active" data-region="pk">
-                            PAKISTAN
+                            {{ __('PAKISTAN') }}
                         </button>
                         <button type="button" class="region-pill-btn" data-region="usa">
-                            USA
+                            {{ __('USA') }}
                         </button>
                     </div>
 

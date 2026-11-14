@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ app()->getLocale() }}">
+<html lang="{{ app()->getLocale() }}" dir="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,10 +16,10 @@
         <link rel="icon" type="image/png" href="{{ $logo }}">
     @endif
 
-    <!-- Google Fonts: Inter & Caveat (for hand-drawn Odoo style notes) -->
+    <!-- Google Fonts: Inter, Cairo (Arabic) & Caveat -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Inter:wght@300;400;500;600;700;800&family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
     <!-- Bootstrap 5 CSS (Local first, CDN fallback) -->
     <link rel="stylesheet" href="{{ asset('assets/vendor/bootstrap/css/bootstrap.min.css') }}">
@@ -31,6 +31,46 @@
 
     <!-- Crelogics ERP Landing Page Styles -->
     <link rel="stylesheet" href="{{ asset('assets/website/css/landing.css') }}?v={{ @filemtime(public_path('assets/website/css/landing.css')) ?: time() }}">
+
+    @if(app()->getLocale() === 'ar')
+        <!-- Bootstrap 5 RTL CSS & Arabic Typography Overrides -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
+        <style>
+            body, h1, h2, h3, h4, h5, h6, .nav-link, .btn, p, span, a, input, select, textarea {
+                font-family: 'Cairo', 'Inter', -apple-system, sans-serif !important;
+            }
+            /* Multi-Level Services Dropdown RTL */
+            .services-flyout-submenu {
+                left: auto !important;
+                right: 100% !important;
+            }
+            .services-flyout-link i.fa-caret-right {
+                transform: rotate(180deg) !important;
+            }
+            .fa-arrow-right, .fa-chevron-right {
+                transform: scaleX(-1);
+            }
+            .services-sub-item-link:hover {
+                padding-left: 18px !important;
+                padding-right: 22px !important;
+            }
+            .dropdown-menu-end {
+                right: auto !important;
+                left: 0 !important;
+            }
+            .text-lg-end {
+                text-align: right !important;
+            }
+            .breadcrumb-item + .breadcrumb-item::before {
+                float: right !important;
+                padding-left: 0.5rem;
+                padding-right: 0;
+            }
+            .cms-nav-item-link:hover {
+                transform: translateX(-5px) !important;
+            }
+        </style>
+    @endif
 
     @stack('styles')
 </head>

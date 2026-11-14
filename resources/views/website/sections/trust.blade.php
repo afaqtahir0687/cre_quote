@@ -1,12 +1,12 @@
 <section class="trust-section">
     <div class="container">
         <div class="text-center mb-4">
-            <span class="section-tag">Enterprise Value</span>
+            <span class="section-tag">{{ __('Enterprise Value') }}</span>
             <h3 class="fw-bold mb-2" style="font-size: 1.5rem; color: var(--clr-secondary);">
-                Everything Your Business Needs, Centralized in One Unified System
+                {{ __('Everything Your Business Needs, Centralized in One Unified System') }}
             </h3>
             <p class="text-muted mb-0" style="font-size: 0.95rem;">
-                Built from the ground up to solve daily operational bottlenecks, reduce manual entry errors, and accelerate cash flow.
+                {{ __('Built from the ground up to solve daily operational bottlenecks, reduce manual entry errors, and accelerate cash flow.') }}
             </p>
         </div>
 
@@ -18,8 +18,8 @@
                         <i class="fas fa-store-alt"></i>
                     </div>
                     <div>
-                        <h4 class="trust-title">Multi-Shop & Branches</h4>
-                        <p class="trust-desc">Operate multiple business branches with one master admin login and isolated branch staff data.</p>
+                        <h4 class="trust-title">{{ __('Multi-Shop & Branches') }}</h4>
+                        <p class="trust-desc">{{ __('Operate multiple business branches with one master admin login and isolated branch staff data.') }}</p>
                     </div>
                 </div>
             </div>
@@ -31,8 +31,8 @@
                         <i class="fas fa-random"></i>
                     </div>
                     <div>
-                        <h4 class="trust-title">1-Click Pipeline</h4>
-                        <p class="trust-desc">Instantly convert accepted Quotations into Job Orders, then to Sales Invoices and Delivery Notes.</p>
+                        <h4 class="trust-title">{{ __('1-Click Pipeline') }}</h4>
+                        <p class="trust-desc">{{ __('Instantly convert accepted Quotations into Job Orders, then to Sales Invoices and Delivery Notes.') }}</p>
                     </div>
                 </div>
             </div>
@@ -44,8 +44,8 @@
                         <i class="fas fa-calculator"></i>
                     </div>
                     <div>
-                        <h4 class="trust-title">Size & Meter Pricing</h4>
-                        <p class="trust-desc">Engineered for businesses needing area, size, square meters, custom units, and tax calculation.</p>
+                        <h4 class="trust-title">{{ __('Size & Meter Pricing') }}</h4>
+                        <p class="trust-desc">{{ __('Engineered for businesses needing area, size, square meters, custom units, and tax calculation.') }}</p>
                     </div>
                 </div>
             </div>
@@ -57,8 +57,8 @@
                         <i class="fas fa-file-invoice-dollar"></i>
                     </div>
                     <div>
-                        <h4 class="trust-title">Customer Ledger & PDFs</h4>
-                        <p class="trust-desc">Auto-generate client statements, record partial cash payments, and generate branded PDF invoices.</p>
+                        <h4 class="trust-title">{{ __('Customer Ledger & PDFs') }}</h4>
+                        <p class="trust-desc">{{ __('Auto-generate client statements, record partial cash payments, and generate branded PDF invoices.') }}</p>
                     </div>
                 </div>
             </div>

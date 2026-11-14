@@ -20,10 +20,10 @@
                             <span class="badge-brand-pill">
                                 CRELOGICS
                             </span>
-                            <span class="text-white-50 small fw-semibold" id="stepCounterText">Step 1 of 4</span>
+                            <span class="text-white-50 small fw-semibold" id="stepCounterText">{{ __('Step 1 of 4') }}</span>
                         </div>
                         <h6 class="modal-title fw-bold text-white mb-0" id="proposalModalLabel" style="font-size: 1.05rem; letter-spacing: -0.01em;">
-                            {{ $modalTitle }}
+                            {{ __($modalTitle) }}
                         </h6>
                     </div>
                 </div>
@@ -33,10 +33,10 @@
             <!-- Sleek Modern Progress Bar & Step Tracker -->
             <div class="proposal-progress-wrap bg-light border-bottom px-4 py-2">
                 <div class="d-flex justify-content-between text-muted mb-1" style="font-size: 0.72rem; font-weight: 700; letter-spacing: 0.02em;" id="stepIndicatorLabels">
-                    <span class="step-label active" data-step="1"><i class="fas fa-circle-dot me-1"></i>1. Service</span>
-                    <span class="step-label" data-step="2"><i class="far fa-circle me-1"></i>2. Goals</span>
-                    <span class="step-label" data-step="3"><i class="far fa-circle me-1"></i>3. Budget</span>
-                    <span class="step-label" data-step="4"><i class="far fa-circle me-1"></i>4. Contact</span>
+                    <span class="step-label active" data-step="1"><i class="fas fa-circle-dot me-1"></i>{{ __('1. Service') }}</span>
+                    <span class="step-label" data-step="2"><i class="far fa-circle me-1"></i>{{ __('2. Goals') }}</span>
+                    <span class="step-label" data-step="3"><i class="far fa-circle me-1"></i>{{ __('3. Budget') }}</span>
+                    <span class="step-label" data-step="4"><i class="far fa-circle me-1"></i>{{ __('4. Contact') }}</span>
                 </div>
                 <div class="progress" style="height: 5px; border-radius: 10px; background-color: #E2E8F0;">
                     <div class="progress-bar" id="proposalProgressBar" role="progressbar" style="width: 25%; background: linear-gradient(90deg, #0A6FB7, #FF8300); border-radius: 10px; transition: width 0.3s ease;"></div>
@@ -51,8 +51,8 @@
                     <!-- STEP 1: PRIMARY SERVICE -->
                     <div class="proposal-step" id="proposalStep1">
                         <div class="text-center mb-3">
-                            <h6 class="fw-bold text-dark mb-1" style="font-size: 1.05rem;">What service are you interested in?</h6>
-                            <p class="text-muted small mb-0" style="font-size: 0.82rem;">Select your primary focus area to get an accurate estimate.</p>
+                            <h6 class="fw-bold text-dark mb-1" style="font-size: 1.05rem;">{{ __('What service are you interested in?') }}</h6>
+                            <p class="text-muted small mb-0" style="font-size: 0.82rem;">{{ __('Select your primary focus area to get an accurate estimate.') }}</p>
                         </div>
 
                         <!-- 2-Column Service Selection Cards -->
@@ -66,7 +66,7 @@
                                                     <i class="{{ $srv->icon ?: 'fas fa-check' }}"></i>
                                                 </div>
                                                 <div class="flex-grow-1 text-truncate">
-                                                    <div class="fw-bold text-dark small text-truncate" style="font-size: 0.82rem;">{{ $srv->name }}</div>
+                                                    <div class="fw-bold text-dark small text-truncate" style="font-size: 0.82rem;">{{ __($srv->name) }}</div>
                                                 </div>
                                                 <div class="service-radio-check" style="font-size: 0.85rem;">
                                                     <i class="far fa-circle text-muted check-empty"></i>
@@ -77,10 +77,10 @@
                                     </div>
                                 @endforeach
                             @else
-                                <div class="col-6"><div class="proposal-service-card p-2 rounded-3 cursor-pointer" data-value="SEO"><div class="fw-bold small">SEO</div></div></div>
-                                <div class="col-6"><div class="proposal-service-card p-2 rounded-3 cursor-pointer" data-value="Google Ads"><div class="fw-bold small">Google Ads</div></div></div>
-                                <div class="col-6"><div class="proposal-service-card p-2 rounded-3 cursor-pointer" data-value="Social Media"><div class="fw-bold small">Social Media</div></div></div>
-                                <div class="col-6"><div class="proposal-service-card p-2 rounded-3 cursor-pointer" data-value="Web Design"><div class="fw-bold small">Web Design</div></div></div>
+                                <div class="col-6"><div class="proposal-service-card p-2 rounded-3 cursor-pointer" data-value="SEO"><div class="fw-bold small">{{ __('SEO') }}</div></div></div>
+                                <div class="col-6"><div class="proposal-service-card p-2 rounded-3 cursor-pointer" data-value="Google Ads"><div class="fw-bold small">{{ __('Google Ads') }}</div></div></div>
+                                <div class="col-6"><div class="proposal-service-card p-2 rounded-3 cursor-pointer" data-value="Social Media"><div class="fw-bold small">{{ __('Social Media') }}</div></div></div>
+                                <div class="col-6"><div class="proposal-service-card p-2 rounded-3 cursor-pointer" data-value="Web Design"><div class="fw-bold small">{{ __('Web Design') }}</div></div></div>
                             @endif
                         </div>
 
@@ -90,160 +90,160 @@
                                 <option value="" disabled selected>{{ __('Or select service from dropdown...') }}</option>
                                 @if(isset($proposalServices) && $proposalServices->count() > 0)
                                     @foreach($proposalServices as $srv)
-                                        <option value="{{ $srv->name }}">{{ $srv->name }}</option>
+                                        <option value="{{ $srv->name }}">{{ __($srv->name) }}</option>
                                     @endforeach
                                 @else
-                                    <option value="SEO">SEO</option>
-                                    <option value="Google Ads">Google Ads</option>
-                                    <option value="Social Media">Social Media</option>
-                                    <option value="Web Design">Web Design</option>
+                                    <option value="SEO">{{ __('SEO') }}</option>
+                                    <option value="Google Ads">{{ __('Google Ads') }}</option>
+                                    <option value="Social Media">{{ __('Social Media') }}</option>
+                                    <option value="Web Design">{{ __('Web Design') }}</option>
                                 @endif
                             </select>
-                            <div class="invalid-feedback small" id="step1Error">Please choose a service to proceed.</div>
+                            <div class="invalid-feedback small" id="step1Error">{{ __('Please choose a service to proceed.') }}</div>
                         </div>
                     </div>
 
                     <!-- STEP 2: LOCATION & CAMPAIGN GOALS -->
                     <div class="proposal-step d-none" id="proposalStep2">
                         <div class="text-center mb-3">
-                            <h6 class="fw-bold text-dark mb-1" style="font-size: 1.05rem;">Target Location & Goals</h6>
-                            <p class="text-muted small mb-0" style="font-size: 0.82rem;">Tell us where your market is and what you want to achieve.</p>
+                            <h6 class="fw-bold text-dark mb-1" style="font-size: 1.05rem;">{{ __('Target Location & Goals') }}</h6>
+                            <p class="text-muted small mb-0" style="font-size: 0.82rem;">{{ __('Tell us where your market is and what you want to achieve.') }}</p>
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label fw-bold text-dark small mb-1">
-                                <i class="fas fa-map-marker-alt text-danger me-1"></i> Customer Location <span class="text-danger">*</span>
+                                <i class="fas fa-map-marker-alt text-danger me-1"></i> {{ __('Customer Location') }} <span class="text-danger">*</span>
                             </label>
                             <select name="customer_location" id="proposalLocationSelect" class="form-select form-control-erp" required>
-                                <option value="" disabled selected>Select location...</option>
+                                <option value="" disabled selected>{{ __('Select location...') }}</option>
                                 @if(isset($proposalLocations) && $proposalLocations->count() > 0)
                                     @foreach($proposalLocations as $loc)
-                                        <option value="{{ $loc->name }}">{{ $loc->name }}</option>
+                                        <option value="{{ $loc->name }}">{{ __($loc->name) }}</option>
                                     @endforeach
                                 @else
-                                    <option value="Saudi Arabia (KSA)">Saudi Arabia (KSA)</option>
-                                    <option value="United Arab Emirates (UAE)">United Arab Emirates (UAE)</option>
-                                    <option value="Gulf / GCC Countries">Gulf / GCC Countries</option>
-                                    <option value="USA & Canada">USA & Canada</option>
-                                    <option value="UK & Europe">UK & Europe</option>
-                                    <option value="Global / International">Global / International</option>
+                                    <option value="Saudi Arabia (KSA)">{{ __('Saudi Arabia (KSA)') }}</option>
+                                    <option value="United Arab Emirates (UAE)">{{ __('United Arab Emirates (UAE)') }}</option>
+                                    <option value="Gulf / GCC Countries">{{ __('Gulf / GCC Countries') }}</option>
+                                    <option value="USA & Canada">{{ __('USA & Canada') }}</option>
+                                    <option value="UK & Europe">{{ __('UK & Europe') }}</option>
+                                    <option value="Global / International">{{ __('Global / International') }}</option>
                                 @endif
                             </select>
-                            <div class="invalid-feedback small">Please select target location.</div>
+                            <div class="invalid-feedback small">{{ __('Please select target location.') }}</div>
                         </div>
 
                         <div class="mb-2">
                             <label class="form-label fw-bold text-dark small mb-1">
-                                <i class="fas fa-bullseye text-primary me-1"></i> Primary Campaign Goal <span class="text-danger">*</span>
+                                <i class="fas fa-bullseye text-primary me-1"></i> {{ __('Primary Campaign Goal') }} <span class="text-danger">*</span>
                             </label>
                             <select name="campaign_goal" id="proposalGoalSelect" class="form-select form-control-erp" required>
-                                <option value="" disabled selected>Select goal...</option>
+                                <option value="" disabled selected>{{ __('Select goal...') }}</option>
                                 @if(isset($proposalGoals) && $proposalGoals->count() > 0)
                                     @foreach($proposalGoals as $goal)
-                                        <option value="{{ $goal->name }}">{{ $goal->name }}</option>
+                                        <option value="{{ $goal->name }}">{{ __($goal->name) }}</option>
                                     @endforeach
                                 @else
-                                    <option value="Generate High-Quality Leads">Generate High-Quality Leads</option>
-                                    <option value="Boost Online Sales & Revenue">Boost Online Sales & Revenue</option>
-                                    <option value="Improve Search Engine Rankings (SEO)">Improve Search Engine Rankings (SEO)</option>
-                                    <option value="Build Brand Awareness">Build Brand Awareness</option>
+                                    <option value="Generate High-Quality Leads">{{ __('Generate High-Quality Leads') }}</option>
+                                    <option value="Boost Online Sales & Revenue">{{ __('Boost Online Sales & Revenue') }}</option>
+                                    <option value="Improve Search Engine Rankings (SEO)">{{ __('Improve Search Engine Rankings (SEO)') }}</option>
+                                    <option value="Build Brand Awareness">{{ __('Build Brand Awareness') }}</option>
                                 @endif
                             </select>
-                            <div class="invalid-feedback small">Please select campaign goal.</div>
+                            <div class="invalid-feedback small">{{ __('Please select campaign goal.') }}</div>
                         </div>
                     </div>
 
                     <!-- STEP 3: BUDGET & TIMELINE -->
                     <div class="proposal-step d-none" id="proposalStep3">
                         <div class="text-center mb-3">
-                            <h6 class="fw-bold text-dark mb-1" style="font-size: 1.05rem;">Budget & Timeline</h6>
-                            <p class="text-muted small mb-0" style="font-size: 0.82rem;">Helps us propose the optimal scope and milestone plan.</p>
+                            <h6 class="fw-bold text-dark mb-1" style="font-size: 1.05rem;">{{ __('Budget & Timeline') }}</h6>
+                            <p class="text-muted small mb-0" style="font-size: 0.82rem;">{{ __('Helps us propose the optimal scope and milestone plan.') }}</p>
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label fw-bold text-dark small mb-1">
-                                <i class="fas fa-wallet text-success me-1"></i> Approximate Monthly Budget <span class="text-danger">*</span>
+                                <i class="fas fa-wallet text-success me-1"></i> {{ __('Approximate Monthly Budget') }} <span class="text-danger">*</span>
                             </label>
                             <select name="monthly_budget" id="proposalBudgetSelect" class="form-select form-control-erp" required>
-                                <option value="" disabled selected>Select budget...</option>
+                                <option value="" disabled selected>{{ __('Select budget...') }}</option>
                                 @if(isset($proposalBudgets) && $proposalBudgets->count() > 0)
                                     @foreach($proposalBudgets as $bgt)
-                                        <option value="{{ $bgt->name }}">{{ $bgt->name }}</option>
+                                        <option value="{{ $bgt->name }}">{{ __($bgt->name) }}</option>
                                     @endforeach
                                 @else
-                                    <option value="Under $1,000 / month">Under $1,000 / month</option>
-                                    <option value="$1,000 – $2,500 / month">$1,000 – $2,500 / month</option>
-                                    <option value="$2,500 – $5,000 / month">$2,500 – $5,000 / month</option>
-                                    <option value="$5,000 – $10,000 / month">$5,000 – $10,000 / month</option>
-                                    <option value="$10,000+ / Enterprise Scale">$10,000+ / Enterprise Scale</option>
+                                    <option value="Under $1,000 / month">{{ __('Under $1,000 / month') }}</option>
+                                    <option value="$1,000 – $2,500 / month">{{ __('$1,000 – $2,500 / month') }}</option>
+                                    <option value="$2,500 – $5,000 / month">{{ __('$2,500 – $5,000 / month') }}</option>
+                                    <option value="$5,000 – $10,000 / month">{{ __('$5,000 – $10,000 / month') }}</option>
+                                    <option value="$10,000+ / Enterprise Scale">{{ __('$10,000+ / Enterprise Scale') }}</option>
                                 @endif
                             </select>
-                            <div class="invalid-feedback small">Please select budget range.</div>
+                            <div class="invalid-feedback small">{{ __('Please select budget range.') }}</div>
                         </div>
 
                         <div class="mb-2">
                             <label class="form-label fw-bold text-dark small mb-1">
-                                <i class="fas fa-bolt text-warning me-1"></i> When to Get Started? <span class="text-danger">*</span>
+                                <i class="fas fa-bolt text-warning me-1"></i> {{ __('When to Get Started?') }} <span class="text-danger">*</span>
                             </label>
                             <select name="starting_timeline" id="proposalTimelineSelect" class="form-select form-control-erp" required>
-                                <option value="" disabled selected>Select starting timeline...</option>
+                                <option value="" disabled selected>{{ __('Select starting timeline...') }}</option>
                                 @if(isset($proposalTimelines) && $proposalTimelines->count() > 0)
                                     @foreach($proposalTimelines as $tml)
-                                        <option value="{{ $tml->name }}">{{ $tml->name }}</option>
+                                        <option value="{{ $tml->name }}">{{ __($tml->name) }}</option>
                                     @endforeach
                                 @else
-                                    <option value="Immediately">Immediately (Ready now)</option>
-                                    <option value="Within 1 to 2 Weeks">Within 1 to 2 Weeks</option>
-                                    <option value="Next Month">Next Month</option>
-                                    <option value="Exploring Options">Exploring Options & Researching</option>
+                                    <option value="Immediately">{{ __('Immediately') }}</option>
+                                    <option value="Within 1 to 2 Weeks">{{ __('Within 1 to 2 Weeks') }}</option>
+                                    <option value="Next Month">{{ __('Next Month') }}</option>
+                                    <option value="Exploring Options">{{ __('Exploring Options') }}</option>
                                 @endif
                             </select>
-                            <div class="invalid-feedback small">Please specify timeline.</div>
+                            <div class="invalid-feedback small">{{ __('Please specify timeline.') }}</div>
                         </div>
                     </div>
 
                     <!-- STEP 4: CONTACT INFORMATION -->
                     <div class="proposal-step d-none" id="proposalStep4">
                         <div class="text-center mb-3">
-                            <h6 class="fw-bold text-dark mb-1" style="font-size: 1.05rem;">Where Should We Send Your Proposal?</h6>
-                            <p class="text-muted small mb-0" style="font-size: 0.82rem;">Our senior strategist will review and email your proposal within 24 hours.</p>
+                            <h6 class="fw-bold text-dark mb-1" style="font-size: 1.05rem;">{{ __('Where Should We Send Your Proposal?') }}</h6>
+                            <p class="text-muted small mb-0" style="font-size: 0.82rem;">{{ __('Our senior strategist will review and email your proposal within 24 hours.') }}</p>
                         </div>
 
                         <div class="row g-2 mb-2">
                             <div class="col-6">
-                                <label class="form-label fw-bold text-dark small mb-1">First Name <span class="text-danger">*</span></label>
+                                <label class="form-label fw-bold text-dark small mb-1">{{ __('First Name') }} <span class="text-danger">*</span></label>
                                 <input type="text" name="first_name" id="propFirstName" class="form-control form-control-erp" placeholder="John" required>
-                                <div class="invalid-feedback small">Required.</div>
+                                <div class="invalid-feedback small">{{ __('Required.') }}</div>
                             </div>
                             <div class="col-6">
-                                <label class="form-label fw-bold text-dark small mb-1">Last Name <span class="text-danger">*</span></label>
+                                <label class="form-label fw-bold text-dark small mb-1">{{ __('Last Name') }} <span class="text-danger">*</span></label>
                                 <input type="text" name="last_name" id="propLastName" class="form-control form-control-erp" placeholder="Doe" required>
-                                <div class="invalid-feedback small">Required.</div>
+                                <div class="invalid-feedback small">{{ __('Required.') }}</div>
                             </div>
                         </div>
 
                         <div class="row g-2 mb-2">
                             <div class="col-6">
-                                <label class="form-label fw-bold text-dark small mb-1">Email <span class="text-danger">*</span></label>
+                                <label class="form-label fw-bold text-dark small mb-1">{{ __('Email') }} <span class="text-danger">*</span></label>
                                 <input type="email" name="email" id="propEmail" class="form-control form-control-erp" placeholder="john@example.com" required>
-                                <div class="invalid-feedback small">Valid email required.</div>
+                                <div class="invalid-feedback small">{{ __('Valid email required.') }}</div>
                             </div>
                             <div class="col-6">
-                                <label class="form-label fw-bold text-dark small mb-1">Phone <span class="text-danger">*</span></label>
+                                <label class="form-label fw-bold text-dark small mb-1">{{ __('Phone') }} <span class="text-danger">*</span></label>
                                 <input type="tel" name="phone" id="propPhone" class="form-control form-control-erp" placeholder="+966 50 123 4567" required>
-                                <div class="invalid-feedback small">Phone required.</div>
+                                <div class="invalid-feedback small">{{ __('Phone required.') }}</div>
                             </div>
                         </div>
 
                         <div class="mb-2">
-                            <label class="form-label fw-bold text-dark small mb-1">Website URL (Optional)</label>
+                            <label class="form-label fw-bold text-dark small mb-1">{{ __('Website URL (Optional)') }}</label>
                             <input type="url" name="website_url" id="propWebsite" class="form-control form-control-erp" placeholder="https://example.com">
                         </div>
 
                         <div class="p-2 rounded-3 bg-light border d-flex align-items-center gap-2 mt-3">
                             <i class="fas fa-lock text-success" style="font-size: 0.85rem;"></i>
                             <span class="text-muted" style="font-size: 0.74rem;">
-                                100% Free & confidential. No spam, guaranteed.
+                                {{ __('100% Free & confidential. No spam, guaranteed.') }}
                             </span>
                         </div>
                     </div>
@@ -253,16 +253,16 @@
                         <div class="rounded-circle d-inline-flex align-items-center justify-content-center text-white mb-3" style="width: 60px; height: 60px; background: var(--clr-accent, #00B894); box-shadow: 0 8px 20px rgba(0, 184, 148, 0.35);">
                             <i class="fas fa-check fs-4"></i>
                         </div>
-                        <h5 class="fw-bold text-dark mb-1" style="font-size: 1.2rem;">Proposal Request Submitted!</h5>
+                        <h5 class="fw-bold text-dark mb-1" style="font-size: 1.2rem;">{{ __('Proposal Request Submitted!') }}</h5>
                         <div class="badge-ref-pill d-inline-block my-2">
                             Reference: <span id="successRefNo" class="fw-bold">#PROP-2026-0001</span>
                         </div>
                         <p class="text-muted small mb-4 px-3" style="font-size: 0.88rem; max-width: 420px; margin: 0 auto;" id="successMsgText">
-                            Thank you! Your proposal request has been received. Our team will contact you within 24 hours.
+                            {{ __('Thank you! Your proposal request has been received. Our team will contact you within 24 hours.') }}
                         </p>
                         <div>
                             <button type="button" class="btn-erp-primary" data-bs-dismiss="modal" style="padding: 10px 32px; font-size: 0.92rem;">
-                                <i class="fas fa-check me-1"></i> Done
+                                <i class="fas fa-check me-1"></i> {{ __('Done') }}
                             </button>
                         </div>
                     </div>
@@ -273,17 +273,17 @@
             <!-- Modal Footer Navigation (CreLogics ERP Standard Buttons) -->
             <div class="modal-footer proposal-compact-footer bg-light border-top py-2 px-3 d-flex justify-content-between" id="proposalModalFooter">
                 <button type="button" class="btn-erp-secondary btn-sm-erp d-none" id="proposalBtnBack">
-                    <i class="fas fa-arrow-left me-1"></i> Back
+                    <i class="fas fa-arrow-left me-1"></i> {{ __('Back') }}
                 </button>
                 <div class="ms-auto d-flex align-items-center gap-2">
-                    <button type="button" class="btn-erp-secondary btn-sm-erp" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn-erp-secondary btn-sm-erp" data-bs-dismiss="modal">{{ __('Cancel') }}</button>
                     
                     <button type="button" class="btn-erp-primary btn-sm-erp" id="proposalBtnNext">
-                        <span>Continue</span> <i class="fas fa-arrow-right ms-1"></i>
+                        <span>{{ __('Continue') }}</span> <i class="fas fa-arrow-right ms-1"></i>
                     </button>
                     
                     <button type="button" class="btn-erp-primary btn-sm-erp d-none" id="proposalBtnSubmit" style="background: var(--clr-accent, #00B894); border-color: var(--clr-accent, #00B894); box-shadow: 0 6px 18px rgba(0, 184, 148, 0.3);">
-                        <span class="btn-text"><i class="fas fa-paper-plane me-1"></i> {{ $submitBtnText }}</span>
+                        <span class="btn-text"><i class="fas fa-paper-plane me-1"></i> {{ __($submitBtnText) }}</span>
                         <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
                     </button>
                 </div>

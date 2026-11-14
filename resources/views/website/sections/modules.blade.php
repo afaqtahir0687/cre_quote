@@ -12,10 +12,10 @@
         <!-- Section Header -->
         <div class="text-center mb-4">
             <span class="badge-pill-soft mb-3">
-                <i class="fas fa-th-large text-primary me-1"></i> Core ERP Modules ({{ $modulesList->count() }} Connected Apps)
+                <i class="fas fa-th-large text-primary me-1"></i> {{ __('Core ERP Modules') }} ({{ $modulesList->count() }} {{ __('Connected Apps') }})
             </span>
-            <h2 class="section-title text-dark fw-bold mb-3">{{ $modTitle }}</h2>
-            <p class="section-subtitle text-muted mx-auto" style="max-width: 680px;">{{ $modSub }}</p>
+            <h2 class="section-title text-dark fw-bold mb-3">{{ __($modTitle) }}</h2>
+            <p class="section-subtitle text-muted mx-auto" style="max-width: 680px;">{{ __($modSub) }}</p>
         </div>
 
         <!-- 1 SINGLE HORIZONTAL LINE OF DYNAMIC MODULE BOXES (From cms_app_modules database table) -->
@@ -26,7 +26,7 @@
                             class="erpgo-module-tab {{ $index === 0 ? 'active' : '' }}" 
                             data-erpgo-tab="mod-{{ $app->slug }}" 
                             id="tab-mod-{{ $app->slug }}"
-                            title="{{ $app->name }}">
+                            title="{{ __($app->name) }}">
                         <div class="erpgo-tab-svg-icon">
                             @if(!empty($app->icon_svg))
                                 {!! $app->icon_svg !!}
@@ -34,7 +34,7 @@
                                 <i class="fas fa-cube text-primary"></i>
                             @endif
                         </div>
-                        <span>{{ $app->name }}</span>
+                        <span>{{ __($app->name) }}</span>
                     </button>
                 @endforeach
             </div>
@@ -52,9 +52,9 @@
                 </div>
                 <div class="d-flex align-items-center gap-2">
                     <span class="badge-soft badge-soft-primary" style="font-size: 0.72rem;">
-                        <i class="fas fa-database me-1"></i> Live Database Connected
+                        <i class="fas fa-database me-1"></i> {{ __('Live Database Connected') }}
                     </span>
-                    <span class="text-muted d-none d-sm-inline" style="font-size: 0.75rem;">CreLogics ERP SaaS Engine</span>
+                    <span class="text-muted d-none d-sm-inline" style="font-size: 0.75rem;">{{ __('CreLogics ERP SaaS Engine') }}</span>
                 </div>
             </div>
 
@@ -68,10 +68,10 @@
                             <div>
                                 <div class="d-flex align-items-center gap-2 mb-1">
                                     <span class="badge-soft badge-soft-primary fw-bold">
-                                        Module #{{ $app->sort_order ?: ($index + 1) }} &bull; {{ $app->name }}
+                                        {{ __('Module') }} #{{ $app->sort_order ?: ($index + 1) }} &bull; {{ __($app->name) }}
                                     </span>
                                     <span class="badge-soft badge-soft-success">
-                                        <i class="fas fa-circle me-1" style="font-size: 0.45rem;"></i> Active Module
+                                        <i class="fas fa-circle me-1" style="font-size: 0.45rem;"></i> {{ __('Active Module') }}
                                     </span>
                                 </div>
                                 <h4 class="fw-bold text-dark mb-1">

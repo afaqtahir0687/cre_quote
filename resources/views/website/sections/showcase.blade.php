@@ -10,10 +10,10 @@
         <!-- Section Header -->
         <div class="text-center mb-4">
             <span class="badge-pill-soft mb-3">
-                <i class="fas fa-play-circle text-primary me-1"></i> Interactive Automation
+                <i class="fas fa-play-circle text-primary me-1"></i> {{ __('Interactive Automation') }}
             </span>
-            <h2 class="section-title text-dark fw-bold mb-3">{{ $showTitle }}</h2>
-            <p class="section-subtitle text-muted mx-auto" style="max-width: 680px;">{{ $showSub }}</p>
+            <h2 class="section-title text-dark fw-bold mb-3">{{ __($showTitle) }}</h2>
+            <p class="section-subtitle text-muted mx-auto" style="max-width: 680px;">{{ __($showSub) }}</p>
         </div>
 
         <!-- 5 Connected Timeline Step Nodes in One Horizontal Row -->
@@ -27,35 +27,35 @@
                     <div class="workflow-node-circle">
                         <i class="fas fa-user-plus"></i>
                     </div>
-                    <span class="workflow-node-label">1. Lead</span>
+                    <span class="workflow-node-label">{{ __('1. Lead') }}</span>
                 </button>
                 <!-- Step 2: Deal -->
                 <button type="button" class="workflow-step-node" data-step-target="step-deal" id="node-step-deal" aria-label="Step 2: Deal">
                     <div class="workflow-node-circle">
                         <i class="fas fa-handshake"></i>
                     </div>
-                    <span class="workflow-node-label">2. Deal</span>
+                    <span class="workflow-node-label">{{ __('2. Deal') }}</span>
                 </button>
                 <!-- Step 3: Proposal -->
                 <button type="button" class="workflow-step-node" data-step-target="step-proposal" id="node-step-proposal" aria-label="Step 3: Proposal">
                     <div class="workflow-node-circle">
                         <i class="fas fa-file-signature"></i>
                     </div>
-                    <span class="workflow-node-label">3. Proposal</span>
+                    <span class="workflow-node-label">{{ __('3. Proposal') }}</span>
                 </button>
                 <!-- Step 4: Invoice -->
                 <button type="button" class="workflow-step-node" data-step-target="step-invoice" id="node-step-invoice" aria-label="Step 4: Invoice">
                     <div class="workflow-node-circle">
                         <i class="fas fa-file-invoice-dollar"></i>
                     </div>
-                    <span class="workflow-node-label">4. Invoice</span>
+                    <span class="workflow-node-label">{{ __('4. Invoice') }}</span>
                 </button>
                 <!-- Step 5: Payment -->
                 <button type="button" class="workflow-step-node" data-step-target="step-payment" id="node-step-payment" aria-label="Step 5: Payment">
                     <div class="workflow-node-circle">
                         <i class="fas fa-check-circle"></i>
                     </div>
-                    <span class="workflow-node-label">5. Payment</span>
+                    <span class="workflow-node-label">{{ __('5. Payment') }}</span>
                 </button>
             </div>
         </div>

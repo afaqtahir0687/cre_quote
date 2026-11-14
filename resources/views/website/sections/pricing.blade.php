@@ -2,10 +2,10 @@
     <div class="container">
         <!-- Section Header -->
         <div class="text-center">
-            <span class="section-tag">Plans & Investment</span>
-            <h2 class="section-title">Transparent, Predictable Pricing</h2>
+            <span class="section-tag">{{ __('Plans & Investment') }}</span>
+            <h2 class="section-title">{{ __('Transparent, Predictable Pricing') }}</h2>
             <p class="section-subtitle">
-                No hidden charges or surprise transaction fees. Select the plan that fits your current business scale and grow with confidence.
+                {{ __('No hidden charges or surprise transaction fees. Select the plan that fits your current business scale and grow with confidence.') }}
             </p>
         </div>
 
@@ -19,23 +19,23 @@
                     <div class="pricing-card {{ $isPopular ? 'featured' : '' }}">
                         @if($isPopular)
                             <div class="pricing-popular-badge">
-                                <i class="fas fa-crown me-1"></i> Most Popular
+                                <i class="fas fa-crown me-1"></i> {{ __('Most Popular') }}
                             </div>
                         @endif
 
-                        <h3 class="pricing-name">{{ $pkg->name }}</h3>
-                        <p class="pricing-desc">{{ $pkg->description }}</p>
+                        <h3 class="pricing-name">{{ __($pkg->name) }}</h3>
+                        <p class="pricing-desc">{{ __($pkg->description) }}</p>
 
                         <div class="pricing-price-wrap">
                             <span class="pricing-currency">$</span>
                             <span class="pricing-amount">{{ number_format($pkg->price, 0) }}</span>
                             <span class="pricing-period">
                                 @if($isFree)
-                                    / {{ $pkg->duration_days }} days trial
+                                    / {{ $pkg->duration_days }} {{ __('days trial') }}
                                 @elseif($pkg->billing_cycle === 'yearly')
-                                    / year ({{ $pkg->duration_days }} days)
+                                    / {{ __('year') }} ({{ $pkg->duration_days }} {{ __('days') }})
                                 @else
-                                    / {{ $pkg->billing_cycle }}
+                                    / {{ __($pkg->billing_cycle) }}
                                 @endif
                             </span>
                         </div>
@@ -52,11 +52,11 @@
                         <div class="d-flex gap-2 flex-wrap mb-3">
                             <span class="badge bg-light text-dark border px-2 py-1">
                                 <i class="fas fa-store text-primary me-1"></i> 
-                                {{ $pkg->max_shops ?? 1 }} {{ ($pkg->max_shops ?? 1) > 1 ? 'Shops' : 'Shop' }}
+                                {{ $pkg->max_shops ?? 1 }} {{ ($pkg->max_shops ?? 1) > 1 ? __('Shops') : __('Shop') }}
                             </span>
                             <span class="badge bg-light text-dark border px-2 py-1">
                                 <i class="fas fa-users text-primary me-1"></i> 
-                                Up to {{ $pkg->max_employees ?? 3 }} Staff
+                                {{ __('Up to') }} {{ $pkg->max_employees ?? 3 }} {{ __('Staff') }}
                             </span>
                         </div>
 
@@ -66,14 +66,14 @@
                                 @foreach($pkg->features as $feature)
                                     <li>
                                         <i class="fas fa-check-circle"></i>
-                                        <span>{{ $feature }}</span>
+                                        <span>{{ __($feature) }}</span>
                                     </li>
                                 @endforeach
                             @else
-                                <li><i class="fas fa-check-circle"></i> Quotes & Invoices Management</li>
-                                <li><i class="fas fa-check-circle"></i> Job Orders & Delivery Notes</li>
-                                <li><i class="fas fa-check-circle"></i> Customer CRM & Ledgers</li>
-                                <li><i class="fas fa-check-circle"></i> Branded PDF Exports</li>
+                                <li><i class="fas fa-check-circle"></i> {{ __('Quotes & Invoices Management') }}</li>
+                                <li><i class="fas fa-check-circle"></i> {{ __('Job Orders & Delivery Notes') }}</li>
+                                <li><i class="fas fa-check-circle"></i> {{ __('Customer CRM & Ledgers') }}</li>
+                                <li><i class="fas fa-check-circle"></i> {{ __('Branded PDF Exports') }}</li>
                             @endif
                         </ul>
 
@@ -81,18 +81,18 @@
                         <div class="mt-auto">
                             @auth
                                 <a href="{{ route('subscription.index') }}" class="{{ $isPopular ? 'btn-erp-primary' : 'btn-erp-secondary' }} w-100">
-                                    <span>Upgrade Subscription</span>
+                                    <span>{{ __('Upgrade Subscription') }}</span>
                                     <i class="fas fa-arrow-right ms-1"></i>
                                 </a>
                             @else
                                 @if(Route::has('register'))
                                     <a href="{{ route('register') }}" class="{{ $isPopular ? 'btn-erp-primary' : 'btn-erp-secondary' }} w-100">
-                                        <span>{{ $isFree ? 'Start 7-Day Free Trial' : 'Get Started Now' }}</span>
+                                        <span>{{ $isFree ? __('Start 7-Day Free Trial') : __('Get Started Now') }}</span>
                                         <i class="fas fa-arrow-right ms-1"></i>
                                     </a>
                                 @else
                                     <a href="{{ route('login') }}" class="{{ $isPopular ? 'btn-erp-primary' : 'btn-erp-secondary' }} w-100">
-                                        <span>Sign In to Activate</span>
+                                        <span>{{ __('Sign In to Activate') }}</span>
                                         <i class="fas fa-arrow-right ms-1"></i>
                                     </a>
                                 @endif

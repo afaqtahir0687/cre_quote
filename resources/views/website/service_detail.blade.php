@@ -14,7 +14,7 @@
     </div>
     <div class="container position-relative py-5" style="z-index: 3;">
         <h1 class="service-crelogics-title fw-bold text-white mb-0">
-            {{ $service->name }}
+            {{ __($service->name) }}
         </h1>
     </div>
 </section>
@@ -29,7 +29,7 @@
                     <!-- Dynamic verified chip -->
                     <div class="service-mini-chip bg-white shadow-sm rounded-pill px-3 py-1 position-absolute top-0 end-0 m-4 d-inline-flex align-items-center gap-2 extra-small text-dark fw-bold" style="font-size: 0.75rem; border: 1px solid #D6E8F7; z-index: 2;">
                         <span class="rounded-circle" style="width: 8px; height: 8px; background: #FA7436;"></span>
-                        <span>{{ $service->badge_text ?: 'Verified Quality' }}</span>
+                        <span>{{ __($service->badge_text ?: 'Verified Quality') }}</span>
                     </div>
 
                     <div class="text-center py-2">
@@ -108,15 +108,15 @@
             <!-- Right Column: 100% Dynamic Text & Feature Highlight Boxes -->
             <div class="col-lg-6">
                 <span class="text-uppercase fw-bold small d-block mb-2" style="letter-spacing: 0.14em; font-size: 0.85rem; color: #FA7436;">
-                    {{ $service->sub_tag ?: 'BEST FOR YOU' }}
+                    {{ __($service->sub_tag ?: 'BEST FOR YOU') }}
                 </span>
 
                 <h2 class="fw-bold text-dark mb-3" style="font-size: clamp(1.8rem, 2.6vw, 2.45rem); line-height: 1.25; letter-spacing: -0.01em;">
-                    {{ $service->headline ?: 'Boosts Your Business Traffic & Revenue!' }}
+                    {{ __($service->headline ?: 'Boosts Your Business Traffic & Revenue!') }}
                 </h2>
 
                 <p class="text-muted mb-4" style="font-size: 1.05rem; line-height: 1.7;">
-                    {{ $service->description ?: 'Drives measurable business growth through improved visibility, sharper targeting, superior design aesthetics, and consistent performance optimization.' }}
+                    {{ __($service->description) }}
                 </p>
 
                 <!-- Two Side-by-Side Highlight Feature Boxes (100% Dynamic with Logo Colors) -->
@@ -127,8 +127,8 @@
                             <div class="d-inline-flex align-items-center justify-content-center p-3 rounded-3 mb-2" style="background: #FFF7ED; border: 1px solid rgba(250, 116, 54, 0.25); width: 62px; height: 62px;">
                                 <i class="{{ $service->feature_1_icon ?: 'fas fa-bullhorn' }} fa-lg" style="color: #FA7436;"></i>
                             </div>
-                            <h5 class="fw-bold text-dark fs-6 mb-1">{{ $service->feature_1_title ?: 'Actionable Audit' }}</h5>
-                            <span class="text-muted extra-small d-block" style="font-size: 0.78rem;">{{ $service->feature_1_text ?: 'Detailed scoping & technical roadmap' }}</span>
+                            <h5 class="fw-bold text-dark fs-6 mb-1">{{ __($service->feature_1_title ?: 'Actionable Audit') }}</h5>
+                            <span class="text-muted extra-small d-block" style="font-size: 0.78rem;">{{ __($service->feature_1_text ?: 'Detailed scoping & technical roadmap') }}</span>
                         </div>
                     </div>
 
@@ -138,9 +138,9 @@
                             <div class="d-inline-flex align-items-center justify-content-center p-3 rounded-3 mb-2" style="background: #F0F9FF; border: 1px solid rgba(10, 111, 183, 0.25); width: 62px; height: 62px;">
                                 <i class="{{ $service->feature_2_icon ?: 'fas fa-chart-pie' }} fa-lg" style="color: #0A6FB7;"></i>
                             </div>
-                            <h5 class="fw-bold text-dark fs-6 mb-1">{{ $service->feature_2_title ?: 'What We Charge' }}</h5>
+                            <h5 class="fw-bold text-dark fs-6 mb-1">{{ __($service->feature_2_title ?: 'What We Charge') }}</h5>
                             <span class="fw-bold extra-small d-block" style="font-size: 0.85rem; color: #0A6FB7;">
-                                {{ $service->feature_2_text ?: ($service->starting_price ? 'From ' . format_currency($service->starting_price) . ' / ' . ($service->price_unit ?: 'Project') : 'Custom Itemized Quote') }}
+                                {{ __($service->feature_2_text ?: ($service->starting_price ? 'From ' . format_currency($service->starting_price) . ' / ' . ($service->price_unit ?: 'Project') : 'Custom Itemized Quote')) }}
                             </span>
                         </div>
                     </div>
@@ -153,10 +153,10 @@
                 @endphp
                 <div class="d-flex flex-wrap gap-3">
                     <button type="button" class="btn fw-semibold px-4 py-2 text-white d-inline-flex align-items-center btn-logo-orange" data-bs-toggle="modal" data-bs-target="#proposalModal">
-                        <i class="fas fa-file-signature me-2"></i> Get Free Proposal
+                        <i class="fas fa-file-signature me-2"></i> {{ __('Get Free Proposal') }}
                     </button>
                     <a href="https://wa.me/{{ $waNum }}?text={{ urlencode($waText) }}" target="_blank" class="btn fw-semibold px-4 py-2 text-white d-inline-flex align-items-center btn-logo-wa">
-                        <i class="fab fa-whatsapp me-2" style="font-size: 1.15rem;"></i> WhatsApp Specialist
+                        <i class="fab fa-whatsapp me-2" style="font-size: 1.15rem;"></i> {{ __('WhatsApp Specialist') }}
                     </a>
                 </div>
             </div>
@@ -169,10 +169,10 @@
 <section class="py-5" style="background-color: #F8FAFC; border-top: 1px solid #EDF2F7; border-bottom: 1px solid #EDF2F7;">
     <div class="container py-3">
         <div class="text-center mb-5">
-            <span class="badge px-3 py-1 text-uppercase fw-bold mb-2" style="background: rgba(10, 111, 183, 0.08); color: #0A6FB7; font-size: 0.75rem; letter-spacing: 0.08em; border-radius: 4px;">Detailed Scope</span>
-            <h2 class="fw-bold text-dark fs-2 mb-2">Key Deliverables Included in {{ $service->name }}</h2>
+            <span class="badge px-3 py-1 text-uppercase fw-bold mb-2" style="background: rgba(10, 111, 183, 0.08); color: #0A6FB7; font-size: 0.75rem; letter-spacing: 0.08em; border-radius: 4px;">{{ __('Detailed Scope') }}</span>
+            <h2 class="fw-bold text-dark fs-2 mb-2">{{ __('Key Deliverables Included in') }} {{ __($service->name) }}</h2>
             <p class="text-muted mx-auto" style="max-width: 650px;">
-                Every client project includes end-to-end execution, quality controls, and source handover with zero hidden fees.
+                {{ __('A transparent, agile execution roadmap designed to ensure seamless milestones and guaranteed outcomes.') }}
             </p>
         </div>
 
@@ -183,8 +183,8 @@
                         <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-3" style="width: 44px; height: 44px; background: rgba(10, 111, 183, 0.12); color: #0A6FB7; font-size: 1.1rem;">
                             <i class="fas fa-check-circle"></i>
                         </div>
-                        <h5 class="fw-bold text-dark fs-6 mb-2">{{ $item }}</h5>
-                        <p class="text-muted extra-small mb-0 mt-auto" style="line-height: 1.5;">Executed by senior specialists strictly adhering to corporate brand standards.</p>
+                        <h5 class="fw-bold text-dark fs-6 mb-2">{{ __($item) }}</h5>
+                        <p class="text-muted extra-small mb-0 mt-auto" style="line-height: 1.5;">{{ __('Executed by senior specialists strictly adhering to corporate brand standards.') }}</p>
                     </div>
                 </div>
             @endforeach
@@ -199,11 +199,11 @@
     <div class="container py-2">
         <div class="p-4 p-md-5 rounded-4 border" style="background: linear-gradient(180deg, #FDFDFE 0%, #F8FAFC 100%); border-color: #E2E8F0 !important;">
             <div class="d-flex align-items-center gap-2 mb-3">
-                <span class="badge px-3 py-1 text-uppercase fw-bold" style="background: rgba(10, 111, 183, 0.08); color: #0A6FB7; font-size: 0.75rem; letter-spacing: 0.08em; border-radius: 4px;">Service Deep Dive</span>
+                <span class="badge px-3 py-1 text-uppercase fw-bold" style="background: rgba(10, 111, 183, 0.08); color: #0A6FB7; font-size: 0.75rem; letter-spacing: 0.08em; border-radius: 4px;">{{ __('Service Deep Dive') }}</span>
             </div>
-            <h3 class="fw-bold text-dark fs-3 mb-3">Overview & Core Strategic Value</h3>
+            <h3 class="fw-bold text-dark fs-3 mb-3">{{ __('Overview & Core Strategic Value') }}</h3>
             <div class="service-content-body text-secondary" style="font-size: 1.02rem; line-height: 1.8;">
-                {!! $service->content !!}
+                {!! __($service->content) !!}
             </div>
         </div>
     </div>
@@ -214,10 +214,10 @@
 <section class="py-5 bg-white">
     <div class="container py-3">
         <div class="text-center mb-5">
-            <span class="badge px-3 py-1 text-uppercase fw-bold mb-2" style="background: rgba(250, 116, 54, 0.1); color: #FA7436; font-size: 0.75rem; letter-spacing: 0.08em; border-radius: 4px;">Methodology</span>
-            <h2 class="fw-bold text-dark fs-2 mb-2">Our 4-Stage Project Lifecycle</h2>
+            <span class="badge px-3 py-1 text-uppercase fw-bold mb-2" style="background: rgba(250, 116, 54, 0.1); color: #FA7436; font-size: 0.75rem; letter-spacing: 0.08em; border-radius: 4px;">{{ __('Methodology') }}</span>
+            <h2 class="fw-bold text-dark fs-2 mb-2">{{ __('Our 4-Stage Project Lifecycle') }}</h2>
             <p class="text-muted mx-auto" style="max-width: 650px;">
-                A transparent, agile execution roadmap designed specifically for {{ $service->name }} to ensure seamless milestones and guaranteed outcomes.
+                {{ __('A transparent, agile execution roadmap designed specifically for') }} {{ __($service->name) }} {{ __('to ensure seamless milestones and guaranteed outcomes.') }}
             </p>
         </div>
 
@@ -239,8 +239,8 @@
                         <div class="rounded-circle text-white d-inline-flex align-items-center justify-content-center mb-3 fw-bold" style="width: 48px; height: 48px; font-size: 1.15rem; background: {{ $stepColors[$idx % count($stepColors)] }};">
                             {{ $idx + 1 }}
                         </div>
-                        <h5 class="fw-bold text-dark fs-6 mb-2">{{ is_array($step) ? ($step['title'] ?? '') : $step }}</h5>
-                        <p class="text-muted small mb-0" style="line-height: 1.5;">{{ is_array($step) ? ($step['desc'] ?? '') : '' }}</p>
+                        <h5 class="fw-bold text-dark fs-6 mb-2">{{ is_array($step) ? __($step['title'] ?? '') : __($step) }}</h5>
+                        <p class="text-muted small mb-0" style="line-height: 1.5;">{{ is_array($step) ? __($step['desc'] ?? '') : '' }}</p>
                     </div>
                 </div>
             @endforeach
@@ -254,11 +254,11 @@
     <div class="container py-2">
         <div class="d-flex flex-wrap justify-content-between align-items-end mb-4">
             <div>
-                <span class="badge px-3 py-1 text-uppercase fw-bold mb-2" style="background: rgba(10, 111, 183, 0.08); color: #0A6FB7; font-size: 0.75rem; letter-spacing: 0.08em; border-radius: 4px;">Explore More</span>
-                <h3 class="fw-bold text-dark fs-3 mb-0">Related {{ $service->category }} Services</h3>
+                <span class="badge px-3 py-1 text-uppercase fw-bold mb-2" style="background: rgba(10, 111, 183, 0.08); color: #0A6FB7; font-size: 0.75rem; letter-spacing: 0.08em; border-radius: 4px;">{{ __('Explore More') }}</span>
+                <h3 class="fw-bold text-dark fs-3 mb-0">{{ __('Related Services') }} ({{ __($service->category) }})</h3>
             </div>
             <a href="{{ url('/services?category=' . $service->category) }}" class="btn btn-sm btn-outline-primary fw-semibold rounded-pill px-3 py-2 mt-2 mt-sm-0" style="border-color: #0A6FB7; color: #0A6FB7;">
-                <span>View All {{ $service->category }}</span> &rarr;
+                <span>{{ __('View All Services') }}</span> &rarr;
             </a>
         </div>
 
@@ -269,10 +269,10 @@
                         <div class="d-inline-flex align-items-center justify-content-center rounded-3 mb-3" style="width: 44px; height: 44px; background: rgba(10, 111, 183, 0.08); color: #0A6FB7; font-size: 1.1rem;">
                             <i class="{{ $rel->icon ?: 'fas fa-concierge-bell' }}"></i>
                         </div>
-                        <h5 class="fw-bold text-dark fs-6 mb-2">{{ $rel->name }}</h5>
-                        <p class="text-muted extra-small mb-3" style="line-height: 1.5;">{{ Str::limit($rel->description, 70) }}</p>
+                        <h5 class="fw-bold text-dark fs-6 mb-2">{{ __($rel->name) }}</h5>
+                        <p class="text-muted extra-small mb-3" style="line-height: 1.5;">{{ Str::limit(__($rel->description), 70) }}</p>
                         <div class="mt-auto d-flex align-items-center justify-content-between pt-2 border-top text-primary small fw-semibold" style="color: #0A6FB7 !important;">
-                            <span>Explore Page</span>
+                            <span>{{ __('Explore Page') }}</span>
                             <i class="fas fa-arrow-right"></i>
                         </div>
                     </a>
@@ -286,19 +286,19 @@
 <!-- Dynamic Logo Theme Call to Action Banner (Navy #17243A to Blue #0A6FB7 to Orange #FA7436) -->
 <section class="py-5 text-white position-relative overflow-hidden" style="background: linear-gradient(135deg, #17243A 0%, #0A6FB7 50%, #FA7436 100%);">
     <div class="container text-center py-4 position-relative" style="z-index: 2;">
-        <h2 class="fw-bold fs-2 mb-3">{{ $service->cta_title ?: ('Ready to Accelerate with ' . $service->name . '?') }}</h2>
+        <h2 class="fw-bold fs-2 mb-3">{{ __($service->cta_title ?: ('Ready to Accelerate with ' . $service->name . '?')) }}</h2>
         <p class="mx-auto mb-4" style="max-width: 650px; opacity: 0.95; font-size: 1.05rem;">
-            {{ $service->cta_subtitle ?: 'Contact Crelogics today to discuss your vision, review technical requirements, and receive an itemized proposal within 24 hours.' }}
+            {{ __($service->cta_subtitle) }}
         </p>
         <div class="d-flex flex-wrap justify-content-center gap-3">
             <button type="button" class="btn fw-semibold px-4 py-2 text-white btn-logo-orange shadow" data-bs-toggle="modal" data-bs-target="#proposalModal">
-                <i class="fas fa-file-signature me-2"></i> Request Custom Proposal
+                <i class="fas fa-file-signature me-2"></i> {{ __('Request Custom Proposal') }}
             </button>
             <a href="https://wa.me/{{ $waNum }}?text={{ urlencode($waText) }}" target="_blank" class="btn fw-semibold px-4 py-2 btn-logo-wa">
-                <i class="fab fa-whatsapp me-2" style="font-size: 1.1rem;"></i> Chat with Specialist
+                <i class="fab fa-whatsapp me-2" style="font-size: 1.1rem;"></i> {{ __('Chat with Specialist') }}
             </a>
             <a href="{{ url('/services') }}" class="btn fw-semibold px-4 py-2 text-white" style="background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.35); border-radius: 8px;">
-                <i class="fas fa-th-large me-2"></i> All Services
+                <i class="fas fa-th-large me-2"></i> {{ __('All Services') }}
             </a>
         </div>
     </div>

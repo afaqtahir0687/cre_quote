@@ -41,14 +41,14 @@
                                        role="button" 
                                        data-bs-toggle="dropdown" 
                                        aria-expanded="false">
-                                        <span>Services</span>
+                                        <span>{{ __('Services') }}</span>
                                     </a>
                                     <ul class="dropdown-menu services-menu-parent border-0 shadow-lg rounded-3" aria-labelledby="servicesNavbarDropdown">
                                         @foreach(['Creativity', 'Marketing', 'Advertising'] as $catKey)
                                             @if(isset($groupedServices[$catKey]) && $groupedServices[$catKey]->count() > 0)
                                                 <li class="services-flyout-item">
                                                     <a href="{{ url('/services?category=' . $catKey) }}" class="services-flyout-link">
-                                                        <span>{{ $catKey }}</span>
+                                                        <span>{{ __($catKey) }}</span>
                                                         <i class="fas fa-caret-right text-muted small ms-2"></i>
                                                     </a>
                                                     <ul class="services-flyout-submenu list-unstyled mb-0">
@@ -56,7 +56,7 @@
                                                             <li>
                                                                 <a href="{{ route('website.service_detail', $sItem->slug) }}" class="services-sub-item-link">
                                                                     <i class="{{ $sItem->icon ?: 'fas fa-chevron-right' }} extra-small" style="color: #FA7436; font-size: 0.75rem;"></i>
-                                                                    <span>{{ $sItem->name }}</span>
+                                                                    <span>{{ __($sItem->name) }}</span>
                                                                 </a>
                                                             </li>
                                                         @endforeach
@@ -76,13 +76,13 @@
                             @else
                                 <li class="nav-item">
                                     <a class="nav-link nav-link-erp {{ $isCurrent ? 'active fw-bold text-primary' : '' }}" href="{{ $navHref }}" target="{{ $nav->target ?: '_self' }}">
-                                        {{ $nav->label }}
+                                        {{ __($nav->label) }}
                                     </a>
                                 </li>
                             @endif
                         @endforeach
                     @else
-                        <li class="nav-item"><a class="nav-link nav-link-erp {{ request()->is('/') ? 'active fw-bold text-primary' : '' }}" href="{{ url('/') }}">Home</a></li>
+                        <li class="nav-item"><a class="nav-link nav-link-erp {{ request()->is('/') ? 'active fw-bold text-primary' : '' }}" href="{{ url('/') }}">{{ __('Home') }}</a></li>
                         
                         <!-- Fallback Services Dropdown -->
                         <li class="nav-item dropdown services-nav-dropdown">
@@ -92,14 +92,14 @@
                                role="button" 
                                data-bs-toggle="dropdown" 
                                aria-expanded="false">
-                                <span>Services</span>
+                                <span>{{ __('Services') }}</span>
                             </a>
                             <ul class="dropdown-menu services-menu-parent border-0 shadow-lg rounded-3" aria-labelledby="servicesNavbarDropdownFallback">
                                 @foreach(['Creativity', 'Marketing', 'Advertising'] as $catKey)
                                     @if(isset($groupedServices[$catKey]) && $groupedServices[$catKey]->count() > 0)
                                         <li class="services-flyout-item">
                                             <a href="{{ url('/services?category=' . $catKey) }}" class="services-flyout-link">
-                                                <span>{{ $catKey }}</span>
+                                                <span>{{ __($catKey) }}</span>
                                                 <i class="fas fa-caret-right text-muted small ms-2"></i>
                                             </a>
                                             <ul class="services-flyout-submenu list-unstyled mb-0">
@@ -107,7 +107,7 @@
                                                     <li>
                                                         <a href="{{ route('website.service_detail', $sItem->slug) }}" class="services-sub-item-link">
                                                             <i class="{{ $sItem->icon ?: 'fas fa-chevron-right' }} extra-small" style="color: #FA7436; font-size: 0.75rem;"></i>
-                                                            <span>{{ $sItem->name }}</span>
+                                                            <span>{{ __($sItem->name) }}</span>
                                                         </a>
                                                     </li>
                                                 @endforeach
@@ -125,28 +125,50 @@
                             </ul>
                         </li>
 
-                        <li class="nav-item"><a class="nav-link nav-link-erp {{ request()->is('products*') ? 'active fw-bold text-primary' : '' }}" href="{{ url('/products') }}">Products</a></li>
-                        <li class="nav-item"><a class="nav-link nav-link-erp" href="{{ url('/#features') }}">Features</a></li>
-                        <li class="nav-item"><a class="nav-link nav-link-erp" href="{{ url('/#modules') }}">Modules</a></li>
-                        <li class="nav-item"><a class="nav-link nav-link-erp" href="{{ url('/#showcase') }}">Workflow</a></li>
-                        <li class="nav-item"><a class="nav-link nav-link-erp" href="{{ url('/#pricing') }}">Pricing</a></li>
-                        <li class="nav-item"><a class="nav-link nav-link-erp" href="{{ url('/#contact') }}">Contact</a></li>
+                        <li class="nav-item"><a class="nav-link nav-link-erp {{ request()->is('products*') ? 'active fw-bold text-primary' : '' }}" href="{{ url('/products') }}">{{ __('Products') }}</a></li>
+                        <li class="nav-item"><a class="nav-link nav-link-erp" href="{{ url('/#features') }}">{{ __('Features') }}</a></li>
+                        <li class="nav-item"><a class="nav-link nav-link-erp" href="{{ url('/#modules') }}">{{ __('Modules') }}</a></li>
+                        <li class="nav-item"><a class="nav-link nav-link-erp" href="{{ url('/#showcase') }}">{{ __('Workflow') }}</a></li>
+                        <li class="nav-item"><a class="nav-link nav-link-erp" href="{{ url('/#pricing') }}">{{ __('Pricing') }}</a></li>
+                        <li class="nav-item"><a class="nav-link nav-link-erp" href="{{ url('/#contact') }}">{{ __('Contact') }}</a></li>
                     @endif
                 </ul>
 
                 <!-- Action CTAs -->
-                <div class="nav-actions mt-3 mt-lg-0">
+                <div class="nav-actions d-flex align-items-center gap-2 mt-3 mt-lg-0">
+                    <!-- Language Switcher Dropdown (English / العربية) -->
+                    <div class="dropdown">
+                        <button class="btn btn-sm btn-light border dropdown-toggle d-flex align-items-center gap-1 rounded-pill px-3 py-1 text-dark shadow-none" type="button" data-bs-toggle="dropdown" style="font-size: 0.84rem; font-weight: 600; background: #FFFFFF;">
+                            <i class="fas fa-globe text-primary me-1"></i>
+                            <span>{{ app()->getLocale() === 'ar' ? 'العربية' : 'English' }}</span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-3 mt-1 p-1" style="min-width: 130px; z-index: 1080;">
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center justify-content-between py-2 rounded {{ app()->getLocale() === 'en' ? 'active fw-bold text-white' : '' }}" href="{{ route('language.switch', 'en') }}">
+                                    <span>English</span>
+                                    <span>🇬🇧</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center justify-content-between py-2 rounded {{ app()->getLocale() === 'ar' ? 'active fw-bold text-white' : '' }}" href="{{ route('language.switch', 'ar') }}">
+                                    <span>العربية</span>
+                                    <span>🇸🇦</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+
                     @auth
                         <a href="{{ route('dashboard') }}" class="btn-erp-primary">
-                            <i class="fas fa-th-large me-1"></i> Dashboard
+                            <i class="fas fa-th-large me-1"></i> {{ __('Dashboard') }}
                         </a>
                     @else
                         <a href="{{ route('login') }}" class="btn-erp-secondary">
-                            <i class="fas fa-sign-in-alt me-1"></i> Sign In
+                            <i class="fas fa-sign-in-alt me-1"></i> {{ __('Sign In') }}
                         </a>
                         @if(Route::has('register'))
                             <a href="{{ route('register') }}" class="btn-erp-primary">
-                                <span>Get Started</span>
+                                <span>{{ __('Get Started') }}</span>
                                 <i class="fas fa-arrow-right ms-1"></i>
                             </a>
                         @endif
