@@ -35,7 +35,7 @@
                         </span>
                         @foreach($customers->take(4) as $client)
                             <span class="badge bg-white text-dark border px-2 py-1 rounded-pill shadow-xs" style="font-size: 0.72rem;">
-                                {{ $client->company_name ?: $client->name }}
+                                {{ __($client->company_name ?: $client->name) }}
                             </span>
                         @endforeach
                     </div>
@@ -74,7 +74,7 @@
                 </div>
                 <div class="mosaic-tile tile-circle-grey tile-col-5 tile-row-1"></div>
                 <div class="mosaic-tile tile-chip-badge tile-col-6 tile-row-1">
-                    <span>⭐ 4.9/5 Rating</span>
+                    <span>⭐ {{ __('4.9/5 Rating') }}</span>
                 </div>
                 <div class="mosaic-tile tile-avatar tile-col-7 tile-row-1">
                     <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?w=140&h=140&fit=crop&crop=faces&q=80" alt="Retail Head" loading="lazy">
@@ -90,7 +90,7 @@
                     <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=140&h=140&fit=crop&crop=faces&q=80" alt="Production Manager" loading="lazy">
                 </div>
                 <div class="mosaic-tile tile-chip-badge tile-col-3 tile-row-2">
-                    <span>⚡ 100% Sync</span>
+                    <span>⚡ {{ __('100% Sync') }}</span>
                 </div>
                 <div class="mosaic-tile tile-sq-blue tile-col-11 tile-row-2"></div>
                 <div class="mosaic-tile tile-avatar tile-col-12 tile-row-2">
@@ -110,7 +110,7 @@
                 </div>
                 <div class="mosaic-tile tile-sq-purple tile-col-2 tile-row-4"></div>
                 <div class="mosaic-tile tile-chip-badge tile-col-11 tile-row-4">
-                    <span>💼 Multi-Shop</span>
+                    <span>💼 {{ __('Multi-Shop') }}</span>
                 </div>
                 <div class="mosaic-tile tile-avatar tile-col-12 tile-row-4">
                     <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=140&h=140&fit=crop&crop=faces&q=80" alt="Enterprise Client" loading="lazy">
@@ -122,7 +122,7 @@
                     <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=140&h=140&fit=crop&crop=faces&q=80" alt="Printing Manager" loading="lazy">
                 </div>
                 <div class="mosaic-tile tile-chip-badge tile-col-5 tile-row-5">
-                    <span>📈 +35% Growth</span>
+                    <span>📈 {{ __('+35% Growth') }}</span>
                 </div>
                 <div class="mosaic-tile tile-circle-grey tile-col-7 tile-row-5"></div>
                 <div class="mosaic-tile tile-avatar tile-col-8 tile-row-5">

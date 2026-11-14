@@ -62,7 +62,7 @@
                         <div>
                             <div class="text-muted small">{{ __('Office Location') }}</div>
                             <span class="fw-bold text-dark">
-                                {{ $settings['company_address'] ?? 'Business District, Modern Industrial Zone' }}
+                                {{ __($settings['company_address'] ?? 'Business District, Modern Industrial Zone') }}
                             </span>
                         </div>
                     </div>

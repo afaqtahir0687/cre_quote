@@ -116,7 +116,7 @@
                             <li><i class="fas fa-check-circle"></i> 7 Days Full Test Period</li>
                             <li><i class="fas fa-check-circle"></i> Single Shop Location (1 Shop)</li>
                             <li><i class="fas fa-check-circle"></i> Up to 3 Staff Members</li>
-                            <li><i class="fas fa-check-circle"></i> Quotes & Invoices Management</li>
+                            <li><i class="fas fa-check-circle"></i> {{ __('Quotes & Invoices Management') }}</li>
                             <li><i class="fas fa-check-circle"></i> Job Orders & Delivery Notes</li>
                         </ul>
                         <a href="{{ route('register') }}" class="btn-erp-primary w-100">Start Free Trial</a>
@@ -128,7 +128,7 @@
         <div class="text-center mt-5">
             <p class="text-muted mb-0">
                 <i class="fas fa-shield-alt text-success me-1"></i>
-                All plans include offline cash activation support, data backups, and priority WhatsApp technical assistance.
+                {{ __('All plans include offline cash activation support, data backups, and priority WhatsApp technical assistance.') }}
             </p>
         </div>
     </div>

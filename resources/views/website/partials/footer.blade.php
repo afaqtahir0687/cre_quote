@@ -23,7 +23,7 @@
                     <span class="navbar-brand-badge ms-1" style="background: rgba(255,255,255,0.1); color: #fff;">ERP</span>
                 </div>
                 <p class="footer-desc mt-3">
-                    {{ $footerDesc }}
+                    {{ __($footerDesc) }}
                 </p>
             </div>
 
@@ -112,8 +112,8 @@
                             </div>
                             <div class="region-text-wrap text-white">
                                 <span class="d-block" style="line-height: 1.5; font-size: 0.9rem; font-weight: 500;">
-                                    First Floor, Building No. 184-Commercial,<br>
-                                    Airline Housing Society, Lahore, Pakistan
+                                    {{ __('First Floor, Building No. 184-Commercial,') }}<br>
+                                    {{ __('Airline Housing Society, Lahore, Pakistan') }}
                                 </span>
                             </div>
                         </div>
@@ -141,7 +141,7 @@
                             </div>
                             <div class="region-text-wrap text-white">
                                 <span class="d-block" style="line-height: 1.5; font-size: 0.9rem; font-weight: 500;">
-                                    KALISPELL, MT 59901 USA.
+                                    {{ __('KALISPELL, MT 59901 USA.') }}
                                 </span>
                             </div>
                         </div>
@@ -168,7 +168,7 @@
         <!-- Footer Bottom Bar -->
         <div class="footer-bottom text-center justify-content-center">
             <div class="text-center w-100" style="color: #94A3B8; font-size: 0.88rem;">
-                &copy; {{ date('Y') }} <strong>{{ !empty($settings['copyright_text']) ? $settings['copyright_text'] : 'Crelogics ERP. All rights reserved. Built with precision for modern business growth.' }}</strong>
+                &copy; {{ date('Y') }} <strong>{{ __(!empty($settings['copyright_text']) ? $settings['copyright_text'] : 'Crelogics ERP. All rights reserved. Built with precision for modern business growth.') }}</strong>
             </div>
         </div>
     </div>

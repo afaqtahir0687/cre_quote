@@ -255,7 +255,7 @@
                         </div>
                         <h5 class="fw-bold text-dark mb-1" style="font-size: 1.2rem;">{{ __('Proposal Request Submitted!') }}</h5>
                         <div class="badge-ref-pill d-inline-block my-2">
-                            Reference: <span id="successRefNo" class="fw-bold">#PROP-2026-0001</span>
+                            {{ __('Reference:') }} <span id="successRefNo" class="fw-bold">#PROP-2026-0001</span>
                         </div>
                         <p class="text-muted small mb-4 px-3" style="font-size: 0.88rem; max-width: 420px; margin: 0 auto;" id="successMsgText">
                             {{ __('Thank you! Your proposal request has been received. Our team will contact you within 24 hours.') }}

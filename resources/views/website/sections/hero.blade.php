@@ -153,8 +153,8 @@
                     <i class="fas fa-file-invoice-dollar"></i>
                 </div>
                 <div class="text-start">
-                    <div style="font-size: 0.72rem; color: #64748B;">Invoice #INV-2049</div>
-                    <div style="font-weight: 700; color: #00B894;">Paid $1,250.00 • Instant Receipt</div>
+                    <div style="font-size: 0.72rem; color: #64748B;">{{ __('Invoice') }} #INV-2049</div>
+                    <div style="font-weight: 700; color: #00B894;">{{ __('Paid $1,250.00 • Instant Receipt') }}</div>
                 </div>
             </div>
 
@@ -164,8 +164,8 @@
                     <i class="fas fa-tools"></i>
                 </div>
                 <div class="text-start">
-                    <div style="font-size: 0.72rem; color: #64748B;">Job Order #JOB-118</div>
-                    <div style="font-weight: 700; color: #4361EE;">Ready for Delivery • 100%</div>
+                    <div style="font-size: 0.72rem; color: #64748B;">{{ __('Job Order') }} #JOB-118</div>
+                    <div style="font-weight: 700; color: #4361EE;">{{ __('Ready for Delivery • 100%') }}</div>
                 </div>
             </div>
 
@@ -187,13 +187,13 @@
                             <i class="fas fa-cubes text-primary"></i> Cre<span>Logics</span>
                         </div>
                         <div class="mockup-menu-list">
-                            <div class="mockup-menu-item active"><i class="fas fa-th-large"></i> Dashboard</div>
-                            <div class="mockup-menu-item"><i class="fas fa-clipboard-list"></i> Job Orders</div>
-                            <div class="mockup-menu-item"><i class="fas fa-file-signature"></i> Quotations</div>
-                            <div class="mockup-menu-item"><i class="fas fa-file-invoice-dollar"></i> Invoices</div>
-                            <div class="mockup-menu-item"><i class="fas fa-truck"></i> Delivery</div>
-                            <div class="mockup-menu-item"><i class="fas fa-users"></i> CRM & Clients</div>
-                            <div class="mockup-menu-item"><i class="fas fa-boxes"></i> Inventory</div>
+                            <div class="mockup-menu-item active"><i class="fas fa-th-large"></i> {{ __('Dashboard') }}</div>
+                            <div class="mockup-menu-item"><i class="fas fa-clipboard-list"></i> {{ __('Job Orders') }}</div>
+                            <div class="mockup-menu-item"><i class="fas fa-file-signature"></i> {{ __('Quotations') }}</div>
+                            <div class="mockup-menu-item"><i class="fas fa-file-invoice-dollar"></i> {{ __('Invoices') }}</div>
+                            <div class="mockup-menu-item"><i class="fas fa-truck"></i> {{ __('Delivery') }}</div>
+                            <div class="mockup-menu-item"><i class="fas fa-users"></i> {{ __('CRM & Clients') }}</div>
+                            <div class="mockup-menu-item"><i class="fas fa-boxes"></i> {{ __('Inventory') }}</div>
                         </div>
                     </div>
 
@@ -202,16 +202,16 @@
                         <div class="mockup-navbar">
                             <div class="mockup-shop-badge">
                                 <i class="fas fa-store text-primary"></i>
-                                <span>Shop: <strong>New Crelogics (Main)</strong></span>
+                                <span>{{ __('Shop:') }} <strong>{{ __('New Crelogics (Main)') }}</strong></span>
                             </div>
                             <div class="d-flex align-items-center gap-2">
                                 <span class="badge bg-success-subtle text-success border px-2 py-1 rounded-pill"
                                     style="font-size: 0.7rem;">
-                                    <i class="fas fa-check-circle me-1"></i> Live Sync
+                                    <i class="fas fa-check-circle me-1"></i> {{ __('Live Sync') }}
                                 </span>
                                 <div class="mockup-user-pill">
                                     <div class="mockup-avatar">A</div>
-                                    <span class="d-none d-sm-inline">Admin</span>
+                                    <span class="d-none d-sm-inline">{{ __('Admin') }}</span>
                                 </div>
                             </div>
                         </div>
@@ -219,44 +219,43 @@
                         <!-- 4 KPI Cards (Dynamic counts from database) -->
                         <div class="mockup-kpi-grid">
                             <div class="mockup-kpi-card kpi-blue">
-                                <div class="mockup-kpi-title">Active Shops</div>
+                                <div class="mockup-kpi-title">{{ __('Active Shops') }}</div>
                                 <div class="mockup-kpi-value">{{ $shopCount ?? 1 }}</div>
-                                <div class="mockup-kpi-sub">Branches online</div>
+                                <div class="mockup-kpi-sub">{{ __('Branches online') }}</div>
                             </div>
                             <div class="mockup-kpi-card kpi-green">
-                                <div class="mockup-kpi-title">Total Invoices</div>
+                                <div class="mockup-kpi-title">{{ __('Total Invoices') }}</div>
                                 <div class="mockup-kpi-value">{{ $invoiceCount ?? 3 }}</div>
-                                <div class="mockup-kpi-sub">Across branches</div>
+                                <div class="mockup-kpi-sub">{{ __('Across branches') }}</div>
                             </div>
                             <div class="mockup-kpi-card kpi-red">
-                                <div class="mockup-kpi-title">Pending Due</div>
+                                <div class="mockup-kpi-title">{{ __('Pending Due') }}</div>
                                 <div class="mockup-kpi-value">${{ number_format($pendingDue ?? 220, 2) }}</div>
-                                <div class="mockup-kpi-sub">Unpaid balances</div>
+                                <div class="mockup-kpi-sub">{{ __('Unpaid balances') }}</div>
                             </div>
                             <div class="mockup-kpi-card kpi-purple">
-                                <div class="mockup-kpi-title">Quotes / Orders</div>
+                                <div class="mockup-kpi-title">{{ __('Quotes / Orders') }}</div>
                                 <div class="mockup-kpi-value">{{ ($recentQuotes?->count() ?? 2) }} /
                                     {{ ($orderCount ?? 4) }}</div>
-                                <div class="mockup-kpi-sub">Live conversion</div>
+                                <div class="mockup-kpi-sub">{{ __('Live conversion') }}</div>
                             </div>
                         </div>
 
                         <!-- Recent Job Orders Mini Table -->
                         <div class="mockup-table-card">
                             <div class="mockup-table-header">
-                                <span class="mockup-table-title">Recent Job Orders</span>
-                                <span class="badge bg-light text-primary border" style="font-size: 0.72rem;">View
-                                    All</span>
+                                <span class="mockup-table-title">{{ __('Recent Job Orders') }}</span>
+                                <span class="badge bg-light text-primary border" style="font-size: 0.72rem;">{{ __('View All') }}</span>
                             </div>
                             <div class="table-responsive">
                                 <table class="mockup-table">
                                     <thead>
                                         <tr>
-                                            <th>Order #</th>
-                                            <th>Customer</th>
-                                            <th>Details</th>
-                                            <th>Amount</th>
-                                            <th>Status</th>
+                                            <th>{{ __('Order #') }}</th>
+                                            <th>{{ __('Customer') }}</th>
+                                            <th>{{ __('Details') }}</th>
+                                            <th>{{ __('Amount') }}</th>
+                                            <th>{{ __('Status') }}</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -265,14 +264,14 @@
                                                 <tr>
                                                     <td class="fw-bold text-primary">
                                                         {{ $jo->order_number ?: '#JOB-' . $jo->id }}</td>
-                                                    <td>{{ $jo->customer?->name ?: 'Client' }}</td>
-                                                    <td>Production Order</td>
+                                                    <td>{{ __($jo->customer?->name ?: 'Client') }}</td>
+                                                    <td>{{ __('Production Order') }}</td>
                                                     <td class="fw-bold">
                                                         ${{ number_format($jo->grand_total ?: $jo->total_amount, 2) }}</td>
                                                     <td>
                                                         <span class="mockup-tag tag-blue">
                                                             <i class="fas fa-cog fa-spin me-1"></i>
-                                                            {{ ucfirst(str_replace('_', ' ', $jo->status ?: 'In Prod')) }}
+                                                            {{ __(ucfirst(str_replace('_', ' ', $jo->status ?: 'In Prod'))) }}
                                                         </span>
                                                     </td>
                                                 </tr>
@@ -280,27 +279,27 @@
                                         @else
                                             <tr>
                                                 <td class="fw-bold text-primary">#JOB-1024</td>
-                                                <td>Farooq Builders</td>
-                                                <td>Flex Sign (12x4 ft)</td>
+                                                <td>{{ __('Farooq Builders') }}</td>
+                                                <td>{{ __('Flex Sign (12x4 ft)') }}</td>
                                                 <td class="fw-bold">$450.00</td>
                                                 <td><span class="mockup-tag tag-green"><i
-                                                            class="fas fa-check-circle me-1"></i> Ready</span></td>
+                                                            class="fas fa-check-circle me-1"></i> {{ __('Ready') }}</span></td>
                                             </tr>
                                             <tr>
                                                 <td class="fw-bold text-primary">#JOB-1023</td>
-                                                <td>Imran Trading LLC</td>
-                                                <td>3D Letter Signage</td>
+                                                <td>{{ __('Imran Trading LLC') }}</td>
+                                                <td>{{ __('3D Letter Signage') }}</td>
                                                 <td class="fw-bold">$820.00</td>
                                                 <td><span class="mockup-tag tag-blue"><i
-                                                            class="fas fa-cog fa-spin me-1"></i> In Prod</span></td>
+                                                            class="fas fa-cog fa-spin me-1"></i> {{ __('In Prod') }}</span></td>
                                             </tr>
                                             <tr>
                                                 <td class="fw-bold text-primary">#JOB-1022</td>
-                                                <td>Salman Agencies</td>
-                                                <td>Vinyl Stickers (100)</td>
+                                                <td>{{ __('Salman Agencies') }}</td>
+                                                <td>{{ __('Vinyl Stickers (100)') }}</td>
                                                 <td class="fw-bold">$210.00</td>
                                                 <td><span class="mockup-tag tag-amber"><i class="fas fa-clock me-1"></i>
-                                                        Pending</span></td>
+                                                        {{ __('Pending') }}</span></td>
                                             </tr>
                                         @endif
                                     </tbody>
