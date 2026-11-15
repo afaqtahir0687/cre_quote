@@ -26,8 +26,18 @@ Is document mein un tamam files ki tafseelat darj hain jo haliya feature update 
 
 ---
 
+4. **`app/Http/Controllers/SuperAdmin/BusinessTypeController.php`**
+   - **Maqsad:** Super Admin Business Categories / Industry Types CRUD management.
+   - **Features:** Full Create, Read, Update, Delete, Toggle Active status, default module selections, starter departments seeding, aur shop association guards.
+
+---
+
 ### B. Database Models
-4. **`app/Models/TravelTrip.php`**
+5. **`app/Models/BusinessType.php`**
+   - **Maqsad:** Dynamic Business Types & Industries database model.
+   - **Features:** Casts for default modules/departments, active/ordered scopes, localized name/description accessors (`name_ar`), aur shops relationship.
+
+6. **`app/Models/TravelTrip.php`**
    - **Maqsad:** Travel Trip model.
    - **Features:** Shop ke sath relation (`belongsTo`), Bookings relation (`hasMany`), seat tracking methods (`bookedSeatNumbers()`, `isSeatBooked()`, `availableSeatsCount()`), aur unique trip code generator (`TRP-YYYYMMDD-XXX`).
 
@@ -48,10 +58,22 @@ Is document mein un tamam files ki tafseelat darj hain jo haliya feature update 
      - `travel_trips`: Bus capacity (default 49), routes, dates, hotel rates.
      - `travel_bookings`: Passenger info, allocated seat number, package type (with/without hotel), financial breakdown, aur `(travel_trip_id, seat_number)` par unique compound anti-collision indexes.
 
+8. **`database/migrations/2026_11_15_162000_create_business_types_table.php`**
+   - **Maqsad:** Nayi `business_types` table create ki (slug, name, name_ar, icon, description, default_modules, default_departments, sort_order, is_active).
+
 ---
 
-### D. Blade Views (Umrah & Travel System)
-8. **`resources/views/travel/trips/index.blade.php`**
+### D. Blade Views (Umrah & Travel System & Business Types Management)
+9. **`resources/views/super_admin/business_types/index.blade.php`**
+   - Super Admin Business Types datatable listing, module pills, shop count badge, active toggle switch, edit/delete actions.
+
+10. **`resources/views/super_admin/business_types/create.blade.php`**
+    - Super Admin form to create a new category (name, Arabic name, icon picker, description, default module checkboxes, starter departments).
+
+11. **`resources/views/super_admin/business_types/edit.blade.php`**
+    - Edit existing category details, adjust default module presets, and starter departments.
+
+12. **`resources/views/travel/trips/index.blade.php`**
    - Trips ki listing table, KPI cards (Total Trips, Active Bookings, Total Revenue, Avg Occupancy), search aur status filters.
 
 9. **`resources/views/travel/trips/create.blade.php`**

@@ -274,13 +274,9 @@
 
 @push('scripts')
 <script>
-    const industryDefaults = {
-        printing_advertising: ['job_orders', 'quotations', 'invoices', 'delivery_notes', 'customers', 'products', 'services', 'categories', 'units', 'employees', 'departments'],
-        travel_umrah: ['travel_tourism', 'invoices', 'customers', 'employees', 'departments'],
-        general_trading: ['invoices', 'delivery_notes', 'customers', 'products', 'categories', 'units', 'employees'],
-        services_agency: ['quotations', 'invoices', 'customers', 'services', 'employees'],
-        custom: ['job_orders', 'quotations', 'invoices', 'delivery_notes', 'customers', 'products', 'services', 'categories', 'units', 'employees', 'departments', 'travel_tourism']
-    };
+    const industryDefaults = @json(collect($businessTypes)->mapWithKeys(function ($item, $key) {
+        return [$key => $item['default_modules'] ?? []];
+    }));
 
     function onBusinessTypeChange(typeKey) {
         // Highlight active card

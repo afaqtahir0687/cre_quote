@@ -91,6 +91,10 @@
                         <span class="submenu-bullet"></span>
                         <span>{{ __('Manage Shops') }}</span>
                     </a>
+                    <a href="{{ route('super_admin.business_types.index') }}" class="submenu-link {{ request()->routeIs('super_admin.business_types.*') ? 'active' : '' }}">
+                        <span class="submenu-bullet"></span>
+                        <span>{{ __('Shop Categories') }}</span>
+                    </a>
                     <a href="{{ route('super_admin.users.index') }}" class="submenu-link {{ request()->routeIs('super_admin.users.*') ? 'active' : '' }}">
                         <span class="submenu-bullet"></span>
                         <span>{{ __('System Users') }}</span>

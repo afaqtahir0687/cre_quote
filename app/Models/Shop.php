@@ -385,40 +385,83 @@ class Shop extends Model
     }
 
     /**
-     * All available business categories / industries.
+     * Relationship with BusinessType model.
+     */
+    public function businessTypeModel()
+    {
+        return $this->belongsTo(BusinessType::class, 'business_type', 'slug');
+    }
+
+    /**
+     * All available business categories / industries (Dynamically fetched from DB with safe fallback).
      */
     public static function availableBusinessTypes(): array
     {
+        try {
+            if (\Illuminate\Support\Facades\Schema::hasTable('business_types')) {
+                $types = BusinessType::active()->ordered()->get();
+                if ($types->isNotEmpty()) {
+                    $result = [];
+                    foreach ($types as $type) {
+                        $result[$type->slug] = [
+                            'id' => $type->id,
+                            'name' => $type->name,
+                            'name_ar' => $type->name_ar ?: $type->name,
+                            'icon' => $type->icon ?: 'fas fa-briefcase',
+                            'description' => $type->description,
+                            'description_ar' => $type->description_ar ?: $type->description,
+                            'default_modules' => $type->default_modules ?? [],
+                            'default_departments' => $type->default_departments ?? [],
+                            'is_system' => (bool) $type->is_system,
+                        ];
+                    }
+                    return $result;
+                }
+            }
+        } catch (\Throwable $e) {
+            // Safe fallback if database table is not yet accessible
+        }
+
         return [
             'printing_advertising' => [
                 'name' => 'Printing, Signage & Advertising',
                 'name_ar' => 'الطباعة واللوحات الإعلانية',
                 'icon' => 'fas fa-print',
                 'description' => 'Flex printing, 3D channel signage, vehicle graphics, job order production.',
+                'default_modules' => ['job_orders', 'quotations', 'invoices', 'delivery_notes', 'customers', 'products', 'services', 'categories', 'units', 'employees', 'departments'],
+                'default_departments' => ['Printing & Production', 'Graphic Design & Creative', 'Installation & Fabrication', 'Sales & Marketing'],
             ],
             'travel_umrah' => [
                 'name' => 'Umrah, Travel & Tourism Agency',
                 'name_ar' => 'وكالة العمرة والسياحة والسفر',
                 'icon' => 'fas fa-kaaba',
                 'description' => 'Bus seat booking, Umrah trips, passenger boarding passes, hotel & travel expense packages.',
+                'default_modules' => ['travel_tourism', 'customers', 'invoices', 'employees', 'departments'],
+                'default_departments' => ['Transport & Fleet Operations', 'Ticketing & Visa Operations', 'Hotels & Accommodations', 'Customer Relations'],
             ],
             'general_trading' => [
                 'name' => 'General Trading & Retail Store',
                 'name_ar' => 'التجارة العامة ونقاط البيع',
                 'icon' => 'fas fa-shopping-cart',
                 'description' => 'Inventory, products, sales invoices, customer ledger balances.',
+                'default_modules' => ['invoices', 'customers', 'products', 'categories', 'units', 'employees', 'departments'],
+                'default_departments' => ['Sales & Showroom', 'Warehouse & Inventory', 'Purchasing & Procurement', 'Accounts & Finance'],
             ],
             'services_agency' => [
                 'name' => 'Digital & Professional Services',
                 'name_ar' => 'الخدمات الرقمية والاستشارية',
                 'icon' => 'fas fa-laptop-code',
                 'description' => 'Client proposals, project milestones, hourly/fixed services billing.',
+                'default_modules' => ['quotations', 'invoices', 'customers', 'services', 'employees', 'departments'],
+                'default_departments' => ['Consulting & Strategy', 'Development & Tech Services', 'Client Success & Support', 'Finance & Administration'],
             ],
             'custom' => [
                 'name' => 'Custom / Full Enterprise Suite',
                 'name_ar' => 'أعمال مخصصة شاملة لجميع الوحدات',
                 'icon' => 'fas fa-cubes',
                 'description' => 'Tailor-fit permissions with all ERP modules selectable.',
+                'default_modules' => array_keys(self::availableModules()),
+                'default_departments' => ['Executive Management', 'Operations & Fulfillment', 'Accounts & Finance'],
             ],
         ];
     }
@@ -505,10 +548,21 @@ class Shop extends Model
     }
 
     /**
-     * Default modules by business type.
+     * Default modules by business type (Dynamically fetched from DB with safe fallback).
      */
     public static function defaultModulesForType(string $type): array
     {
+        try {
+            if (\Illuminate\Support\Facades\Schema::hasTable('business_types')) {
+                $bt = BusinessType::where('slug', $type)->first();
+                if ($bt && is_array($bt->default_modules) && !empty($bt->default_modules)) {
+                    return $bt->default_modules;
+                }
+            }
+        } catch (\Throwable $e) {
+            // Fallback
+        }
+
         return match ($type) {
             'travel_umrah' => [
                 'travel_tourism',
@@ -525,6 +579,7 @@ class Shop extends Model
                 'categories',
                 'units',
                 'employees',
+                'departments',
             ],
             'services_agency' => [
                 'quotations',
@@ -532,6 +587,7 @@ class Shop extends Model
                 'customers',
                 'services',
                 'employees',
+                'departments',
             ],
             'custom' => array_keys(self::availableModules()),
             default => [ // 'printing_advertising'

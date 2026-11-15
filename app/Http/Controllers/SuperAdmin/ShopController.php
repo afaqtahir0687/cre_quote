@@ -189,8 +189,22 @@ class ShopController extends Controller
                 'quote_prefix' => $shop->quote_prefix,
             ]);
 
-            // 3. Seed default departments tailored to the selected business category
-            if ($businessType === 'travel_umrah') {
+            // 3. Seed default departments tailored to the selected business category (from dynamic BusinessType if available)
+            $btModel = \App\Models\BusinessType::where('slug', $businessType)->first();
+            $dynamicDepts = ($btModel && is_array($btModel->default_departments) && !empty($btModel->default_departments))
+                ? $btModel->default_departments
+                : null;
+
+            if ($dynamicDepts) {
+                $defaultDepartments = [];
+                foreach ($dynamicDepts as $dItem) {
+                    $dName = is_array($dItem) ? ($dItem['name'] ?? 'General') : trim($dItem);
+                    $dDesc = is_array($dItem) ? ($dItem['description'] ?? "Department for {$shop->name}") : "Department for {$shop->name}";
+                    if (!empty($dName)) {
+                        $defaultDepartments[] = ['name' => $dName, 'description' => $dDesc];
+                    }
+                }
+            } elseif ($businessType === 'travel_umrah') {
                 $defaultDepartments = [
                     ['name' => 'Transport & Bus Fleet', 'description' => 'Bus scheduling, drivers, fuel and trip logistics'],
                     ['name' => 'Ticketing & Visa', 'description' => 'Passports, Umrah e-visas and booking validation'],

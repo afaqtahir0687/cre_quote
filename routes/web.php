@@ -224,6 +224,10 @@ Route::group(['middleware' => 'auth'], function () {
         Route::resource('shops', ShopController::class);
         Route::post('shops/{shop}/toggle-status', [ShopController::class, 'toggleStatus'])->name('shops.toggle_status');
         Route::post('shops/{shop}/update-status', [ShopController::class, 'updateStatus'])->name('shops.update_status');
+
+        // Shop Business Categories / Industries Management
+        Route::resource('business-types', \App\Http\Controllers\SuperAdmin\BusinessTypeController::class)->names('business_types');
+        Route::post('business-types/{business_type}/toggle-status', [\App\Http\Controllers\SuperAdmin\BusinessTypeController::class, 'toggleStatus'])->name('business_types.toggle_status');
         
         // Platform Users Management
         Route::resource('users', SuperAdminUserController::class);
