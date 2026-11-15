@@ -154,239 +154,313 @@
             </a>
         </div>
 
-        <!-- ================= 2. SALES & REVENUE ================= -->
-        <div class="sidebar-group-title menu-group-header">
-            <span>{{ __('Sales & Revenue') }}</span>
-        </div>
-
-        <!-- Job Orders -->
-        @php $isJobActive = request()->routeIs('job-orders.*'); @endphp
-        <div class="menu-item-wrapper">
-            <a href="#menuJobOrders" class="sidebar-link sidebar-parent {{ $isJobActive ? 'active' : 'collapsed' }}"
-               data-bs-toggle="collapse" role="button" aria-expanded="{{ $isJobActive ? 'true' : 'false' }}" aria-controls="menuJobOrders">
-                <div class="sidebar-parent-label">
-                    <i class="fas fa-tasks"></i>
-                    <span>{{ __('Job Orders') }}</span>
-                </div>
-                <i class="fas fa-chevron-down sidebar-arrow"></i>
-            </a>
-            <div class="collapse sidebar-submenu {{ $isJobActive ? 'show' : '' }}" id="menuJobOrders">
-                <a href="{{ route('job-orders.index') }}" class="submenu-link {{ request()->routeIs('job-orders.index') ? 'active' : '' }}">
-                    <span class="submenu-bullet"></span>
-                    <span>{{ __('All Job Orders') }}</span>
-                </a>
-                <a href="{{ route('job-orders.create') }}" class="submenu-link {{ request()->routeIs('job-orders.create') ? 'active' : '' }}">
-                    <span class="submenu-bullet"></span>
-                    <span>{{ __('Create Job Order') }}</span>
-                </a>
+        {{-- ================= TRAVEL & UMRAH MODULE ================= --}}
+        @if(shop_has_module('travel_tourism'))
+            <div class="sidebar-group-title menu-group-header">
+                <i class="fas fa-kaaba text-success me-1"></i>
+                <span>{{ __('Umrah & Travel Agency') }}</span>
             </div>
-        </div>
 
-        <!-- Quotations -->
-        @php $isQuoteActive = request()->routeIs('quotes.*'); @endphp
-        <div class="menu-item-wrapper">
-            <a href="#menuQuotes" class="sidebar-link sidebar-parent {{ $isQuoteActive ? 'active' : 'collapsed' }}"
-               data-bs-toggle="collapse" role="button" aria-expanded="{{ $isQuoteActive ? 'true' : 'false' }}" aria-controls="menuQuotes">
-                <div class="sidebar-parent-label">
-                    <i class="fas fa-file-invoice"></i>
-                    <span>{{ __('Quotations') }}</span>
-                </div>
-                <i class="fas fa-chevron-down sidebar-arrow"></i>
-            </a>
-            <div class="collapse sidebar-submenu {{ $isQuoteActive ? 'show' : '' }}" id="menuQuotes">
-                <a href="{{ route('quotes.index') }}" class="submenu-link {{ request()->routeIs('quotes.index') ? 'active' : '' }}">
-                    <span class="submenu-bullet"></span>
-                    <span>{{ __('All Quotations') }}</span>
-                </a>
-                <a href="{{ route('quotes.create') }}" class="submenu-link {{ request()->routeIs('quotes.create') ? 'active' : '' }}">
-                    <span class="submenu-bullet"></span>
-                    <span>{{ __('Create Quotation') }}</span>
-                </a>
-            </div>
-        </div>
-
-        <!-- Sales Invoices -->
-        @php $isInvoiceActive = request()->routeIs('invoices.*'); @endphp
-        <div class="menu-item-wrapper">
-            <a href="#menuInvoices" class="sidebar-link sidebar-parent {{ $isInvoiceActive ? 'active' : 'collapsed' }}"
-               data-bs-toggle="collapse" role="button" aria-expanded="{{ $isInvoiceActive ? 'true' : 'false' }}" aria-controls="menuInvoices">
-                <div class="sidebar-parent-label">
-                    <i class="fas fa-file-invoice-dollar"></i>
-                    <span>{{ __('Sales Invoices') }}</span>
-                </div>
-                <i class="fas fa-chevron-down sidebar-arrow"></i>
-            </a>
-            <div class="collapse sidebar-submenu {{ $isInvoiceActive ? 'show' : '' }}" id="menuInvoices">
-                <a href="{{ route('invoices.index') }}" class="submenu-link {{ request()->routeIs('invoices.index') ? 'active' : '' }}">
-                    <span class="submenu-bullet"></span>
-                    <span>{{ __('All Invoices') }}</span>
-                </a>
-                <a href="{{ route('invoices.create') }}" class="submenu-link {{ request()->routeIs('invoices.create') ? 'active' : '' }}">
-                    <span class="submenu-bullet"></span>
-                    <span>{{ __('Create Invoice') }}</span>
-                </a>
-            </div>
-        </div>
-
-        <!-- Delivery Notes -->
-        @php $isDeliveryActive = request()->routeIs('delivery_notes.*'); @endphp
-        <div class="menu-item-wrapper">
-            <a href="#menuDeliveryNotes" class="sidebar-link sidebar-parent {{ $isDeliveryActive ? 'active' : 'collapsed' }}"
-               data-bs-toggle="collapse" role="button" aria-expanded="{{ $isDeliveryActive ? 'true' : 'false' }}" aria-controls="menuDeliveryNotes">
-                <div class="sidebar-parent-label">
-                    <i class="fas fa-truck"></i>
-                    <span>{{ __('Delivery Notes') }}</span>
-                </div>
-                <i class="fas fa-chevron-down sidebar-arrow"></i>
-            </a>
-            <div class="collapse sidebar-submenu {{ $isDeliveryActive ? 'show' : '' }}" id="menuDeliveryNotes">
-                <a href="{{ route('delivery_notes.index') }}" class="submenu-link {{ request()->routeIs('delivery_notes.index') ? 'active' : '' }}">
-                    <span class="submenu-bullet"></span>
-                    <span>{{ __('All Delivery Notes') }}</span>
-                </a>
-                <a href="{{ route('delivery_notes.create') }}" class="submenu-link {{ request()->routeIs('delivery_notes.create') ? 'active' : '' }}">
-                    <span class="submenu-bullet"></span>
-                    <span>{{ __('Create Delivery Note') }}</span>
-                </a>
-            </div>
-        </div>
-
-        <!-- Customers / CRM -->
-        @php $isCustActive = request()->routeIs('customers.*'); @endphp
-        <div class="menu-item-wrapper">
-            <a href="#menuCustomers" class="sidebar-link sidebar-parent {{ $isCustActive ? 'active' : 'collapsed' }}"
-               data-bs-toggle="collapse" role="button" aria-expanded="{{ $isCustActive ? 'true' : 'false' }}" aria-controls="menuCustomers">
-                <div class="sidebar-parent-label">
-                    <i class="fas fa-user-friends"></i>
-                    <span>{{ __('Customers (CRM)') }}</span>
-                </div>
-                <i class="fas fa-chevron-down sidebar-arrow"></i>
-            </a>
-            <div class="collapse sidebar-submenu {{ $isCustActive ? 'show' : '' }}" id="menuCustomers">
-                <a href="{{ route('customers.index') }}" class="submenu-link {{ request()->routeIs('customers.index') ? 'active' : '' }}">
-                    <span class="submenu-bullet"></span>
-                    <span>{{ __('All Customers') }}</span>
-                </a>
-                <a href="{{ route('customers.create') }}" class="submenu-link {{ request()->routeIs('customers.create') ? 'active' : '' }}">
-                    <span class="submenu-bullet"></span>
-                    <span>{{ __('Add Customer') }}</span>
-                </a>
-                @if(auth()->user()->is_super_admin ?? false)
-                    <a href="{{ route('super_admin.proposals.index') }}" class="submenu-link {{ request()->routeIs('super_admin.proposals.*') ? 'active' : '' }}">
-                        <span class="submenu-bullet"></span>
-                        <span class="d-flex align-items-center justify-content-between w-100">
-                            <span>{{ __('Proposal Leads') }}</span>
-                            @if(($pendingProposalsCount ?? 0) > 0)
-                                <span class="badge bg-warning text-dark rounded-pill" style="font-size: 0.65rem;">{{ $pendingProposalsCount }}</span>
-                            @endif
-                        </span>
-                    </a>
-                @endif
-            </div>
-        </div>
-
-        <!-- ================= 3. PURCHASE & INVENTORY ================= -->
-        <div class="sidebar-group-title menu-group-header">
-            <span>{{ __('Purchase & Inventory') }}</span>
-        </div>
-
-        <!-- Products -->
-        @php $isProdActive = request()->routeIs('products.*'); @endphp
-        <div class="menu-item-wrapper">
-            <a href="#menuProducts" class="sidebar-link sidebar-parent {{ $isProdActive ? 'active' : 'collapsed' }}"
-               data-bs-toggle="collapse" role="button" aria-expanded="{{ $isProdActive ? 'true' : 'false' }}" aria-controls="menuProducts">
-                <div class="sidebar-parent-label">
-                    <i class="fas fa-boxes"></i>
-                    <span>{{ __('Products') }}</span>
-                </div>
-                <i class="fas fa-chevron-down sidebar-arrow"></i>
-            </a>
-            <div class="collapse sidebar-submenu {{ $isProdActive ? 'show' : '' }}" id="menuProducts">
-                <a href="{{ route('products.index') }}" class="submenu-link {{ request()->routeIs('products.index') ? 'active' : '' }}">
-                    <span class="submenu-bullet"></span>
-                    <span>{{ __('All Products') }}</span>
-                </a>
-                <a href="{{ route('products.create') }}" class="submenu-link {{ request()->routeIs('products.create') ? 'active' : '' }}">
-                    <span class="submenu-bullet"></span>
-                    <span>{{ __('Add Product') }}</span>
-                </a>
-            </div>
-        </div>
-
-        <!-- Dedicated Services Module -->
-        @php $isServActive = request()->routeIs('services.*'); @endphp
-        <div class="menu-item-wrapper">
-            <a href="#menuServices" class="sidebar-link sidebar-parent {{ $isServActive ? 'active' : 'collapsed' }}"
-               data-bs-toggle="collapse" role="button" aria-expanded="{{ $isServActive ? 'true' : 'false' }}" aria-controls="menuServices">
-                <div class="sidebar-parent-label">
-                    <i class="fas fa-concierge-bell"></i>
-                    <span>{{ __('Services') }}</span>
-                </div>
-                <i class="fas fa-chevron-down sidebar-arrow"></i>
-            </a>
-            <div class="collapse sidebar-submenu {{ $isServActive ? 'show' : '' }}" id="menuServices">
-                <a href="{{ route('services.index') }}" class="submenu-link {{ request()->routeIs('services.index') ? 'active' : '' }}">
-                    <span class="submenu-bullet"></span>
-                    <span>{{ __('All Services') }}</span>
-                </a>
-                <a href="{{ route('services.create') }}" class="submenu-link {{ request()->routeIs('services.create') ? 'active' : '' }}">
-                    <span class="submenu-bullet"></span>
-                    <span>{{ __('Add New Service') }}</span>
-                </a>
-            </div>
-        </div>
-
-        <!-- Categories -->
-        <div class="menu-item-wrapper">
-            <a href="{{ route('categories.index') }}" class="sidebar-link {{ request()->routeIs('categories.*') ? 'active' : '' }}">
-                <i class="fas fa-tags"></i>
-                <span>{{ __('Categories') }}</span>
-            </a>
-        </div>
-
-        <!-- Units -->
-        <div class="menu-item-wrapper">
-            <a href="{{ route('units.index') }}" class="sidebar-link {{ request()->routeIs('units.*') ? 'active' : '' }}">
-                <i class="fas fa-balance-scale"></i>
-                <span>{{ __('Units') }}</span>
-            </a>
-        </div>
-
-        <!-- ================= 4. HRM & WORKSHOP ================= -->
-        <div class="sidebar-group-title menu-group-header">
-            <span>{{ __('HRM & Workshop') }}</span>
-        </div>
-
-        @if(auth()->check() && (auth()->user()->isAdmin() || auth()->user()->isSuperAdmin()))
-            @php $isEmployeeActive = request()->routeIs('employees.*'); @endphp
+            @php $isTravelActive = request()->routeIs('travel.*'); @endphp
             <div class="menu-item-wrapper">
-                <a href="#menuEmployees" class="sidebar-link sidebar-parent {{ $isEmployeeActive ? 'active' : 'collapsed' }}"
-                   data-bs-toggle="collapse" role="button" aria-expanded="{{ $isEmployeeActive ? 'true' : 'false' }}" aria-controls="menuEmployees">
+                <a href="#menuTravelAgency" class="sidebar-link sidebar-parent {{ $isTravelActive ? 'active' : 'collapsed' }}"
+                   data-bs-toggle="collapse" role="button" aria-expanded="{{ $isTravelActive ? 'true' : 'false' }}" aria-controls="menuTravelAgency">
                     <div class="sidebar-parent-label">
-                        <i class="fas fa-id-badge"></i>
-                        <span>{{ __('Employees') }}</span>
+                        <i class="fas fa-bus-alt text-primary"></i>
+                        <span>{{ __('Trips & Seat Booking') }}</span>
                     </div>
                     <i class="fas fa-chevron-down sidebar-arrow"></i>
                 </a>
-                <div class="collapse sidebar-submenu {{ $isEmployeeActive ? 'show' : '' }}" id="menuEmployees">
-                    <a href="{{ route('employees.index') }}" class="submenu-link {{ request()->routeIs('employees.index') ? 'active' : '' }}">
+                <div class="collapse sidebar-submenu {{ $isTravelActive ? 'show' : '' }}" id="menuTravelAgency">
+                    <a href="{{ route('travel.trips.index') }}" class="submenu-link {{ request()->routeIs('travel.trips.*') ? 'active' : '' }}">
                         <span class="submenu-bullet"></span>
-                        <span>{{ __('Staff List') }}</span>
+                        <span>{{ __('All Trips & Buses') }}</span>
                     </a>
-                    <a href="{{ route('employees.create') }}" class="submenu-link {{ request()->routeIs('employees.create') ? 'active' : '' }}">
+                    <a href="{{ route('travel.bookings.index') }}" class="submenu-link {{ request()->routeIs('travel.bookings.index') || request()->routeIs('travel.bookings.show') ? 'active' : '' }}">
                         <span class="submenu-bullet"></span>
-                        <span>{{ __('Add Employee') }}</span>
+                        <span>{{ __('Seat Bookings') }}</span>
+                    </a>
+                    <a href="{{ route('travel.bookings.create') }}" class="submenu-link {{ request()->routeIs('travel.bookings.create') ? 'active' : '' }}">
+                        <span class="submenu-bullet"></span>
+                        <span>{{ __('Book a Seat') }}</span>
                     </a>
                 </div>
             </div>
         @endif
 
-        <div class="menu-item-wrapper">
-            <a href="{{ route('departments.index') }}" class="sidebar-link {{ request()->routeIs('departments.*') ? 'active' : '' }}">
-                <i class="fas fa-cogs"></i>
-                <span>{{ __('Departments / Units') }}</span>
-            </a>
-        </div>
+        @php
+            $hasSalesGroup = shop_has_module('job_orders') || shop_has_module('quotations') || shop_has_module('invoices') || shop_has_module('delivery_notes') || shop_has_module('customers');
+        @endphp
+
+        @if($hasSalesGroup)
+            <!-- ================= 2. SALES & REVENUE ================= -->
+            <div class="sidebar-group-title menu-group-header">
+                <span>{{ __('Sales & Revenue') }}</span>
+            </div>
+
+            @if(shop_has_module('job_orders'))
+                <!-- Job Orders -->
+                @php $isJobActive = request()->routeIs('job-orders.*'); @endphp
+                <div class="menu-item-wrapper">
+                    <a href="#menuJobOrders" class="sidebar-link sidebar-parent {{ $isJobActive ? 'active' : 'collapsed' }}"
+                       data-bs-toggle="collapse" role="button" aria-expanded="{{ $isJobActive ? 'true' : 'false' }}" aria-controls="menuJobOrders">
+                        <div class="sidebar-parent-label">
+                            <i class="fas fa-tasks"></i>
+                            <span>{{ __('Job Orders') }}</span>
+                        </div>
+                        <i class="fas fa-chevron-down sidebar-arrow"></i>
+                    </a>
+                    <div class="collapse sidebar-submenu {{ $isJobActive ? 'show' : '' }}" id="menuJobOrders">
+                        <a href="{{ route('job-orders.index') }}" class="submenu-link {{ request()->routeIs('job-orders.index') ? 'active' : '' }}">
+                            <span class="submenu-bullet"></span>
+                            <span>{{ __('All Job Orders') }}</span>
+                        </a>
+                        <a href="{{ route('job-orders.create') }}" class="submenu-link {{ request()->routeIs('job-orders.create') ? 'active' : '' }}">
+                            <span class="submenu-bullet"></span>
+                            <span>{{ __('Create Job Order') }}</span>
+                        </a>
+                    </div>
+                </div>
+            @endif
+
+            @if(shop_has_module('quotations'))
+                <!-- Quotations -->
+                @php $isQuoteActive = request()->routeIs('quotes.*'); @endphp
+                <div class="menu-item-wrapper">
+                    <a href="#menuQuotes" class="sidebar-link sidebar-parent {{ $isQuoteActive ? 'active' : 'collapsed' }}"
+                       data-bs-toggle="collapse" role="button" aria-expanded="{{ $isQuoteActive ? 'true' : 'false' }}" aria-controls="menuQuotes">
+                        <div class="sidebar-parent-label">
+                            <i class="fas fa-file-invoice"></i>
+                            <span>{{ __('Quotations') }}</span>
+                        </div>
+                        <i class="fas fa-chevron-down sidebar-arrow"></i>
+                    </a>
+                    <div class="collapse sidebar-submenu {{ $isQuoteActive ? 'show' : '' }}" id="menuQuotes">
+                        <a href="{{ route('quotes.index') }}" class="submenu-link {{ request()->routeIs('quotes.index') ? 'active' : '' }}">
+                            <span class="submenu-bullet"></span>
+                            <span>{{ __('All Quotations') }}</span>
+                        </a>
+                        <a href="{{ route('quotes.create') }}" class="submenu-link {{ request()->routeIs('quotes.create') ? 'active' : '' }}">
+                            <span class="submenu-bullet"></span>
+                            <span>{{ __('Create Quotation') }}</span>
+                        </a>
+                    </div>
+                </div>
+            @endif
+
+            @if(shop_has_module('invoices'))
+                <!-- Sales Invoices -->
+                @php $isInvoiceActive = request()->routeIs('invoices.*'); @endphp
+                <div class="menu-item-wrapper">
+                    <a href="#menuInvoices" class="sidebar-link sidebar-parent {{ $isInvoiceActive ? 'active' : 'collapsed' }}"
+                       data-bs-toggle="collapse" role="button" aria-expanded="{{ $isInvoiceActive ? 'true' : 'false' }}" aria-controls="menuInvoices">
+                        <div class="sidebar-parent-label">
+                            <i class="fas fa-file-invoice-dollar"></i>
+                            <span>{{ __('Sales Invoices') }}</span>
+                        </div>
+                        <i class="fas fa-chevron-down sidebar-arrow"></i>
+                    </a>
+                    <div class="collapse sidebar-submenu {{ $isInvoiceActive ? 'show' : '' }}" id="menuInvoices">
+                        <a href="{{ route('invoices.index') }}" class="submenu-link {{ request()->routeIs('invoices.index') ? 'active' : '' }}">
+                            <span class="submenu-bullet"></span>
+                            <span>{{ __('All Invoices') }}</span>
+                        </a>
+                        <a href="{{ route('invoices.create') }}" class="submenu-link {{ request()->routeIs('invoices.create') ? 'active' : '' }}">
+                            <span class="submenu-bullet"></span>
+                            <span>{{ __('Create Invoice') }}</span>
+                        </a>
+                    </div>
+                </div>
+            @endif
+
+            @if(shop_has_module('delivery_notes'))
+                <!-- Delivery Notes -->
+                @php $isDeliveryActive = request()->routeIs('delivery_notes.*'); @endphp
+                <div class="menu-item-wrapper">
+                    <a href="#menuDeliveryNotes" class="sidebar-link sidebar-parent {{ $isDeliveryActive ? 'active' : 'collapsed' }}"
+                       data-bs-toggle="collapse" role="button" aria-expanded="{{ $isDeliveryActive ? 'true' : 'false' }}" aria-controls="menuDeliveryNotes">
+                        <div class="sidebar-parent-label">
+                            <i class="fas fa-truck"></i>
+                            <span>{{ __('Delivery Notes') }}</span>
+                        </div>
+                        <i class="fas fa-chevron-down sidebar-arrow"></i>
+                    </a>
+                    <div class="collapse sidebar-submenu {{ $isDeliveryActive ? 'show' : '' }}" id="menuDeliveryNotes">
+                        <a href="{{ route('delivery_notes.index') }}" class="submenu-link {{ request()->routeIs('delivery_notes.index') ? 'active' : '' }}">
+                            <span class="submenu-bullet"></span>
+                            <span>{{ __('All Delivery Notes') }}</span>
+                        </a>
+                        <a href="{{ route('delivery_notes.create') }}" class="submenu-link {{ request()->routeIs('delivery_notes.create') ? 'active' : '' }}">
+                            <span class="submenu-bullet"></span>
+                            <span>{{ __('Create Delivery Note') }}</span>
+                        </a>
+                    </div>
+                </div>
+            @endif
+
+            @if(shop_has_module('customers'))
+                <!-- Customers / CRM -->
+                @php $isCustActive = request()->routeIs('customers.*'); @endphp
+                <div class="menu-item-wrapper">
+                    <a href="#menuCustomers" class="sidebar-link sidebar-parent {{ $isCustActive ? 'active' : 'collapsed' }}"
+                       data-bs-toggle="collapse" role="button" aria-expanded="{{ $isCustActive ? 'true' : 'false' }}" aria-controls="menuCustomers">
+                        <div class="sidebar-parent-label">
+                            <i class="fas fa-user-friends"></i>
+                            <span>{{ __('Customers (CRM)') }}</span>
+                        </div>
+                        <i class="fas fa-chevron-down sidebar-arrow"></i>
+                    </a>
+                    <div class="collapse sidebar-submenu {{ $isCustActive ? 'show' : '' }}" id="menuCustomers">
+                        <a href="{{ route('customers.index') }}" class="submenu-link {{ request()->routeIs('customers.index') ? 'active' : '' }}">
+                            <span class="submenu-bullet"></span>
+                            <span>{{ __('All Customers') }}</span>
+                        </a>
+                        <a href="{{ route('customers.create') }}" class="submenu-link {{ request()->routeIs('customers.create') ? 'active' : '' }}">
+                            <span class="submenu-bullet"></span>
+                            <span>{{ __('Add Customer') }}</span>
+                        </a>
+                        @if(auth()->user()->is_super_admin ?? false)
+                            <a href="{{ route('super_admin.proposals.index') }}" class="submenu-link {{ request()->routeIs('super_admin.proposals.*') ? 'active' : '' }}">
+                                <span class="submenu-bullet"></span>
+                                <span class="d-flex align-items-center justify-content-between w-100">
+                                    <span>{{ __('Proposal Leads') }}</span>
+                                    @if(($pendingProposalsCount ?? 0) > 0)
+                                        <span class="badge bg-warning text-dark rounded-pill" style="font-size: 0.65rem;">{{ $pendingProposalsCount }}</span>
+                                    @endif
+                                </span>
+                            </a>
+                        @endif
+                    </div>
+                </div>
+            @endif
+        @endif
+
+        @php
+            $hasInventoryGroup = shop_has_module('products') || shop_has_module('services') || shop_has_module('categories') || shop_has_module('units');
+        @endphp
+
+        @if($hasInventoryGroup)
+            <!-- ================= 3. PURCHASE & INVENTORY ================= -->
+            <div class="sidebar-group-title menu-group-header">
+                <span>{{ __('Purchase & Inventory') }}</span>
+            </div>
+
+            @if(shop_has_module('products'))
+                <!-- Products -->
+                @php $isProdActive = request()->routeIs('products.*'); @endphp
+                <div class="menu-item-wrapper">
+                    <a href="#menuProducts" class="sidebar-link sidebar-parent {{ $isProdActive ? 'active' : 'collapsed' }}"
+                       data-bs-toggle="collapse" role="button" aria-expanded="{{ $isProdActive ? 'true' : 'false' }}" aria-controls="menuProducts">
+                        <div class="sidebar-parent-label">
+                            <i class="fas fa-boxes"></i>
+                            <span>{{ __('Products') }}</span>
+                        </div>
+                        <i class="fas fa-chevron-down sidebar-arrow"></i>
+                    </a>
+                    <div class="collapse sidebar-submenu {{ $isProdActive ? 'show' : '' }}" id="menuProducts">
+                        <a href="{{ route('products.index') }}" class="submenu-link {{ request()->routeIs('products.index') ? 'active' : '' }}">
+                            <span class="submenu-bullet"></span>
+                            <span>{{ __('All Products') }}</span>
+                        </a>
+                        <a href="{{ route('products.create') }}" class="submenu-link {{ request()->routeIs('products.create') ? 'active' : '' }}">
+                            <span class="submenu-bullet"></span>
+                            <span>{{ __('Add Product') }}</span>
+                        </a>
+                    </div>
+                </div>
+            @endif
+
+            @if(shop_has_module('services'))
+                <!-- Dedicated Services Module -->
+                @php $isServActive = request()->routeIs('services.*'); @endphp
+                <div class="menu-item-wrapper">
+                    <a href="#menuServices" class="sidebar-link sidebar-parent {{ $isServActive ? 'active' : 'collapsed' }}"
+                       data-bs-toggle="collapse" role="button" aria-expanded="{{ $isServActive ? 'true' : 'false' }}" aria-controls="menuServices">
+                        <div class="sidebar-parent-label">
+                            <i class="fas fa-concierge-bell"></i>
+                            <span>{{ __('Services') }}</span>
+                        </div>
+                        <i class="fas fa-chevron-down sidebar-arrow"></i>
+                    </a>
+                    <div class="collapse sidebar-submenu {{ $isServActive ? 'show' : '' }}" id="menuServices">
+                        <a href="{{ route('services.index') }}" class="submenu-link {{ request()->routeIs('services.index') ? 'active' : '' }}">
+                            <span class="submenu-bullet"></span>
+                            <span>{{ __('All Services') }}</span>
+                        </a>
+                        <a href="{{ route('services.create') }}" class="submenu-link {{ request()->routeIs('services.create') ? 'active' : '' }}">
+                            <span class="submenu-bullet"></span>
+                            <span>{{ __('Add New Service') }}</span>
+                        </a>
+                    </div>
+                </div>
+            @endif
+
+            @if(shop_has_module('categories'))
+                <!-- Categories -->
+                <div class="menu-item-wrapper">
+                    <a href="{{ route('categories.index') }}" class="sidebar-link {{ request()->routeIs('categories.*') ? 'active' : '' }}">
+                        <i class="fas fa-tags"></i>
+                        <span>{{ __('Categories') }}</span>
+                    </a>
+                </div>
+            @endif
+
+            @if(shop_has_module('units'))
+                <!-- Units -->
+                <div class="menu-item-wrapper">
+                    <a href="{{ route('units.index') }}" class="sidebar-link {{ request()->routeIs('units.*') ? 'active' : '' }}">
+                        <i class="fas fa-balance-scale"></i>
+                        <span>{{ __('Units') }}</span>
+                    </a>
+                </div>
+            @endif
+        @endif
+
+        @php
+            $hasHrmGroup = shop_has_module('employees') || shop_has_module('departments');
+        @endphp
+
+        @if($hasHrmGroup)
+            <!-- ================= 4. HRM & WORKSHOP ================= -->
+            <div class="sidebar-group-title menu-group-header">
+                <span>{{ __('HRM & Workshop') }}</span>
+            </div>
+
+            @if(shop_has_module('employees'))
+                @if(auth()->check() && (auth()->user()->isAdmin() || auth()->user()->isSuperAdmin()))
+                    @php $isEmployeeActive = request()->routeIs('employees.*'); @endphp
+                    <div class="menu-item-wrapper">
+                        <a href="#menuEmployees" class="sidebar-link sidebar-parent {{ $isEmployeeActive ? 'active' : 'collapsed' }}"
+                           data-bs-toggle="collapse" role="button" aria-expanded="{{ $isEmployeeActive ? 'true' : 'false' }}" aria-controls="menuEmployees">
+                            <div class="sidebar-parent-label">
+                                <i class="fas fa-id-badge"></i>
+                                <span>{{ __('Employees') }}</span>
+                            </div>
+                            <i class="fas fa-chevron-down sidebar-arrow"></i>
+                        </a>
+                        <div class="collapse sidebar-submenu {{ $isEmployeeActive ? 'show' : '' }}" id="menuEmployees">
+                            <a href="{{ route('employees.index') }}" class="submenu-link {{ request()->routeIs('employees.index') ? 'active' : '' }}">
+                                <span class="submenu-bullet"></span>
+                                <span>{{ __('Staff List') }}</span>
+                            </a>
+                            <a href="{{ route('employees.create') }}" class="submenu-link {{ request()->routeIs('employees.create') ? 'active' : '' }}">
+                                <span class="submenu-bullet"></span>
+                                <span>{{ __('Add Employee') }}</span>
+                            </a>
+                        </div>
+                    </div>
+                @endif
+            @endif
+
+            @if(shop_has_module('departments'))
+                <div class="menu-item-wrapper">
+                    <a href="{{ route('departments.index') }}" class="sidebar-link {{ request()->routeIs('departments.*') ? 'active' : '' }}">
+                        <i class="fas fa-cogs"></i>
+                        <span>{{ __('Departments / Units') }}</span>
+                    </a>
+                </div>
+            @endif
+        @endif
 
         <!-- ================= 5. SETTINGS & SYSTEM ================= -->
         <div class="sidebar-group-title menu-group-header">

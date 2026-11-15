@@ -64,7 +64,9 @@ class ShopController extends Controller
     public function create()
     {
         $packages = Package::where('is_active', true)->orderBy('sort_order')->get();
-        return view('super_admin.shops.create', compact('packages'));
+        $businessTypes = Shop::availableBusinessTypes();
+        $allModules = Shop::availableModules();
+        return view('super_admin.shops.create', compact('packages', 'businessTypes', 'allModules'));
     }
 
     /**
@@ -75,6 +77,9 @@ class ShopController extends Controller
         $request->validate([
             // Shop Details
             'name' => 'required|string|max:255',
+            'business_type' => 'required|string|in:' . implode(',', array_keys(Shop::availableBusinessTypes())),
+            'enabled_modules' => 'nullable|array',
+            'enabled_modules.*' => 'string|in:' . implode(',', array_keys(Shop::availableModules())),
             'slug' => 'nullable|string|max:255|unique:shops,slug',
             'email' => 'nullable|email|max:255',
             'phone' => 'nullable|string|max:50',
@@ -141,9 +146,16 @@ class ShopController extends Controller
             $startsAt = now();
             $expiresAt = now()->addDays($durationDays);
 
+            $businessType = $request->input('business_type', 'printing_advertising');
+            $enabledModules = $request->has('enabled_modules')
+                ? (array) $request->input('enabled_modules')
+                : Shop::defaultModulesForType($businessType);
+
             // 1. Create Shop
             $shop = Shop::create([
                 'name' => $request->name,
+                'business_type' => $businessType,
+                'enabled_modules' => $enabledModules,
                 'slug' => $slug,
                 'email' => $request->email,
                 'phone' => $normalizedPhone,
@@ -177,13 +189,22 @@ class ShopController extends Controller
                 'quote_prefix' => $shop->quote_prefix,
             ]);
 
-            // 3. Seed default departments for the new shop
-            $defaultDepartments = [
-                ['name' => 'Workshop', 'description' => 'General fabrication and assembly workshop'],
-                ['name' => 'Banner Machine', 'description' => 'Flex and banner printing machinery'],
-                ['name' => 'Sticker Print', 'description' => 'Sticker printing and vinyl cutting unit'],
-                ['name' => 'Sign Board', 'description' => 'Sign board design, frame, and mounting team'],
-            ];
+            // 3. Seed default departments tailored to the selected business category
+            if ($businessType === 'travel_umrah') {
+                $defaultDepartments = [
+                    ['name' => 'Transport & Bus Fleet', 'description' => 'Bus scheduling, drivers, fuel and trip logistics'],
+                    ['name' => 'Ticketing & Visa', 'description' => 'Passports, Umrah e-visas and booking validation'],
+                    ['name' => 'Hotel Accommodations', 'description' => 'Makkah & Madinah hotel rooms, catering and check-in'],
+                    ['name' => 'Customer Relations', 'description' => 'Pilgrim inquiries, passenger support and guidance'],
+                ];
+            } else {
+                $defaultDepartments = [
+                    ['name' => 'Workshop', 'description' => 'General fabrication and assembly workshop'],
+                    ['name' => 'Banner Machine', 'description' => 'Flex and banner printing machinery'],
+                    ['name' => 'Sticker Print', 'description' => 'Sticker printing and vinyl cutting unit'],
+                    ['name' => 'Sign Board', 'description' => 'Sign board design, frame, and mounting team'],
+                ];
+            }
 
             foreach ($defaultDepartments as $dept) {
                 Department::create([
@@ -253,7 +274,9 @@ class ShopController extends Controller
     {
         $shop->load(['admins', 'setting', 'package', 'subscriptions.package', 'subscriptions.recordedBy', 'branches']);
         $packages = Package::where('is_active', true)->orderBy('sort_order')->get();
-        return view('super_admin.shops.edit', compact('shop', 'packages'));
+        $businessTypes = Shop::availableBusinessTypes();
+        $allModules = Shop::availableModules();
+        return view('super_admin.shops.edit', compact('shop', 'packages', 'businessTypes', 'allModules'));
     }
 
     /**
@@ -263,6 +286,9 @@ class ShopController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
+            'business_type' => 'required|string|in:' . implode(',', array_keys(Shop::availableBusinessTypes())),
+            'enabled_modules' => 'nullable|array',
+            'enabled_modules.*' => 'string|in:' . implode(',', array_keys(Shop::availableModules())),
             'slug' => 'required|string|max:255|unique:shops,slug,' . $shop->id,
             'email' => 'nullable|email|max:255',
             'phone' => 'nullable|string|max:50',
@@ -282,6 +308,7 @@ class ShopController extends Controller
         ]);
 
         $data = $request->except(['logo', 'country_code']);
+        $data['enabled_modules'] = $request->has('enabled_modules') ? (array) $request->input('enabled_modules') : [];
 
         if ($request->filled('phone')) {
             $data['phone'] = \App\Models\Customer::normalizePhone(

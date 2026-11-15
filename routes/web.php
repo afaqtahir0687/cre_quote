@@ -204,6 +204,18 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('super-admin/switch-shop/{id}', [ShopController::class, 'switchShop'])->name('super_admin.switch_shop');
     Route::post('super-admin/switch-shop-all', [ShopController::class, 'switchShopAll'])->name('super_admin.switch_shop_all');
 
+    // ================= TRAVEL & UMRAH AGENCY MODULE =================
+    Route::group(['prefix' => 'travel', 'as' => 'travel.', 'middleware' => 'shop.module:travel_tourism'], function () {
+        // Trips Management
+        Route::get('trips/{trip}/seats-json', [\App\Http\Controllers\TravelTripController::class, 'seatsJson'])->name('trips.seats_json');
+        Route::resource('trips', \App\Http\Controllers\TravelTripController::class);
+
+        // Seat & Passenger Bookings
+        Route::post('bookings/{booking}/cancel', [\App\Http\Controllers\TravelBookingController::class, 'cancel'])->name('bookings.cancel');
+        Route::get('bookings/{booking}/voucher', [\App\Http\Controllers\TravelBookingController::class, 'printVoucher'])->name('bookings.voucher');
+        Route::resource('bookings', \App\Http\Controllers\TravelBookingController::class);
+    });
+
     // Super Admin Management Panel
     Route::group(['prefix' => 'super-admin', 'as' => 'super_admin.', 'middleware' => 'super_admin'], function () {
         Route::get('/', [SuperAdminController::class, 'index'])->name('dashboard');

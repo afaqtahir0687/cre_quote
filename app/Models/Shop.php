@@ -22,6 +22,8 @@ class Shop extends Model
         'invoice_prefix',
         'quote_prefix',
         'status',
+        'business_type',
+        'enabled_modules',
         'status_reason',
         'status_message',
         'grace_period_days',
@@ -40,6 +42,7 @@ class Shop extends Model
     ];
 
     protected $casts = [
+        'enabled_modules' => 'array',
         'action_deadline' => 'date',
         'status_updated_at' => 'datetime',
         'grace_period_days' => 'integer',
@@ -363,6 +366,202 @@ class Shop extends Model
         $currentBranchesCount = $target->branches()->count() + 1; // including main shop
 
         return $currentBranchesCount < $maxShops;
+    }
+
+    /**
+     * Travel trips belonging to this shop.
+     */
+    public function travelTrips()
+    {
+        return $this->hasMany(TravelTrip::class);
+    }
+
+    /**
+     * Travel bookings belonging to this shop.
+     */
+    public function travelBookings()
+    {
+        return $this->hasMany(TravelBooking::class);
+    }
+
+    /**
+     * All available business categories / industries.
+     */
+    public static function availableBusinessTypes(): array
+    {
+        return [
+            'printing_advertising' => [
+                'name' => 'Printing, Signage & Advertising',
+                'name_ar' => 'الطباعة واللوحات الإعلانية',
+                'icon' => 'fas fa-print',
+                'description' => 'Flex printing, 3D channel signage, vehicle graphics, job order production.',
+            ],
+            'travel_umrah' => [
+                'name' => 'Umrah, Travel & Tourism Agency',
+                'name_ar' => 'وكالة العمرة والسياحة والسفر',
+                'icon' => 'fas fa-kaaba',
+                'description' => 'Bus seat booking, Umrah trips, passenger boarding passes, hotel & travel expense packages.',
+            ],
+            'general_trading' => [
+                'name' => 'General Trading & Retail Store',
+                'name_ar' => 'التجارة العامة ونقاط البيع',
+                'icon' => 'fas fa-shopping-cart',
+                'description' => 'Inventory, products, sales invoices, customer ledger balances.',
+            ],
+            'services_agency' => [
+                'name' => 'Digital & Professional Services',
+                'name_ar' => 'الخدمات الرقمية والاستشارية',
+                'icon' => 'fas fa-laptop-code',
+                'description' => 'Client proposals, project milestones, hourly/fixed services billing.',
+            ],
+            'custom' => [
+                'name' => 'Custom / Full Enterprise Suite',
+                'name_ar' => 'أعمال مخصصة شاملة لجميع الوحدات',
+                'icon' => 'fas fa-cubes',
+                'description' => 'Tailor-fit permissions with all ERP modules selectable.',
+            ],
+        ];
+    }
+
+    /**
+     * All available modular features.
+     */
+    public static function availableModules(): array
+    {
+        return [
+            'job_orders' => [
+                'name' => 'Job Orders & Workshop Production',
+                'name_ar' => 'أوامر التشغيل والإنتاج في الورشة',
+                'icon' => 'fas fa-tasks',
+                'category' => 'sales',
+            ],
+            'quotations' => [
+                'name' => 'Quotations & Cost Estimates',
+                'name_ar' => 'عروض الأسعار والتقديرات',
+                'icon' => 'fas fa-file-invoice',
+                'category' => 'sales',
+            ],
+            'invoices' => [
+                'name' => 'Sales Invoices & Billing',
+                'name_ar' => 'فواتير المبيعات والتحصيل',
+                'icon' => 'fas fa-file-invoice-dollar',
+                'category' => 'sales',
+            ],
+            'delivery_notes' => [
+                'name' => 'Delivery Notes (Challan)',
+                'name_ar' => 'سندات التسليم والشحن',
+                'icon' => 'fas fa-truck',
+                'category' => 'sales',
+            ],
+            'customers' => [
+                'name' => 'Customer Relationship Management (CRM)',
+                'name_ar' => 'إدارة العملاء وكشوفات الحساب',
+                'icon' => 'fas fa-user-friends',
+                'category' => 'crm',
+            ],
+            'products' => [
+                'name' => 'Products & Materials Catalog',
+                'name_ar' => 'المنتجات وخامات المستودع',
+                'icon' => 'fas fa-boxes',
+                'category' => 'inventory',
+            ],
+            'services' => [
+                'name' => 'Custom Services Catalog',
+                'name_ar' => 'دليل الخدمات المخصصة',
+                'icon' => 'fas fa-concierge-bell',
+                'category' => 'inventory',
+            ],
+            'categories' => [
+                'name' => 'Product & Material Categories',
+                'name_ar' => 'تصنيفات الأصناف والمواد',
+                'icon' => 'fas fa-tags',
+                'category' => 'inventory',
+            ],
+            'units' => [
+                'name' => 'Units of Measurement',
+                'name_ar' => 'وحدات القياس (متر، سم، طقم...)',
+                'icon' => 'fas fa-balance-scale',
+                'category' => 'inventory',
+            ],
+            'employees' => [
+                'name' => 'Employees & Staff (HRM)',
+                'name_ar' => 'الموظفين والموارد البشرية',
+                'icon' => 'fas fa-id-badge',
+                'category' => 'hrm',
+            ],
+            'departments' => [
+                'name' => 'Departments & Machine Units',
+                'name_ar' => 'الأقسام ووحدات التشغيل',
+                'icon' => 'fas fa-cogs',
+                'category' => 'hrm',
+            ],
+            'travel_tourism' => [
+                'name' => 'Umrah, Bus Trips & Seat Booking',
+                'name_ar' => 'إدارة العمرة والرحلات وحجز مقاعد الحافلات',
+                'icon' => 'fas fa-bus-alt',
+                'category' => 'travel',
+            ],
+        ];
+    }
+
+    /**
+     * Default modules by business type.
+     */
+    public static function defaultModulesForType(string $type): array
+    {
+        return match ($type) {
+            'travel_umrah' => [
+                'travel_tourism',
+                'invoices',
+                'customers',
+                'employees',
+                'departments',
+            ],
+            'general_trading' => [
+                'invoices',
+                'delivery_notes',
+                'customers',
+                'products',
+                'categories',
+                'units',
+                'employees',
+            ],
+            'services_agency' => [
+                'quotations',
+                'invoices',
+                'customers',
+                'services',
+                'employees',
+            ],
+            'custom' => array_keys(self::availableModules()),
+            default => [ // 'printing_advertising'
+                'job_orders',
+                'quotations',
+                'invoices',
+                'delivery_notes',
+                'customers',
+                'products',
+                'services',
+                'categories',
+                'units',
+                'employees',
+                'departments',
+            ],
+        };
+    }
+
+    /**
+     * Check if a specific module is enabled for this shop.
+     */
+    public function hasModule(string $moduleKey): bool
+    {
+        if (is_array($this->enabled_modules) && count($this->enabled_modules) > 0) {
+            return in_array($moduleKey, $this->enabled_modules, true);
+        }
+
+        $type = $this->business_type ?: 'printing_advertising';
+        $defaults = self::defaultModulesForType($type);
+        return in_array($moduleKey, $defaults, true);
     }
 
     protected static function booted()

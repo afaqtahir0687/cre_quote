@@ -63,8 +63,19 @@
                             <i class="fas fa-map-marker-alt me-1 text-danger"></i>{{ $shop->city ? tdb($shop->city) : __('Main Location') }}
                             @if($shop->country) &bull; {{ $shop->country }}@endif
                         </div>
-                        @if($shop->package)
-                            <div class="mt-1">
+                        <div class="mt-1 d-flex flex-wrap align-items-center gap-1">
+                            @php
+                                $btypes = \App\Models\Shop::availableBusinessTypes();
+                                $currentBtype = $btypes[$shop->business_type ?? 'printing_advertising'] ?? null;
+                            @endphp
+                            @if($currentBtype)
+                                <span class="badge bg-light text-primary border" style="font-size: 0.7rem;">
+                                    <i class="{{ $currentBtype['icon'] }} me-1"></i>
+                                    {{ __(app()->getLocale() === 'ar' ? $currentBtype['name_ar'] : $currentBtype['name']) }}
+                                </span>
+                            @endif
+
+                            @if($shop->package)
                                 <span class="badge {{ $shop->package->badgeClass() }}" style="font-size: 0.7rem;">
                                     {{ tdb($shop->package->name) }}
                                     @if($shop->isSubscriptionExpired())
@@ -73,8 +84,8 @@
                                         &bull; {{ $shop->subscriptionDaysRemaining() }} {{ __('days left') }}
                                     @endif
                                 </span>
-                            </div>
-                        @endif
+                            @endif
+                        </div>
                     </div>
                 </div>
             </td>

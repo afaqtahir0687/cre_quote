@@ -14,6 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'admin' => \App\Http\Middleware\IsAdmin::class,
             'super_admin' => \App\Http\Middleware\IsSuperAdmin::class,
+            'shop.module' => \App\Http\Middleware\CheckShopModule::class,
         ]);
 
         $middleware->web(append: [

@@ -27,7 +27,85 @@
 
     <div class="row g-4">
         <div class="col-lg-8">
-            <x-card :title="__('Branch Profile & Configuration')">
+            <!-- 1. Industry / Business Category Selection -->
+            <x-card :title="__('1. Business Category & Industry Type')">
+                <p class="text-muted small mb-3">
+                    {{ __('Select the primary business category for this shop. Recommended modules and workflows will be configured automatically.') }}
+                </p>
+
+                <div class="row g-3">
+                    @php
+                        $selectedType = old('business_type', $shop->business_type ?: 'printing_advertising');
+                    @endphp
+                    @foreach($businessTypes as $typeKey => $typeInfo)
+                        <div class="col-md-6">
+                            <label class="business-type-card border rounded-3 p-3 d-flex align-items-start gap-3 h-100 cursor-pointer position-relative shadow-xs transition-all {{ $selectedType === $typeKey ? 'border-primary bg-primary-subtle' : 'bg-white' }}"
+                                   for="btype_{{ $typeKey }}" style="cursor: pointer; transition: all 0.2s ease;">
+                                <input type="radio" name="business_type" id="btype_{{ $typeKey }}" value="{{ $typeKey }}" 
+                                       class="form-check-input mt-1 flex-shrink-0" {{ $selectedType === $typeKey ? 'checked' : '' }}
+                                       onchange="onBusinessTypeChange('{{ $typeKey }}')">
+                                <div class="flex-grow-1">
+                                    <div class="d-flex align-items-center gap-2 mb-1">
+                                        <i class="{{ $typeInfo['icon'] }} text-primary"></i>
+                                        <strong class="text-dark small">{{ __(app()->getLocale() === 'ar' ? $typeInfo['name_ar'] : $typeInfo['name']) }}</strong>
+                                    </div>
+                                    <p class="text-muted extra-small mb-0" style="font-size: 0.76rem; line-height: 1.4;">
+                                        {{ __($typeInfo['description']) }}
+                                    </p>
+                                </div>
+                            </label>
+                        </div>
+                    @endforeach
+                </div>
+            </x-card>
+
+            <!-- 2. Granular Module Permissions & Feature Toggles -->
+            <x-card :title="__('2. Modular Permissions & Feature Toggles (Per Shop)')" class="mt-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <p class="text-muted small mb-0">
+                        {{ __('Choose which modules and menus are active for this shop. Unchecked modules will not appear in the shop navigation or dashboard.') }}
+                    </p>
+                    <button type="button" class="btn btn-sm btn-light border" onclick="resetToIndustryDefaults()">
+                        <i class="fas fa-undo me-1 text-primary"></i> {{ __('Reset to Category Defaults') }}
+                    </button>
+                </div>
+
+                @php
+                    $oldModules = old('enabled_modules', is_array($shop->enabled_modules) && count($shop->enabled_modules) > 0 
+                        ? $shop->enabled_modules 
+                        : \App\Models\Shop::defaultModulesForType($selectedType));
+                @endphp
+
+                <div class="row g-3">
+                    @foreach($allModules as $modKey => $modInfo)
+                        @php
+                            $isChecked = in_array($modKey, $oldModules, true);
+                            $isTravel = $modKey === 'travel_tourism';
+                        @endphp
+                        <div class="col-md-6">
+                            <div class="p-3 border rounded-3 h-100 {{ $isTravel ? 'bg-light-subtle border-primary-subtle' : 'bg-white' }}" style="transition: all 0.2s ease;">
+                                <div class="form-check form-switch mb-1">
+                                    <input class="form-check-input module-checkbox" type="checkbox" name="enabled_modules[]" 
+                                           value="{{ $modKey }}" id="mod_{{ $modKey }}" {{ $isChecked ? 'checked' : '' }}>
+                                    <label class="form-check-label fw-bold text-dark small" for="mod_{{ $modKey }}">
+                                        <i class="{{ $modInfo['icon'] }} text-primary me-1"></i>
+                                        {{ __(app()->getLocale() === 'ar' ? $modInfo['name_ar'] : $modInfo['name']) }}
+                                    </label>
+                                </div>
+                                <div class="text-muted extra-small ms-4" style="font-size: 0.74rem;">
+                                    @if($isTravel)
+                                        <span class="badge bg-success-subtle text-success border border-success-subtle extra-small py-0 px-1">{{ __('Umrah & Transport Bus Seat Booking') }}</span>
+                                    @else
+                                        {{ __('Category:') }} <span class="badge bg-light text-dark border extra-small">{{ ucfirst($modInfo['category']) }}</span>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </x-card>
+
+            <x-card :title="__('3. Branch Profile & Configuration')" class="mt-4">
                 <div class="row g-3">
                     <div class="col-md-8">
                         <label class="form-label fw-bold text-dark">{{ __('Shop / Branch Name *') }}</label>
@@ -310,6 +388,44 @@
 
 @push('scripts')
 <script>
+    const industryDefaults = {
+        printing_advertising: ['job_orders', 'quotations', 'invoices', 'delivery_notes', 'customers', 'products', 'services', 'categories', 'units', 'employees', 'departments'],
+        travel_umrah: ['travel_tourism', 'invoices', 'customers', 'employees', 'departments'],
+        general_trading: ['invoices', 'delivery_notes', 'customers', 'products', 'categories', 'units', 'employees'],
+        services_agency: ['quotations', 'invoices', 'customers', 'services', 'employees'],
+        custom: ['job_orders', 'quotations', 'invoices', 'delivery_notes', 'customers', 'products', 'services', 'categories', 'units', 'employees', 'departments', 'travel_tourism']
+    };
+
+    function onBusinessTypeChange(typeKey) {
+        document.querySelectorAll('.business-type-card').forEach(card => {
+            card.classList.remove('border-primary', 'bg-primary-subtle');
+            card.classList.add('bg-white');
+        });
+        const selectedRadio = document.getElementById('btype_' + typeKey);
+        if (selectedRadio) {
+            const parentCard = selectedRadio.closest('.business-type-card');
+            if (parentCard) {
+                parentCard.classList.remove('bg-white');
+                parentCard.classList.add('border-primary', 'bg-primary-subtle');
+            }
+        }
+        applyModuleDefaults(typeKey);
+    }
+
+    function applyModuleDefaults(typeKey) {
+        const allowed = industryDefaults[typeKey] || industryDefaults.printing_advertising;
+        document.querySelectorAll('.module-checkbox').forEach(cb => {
+            cb.checked = allowed.includes(cb.value);
+        });
+    }
+
+    function resetToIndustryDefaults() {
+        const checkedType = document.querySelector('input[name="business_type"]:checked');
+        if (checkedType) {
+            applyModuleDefaults(checkedType.value);
+        }
+    }
+
     function toggleStatusFields(val) {
         const container = document.getElementById('editStatusExtraContainer');
         if (val === 'inactive' || val === 'suspended') {

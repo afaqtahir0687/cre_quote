@@ -115,6 +115,47 @@ if (!function_exists('current_shop')) {
     }
 }
 
+if (!function_exists('shop_has_module')) {
+    /**
+     * Check if a specific module is enabled for the active shop context.
+     * Super admin in global view has access to everything.
+     */
+    function shop_has_module(string $moduleKey): bool
+    {
+        if (!auth()->check()) {
+            return false;
+        }
+
+        $user = auth()->user();
+
+        // Super Admin in global view ('all' or empty) sees all modules
+        if ($user->isSuperAdmin()) {
+            $sessionShop = session('active_shop_id');
+            if (empty($sessionShop) || $sessionShop === 'all') {
+                return true;
+            }
+        }
+
+        $shop = current_shop();
+        if (!$shop) {
+            return true;
+        }
+
+        return $shop->hasModule($moduleKey);
+    }
+}
+
+if (!function_exists('shop_business_type')) {
+    /**
+     * Get the business category/type for the current shop.
+     */
+    function shop_business_type(): string
+    {
+        $shop = current_shop();
+        return $shop ? ($shop->business_type ?: 'printing_advertising') : 'printing_advertising';
+    }
+}
+
 if (!function_exists('current_setting')) {
     /**
      * Get the current shop setting. Strictly isolated to the active shop.

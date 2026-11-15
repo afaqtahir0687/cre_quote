@@ -6,20 +6,97 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
         <h2 class="fw-bold text-dark mb-1">{{ __('Add New Shop') }}</h2>
-        <p class="text-muted small mb-0">{{ __('Create an isolated branch with dedicated data and assign its primary administrator.') }}</p>
+        <p class="text-muted small mb-0">{{ __('Create an isolated branch with dedicated business category, granular module permissions, and assign its administrator.') }}</p>
     </div>
     <a href="{{ route('super_admin.shops.index') }}" class="btn btn-outline-secondary">
         <i class="fas fa-arrow-left me-1"></i> {{ __('Back to Shops') }}
     </a>
 </div>
 
-<form action="{{ route('super_admin.shops.store') }}" method="POST" enctype="multipart/form-data">
+<form action="{{ route('super_admin.shops.store') }}" method="POST" enctype="multipart/form-data" id="createShopForm">
     @csrf
 
     <div class="row g-4">
-        <!-- Shop Profile Card -->
+        <!-- Left Column: Business Category, Profile & Module Permissions -->
         <div class="col-lg-7">
-            <x-card title="{{ __('1. Branch Profile & Settings') }}">
+            <!-- 1. Industry / Business Category Selection -->
+            <x-card :title="__('1. Business Category & Industry Type')">
+                <p class="text-muted small mb-3">
+                    {{ __('Select the primary business category for this shop. Recommended modules and workflows will be configured automatically.') }}
+                </p>
+
+                <div class="row g-3">
+                    @php
+                        $selectedType = old('business_type', 'printing_advertising');
+                    @endphp
+                    @foreach($businessTypes as $typeKey => $typeInfo)
+                        <div class="col-md-6">
+                            <label class="business-type-card border rounded-3 p-3 d-flex align-items-start gap-3 h-100 cursor-pointer position-relative shadow-xs transition-all {{ $selectedType === $typeKey ? 'border-primary bg-primary-subtle' : 'bg-white' }}"
+                                   for="btype_{{ $typeKey }}" style="cursor: pointer; transition: all 0.2s ease;">
+                                <input type="radio" name="business_type" id="btype_{{ $typeKey }}" value="{{ $typeKey }}" 
+                                       class="form-check-input mt-1 flex-shrink-0" {{ $selectedType === $typeKey ? 'checked' : '' }}
+                                       onchange="onBusinessTypeChange('{{ $typeKey }}')">
+                                <div class="flex-grow-1">
+                                    <div class="d-flex align-items-center gap-2 mb-1">
+                                        <i class="{{ $typeInfo['icon'] }} text-primary"></i>
+                                        <strong class="text-dark small">{{ __(app()->getLocale() === 'ar' ? $typeInfo['name_ar'] : $typeInfo['name']) }}</strong>
+                                    </div>
+                                    <p class="text-muted extra-small mb-0" style="font-size: 0.76rem; line-height: 1.4;">
+                                        {{ __($typeInfo['description']) }}
+                                    </p>
+                                </div>
+                            </label>
+                        </div>
+                    @endforeach
+                </div>
+            </x-card>
+
+            <!-- 2. Granular Module Permissions & Feature Toggles -->
+            <x-card :title="__('2. Modular Permissions & Feature Toggles (Per Shop)')" class="mt-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <p class="text-muted small mb-0">
+                        {{ __('Choose which modules and menus are active for this shop. Unchecked modules will not appear in the shop navigation or dashboard.') }}
+                    </p>
+                    <button type="button" class="btn btn-sm btn-light border" onclick="resetToIndustryDefaults()">
+                        <i class="fas fa-undo me-1 text-primary"></i> {{ __('Reset to Category Defaults') }}
+                    </button>
+                </div>
+
+                @php
+                    $oldModules = old('enabled_modules', \App\Models\Shop::defaultModulesForType($selectedType));
+                @endphp
+
+                <div class="row g-3">
+                    @foreach($allModules as $modKey => $modInfo)
+                        @php
+                            $isChecked = in_array($modKey, $oldModules, true);
+                            $isTravel = $modKey === 'travel_tourism';
+                        @endphp
+                        <div class="col-md-6">
+                            <div class="p-3 border rounded-3 h-100 {{ $isTravel ? 'bg-light-subtle border-primary-subtle' : 'bg-white' }}" style="transition: all 0.2s ease;">
+                                <div class="form-check form-switch mb-1">
+                                    <input class="form-check-input module-checkbox" type="checkbox" name="enabled_modules[]" 
+                                           value="{{ $modKey }}" id="mod_{{ $modKey }}" {{ $isChecked ? 'checked' : '' }}>
+                                    <label class="form-check-label fw-bold text-dark small" for="mod_{{ $modKey }}">
+                                        <i class="{{ $modInfo['icon'] }} text-primary me-1"></i>
+                                        {{ __(app()->getLocale() === 'ar' ? $modInfo['name_ar'] : $modInfo['name']) }}
+                                    </label>
+                                </div>
+                                <div class="text-muted extra-small ms-4" style="font-size: 0.74rem;">
+                                    @if($isTravel)
+                                        <span class="badge bg-success-subtle text-success border border-success-subtle extra-small py-0 px-1">{{ __('Umrah & Transport Bus Seat Booking') }}</span>
+                                    @else
+                                        {{ __('Category:') }} <span class="badge bg-light text-dark border extra-small">{{ ucfirst($modInfo['category']) }}</span>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </x-card>
+
+            <!-- 3. Branch Profile & Settings -->
+            <x-card :title="__('3. Branch Profile & Identity')" class="mt-4">
                 <div class="row g-3">
                     <div class="col-md-8">
                         <label class="form-label fw-bold text-dark">{{ __('Shop / Branch Name *') }}</label>
@@ -48,13 +125,13 @@
 
                     <div class="col-12">
                         <label class="form-label fw-bold text-dark">{{ __('Address') }}</label>
-                        <textarea name="address" rows="2" class="form-control @error('address') is-invalid @enderror" placeholder="Street, Industrial Area, Building...">{{ old('address') }}</textarea>
+                        <textarea name="address" rows="2" class="form-control @error('address') is-invalid @enderror" placeholder="Street, Commercial District, Building...">{{ old('address') }}</textarea>
                         @error('address') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
 
                     <div class="col-md-6">
                         <label class="form-label fw-bold text-dark">{{ __('City') }}</label>
-                        <input type="text" name="city" class="form-control @error('city') is-invalid @enderror" placeholder="e.g. Riyadh, Jeddah, Dammam" value="{{ old('city') }}">
+                        <input type="text" name="city" class="form-control @error('city') is-invalid @enderror" placeholder="e.g. Riyadh, Jeddah, Makkah" value="{{ old('city') }}">
                         @error('city') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
 
@@ -66,7 +143,7 @@
 
                     <div class="col-md-4">
                         <label class="form-label fw-bold text-dark">{{ __('Currency Symbol') }} *</label>
-                        <input type="text" name="currency_symbol" class="form-control @error('currency_symbol') is-invalid @enderror" placeholder="$, SAR, AED, PKR" value="{{ old('currency_symbol', '$') }}" required>
+                        <input type="text" name="currency_symbol" class="form-control @error('currency_symbol') is-invalid @enderror" placeholder="$, SAR, AED, PKR" value="{{ old('currency_symbol', 'SAR') }}" required>
                         @error('currency_symbol') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
 
@@ -107,9 +184,10 @@
             </x-card>
         </div>
 
-        <!-- Admin Account Card -->
+        <!-- Right Column: Admin User & Subscription Package -->
         <div class="col-lg-5">
-            <x-card :title="__('2. Primary Shop Administrator')">
+            <!-- Admin Account Card -->
+            <x-card :title="__('4. Primary Shop Administrator')">
                 <p class="text-muted small">
                     {{ __('This account will have full administrative rights restricted exclusively to this branch.') }}
                 </p>
@@ -147,7 +225,7 @@
             </x-card>
 
             <!-- Package Selection Card -->
-            <x-card :title="__('3. Package & Subscription (Cash By Hand)')" class="mt-4">
+            <x-card :title="__('5. Package & Subscription (Cash By Hand)')" class="mt-4">
                 <div class="mb-3">
                     <label class="form-label fw-bold text-dark">{{ __('Select Initial Package') }} *</label>
                     <select name="package_id" id="createPackageSelect" class="form-select" required>
@@ -157,7 +235,7 @@
                                 data-price="{{ $pkg->price }}" 
                                 data-max-shops="{{ $pkg->max_shops }}"
                                 {{ $pkg->slug === 'trial' ? 'selected' : '' }}>
-                                {{ $pkg->name }} — {{ $pkg->price == 0 ? 'Free' : number_format($pkg->price, 0) }} ({{ $pkg->duration_days }} Days, {{ $pkg->max_shops > 1 ? $pkg->max_shops . ' Shops' : '1 Shop' }})
+                                {{ $pkg->name }} — {{ $pkg->price == 0 ? __('Free') : number_format($pkg->price, 0) }} ({{ $pkg->duration_days }} {{ __('Days') }}, {{ $pkg->max_shops > 1 ? $pkg->max_shops . ' ' . __('Shops') : '1 ' . __('Shop') }})
                             </option>
                         @endforeach
                     </select>
@@ -178,7 +256,8 @@
 
                 <div class="p-3 rounded-3 bg-light border border-light-subtle mt-3 mb-0 small text-muted">
                     <i class="fas fa-magic text-primary me-2"></i>
-                    <strong class="text-dark">{{ __('Automated Provisioning:') }}</strong> {{ __('Default production departments (Workshop, Banner Machine, Sticker Print, Sign Board) and initial settings are configured automatically.') }}
+                    <strong class="text-dark">{{ __('Automated Tailored Provisioning:') }}</strong> 
+                    <span id="provisioningDesc">{{ __('Selected industry defaults, initial settings and staff roles are configured automatically.') }}</span>
                 </div>
 
                 <div class="mt-4 d-flex justify-content-end gap-2">
@@ -195,6 +274,47 @@
 
 @push('scripts')
 <script>
+    const industryDefaults = {
+        printing_advertising: ['job_orders', 'quotations', 'invoices', 'delivery_notes', 'customers', 'products', 'services', 'categories', 'units', 'employees', 'departments'],
+        travel_umrah: ['travel_tourism', 'invoices', 'customers', 'employees', 'departments'],
+        general_trading: ['invoices', 'delivery_notes', 'customers', 'products', 'categories', 'units', 'employees'],
+        services_agency: ['quotations', 'invoices', 'customers', 'services', 'employees'],
+        custom: ['job_orders', 'quotations', 'invoices', 'delivery_notes', 'customers', 'products', 'services', 'categories', 'units', 'employees', 'departments', 'travel_tourism']
+    };
+
+    function onBusinessTypeChange(typeKey) {
+        // Highlight active card
+        document.querySelectorAll('.business-type-card').forEach(card => {
+            card.classList.remove('border-primary', 'bg-primary-subtle');
+            card.classList.add('bg-white');
+        });
+        const selectedRadio = document.getElementById('btype_' + typeKey);
+        if (selectedRadio) {
+            const parentCard = selectedRadio.closest('.business-type-card');
+            if (parentCard) {
+                parentCard.classList.remove('bg-white');
+                parentCard.classList.add('border-primary', 'bg-primary-subtle');
+            }
+        }
+
+        // Apply module defaults
+        applyModuleDefaults(typeKey);
+    }
+
+    function applyModuleDefaults(typeKey) {
+        const allowed = industryDefaults[typeKey] || industryDefaults.printing_advertising;
+        document.querySelectorAll('.module-checkbox').forEach(cb => {
+            cb.checked = allowed.includes(cb.value);
+        });
+    }
+
+    function resetToIndustryDefaults() {
+        const checkedType = document.querySelector('input[name="business_type"]:checked');
+        if (checkedType) {
+            applyModuleDefaults(checkedType.value);
+        }
+    }
+
     function togglePasswordVisibility() {
         const input = document.getElementById('admin_password');
         const icon = document.getElementById('pwdToggleIcon');
@@ -209,48 +329,39 @@
         }
     }
 
-    document.getElementById('shopNameInput')?.addEventListener('input', function() {
-        const slugInput = document.getElementById('shopSlugInput');
-        if (slugInput && !slugInput.dataset.manual) {
-            slugInput.value = this.value
-                .toLowerCase()
-                .trim()
-                .replace(/[^\w\s-]/g, '')
-                .replace(/[\s_-]+/g, '-')
-                .replace(/^-+|-+$/g, '');
-        }
-    });
+    // Logo Preview
+    const logoInput = document.getElementById('createShopLogoInput');
+    const logoPreviewImg = document.getElementById('createLogoPreviewImg');
+    const logoPlaceholder = document.getElementById('createLogoPlaceholder');
 
-    document.getElementById('shopSlugInput')?.addEventListener('input', function() {
-        this.dataset.manual = "true";
-    });
+    if (logoInput) {
+        logoInput.addEventListener('change', function () {
+            const file = this.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    logoPreviewImg.src = e.target.result;
+                    logoPreviewImg.classList.remove('d-none');
+                    if (logoPlaceholder) logoPlaceholder.classList.add('d-none');
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
 
-    document.getElementById('createShopLogoInput')?.addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(evt) {
-                const img = document.getElementById('createLogoPreviewImg');
-                const ph = document.getElementById('createLogoPlaceholder');
-                if (img) {
-                    img.src = evt.target.result;
-                    img.classList.remove('d-none');
-                }
-                if (ph) {
-                    ph.classList.add('d-none');
-                }
-            };
-            reader.readAsDataURL(file);
-        }
-    });
+    // Auto-fill duration and price on package change
+    const pkgSelect = document.getElementById('createPackageSelect');
+    const durationInput = document.getElementById('createDurationInput');
+    const cashInput = document.getElementById('createCashInput');
 
-    const createPkgSelect = document.getElementById('createPackageSelect');
-    createPkgSelect?.addEventListener('change', function() {
-        const opt = this.options[this.selectedIndex];
-        if (opt) {
-            document.getElementById('createDurationInput').value = opt.getAttribute('data-days') || 7;
-            document.getElementById('createCashInput').value = opt.getAttribute('data-price') || 0;
-        }
-    });
+    if (pkgSelect) {
+        pkgSelect.addEventListener('change', function () {
+            const opt = this.options[this.selectedIndex];
+            if (opt) {
+                if (durationInput) durationInput.value = opt.getAttribute('data-days') || 7;
+                if (cashInput) cashInput.value = opt.getAttribute('data-price') || 0;
+            }
+        });
+    }
 </script>
 @endpush
