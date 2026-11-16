@@ -80,7 +80,7 @@ class TravelBookingController extends Controller
 
         $selectedSeat = $request->filled('seat') ? (int) $request->seat : null;
 
-        $customers = Customer::where('shop_id', current_shop_id())->orderBy('name')->get();
+        $customers = (current_shop_id() ? Customer::where('shop_id', current_shop_id()) : Customer::query())->orderBy('name')->get();
 
         return view('travel.bookings.create', compact('trips', 'selectedTrip', 'selectedSeat', 'customers'));
     }
