@@ -261,16 +261,44 @@
 
                     <!-- Action Buttons -->
                     <td class="text-end pe-4">
-                        <div class="btn-group btn-group-sm">
-                            <a href="{{ route('travel.bookings.voucher', $booking->id) }}" target="_blank" class="btn btn-sm btn-light border p-1 px-2" title="{{ __('Print Boarding Pass Voucher') }}">
-                                <i class="fas fa-print text-dark"></i>
-                            </a>
-                            <a href="{{ route('travel.bookings.show', $booking->id) }}" class="btn btn-sm btn-light border p-1 px-2" title="{{ __('View Details') }}">
-                                <i class="fas fa-eye text-primary"></i>
-                            </a>
-                            <a href="{{ route('travel.bookings.edit', $booking->id) }}" class="btn btn-sm btn-light border p-1 px-2" title="{{ __('Edit') }}">
-                                <i class="fas fa-edit text-warning"></i>
-                            </a>
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-light" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                                <li>
+                                    <a class="dropdown-item" href="{{ route('travel.bookings.show', $booking->id) }}">
+                                        <i class="fas fa-eye me-2 text-info"></i> {{ __('View Details') }}
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="{{ route('travel.bookings.voucher', $booking->id) }}" target="_blank">
+                                        <i class="fas fa-print me-2 text-primary"></i> {{ __('Print Ticket Voucher') }}
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="{{ route('travel.bookings.edit', $booking->id) }}">
+                                        <i class="fas fa-edit me-2 text-warning"></i> {{ __('Edit') }}
+                                    </a>
+                                </li>
+                                @if($booking->invoice)
+                                    <li>
+                                        <a class="dropdown-item" href="{{ route('invoices.show', $booking->invoice_id) }}">
+                                            <i class="fas fa-file-invoice-dollar me-2 text-success"></i> {{ __('View Invoice') }}
+                                        </a>
+                                    </li>
+                                @endif
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <form action="{{ route('travel.bookings.destroy', $booking->id) }}" method="POST" class="delete-form" onsubmit="return confirm('{{ __('Are you sure you want to cancel this booking and free the seat?') }}')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="dropdown-item text-danger">
+                                            <i class="fas fa-ban me-2"></i> {{ __('Cancel Booking') }}
+                                        </button>
+                                    </form>
+                                </li>
+                            </ul>
                         </div>
                     </td>
                 </tr>

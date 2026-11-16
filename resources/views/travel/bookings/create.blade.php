@@ -4,15 +4,18 @@
 
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-        <h2 class="fw-bold text-dark mb-1">
-            <i class="fas fa-ticket-alt text-primary me-2"></i>{{ __('Book Umrah Bus Seat') }}
-        </h2>
-        <p class="text-muted small mb-0">{{ __('Select trip, pick an available seat on the interactive bus layout, and register passenger details with package pricing.') }}</p>
+    <div class="d-flex align-items-center">
+        <a href="{{ route('travel.bookings.index') }}" class="btn btn-light btn-sm rounded-circle me-3 shadow-sm">
+            <i class="fas fa-arrow-left text-muted"></i>
+        </a>
+        <div>
+            <h2 class="fw-bold text-dark mb-0">{{ __('Book Umrah Bus Seat') }}</h2>
+            <p class="text-muted small mb-0">{{ __('Select trip, pick an available seat on the interactive bus layout, and register passenger details.') }}</p>
+        </div>
     </div>
     <div class="d-flex align-items-center gap-2">
         <a href="{{ route('travel.bookings.index') }}" class="btn btn-outline-secondary">
-            <i class="fas fa-arrow-left me-1"></i> {{ __('Back to Bookings') }}
+            <i class="fas fa-list me-1"></i> {{ __('All Bookings') }}
         </a>
     </div>
 </div>

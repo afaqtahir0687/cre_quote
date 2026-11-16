@@ -4,18 +4,21 @@
 
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-        <h2 class="fw-bold text-dark mb-1">
-            <i class="fas fa-edit text-warning me-2"></i>{{ __('Edit Trip') }}: {{ $trip->trip_code }}
-        </h2>
-        <p class="text-muted small mb-0">{{ __('Update trip details, bus capacity, dates, and package fares.') }}</p>
+    <div class="d-flex align-items-center">
+        <a href="{{ route('travel.trips.index') }}" class="btn btn-light btn-sm rounded-circle me-3 shadow-sm">
+            <i class="fas fa-arrow-left text-muted"></i>
+        </a>
+        <div class="d-flex align-items-center">
+            <h2 class="fw-bold text-dark mb-0">{{ __('Edit Trip') }}</h2>
+            <span class="badge-soft badge-soft-primary ms-3">{{ $trip->trip_code }}</span>
+            <span class="badge {{ $trip->status === 'upcoming' ? 'bg-info' : ($trip->status === 'completed' ? 'bg-success' : 'bg-warning text-dark') }} ms-2">
+                {{ __(ucfirst($trip->status)) }}
+            </span>
+        </div>
     </div>
     <div class="d-flex align-items-center gap-2">
-        <a href="{{ route('travel.trips.show', $trip->id) }}" class="btn btn-outline-primary">
-            <i class="fas fa-th me-1"></i> {{ __('View Seat Layout') }}
-        </a>
-        <a href="{{ route('travel.trips.index') }}" class="btn btn-outline-secondary">
-            <i class="fas fa-arrow-left me-1"></i> {{ __('Back to Trips') }}
+        <a href="{{ route('travel.trips.show', $trip->id) }}" class="btn btn-outline-primary d-flex align-items-center shadow-sm">
+            <i class="fas fa-th me-2"></i> {{ __('View Seat Layout') }}
         </a>
     </div>
 </div>

@@ -3,35 +3,34 @@
 @section('title', $trip->title . ' - ' . __('Bus Seat Layout'))
 
 @section('content')
-<!-- Header & Navigation -->
-<div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
-    <div>
-        <div class="d-flex align-items-center gap-2 mb-1">
-            <span class="badge bg-light text-primary border fw-bold">{{ $trip->trip_code }}</span>
-            <span class="badge {{ $trip->status === 'upcoming' ? 'badge-soft-info' : ($trip->status === 'completed' ? 'badge-soft-success' : 'badge-soft-warning') }}">
-                {{ __(ucfirst($trip->status)) }}
-            </span>
-            <span class="badge bg-white text-dark border">
-                <i class="fas fa-calendar-day text-primary me-1"></i> {{ $trip->duration_days }} {{ __('Days Trip') }}
-            </span>
-        </div>
-        <h2 class="fw-bold text-dark mb-1">{{ $trip->title }}</h2>
-        <p class="text-muted small mb-0">
-            <i class="fas fa-route text-primary me-1"></i> {{ $trip->departure_city }} → {{ $trip->destination_city }}
-            &bull; <i class="fas fa-bus text-secondary ms-2 me-1"></i> {{ $trip->bus_name }} ({{ $trip->bus_number ?: __('Reg. Pending') }})
-        </p>
-    </div>
-
-    <div class="d-flex align-items-center gap-2">
-        <a href="{{ route('travel.trips.index') }}" class="btn btn-outline-secondary">
-            <i class="fas fa-arrow-left me-1"></i> {{ __('Back to Trips') }}
+<!-- Header & Navigation (Matching Job Orders & Quotes) -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex align-items-center">
+        <a href="{{ route('travel.trips.index') }}" class="btn btn-light btn-sm rounded-circle me-3 shadow-sm">
+            <i class="fas fa-arrow-left text-muted"></i>
         </a>
-        <a href="{{ route('travel.trips.edit', $trip->id) }}" class="btn btn-light border">
-            <i class="fas fa-edit me-1 text-warning"></i> {{ __('Edit Trip') }}
+        <div>
+            <div class="d-flex align-items-center gap-2">
+                <h2 class="fw-bold text-dark mb-0">{{ $trip->title }}</h2>
+                <span class="badge-soft badge-soft-primary">{{ $trip->trip_code }}</span>
+                <span class="badge-soft {{ $trip->status === 'upcoming' ? 'badge-soft-info' : ($trip->status === 'completed' ? 'badge-soft-success' : 'badge-soft-warning') }}">
+                    {{ __(ucfirst($trip->status)) }}
+                </span>
+            </div>
+            <p class="text-muted small mb-0 mt-1">
+                <i class="fas fa-route text-primary me-1"></i> {{ $trip->departure_city }} &rarr; {{ $trip->destination_city }}
+                &bull; <i class="fas fa-bus text-secondary ms-2 me-1"></i> {{ $trip->bus_name }} ({{ $trip->bus_number ?: __('Reg. Pending') }})
+                &bull; <i class="fas fa-calendar-day text-muted ms-2 me-1"></i> {{ $trip->duration_days }} {{ __('Days Trip') }}
+            </p>
+        </div>
+    </div>
+    <div class="d-flex align-items-center gap-2">
+        <a href="{{ route('travel.trips.edit', $trip->id) }}" class="btn btn-outline-info d-flex align-items-center shadow-sm">
+            <i class="fas fa-edit me-2"></i> {{ __('Edit Trip') }}
         </a>
         @if($trip->availableSeatsCount() > 0)
-            <a href="{{ route('travel.bookings.create', ['trip_id' => $trip->id]) }}" class="btn btn-primary-modern">
-                <i class="fas fa-plus-circle me-1"></i> {{ __('Book Passenger Seat') }}
+            <a href="{{ route('travel.bookings.create', ['trip_id' => $trip->id]) }}" class="btn btn-primary-modern d-flex align-items-center shadow-sm text-nowrap">
+                <i class="fas fa-plus me-2"></i> {{ __('Book Passenger Seat') }}
             </a>
         @endif
     </div>

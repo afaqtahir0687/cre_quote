@@ -3,56 +3,45 @@
 @section('title', __('Booking Voucher') . ' - ' . $booking->booking_reference)
 
 @section('content')
-<!-- Page Header -->
-<div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
-    <div>
-        <div class="d-flex align-items-center gap-2 mb-1">
-            <span class="badge bg-primary text-white fs-6 px-3 py-1">{{ $booking->booking_reference }}</span>
-            @if($booking->booking_status === 'confirmed')
-                <span class="badge-soft badge-soft-success px-3 py-1">
-                    <i class="fas fa-check-circle me-1"></i> {{ __('Confirmed') }}
-                </span>
-            @else
-                <span class="badge-soft badge-soft-danger px-3 py-1">
-                    <i class="fas fa-times-circle me-1"></i> {{ __('Cancelled') }}
-                </span>
-            @endif
-
-            @if($booking->payment_status === 'paid')
-                <span class="badge bg-success text-white px-3 py-1">
-                    <i class="fas fa-check-double me-1"></i> {{ __('Paid in Full') }}
-                </span>
-            @elseif($booking->payment_status === 'partial')
-                <span class="badge bg-warning text-dark px-3 py-1">
-                    <i class="fas fa-hourglass-half me-1"></i> {{ __('Partially Paid') }}
-                </span>
-            @else
-                <span class="badge bg-danger text-white px-3 py-1">
-                    <i class="fas fa-exclamation-circle me-1"></i> {{ __('Unpaid') }}
-                </span>
-            @endif
+<!-- Page Header (Matching Job Orders & Invoices) -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex align-items-center">
+        <a href="{{ route('travel.bookings.index') }}" class="btn btn-light btn-sm rounded-circle me-3 shadow-sm">
+            <i class="fas fa-arrow-left text-muted"></i>
+        </a>
+        <div>
+            <div class="d-flex align-items-center">
+                <h2 class="fw-bold text-dark mb-0">{{ __('Booking Detail') }}</h2>
+                <span class="badge-soft badge-soft-primary ms-3">{{ $booking->booking_reference }}</span>
+                <span class="badge bg-primary text-white ms-2">{{ __('Seat #:seat', ['seat' => $booking->seat_number]) }}</span>
+                @if($booking->booking_status === 'cancelled')
+                    <span class="badge bg-danger ms-2"><i class="fas fa-ban me-1"></i> {{ __('Cancelled') }}</span>
+                @elseif($booking->payment_status === 'paid')
+                    <span class="badge bg-success ms-2"><i class="fas fa-check-circle me-1"></i> {{ __('Paid') }}</span>
+                @elseif($booking->payment_status === 'partial')
+                    <span class="badge bg-warning text-dark ms-2"><i class="fas fa-clock me-1"></i> {{ __('Partial Paid') }}</span>
+                @else
+                    <span class="badge bg-secondary ms-2"><i class="fas fa-hourglass-start me-1"></i> {{ __('Unpaid') }}</span>
+                @endif
+            </div>
+            <p class="text-muted small mb-0 mt-1">
+                {{ $booking->passenger_name }} &bull; {{ $booking->trip ? $booking->trip->title : '' }} ({{ $booking->trip ? $booking->trip->trip_code : '' }})
+            </p>
         </div>
-        <h2 class="fw-bold text-dark mb-0">
-            {{ $booking->passenger_name }} &bull; <span class="text-primary">{{ __('Seat #:seat', ['seat' => $booking->seat_number]) }}</span>
-        </h2>
-        <p class="text-muted small mb-0">{{ $booking->trip ? $booking->trip->title : '' }} ({{ $booking->trip ? $booking->trip->trip_code : '' }})</p>
     </div>
 
-    <div class="d-flex flex-wrap align-items-center gap-2">
-        <a href="{{ route('travel.bookings.voucher', $booking->id) }}" target="_blank" class="btn btn-primary-modern shadow-sm">
-            <i class="fas fa-print me-1"></i> {{ __('Print Boarding Pass') }}
+    <div class="d-flex gap-2">
+        <a href="{{ route('travel.bookings.voucher', $booking->id) }}" target="_blank" class="btn btn-primary-modern d-flex align-items-center shadow-sm">
+            <i class="fas fa-print me-2"></i> {{ __('Print Boarding Pass') }}
         </a>
-        <a href="{{ route('travel.bookings.edit', $booking->id) }}" class="btn btn-outline-primary">
-            <i class="fas fa-edit me-1"></i> {{ __('Edit Booking') }}
+        <a href="{{ route('travel.bookings.edit', $booking->id) }}" class="btn btn-outline-info d-flex align-items-center shadow-sm">
+            <i class="fas fa-edit me-2"></i> {{ __('Edit') }}
         </a>
         @if($booking->invoice)
-            <a href="{{ route('invoices.show', $booking->invoice_id) }}" class="btn btn-outline-info">
-                <i class="fas fa-receipt me-1"></i> {{ __('View Invoice #:inv', ['inv' => $booking->invoice->invoice_number]) }}
+            <a href="{{ route('invoices.show', $booking->invoice_id) }}" class="btn btn-outline-success d-flex align-items-center shadow-sm">
+                <i class="fas fa-receipt me-2"></i> {{ __('Invoice') }}
             </a>
         @endif
-        <a href="{{ route('travel.bookings.index') }}" class="btn btn-outline-secondary">
-            <i class="fas fa-arrow-left me-1"></i> {{ __('Back to Bookings') }}
-        </a>
     </div>
 </div>
 

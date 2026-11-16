@@ -4,15 +4,19 @@
 
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-        <h2 class="fw-bold text-dark mb-1">
-            <i class="fas fa-edit text-primary me-2"></i>{{ __('Edit Passenger Booking') }}
-        </h2>
-        <p class="text-muted small mb-0">{{ __('Update passenger info, modify allocated coach seat, or adjust package expenses.') }}</p>
+    <div class="d-flex align-items-center">
+        <a href="{{ route('travel.bookings.show', $booking->id) }}" class="btn btn-light btn-sm rounded-circle me-3 shadow-sm">
+            <i class="fas fa-arrow-left text-muted"></i>
+        </a>
+        <div class="d-flex align-items-center">
+            <h2 class="fw-bold text-dark mb-0">{{ __('Edit Booking') }}</h2>
+            <span class="badge-soft badge-soft-primary ms-3">{{ $booking->booking_reference }}</span>
+            <span class="badge bg-primary text-white ms-2">{{ __('Seat #:seat', ['seat' => $booking->seat_number]) }}</span>
+        </div>
     </div>
     <div class="d-flex align-items-center gap-2">
-        <a href="{{ route('travel.bookings.show', $booking->id) }}" class="btn btn-outline-secondary">
-            <i class="fas fa-arrow-left me-1"></i> {{ __('Back to Voucher') }}
+        <a href="{{ route('travel.bookings.show', $booking->id) }}" class="btn btn-outline-info d-flex align-items-center shadow-sm">
+            <i class="fas fa-eye me-2"></i> {{ __('View Details') }}
         </a>
     </div>
 </div>
@@ -204,7 +208,7 @@
                 </div>
 
                 <div class="d-grid gap-2">
-                    <button type="submit" class="btn btn-primary btn-lg">
+                    <button type="submit" class="btn btn-primary-modern btn-lg">
                         <i class="fas fa-save me-1"></i> {{ __('Save & Update Booking') }}
                     </button>
                     <a href="{{ route('travel.bookings.show', $booking->id) }}" class="btn btn-outline-secondary">

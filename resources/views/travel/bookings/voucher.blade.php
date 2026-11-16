@@ -525,7 +525,7 @@
                                 <td class="text-center">
                                     <span class="badge bg-light text-dark border extra-small">{{ __('Confirmed') }}</span>
                                 </td>
-                                <td class="text-end font-monospace fw-semibold">{{ currency_symbol() }} {{ number_format($booking->travel_fare, 2) }}</td>
+                                <td class="text-end font-monospace fw-semibold">{{ format_currency($booking->travel_fare) }}</td>
                             </tr>
                             @if($booking->hotel_expense > 0)
                                 <tr>
@@ -536,21 +536,21 @@
                                     <td class="text-center">
                                         <span class="badge bg-light text-dark border extra-small">{{ __('Reserved') }}</span>
                                     </td>
-                                    <td class="text-end font-monospace fw-semibold">{{ currency_symbol() }} {{ number_format($booking->hotel_expense, 2) }}</td>
+                                    <td class="text-end font-monospace fw-semibold">{{ format_currency($booking->hotel_expense) }}</td>
                                 </tr>
                             @endif
                             @if($booking->extra_charges > 0)
                                 <tr>
                                     <td>{{ __('Extra Charges & Service Fees') }}</td>
                                     <td class="text-center">—</td>
-                                    <td class="text-end font-monospace">+ {{ currency_symbol() }} {{ number_format($booking->extra_charges, 2) }}</td>
+                                    <td class="text-end font-monospace">+ {{ format_currency($booking->extra_charges) }}</td>
                                 </tr>
                             @endif
                             @if($booking->discount > 0)
                                 <tr>
                                     <td class="text-danger">{{ __('Promotional Discount') }}</td>
                                     <td class="text-center">—</td>
-                                    <td class="text-end text-danger font-monospace">- {{ currency_symbol() }} {{ number_format($booking->discount, 2) }}</td>
+                                    <td class="text-end text-danger font-monospace">- {{ format_currency($booking->discount) }}</td>
                                 </tr>
                             @endif
                             <tr class="table-light fw-bold">
@@ -564,18 +564,18 @@
                                         <span class="badge bg-danger text-white extra-small">{{ __('Unpaid') }}</span>
                                     @endif
                                 </td>
-                                <td class="text-end font-monospace text-primary fs-6">{{ currency_symbol() }} {{ number_format($booking->total_amount, 2) }}</td>
+                                <td class="text-end font-monospace text-primary fs-6">{{ format_currency($booking->total_amount) }}</td>
                             </tr>
                             <tr class="fw-semibold">
                                 <td class="text-success"><i class="fas fa-check-circle me-1"></i> {{ __('Amount Paid / المبلغ المدفوع') }} ({{ ucfirst(str_replace('_', ' ', $booking->payment_method)) }})</td>
                                 <td></td>
-                                <td class="text-end text-success font-monospace">{{ currency_symbol() }} {{ number_format($booking->paid_amount, 2) }}</td>
+                                <td class="text-end text-success font-monospace">{{ format_currency($booking->paid_amount) }}</td>
                             </tr>
                             @if($booking->balance_due > 0)
                                 <tr class="table-warning fw-bold text-danger">
                                     <td><i class="fas fa-exclamation-triangle me-1"></i> {{ __('Balance Due to Conductor / المتبقي للتحصيل') }}</td>
                                     <td class="text-center"><span class="badge bg-danger text-white extra-small">{{ __('Collect at Bus') }}</span></td>
-                                    <td class="text-end font-monospace">{{ currency_symbol() }} {{ number_format($booking->balance_due, 2) }}</td>
+                                    <td class="text-end font-monospace">{{ format_currency($booking->balance_due) }}</td>
                                 </tr>
                             @endif
                         </tbody>
@@ -654,7 +654,7 @@
 
                     @if($booking->balance_due > 0)
                         <div class="p-2 rounded bg-danger-subtle text-danger border border-danger-subtle extra-small fw-bold text-center mt-2">
-                            {{ __('Due:') }} {{ currency_symbol() }} {{ number_format($booking->balance_due, 2) }}
+                            {{ __('Due:') }} {{ format_currency($booking->balance_due) }}
                         </div>
                     @else
                         <div class="p-2 rounded bg-success-subtle text-success border border-success-subtle extra-small fw-bold text-center mt-2">
