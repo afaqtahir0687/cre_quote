@@ -118,12 +118,12 @@
                         </div>
                     </div>
 
-                    <div class="col-md-6" id="hotelNameGroup">
+                    <div class="col-md-5" id="hotelNameGroup">
                         <label class="form-label fw-bold text-dark">{{ __('Hotel Name') }}</label>
                         <input type="text" name="hotel_name" class="form-control" value="{{ old('hotel_name', $booking->hotel_name) }}">
                     </div>
 
-                    <div class="col-md-6" id="roomTypeGroup">
+                    <div class="col-md-4" id="roomTypeGroup">
                         <label class="form-label fw-bold text-dark">{{ __('Room Sharing Type') }}</label>
                         <select name="room_type" class="form-select">
                             <option value="quad_sharing" {{ old('room_type', $booking->room_type) === 'quad_sharing' ? 'selected' : '' }}>{{ __('Quad Sharing (4 Beds)') }}</option>
@@ -131,6 +131,11 @@
                             <option value="double_sharing" {{ old('room_type', $booking->room_type) === 'double_sharing' ? 'selected' : '' }}>{{ __('Double Sharing (2 Beds)') }}</option>
                             <option value="single_private" {{ old('room_type', $booking->room_type) === 'single_private' ? 'selected' : '' }}>{{ __('Single Private Room') }}</option>
                         </select>
+                    </div>
+
+                    <div class="col-md-3" id="nightsCountGroup">
+                        <label class="form-label fw-bold text-dark">{{ __('Hotel Nights') }}</label>
+                        <input type="number" name="nights_count" class="form-control" min="1" max="90" value="{{ old('nights_count', $booking->nights_count ?: ($booking->trip?->duration_days ?: 10)) }}">
                     </div>
 
                     <div class="col-12">
@@ -217,12 +222,15 @@ function toggleHotelFields() {
     const isWithHotel = document.getElementById('pkgWithHotel').checked;
     const hotelGroup = document.getElementById('hotelNameGroup');
     const roomGroup = document.getElementById('roomTypeGroup');
+    const nightsGroup = document.getElementById('nightsCountGroup');
     if (isWithHotel) {
         hotelGroup.style.display = 'block';
         roomGroup.style.display = 'block';
+        if (nightsGroup) nightsGroup.style.display = 'block';
     } else {
         hotelGroup.style.display = 'none';
         roomGroup.style.display = 'none';
+        if (nightsGroup) nightsGroup.style.display = 'none';
         document.getElementById('hotelExpense').value = 0;
         recalcTotals();
     }

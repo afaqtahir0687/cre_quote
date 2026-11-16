@@ -195,9 +195,9 @@ class TravelBookingController extends Controller
                 'passenger_gender' => $validated['passenger_gender'],
                 'seat_number' => $seatNumber,
                 'package_type' => $validated['package_type'],
-                'hotel_name' => $validated['package_type'] === 'with_hotel' ? ($validated['hotel_name'] ?: $trip->hotel_name) : null,
-                'room_type' => $validated['package_type'] === 'with_hotel' ? ($validated['room_type'] ?: 'quad_sharing') : null,
-                'nights_count' => $validated['package_type'] === 'with_hotel' ? ($validated['nights_count'] ?: $trip->duration_days) : null,
+                'hotel_name' => $validated['package_type'] === 'with_hotel' ? (($validated['hotel_name'] ?? null) ?: $trip->hotel_name) : null,
+                'room_type' => $validated['package_type'] === 'with_hotel' ? (($validated['room_type'] ?? null) ?: 'quad_sharing') : null,
+                'nights_count' => $validated['package_type'] === 'with_hotel' ? (($validated['nights_count'] ?? null) ?: $trip->duration_days) : null,
                 'travel_fare' => $travelFare,
                 'hotel_expense' => $hotelExpense,
                 'extra_charges' => $extraCharges,
@@ -320,6 +320,7 @@ class TravelBookingController extends Controller
             'package_type' => 'required|in:with_hotel,without_hotel',
             'hotel_name' => 'nullable|string|max:255',
             'room_type' => 'nullable|string|max:50',
+            'nights_count' => 'nullable|integer|min:1',
             'travel_fare' => 'required|numeric|min:0',
             'hotel_expense' => 'nullable|numeric|min:0',
             'extra_charges' => 'nullable|numeric|min:0',
@@ -373,6 +374,14 @@ class TravelBookingController extends Controller
         $validated['paid_amount'] = $paidAmount;
         $validated['balance_due'] = $balanceDue;
         $validated['payment_status'] = $paymentStatus;
+
+        if ($validated['package_type'] === 'with_hotel') {
+            $validated['nights_count'] = $validated['nights_count'] ?? $booking->nights_count ?? $booking->trip?->duration_days;
+        } else {
+            $validated['nights_count'] = null;
+            $validated['hotel_name'] = null;
+            $validated['room_type'] = null;
+        }
 
         $booking->update($validated);
 

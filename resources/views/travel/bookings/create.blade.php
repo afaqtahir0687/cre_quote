@@ -159,12 +159,12 @@
                 <!-- Hotel Configuration Fields (toggled by package type) -->
                 <div id="hotelConfigSection" style="{{ $pkgType === 'without_hotel' ? 'display:none;' : '' }}">
                     <div class="row g-3 p-3 rounded-3 bg-light border border-success-subtle">
-                        <div class="col-md-7">
+                        <div class="col-md-5">
                             <label class="form-label fw-bold text-dark small">{{ __('Hotel Accommodation Partner') }}</label>
                             <input type="text" name="hotel_name" id="hotelNameInput" class="form-control" placeholder="{{ __('e.g. Swissôtel Makkah') }}" value="{{ old('hotel_name', $selectedTrip?->hotel_name) }}">
                         </div>
 
-                        <div class="col-md-5">
+                        <div class="col-md-4">
                             <label class="form-label fw-bold text-dark small">{{ __('Room Sharing Type') }}</label>
                             <select name="room_type" class="form-select">
                                 <option value="quad_sharing" {{ old('room_type') === 'quad_sharing' ? 'selected' : '' }}>{{ __('Quad Sharing (رباعي)') }}</option>
@@ -172,6 +172,11 @@
                                 <option value="double_sharing" {{ old('room_type') === 'double_sharing' ? 'selected' : '' }}>{{ __('Double Sharing (ثنائي)') }}</option>
                                 <option value="private_room" {{ old('room_type') === 'private_room' ? 'selected' : '' }}>{{ __('Private Room (غرفة خاصة)') }}</option>
                             </select>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label fw-bold text-dark small">{{ __('Hotel Nights') }}</label>
+                            <input type="number" name="nights_count" id="nightsCountInput" class="form-control" min="1" max="90" placeholder="10" value="{{ old('nights_count', $selectedTrip?->duration_days ?: 10) }}">
                         </div>
                     </div>
                 </div>
