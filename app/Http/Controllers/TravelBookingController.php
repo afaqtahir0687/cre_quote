@@ -156,13 +156,15 @@ class TravelBookingController extends Controller
         }
 
         $booking = DB::transaction(function () use ($validated, $trip, $seatNumber, $shopId, $travelFare, $hotelExpense, $extraCharges, $discount, $taxAmount, $totalAmount, $paidAmount, $balanceDue, $paymentStatus, $request) {
-            // Auto-create Customer in CRM if phone not found
+            // Auto-create Customer in CRM if not found
             $customerId = $validated['customer_id'] ?? null;
             if (!$customerId) {
                 $existingCust = Customer::where('shop_id', $shopId)
                     ->where(function($q) use ($validated) {
-                        $q->where('phone', $validated['passenger_phone'])
-                          ->orWhere('id_no', $validated['passenger_id_number']);
+                        $q->where('phone', $validated['passenger_phone']);
+                        if (!empty($validated['passenger_id_number'])) {
+                            $q->orWhere('tax_id', $validated['passenger_id_number']);
+                        }
                     })->first();
 
                 if ($existingCust) {
@@ -172,8 +174,10 @@ class TravelBookingController extends Controller
                         'shop_id' => $shopId,
                         'name' => $validated['passenger_name'],
                         'phone' => $validated['passenger_phone'],
-                        'id_no' => $validated['passenger_id_number'],
+                        'tax_id' => $validated['passenger_id_number'] ?? null,
                         'city' => $trip->departure_city,
+                        'country' => 'Saudi Arabia',
+                        'is_active' => true,
                     ]);
                     $customerId = $newCust->id;
                 }
@@ -238,7 +242,7 @@ class TravelBookingController extends Controller
                     'description' => "Seat #{$seatNumber} - {$trip->bus_name} ({$trip->departure_city} to {$trip->destination_city})",
                     'quantity' => 1,
                     'unit_price' => $travelFare,
-                    'total_price' => $travelFare,
+                    'total' => $travelFare,
                 ]);
 
                 // Item 2: Hotel & Accommodations (if with_hotel)
@@ -248,7 +252,7 @@ class TravelBookingController extends Controller
                         'description' => "Hotel Accommodation: " . ($booking->hotel_name ?: 'Standard Hotel') . " (" . ucfirst(str_replace('_', ' ', $booking->room_type)) . ")",
                         'quantity' => 1,
                         'unit_price' => $hotelExpense,
-                        'total_price' => $hotelExpense,
+                        'total' => $hotelExpense,
                     ]);
                 }
 
