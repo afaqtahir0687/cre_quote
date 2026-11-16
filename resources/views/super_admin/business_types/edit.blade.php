@@ -152,7 +152,7 @@
                 </div>
 
                 <div class="d-grid gap-2 mt-4 pt-3 border-top">
-                    <button type="submit" class="btn btn-primary btn-lg">
+                    <button type="submit" class="btn btn-primary-modern py-2">
                         <i class="fas fa-save me-1"></i> {{ __('Save & Update Category') }}
                     </button>
                     <a href="{{ route('super_admin.business_types.index') }}" class="btn btn-outline-secondary">

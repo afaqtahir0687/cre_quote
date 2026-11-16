@@ -19,9 +19,29 @@ class BusinessTypeController extends Controller
     /**
      * Display a listing of business types / industries.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $businessTypes = BusinessType::withCount('shops')->ordered()->get();
+        $query = BusinessType::withCount('shops')->ordered();
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('name_ar', 'like', "%{$search}%")
+                  ->orWhere('slug', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%");
+            });
+        }
+
+        if ($request->filled('status')) {
+            if ($request->status === 'active') {
+                $query->where('is_active', true);
+            } elseif ($request->status === 'inactive') {
+                $query->where('is_active', false);
+            }
+        }
+
+        $businessTypes = $query->paginate(15)->withQueryString();
         $allModules = Shop::availableModules();
 
         return view('super_admin.business_types.index', compact('businessTypes', 'allModules'));
