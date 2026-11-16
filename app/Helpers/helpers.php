@@ -328,17 +328,25 @@ if (!function_exists('shop_brand_name')) {
     }
 }
 
+if (!function_exists('currency_symbol')) {
+    /**
+     * Get the active shop's currency symbol (or fallback to setting or 'SAR').
+     */
+    function currency_symbol(): string
+    {
+        $shop = current_shop();
+        $setting = current_setting();
+        return $shop?->currency_symbol ?? $setting?->currency_symbol ?? 'SAR';
+    }
+}
+
 if (!function_exists('format_currency')) {
     /**
      * Format an amount with the current shop's currency symbol.
      */
     function format_currency($amount): string
     {
-        $shop = current_shop();
-        $setting = current_setting();
-        $symbol = $shop?->currency_symbol ?? $setting?->currency_symbol ?? 'SAR';
-        
-        return $symbol . ' ' . number_format((float) $amount, 2);
+        return currency_symbol() . ' ' . number_format((float) $amount, 2);
     }
 }
 
