@@ -24,6 +24,171 @@
     }
 @endphp
 
+@once
+<style>
+.country-phone-group {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: stretch !important;
+    border: 1px solid #ced4da !important;
+    border-radius: 0.375rem !important;
+    background: #ffffff !important;
+    position: relative;
+    width: 100%;
+}
+.country-phone-group:focus-within {
+    border-color: #4361EE !important;
+    box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.18) !important;
+}
+.country-phone-group.has-error {
+    border-color: #dc3545 !important;
+}
+.country-phone-group .dropdown {
+    display: flex !important;
+    align-items: stretch !important;
+    flex-shrink: 0 !important;
+}
+.country-picker-btn {
+    background: #f8fafc !important;
+    border: none !important;
+    border-right: 1px solid #ced4da !important;
+    color: #212529 !important;
+    font-weight: 600;
+    font-size: 0.875rem;
+    padding: 0.375rem 0.75rem !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 0.4rem;
+    border-top-left-radius: 0.375rem !important;
+    border-bottom-left-radius: 0.375rem !important;
+    border-top-right-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+    white-space: nowrap !important;
+    cursor: pointer;
+    box-shadow: none !important;
+    outline: none !important;
+    min-height: 38px;
+    transition: background 0.15s ease;
+}
+.country-picker-btn:hover, 
+.country-picker-btn:focus, 
+.country-picker-btn.show {
+    background: #e9ecef !important;
+    color: #4361EE !important;
+}
+.country-phone-group .phone-input {
+    flex: 1 1 auto !important;
+    border: none !important;
+    border-radius: 0 0.375rem 0.375rem 0 !important;
+    padding: 0.375rem 0.75rem !important;
+    font-size: 0.875rem;
+    background: transparent !important;
+    box-shadow: none !important;
+    outline: none !important;
+    color: #212529 !important;
+    min-height: 38px;
+    width: 100%;
+}
+.country-phone-group .phone-input:focus {
+    box-shadow: none !important;
+    border: none !important;
+    outline: none !important;
+}
+.country-picker-btn .fi {
+    width: 20px;
+    height: 15px;
+    border-radius: 2px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+    background-size: cover;
+    background-position: center;
+    display: inline-block;
+    flex-shrink: 0;
+}
+.country-picker-menu {
+    border-radius: 0.5rem !important;
+    border: 1px solid #ced4da !important;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15) !important;
+    z-index: 1060 !important;
+    width: 300px !important;
+    max-width: 90vw;
+    padding: 8px !important;
+}
+.country-search-wrap {
+    padding-bottom: 6px;
+    border-bottom: 1px solid #f1f5f9;
+    margin-bottom: 4px;
+}
+.country-list-scroll {
+    max-height: 240px;
+    overflow-y: auto;
+}
+.country-list-scroll::-webkit-scrollbar { width: 5px; }
+.country-list-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+.country-item {
+    padding: 6px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.84rem;
+    display: flex;
+    align-items: center;
+    color: #212529;
+    transition: background 0.12s ease;
+}
+.country-item:hover {
+    background: #eef2ff;
+    color: #4361EE;
+}
+.country-item.active {
+    background: #eef2ff;
+    color: #4361EE;
+    font-weight: 600;
+}
+.country-item .fi {
+    width: 18px;
+    height: 14px;
+    border-radius: 2px;
+    flex-shrink: 0;
+    margin-right: 8px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.12);
+}
+.country-item .c-name {
+    flex-grow: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.country-item .c-code {
+    color: #6c757d;
+    font-size: 0.78rem;
+    margin-left: 8px;
+    font-weight: 600;
+}
+
+/* RTL overrides */
+[dir="rtl"] .country-picker-btn {
+    border-right: none !important;
+    border-left: 1px solid #ced4da !important;
+    border-top-right-radius: 0.375rem !important;
+    border-bottom-right-radius: 0.375rem !important;
+    border-top-left-radius: 0 !important;
+    border-bottom-left-radius: 0 !important;
+}
+[dir="rtl"] .country-phone-group .phone-input {
+    border-radius: 0.375rem 0 0 0.375rem !important;
+    direction: ltr;
+    text-align: right;
+}
+[dir="rtl"] .country-item .fi {
+    margin-right: 0;
+    margin-left: 8px;
+}
+[dir="rtl"] .country-item .c-code {
+    margin-left: 0;
+    margin-right: 8px;
+}
+</style>
+@endonce
+
 <div class="country-phone-group @if($error) has-error @endif" id="{{ $id }}_group">
     <div class="dropdown">
         <button class="country-picker-btn dropdown-toggle" 
