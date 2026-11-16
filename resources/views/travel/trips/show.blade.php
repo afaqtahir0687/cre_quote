@@ -101,6 +101,36 @@
     </div>
 </div>
 
+@if(isset($branchBreakdown) && $branchBreakdown->count() > 0)
+<!-- Multi-Branch Fleet Pooling Summary -->
+<div class="card border-0 shadow-sm rounded-4 mb-4 bg-white">
+    <div class="card-body p-3">
+        <div class="d-flex align-items-center justify-content-between mb-2">
+            <span class="fw-bold text-dark small">
+                <i class="fas fa-network-wired text-primary me-2"></i>{{ __('Multi-Branch Passenger & Revenue Distribution (Fleet Shared Pooling)') }}
+            </span>
+            <span class="text-muted extra-small">{{ __('Live synchronized bookings across :count branches', ['count' => $branchBreakdown->count()]) }}</span>
+        </div>
+        <div class="row g-2">
+            @foreach($branchBreakdown as $bStat)
+                <div class="col-sm-6 col-md-4 col-xl-3">
+                    <div class="p-2 px-3 rounded-3 bg-light border d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong class="text-dark d-block small"><i class="fas fa-store text-primary me-1"></i>{{ $bStat->shop?->name ?? __('Main Branch') }}</strong>
+                            <span class="badge bg-primary text-white extra-small">{{ $bStat->total_seats }} {{ __('Seats Booked') }}</span>
+                        </div>
+                        <div class="text-end font-monospace">
+                            <span class="fw-bold text-success d-block small">{{ format_currency($bStat->total_revenue) }}</span>
+                            <span class="text-muted extra-small">{{ __('Paid:') }} {{ format_currency($bStat->total_paid) }}</span>
+                        </div>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+    </div>
+</div>
+@endif
+
 <div class="row g-4 mb-4">
     <!-- Visual Bus Layout Card -->
     <div class="col-xl-5 col-lg-6">
@@ -306,7 +336,14 @@
                                                 &bull; <i class="fas fa-id-card ms-1 me-1 text-secondary"></i>{{ $booking->passenger_id_number }}
                                             @endif
                                         </div>
-                                        <span class="badge bg-light text-muted border extra-small mt-1">{{ $booking->booking_reference }}</span>
+                                        <div class="mt-1 d-flex align-items-center gap-1 flex-wrap">
+                                            <span class="badge bg-light text-muted border extra-small">{{ $booking->booking_reference }}</span>
+                                            @if($booking->shop)
+                                                <span class="badge bg-primary-subtle text-primary border border-primary-subtle extra-small">
+                                                    <i class="fas fa-store me-1"></i>{{ $booking->shop->name }}
+                                                </span>
+                                            @endif
+                                        </div>
                                     </td>
                                     <td>
                                         @if($booking->package_type === 'with_hotel')

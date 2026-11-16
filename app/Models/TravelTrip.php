@@ -130,10 +130,27 @@ class TravelTrip extends Model
     }
 
     /**
-     * Scope trips by active shop.
+     * Get booking summary breakdown grouped by branch/shop.
+     */
+    public function branchBreakdown()
+    {
+        return $this->confirmedBookings()
+            ->with('shop')
+            ->select('shop_id', \Illuminate\Support\Facades\DB::raw('count(*) as total_seats'), \Illuminate\Support\Facades\DB::raw('sum(total_amount) as total_revenue'), \Illuminate\Support\Facades\DB::raw('sum(paid_amount) as total_paid'), \Illuminate\Support\Facades\DB::raw('sum(balance_due) as total_due'))
+            ->groupBy('shop_id')
+            ->get();
+    }
+
+    /**
+     * Scope trips by active shop and sister branches of the same organization.
      */
     public function scopeForCurrentShop($query)
     {
+        $shop = current_shop();
+        if ($shop) {
+            $ids = $shop->allBranchAndParentShopIds();
+            return $query->whereIn('shop_id', $ids);
+        }
         $shopId = current_shop_id();
         if ($shopId) {
             return $query->where('shop_id', $shopId);

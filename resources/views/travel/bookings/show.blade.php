@@ -96,6 +96,19 @@
                         @endif
                     </div>
                 </div>
+
+                <div class="col-md-12">
+                    <div class="p-2 px-3 bg-light rounded-3 border d-flex justify-content-between align-items-center">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="fas fa-store text-primary fs-5"></i>
+                            <div>
+                                <span class="text-muted extra-small d-block text-uppercase fw-bold">{{ __('Booking Branch / Counter') }}</span>
+                                <strong class="text-dark small">{{ $booking->shop?->name ?? __('Main Office') }}</strong>
+                            </div>
+                        </div>
+                        <span class="badge bg-primary text-white extra-small">{{ __('Branch Ledger Account') }}</span>
+                    </div>
+                </div>
             </div>
 
             <!-- Seat & Route Highlight Banner -->

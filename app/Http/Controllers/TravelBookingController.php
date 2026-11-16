@@ -24,11 +24,15 @@ class TravelBookingController extends Controller
     public function index(Request $request)
     {
         $query = TravelBooking::forCurrentShop()
-            ->with(['trip', 'customer'])
+            ->with(['trip', 'customer', 'shop'])
             ->latest('id');
 
         if ($request->filled('trip_id')) {
             $query->where('travel_trip_id', $request->trip_id);
+        }
+
+        if ($request->filled('branch_id')) {
+            $query->where('shop_id', $request->branch_id);
         }
 
         if ($request->filled('payment_status')) {
@@ -51,6 +55,8 @@ class TravelBookingController extends Controller
 
         $bookings = $query->paginate(15)->withQueryString();
         $trips = TravelTrip::forCurrentShop()->latest('departure_date')->get();
+        $currentShop = current_shop();
+        $branches = ($currentShop && !$currentShop->parent_shop_id) ? $currentShop->branches : collect();
 
         $stats = [
             'total_bookings' => TravelBooking::forCurrentShop()->count(),
@@ -59,7 +65,7 @@ class TravelBookingController extends Controller
             'balance_due' => TravelBooking::forCurrentShop()->where('booking_status', 'confirmed')->sum('balance_due'),
         ];
 
-        return view('travel.bookings.index', compact('bookings', 'trips', 'stats'));
+        return view('travel.bookings.index', compact('bookings', 'trips', 'stats', 'branches'));
     }
 
     /**

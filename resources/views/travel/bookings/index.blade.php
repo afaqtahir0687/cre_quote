@@ -101,13 +101,24 @@
 <div class="card border-0 shadow-sm rounded-4 mb-4 bg-white">
     <div class="card-body p-3">
         <form action="{{ route('travel.bookings.index') }}" method="GET" class="row g-2 align-items-center">
-            <div class="col-md-4">
+            <div class="col-md-{{ isset($branches) && $branches->count() > 0 ? '3' : '4' }}">
                 <div class="input-group">
                     <span class="input-group-text bg-white border-end-0 text-muted"><i class="fas fa-search"></i></span>
                     <input type="text" name="search" class="form-control border-start-0" placeholder="{{ __('Search passenger name, booking ref, phone, ID/passport...') }}" value="{{ request('search') }}">
                 </div>
             </div>
-            <div class="col-md-3">
+            @if(isset($branches) && $branches->count() > 0)
+                <div class="col-md-2">
+                    <select name="branch_id" class="form-select">
+                        <option value="">{{ __('All Branches') }}</option>
+                        <option value="{{ current_shop_id() }}" {{ request('branch_id') == current_shop_id() ? 'selected' : '' }}>{{ current_shop()->name }} ({{ __('Head Office') }})</option>
+                        @foreach($branches as $br)
+                            <option value="{{ $br->id }}" {{ request('branch_id') == $br->id ? 'selected' : '' }}>{{ $br->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            @endif
+            <div class="col-md-{{ isset($branches) && $branches->count() > 0 ? '2' : '3' }}">
                 <select name="trip_id" class="form-select">
                     <option value="">{{ __('All Scheduled Trips') }}</option>
                     @foreach($trips as $t)
@@ -125,11 +136,11 @@
                     <option value="unpaid" {{ request('payment_status') === 'unpaid' ? 'selected' : '' }}>{{ __('Unpaid') }}</option>
                 </select>
             </div>
-            <div class="col-md-3 d-flex gap-2">
+            <div class="col-md-{{ isset($branches) && $branches->count() > 0 ? '3' : '3' }} d-flex gap-2">
                 <button type="submit" class="btn btn-primary-modern flex-grow-1">
                     <i class="fas fa-filter me-1"></i> {{ __('Filter') }}
                 </button>
-                @if(request()->has('search') || request()->has('trip_id') || request()->has('payment_status'))
+                @if(request()->has('search') || request()->has('trip_id') || request()->has('payment_status') || request()->has('branch_id'))
                     <a href="{{ route('travel.bookings.index') }}" class="btn btn-light border" title="{{ __('Clear Filters') }}">
                         <i class="fas fa-times"></i>
                     </a>
@@ -194,6 +205,13 @@
                                 &bull; <i class="fas fa-id-card ms-1 me-1 text-secondary"></i><span class="font-monospace">{{ $booking->passenger_id_number }}</span>
                             @endif
                         </div>
+                        @if($booking->shop)
+                            <div class="mt-1">
+                                <span class="badge bg-primary-subtle text-primary border border-primary-subtle extra-small" style="font-size: 0.7rem;">
+                                    <i class="fas fa-store me-1"></i>{{ $booking->shop->name }}
+                                </span>
+                            </div>
+                        @endif
                     </td>
 
                     <!-- Trip & Route -->

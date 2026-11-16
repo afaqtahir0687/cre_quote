@@ -369,6 +369,16 @@ class Shop extends Model
     }
 
     /**
+     * Get all shop IDs within the same business organization (parent shop + all sister branches).
+     */
+    public function allBranchAndParentShopIds(): array
+    {
+        $mainShop = ($this->parent_shop_id && $this->parentShop) ? $this->parentShop : $this;
+        $branchIds = $mainShop->branches()->pluck('id')->all();
+        return array_unique(array_merge([$mainShop->id], $branchIds));
+    }
+
+    /**
      * Travel trips belonging to this shop.
      */
     public function travelTrips()

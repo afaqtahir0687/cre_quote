@@ -94,10 +94,18 @@ class TravelBooking extends Model
     }
 
     /**
-     * Scope bookings by current shop.
+     * Scope bookings by current shop (sub-branches see their own sales; head office sees entire fleet).
      */
     public function scopeForCurrentShop($query)
     {
+        $shop = current_shop();
+        if ($shop) {
+            if ($shop->parent_shop_id) {
+                return $query->where('shop_id', $shop->id);
+            }
+            $ids = $shop->allBranchAndParentShopIds();
+            return $query->whereIn('shop_id', $ids);
+        }
         $shopId = current_shop_id();
         if ($shopId) {
             return $query->where('shop_id', $shopId);

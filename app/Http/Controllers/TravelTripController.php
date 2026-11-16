@@ -105,13 +105,14 @@ class TravelTripController extends Controller
     public function show($id)
     {
         $trip = TravelTrip::forCurrentShop()
-            ->with(['confirmedBookings.customer', 'creator'])
+            ->with(['confirmedBookings.customer', 'confirmedBookings.shop', 'creator', 'shop'])
             ->findOrFail($id);
 
         $bookingsBySeat = $trip->confirmedBookings->keyBy('seat_number');
         $bookedSeats = $trip->bookedSeatNumbers();
+        $branchBreakdown = $trip->branchBreakdown();
 
-        return view('travel.trips.show', compact('trip', 'bookingsBySeat', 'bookedSeats'));
+        return view('travel.trips.show', compact('trip', 'bookingsBySeat', 'bookedSeats', 'branchBreakdown'));
     }
 
     /**
