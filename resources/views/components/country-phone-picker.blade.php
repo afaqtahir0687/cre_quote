@@ -189,14 +189,15 @@
 </style>
 @endonce
 
-<div class="country-phone-group @if($error) has-error @endif" id="{{ $id }}_group">
-    <div class="dropdown">
+<div class="country-phone-group input-group @if($error) has-error @endif" id="{{ $id }}_group" style="display: flex !important; flex-direction: row !important; align-items: stretch !important; flex-wrap: nowrap !important; width: 100% !important; border: 1px solid #ced4da; border-radius: 0.375rem; background: #ffffff;">
+    <div class="dropdown" style="display: flex !important; align-items: stretch !important; flex-shrink: 0 !important;">
         <button class="country-picker-btn dropdown-toggle" 
                 type="button" 
                 id="{{ $id }}_btn" 
                 data-bs-toggle="dropdown" 
                 data-bs-auto-close="outside"
-                aria-expanded="false">
+                aria-expanded="false"
+                style="display: inline-flex !important; align-items: center !important; gap: 0.4rem; white-space: nowrap !important; border: none !important; border-right: 1px solid #ced4da !important; border-top-left-radius: 0.375rem !important; border-bottom-left-radius: 0.375rem !important; border-top-right-radius: 0 !important; border-bottom-right-radius: 0 !important; padding: 0.375rem 0.75rem !important; background: #f8fafc !important; font-weight: 600; font-size: 0.875rem;">
             <span class="fi fi-{{ $currentIso }}" id="{{ $id }}_flag"></span>
             <span class="country-code-text fw-semibold ms-1" id="{{ $id }}_code_text">{{ $currentCode }}</span>
         </button>
@@ -229,6 +230,7 @@
            value="{{ old($name, $value) }}" 
            placeholder="{{ $placeholder }}" 
            autocomplete="tel"
+           style="flex: 1 1 auto !important; width: auto !important; min-width: 0 !important; border: none !important; border-radius: 0 0.375rem 0.375rem 0 !important; padding: 0.375rem 0.75rem !important; background: transparent !important; box-shadow: none !important; font-size: 0.875rem;"
            {{ $required ? 'required' : '' }}>
 </div>
 

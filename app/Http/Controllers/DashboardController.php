@@ -103,6 +103,62 @@ class DashboardController extends Controller
             $recentQuotes = Quote::with('customer')->latest('id')->take(5)->get();
             $recentInvoices = Invoice::with('customer')->latest('id')->take(5)->get();
             $recentCustomers = Customer::latest('id')->take(5)->get();
+
+            // Specialized Umrah & Travel Analytics (if module enabled)
+            $travelStats = null;
+            $activeTrips = collect();
+            $recentBookings = collect();
+
+            if (shop_has_module('travel_tourism')) {
+                $tripsQuery = \App\Models\TravelTrip::forCurrentShop();
+                $bookingsQuery = \App\Models\TravelBooking::forCurrentShop();
+
+                $totalTrips = (clone $tripsQuery)->count();
+                $upcomingTrips = (clone $tripsQuery)->whereIn('status', ['upcoming', 'ongoing'])->count();
+                $totalBookings = (clone $bookingsQuery)->count();
+                $confirmedBookings = (clone $bookingsQuery)->where('booking_status', 'confirmed')->count();
+                $travelTotalRevenue = (float) (clone $bookingsQuery)->where('booking_status', 'confirmed')->sum('total_amount');
+                $travelPaidRevenue = (float) (clone $bookingsQuery)->where('booking_status', 'confirmed')->sum('paid_amount');
+                $travelPendingRevenue = (float) (clone $bookingsQuery)->where('booking_status', 'confirmed')->sum('balance_due');
+
+                // Active coach occupancy calculation
+                $activeCoachTrips = (clone $tripsQuery)->whereIn('status', ['upcoming', 'ongoing'])->with('bookings')->get();
+                $totalCoachSeats = $activeCoachTrips->sum('total_seats');
+                $bookedCoachSeats = $activeCoachTrips->sum(function ($trip) {
+                    return $trip->bookings->where('booking_status', 'confirmed')->count();
+                });
+                $availableCoachSeats = max(0, $totalCoachSeats - $bookedCoachSeats);
+                $coachOccupancyPercent = $totalCoachSeats > 0 ? round(($bookedCoachSeats / $totalCoachSeats) * 100) : 0;
+
+                $travelStats = [
+                    'total_trips' => $totalTrips,
+                    'upcoming_trips' => $upcomingTrips,
+                    'total_bookings' => $totalBookings,
+                    'confirmed_bookings' => $confirmedBookings,
+                    'travel_revenue' => $travelTotalRevenue,
+                    'travel_paid' => $travelPaidRevenue,
+                    'travel_pending' => $travelPendingRevenue,
+                    'total_coach_seats' => $totalCoachSeats,
+                    'booked_coach_seats' => $bookedCoachSeats,
+                    'available_coach_seats' => $availableCoachSeats,
+                    'coach_occupancy_percent' => $coachOccupancyPercent,
+                ];
+
+                $activeTrips = (clone $tripsQuery)
+                    ->whereIn('status', ['upcoming', 'ongoing'])
+                    ->withCount(['bookings' => function ($q) {
+                        $q->where('booking_status', 'confirmed');
+                    }])
+                    ->latest('departure_date')
+                    ->take(5)
+                    ->get();
+
+                $recentBookings = (clone $bookingsQuery)
+                    ->with(['trip', 'customer'])
+                    ->latest('id')
+                    ->take(6)
+                    ->get();
+            }
             
             return view('admin.dashboard', compact(
                 'stats', 
@@ -115,7 +171,10 @@ class DashboardController extends Controller
                 'monthlyInvoices', 
                 'monthlyJobOrders', 
                 'setting', 
-                'currentShop'
+                'currentShop',
+                'travelStats',
+                'activeTrips',
+                'recentBookings'
             ));
         } else {
             // Employee dashboard - show their own data within their shop
