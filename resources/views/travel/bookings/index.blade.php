@@ -3,228 +3,285 @@
 @section('title', __('Umrah & Bus Seat Bookings'))
 
 @section('content')
+<!-- Page Header -->
 <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
     <div>
-        <h2 class="fw-bold text-dark mb-1">
-            <i class="fas fa-ticket-alt text-primary me-2"></i>{{ __('Umrah & Bus Seat Bookings') }}
-        </h2>
-        <p class="text-muted small mb-0">{{ __('Manage passenger reservations, bus seat allocations, package payments, and boarding passes.') }}</p>
+        <div class="d-flex align-items-center gap-2 mb-1">
+            <h2 class="fw-bold text-dark mb-0">
+                <i class="fas fa-ticket-alt text-primary me-2"></i>{{ __('Umrah & Bus Seat Bookings') }}
+            </h2>
+            <span class="badge bg-primary text-white rounded-pill px-3 py-1">
+                {{ __('Coach Fleet Roster') }}
+            </span>
+        </div>
+        <p class="text-muted small mb-0">{{ __('Manage passenger manifests, allocated 49-seat coach reservations, package hotels, and boarding pass vouchers.') }}</p>
     </div>
     <div class="d-flex align-items-center gap-2">
         <a href="{{ route('travel.trips.index') }}" class="btn btn-outline-secondary">
             <i class="fas fa-bus me-1"></i> {{ __('View Trips & Fleet') }}
         </a>
-        <a href="{{ route('travel.bookings.create') }}" class="btn btn-primary-modern">
-            <i class="fas fa-plus-circle me-1"></i> {{ __('Book a Seat') }}
+        <a href="{{ route('travel.bookings.create') }}" class="btn btn-primary-modern shadow-sm">
+            <i class="fas fa-plus me-1"></i> {{ __('Book a Seat') }}
         </a>
     </div>
 </div>
 
-<!-- KPI Summary Cards -->
+<!-- 4 ERP KPI Summary Metric Cards -->
 <div class="row g-3 mb-4">
+    <!-- 1. Total Bookings -->
     <div class="col-sm-6 col-xl-3">
-        <div class="p-3 bg-white rounded-4 border shadow-xs h-100 d-flex align-items-center gap-3">
-            <div class="p-3 rounded-circle bg-primary-subtle text-primary fs-4" style="width: 52px; height: 52px; display: flex; align-items: center; justify-content: center;">
-                <i class="fas fa-ticket-alt"></i>
-            </div>
-            <div>
-                <div class="text-muted small uppercase fw-bold" style="font-size: 0.72rem;">{{ __('Total Bookings') }}</div>
-                <h3 class="fw-bold text-dark mb-0">{{ $stats['total_bookings'] }}</h3>
+        <div class="card border-0 shadow-sm rounded-4 h-100 bg-white">
+            <div class="card-body p-3 d-flex align-items-center gap-3">
+                <div class="rounded-circle d-flex align-items-center justify-content-center text-primary shadow-xs" 
+                     style="width: 52px; height: 52px; background: rgba(67, 97, 238, 0.12); font-size: 1.35rem; flex-shrink: 0;">
+                    <i class="fas fa-ticket-alt"></i>
+                </div>
+                <div>
+                    <div class="text-muted extra-small text-uppercase fw-bold">{{ __('Total Bookings') }}</div>
+                    <h3 class="fw-bold text-dark mb-0">{{ $stats['total_bookings'] }}</h3>
+                    <span class="extra-small text-muted">{{ __('All registered passenger tickets') }}</span>
+                </div>
             </div>
         </div>
     </div>
+
+    <!-- 2. Confirmed Travelers -->
     <div class="col-sm-6 col-xl-3">
-        <div class="p-3 bg-white rounded-4 border shadow-xs h-100 d-flex align-items-center gap-3">
-            <div class="p-3 rounded-circle bg-success-subtle text-success fs-4" style="width: 52px; height: 52px; display: flex; align-items: center; justify-content: center;">
-                <i class="fas fa-user-check"></i>
-            </div>
-            <div>
-                <div class="text-muted small uppercase fw-bold" style="font-size: 0.72rem;">{{ __('Confirmed Seats') }}</div>
-                <h3 class="fw-bold text-success mb-0">{{ $stats['confirmed_bookings'] }}</h3>
+        <div class="card border-0 shadow-sm rounded-4 h-100 bg-white">
+            <div class="card-body p-3 d-flex align-items-center gap-3">
+                <div class="rounded-circle d-flex align-items-center justify-content-center text-success shadow-xs" 
+                     style="width: 52px; height: 52px; background: rgba(16, 185, 129, 0.12); font-size: 1.35rem; flex-shrink: 0;">
+                    <i class="fas fa-user-check"></i>
+                </div>
+                <div>
+                    <div class="text-muted extra-small text-uppercase fw-bold">{{ __('Confirmed Seats') }}</div>
+                    <h3 class="fw-bold text-success mb-0">{{ $stats['confirmed_bookings'] }}</h3>
+                    <span class="extra-small text-muted">{{ __('Pilgrims with locked seats') }}</span>
+                </div>
             </div>
         </div>
     </div>
+
+    <!-- 3. Cash Received -->
     <div class="col-sm-6 col-xl-3">
-        <div class="p-3 bg-white rounded-4 border shadow-xs h-100 d-flex align-items-center gap-3">
-            <div class="p-3 rounded-circle bg-info-subtle text-info fs-4" style="width: 52px; height: 52px; display: flex; align-items: center; justify-content: center;">
-                <i class="fas fa-hand-holding-usd"></i>
-            </div>
-            <div>
-                <div class="text-muted small uppercase fw-bold" style="font-size: 0.72rem;">{{ __('Cash Received') }}</div>
-                <h3 class="fw-bold text-info mb-0">{{ currency_symbol() }}{{ number_format($stats['paid_amount'], 2) }}</h3>
+        <div class="card border-0 shadow-sm rounded-4 h-100 bg-white">
+            <div class="card-body p-3 d-flex align-items-center gap-3">
+                <div class="rounded-circle d-flex align-items-center justify-content-center text-info shadow-xs" 
+                     style="width: 52px; height: 52px; background: rgba(14, 165, 233, 0.12); font-size: 1.35rem; flex-shrink: 0;">
+                    <i class="fas fa-wallet"></i>
+                </div>
+                <div>
+                    <div class="text-muted extra-small text-uppercase fw-bold">{{ __('Cash Collected') }}</div>
+                    <h3 class="fw-bold text-dark mb-0">{{ format_currency($stats['paid_amount']) }}</h3>
+                    <span class="extra-small text-success fw-semibold"><i class="fas fa-arrow-up me-1"></i>{{ __('Realized Revenue') }}</span>
+                </div>
             </div>
         </div>
     </div>
+
+    <!-- 4. Balance Due -->
     <div class="col-sm-6 col-xl-3">
-        <div class="p-3 bg-white rounded-4 border shadow-xs h-100 d-flex align-items-center gap-3">
-            <div class="p-3 rounded-circle bg-danger-subtle text-danger fs-4" style="width: 52px; height: 52px; display: flex; align-items: center; justify-content: center;">
-                <i class="fas fa-clock"></i>
-            </div>
-            <div>
-                <div class="text-muted small uppercase fw-bold" style="font-size: 0.72rem;">{{ __('Balance Due') }}</div>
-                <h3 class="fw-bold text-danger mb-0">{{ currency_symbol() }}{{ number_format($stats['balance_due'], 2) }}</h3>
+        <div class="card border-0 shadow-sm rounded-4 h-100 bg-white">
+            <div class="card-body p-3 d-flex align-items-center gap-3">
+                <div class="rounded-circle d-flex align-items-center justify-content-center text-danger shadow-xs" 
+                     style="width: 52px; height: 52px; background: rgba(239, 68, 68, 0.12); font-size: 1.35rem; flex-shrink: 0;">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div>
+                    <div class="text-muted extra-small text-uppercase fw-bold">{{ __('Pending Due') }}</div>
+                    <h3 class="fw-bold text-danger mb-0">{{ format_currency($stats['balance_due']) }}</h3>
+                    <span class="extra-small text-muted">{{ __('To collect before boarding') }}</span>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Filters Bar -->
-<div class="p-3 bg-white rounded-4 border shadow-xs mb-4">
-    <form action="{{ route('travel.bookings.index') }}" method="GET" class="row g-2 align-items-center">
-        <div class="col-md-4">
-            <div class="input-group">
-                <span class="input-group-text bg-light border-end-0"><i class="fas fa-search text-muted"></i></span>
-                <input type="text" name="search" class="form-control border-start-0" placeholder="{{ __('Search passenger, ref, phone, passport...') }}" value="{{ request('search') }}">
+<!-- Filters Bar Card -->
+<div class="card border-0 shadow-sm rounded-4 mb-4 bg-white">
+    <div class="card-body p-3">
+        <form action="{{ route('travel.bookings.index') }}" method="GET" class="row g-2 align-items-center">
+            <div class="col-md-4">
+                <div class="input-group">
+                    <span class="input-group-text bg-white border-end-0 text-muted"><i class="fas fa-search"></i></span>
+                    <input type="text" name="search" class="form-control border-start-0" placeholder="{{ __('Search passenger name, booking ref, phone, ID/passport...') }}" value="{{ request('search') }}">
+                </div>
             </div>
-        </div>
-        <div class="col-md-3">
-            <select name="trip_id" class="form-select">
-                <option value="">{{ __('All Scheduled Trips') }}</option>
-                @foreach($trips as $t)
-                    <option value="{{ $t->id }}" {{ request('trip_id') == $t->id ? 'selected' : '' }}>
-                        {{ $t->trip_code }} &bull; {{ $t->title }}
-                    </option>
-                @endforeach
-            </select>
-        </div>
-        <div class="col-md-2">
-            <select name="payment_status" class="form-select">
-                <option value="">{{ __('All Payments') }}</option>
-                <option value="paid" {{ request('payment_status') === 'paid' ? 'selected' : '' }}>{{ __('Paid') }}</option>
-                <option value="partial" {{ request('payment_status') === 'partial' ? 'selected' : '' }}>{{ __('Partial') }}</option>
-                <option value="unpaid" {{ request('payment_status') === 'unpaid' ? 'selected' : '' }}>{{ __('Unpaid') }}</option>
-            </select>
-        </div>
-        <div class="col-md-3 d-flex gap-2">
-            <button type="submit" class="btn btn-primary-modern flex-grow-1">
-                <i class="fas fa-filter me-1"></i> {{ __('Filter') }}
-            </button>
-            <a href="{{ route('travel.bookings.index') }}" class="btn btn-light border">
-                {{ __('Reset') }}
+            <div class="col-md-3">
+                <select name="trip_id" class="form-select">
+                    <option value="">{{ __('All Scheduled Trips') }}</option>
+                    @foreach($trips as $t)
+                        <option value="{{ $t->id }}" {{ request('trip_id') == $t->id ? 'selected' : '' }}>
+                            {{ $t->trip_code }} &bull; {{ $t->title }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="col-md-2">
+                <select name="payment_status" class="form-select">
+                    <option value="">{{ __('All Payment Statuses') }}</option>
+                    <option value="paid" {{ request('payment_status') === 'paid' ? 'selected' : '' }}>{{ __('Paid in Full') }}</option>
+                    <option value="partial" {{ request('payment_status') === 'partial' ? 'selected' : '' }}>{{ __('Partially Paid') }}</option>
+                    <option value="unpaid" {{ request('payment_status') === 'unpaid' ? 'selected' : '' }}>{{ __('Unpaid') }}</option>
+                </select>
+            </div>
+            <div class="col-md-3 d-flex gap-2">
+                <button type="submit" class="btn btn-primary-modern flex-grow-1">
+                    <i class="fas fa-filter me-1"></i> {{ __('Filter') }}
+                </button>
+                @if(request()->has('search') || request()->has('trip_id') || request()->has('payment_status'))
+                    <a href="{{ route('travel.bookings.index') }}" class="btn btn-light border" title="{{ __('Clear Filters') }}">
+                        <i class="fas fa-times"></i>
+                    </a>
+                @endif
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Bookings Roster Table Card -->
+<x-card :padding="false" class="border-0 shadow-sm rounded-4 overflow-hidden">
+    @if($bookings->isEmpty())
+        <div class="text-center py-5">
+            <i class="fas fa-ticket-alt fa-3x text-muted mb-3 opacity-25"></i>
+            <h5 class="text-muted fw-bold">{{ __('No Passenger Bookings Found') }}</h5>
+            <p class="text-muted small">{{ __('Book an Umrah seat or schedule a new trip to get started.') }}</p>
+            <a href="{{ route('travel.bookings.create') }}" class="btn btn-primary-modern mt-2">
+                <i class="fas fa-plus me-1"></i> {{ __('Book a Seat Now') }}
             </a>
         </div>
-    </form>
-</div>
+    @else
+        <x-table>
+            <x-slot name="thead">
+                <th class="text-center" style="width: 75px;">{{ __('Seat #') }}</th>
+                <th class="text-nowrap">{{ __('Booking Ref') }}</th>
+                <th style="min-width: 200px;">{{ __('Passenger Manifest') }}</th>
+                <th style="min-width: 190px;">{{ __('Trip & Route') }}</th>
+                <th class="text-nowrap">{{ __('Accommodation') }}</th>
+                <th class="text-nowrap">{{ __('Financials') }}</th>
+                <th class="text-nowrap">{{ __('Payment Status') }}</th>
+                <th class="text-end pe-4 text-nowrap">{{ __('Actions') }}</th>
+            </x-slot>
 
-<!-- Bookings Table -->
-<div class="card border rounded-4 shadow-xs bg-white overflow-hidden">
-    <div class="table-responsive">
-        <table class="table table-hover align-middle mb-0">
-            <thead class="table-light">
-                <tr class="small text-muted text-uppercase">
-                    <th style="width: 70px;">{{ __('Seat') }}</th>
-                    <th>{{ __('Booking Ref') }}</th>
-                    <th>{{ __('Passenger Details') }}</th>
-                    <th>{{ __('Trip & Bus Route') }}</th>
-                    <th>{{ __('Package Type') }}</th>
-                    <th>{{ __('Financials') }}</th>
-                    <th>{{ __('Payment') }}</th>
-                    <th class="text-end">{{ __('Actions') }}</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse($bookings as $booking)
-                    <tr>
-                        <td>
-                            <div class="p-2 rounded-3 text-center fw-bold bg-primary text-white" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem;">
-                                #{{ $booking->seat_number }}
-                            </div>
-                        </td>
-                        <td>
-                            <span class="badge bg-light text-primary border fw-bold">{{ $booking->booking_reference }}</span>
-                            <div class="text-muted extra-small mt-1">{{ $booking->created_at->format('d M, Y') }}</div>
-                        </td>
-                        <td>
-                            <a href="{{ route('travel.bookings.show', $booking->id) }}" class="fw-bold text-dark text-decoration-none">
-                                {{ $booking->passenger_name }}
+            @foreach($bookings as $booking)
+                <tr class="align-middle hover-bg-light">
+                    <!-- Seat Number Badge -->
+                    <td class="text-center">
+                        <span class="badge bg-primary text-white fs-6 px-2 py-1 rounded-3 shadow-xs" style="min-width: 42px;">
+                            <i class="fas fa-chair extra-small me-1"></i>#{{ $booking->seat_number }}
+                        </span>
+                    </td>
+
+                    <!-- Reference & Date -->
+                    <td>
+                        <span class="badge-soft badge-soft-primary fw-bold font-monospace">
+                            {{ $booking->booking_reference }}
+                        </span>
+                        <div class="text-muted extra-small mt-1">
+                            <i class="far fa-calendar-alt me-1"></i>{{ $booking->created_at->format('d M, Y') }}
+                        </div>
+                    </td>
+
+                    <!-- Passenger Details -->
+                    <td>
+                        <a href="{{ route('travel.bookings.show', $booking->id) }}" class="fw-bold text-dark text-decoration-none d-block">
+                            {{ $booking->passenger_name }}
+                        </a>
+                        <div class="extra-small text-muted mt-1">
+                            <i class="fas fa-phone-alt text-primary me-1"></i>
+                            <a href="tel:{{ $booking->passenger_phone }}" class="text-muted text-decoration-none">{{ $booking->passenger_phone }}</a>
+                            @if($booking->passenger_id_number)
+                                &bull; <i class="fas fa-id-card ms-1 me-1 text-secondary"></i><span class="font-monospace">{{ $booking->passenger_id_number }}</span>
+                            @endif
+                        </div>
+                    </td>
+
+                    <!-- Trip & Route -->
+                    <td>
+                        @if($booking->trip)
+                            <a href="{{ route('travel.trips.show', $booking->trip->id) }}" class="fw-semibold text-dark text-decoration-none small d-block text-truncate" style="max-width: 220px;">
+                                {{ $booking->trip->title }}
                             </a>
-                            <div class="text-muted extra-small">
-                                <i class="fas fa-phone-alt me-1 text-primary"></i>{{ $booking->passenger_phone }}
-                                @if($booking->passenger_id_number)
-                                    &bull; <i class="fas fa-id-card ms-1 me-1 text-secondary"></i>{{ $booking->passenger_id_number }}
-                                @endif
+                            <div class="text-muted extra-small mt-1">
+                                <i class="fas fa-route text-primary me-1"></i>{{ $booking->trip->departure_city }} &rarr; {{ $booking->trip->destination_city }}
+                                &bull; {{ $booking->trip->departure_date ? $booking->trip->departure_date->format('d M, Y') : '' }}
                             </div>
-                        </td>
-                        <td>
-                            @if($booking->trip)
-                                <a href="{{ route('travel.trips.show', $booking->trip->id) }}" class="fw-semibold text-dark text-decoration-none small d-block">
-                                    {{ $booking->trip->title }}
-                                </a>
-                                <span class="text-muted extra-small">
-                                    <i class="fas fa-bus me-1"></i>{{ $booking->trip->bus_name }} &bull; {{ $booking->trip->departure_date ? $booking->trip->departure_date->format('d M, Y') : 'N/A' }}
-                                </span>
-                            @else
-                                <span class="text-muted small">---</span>
-                            @endif
-                        </td>
-                        <td>
-                            @if($booking->package_type === 'with_hotel')
-                                <span class="badge bg-success-subtle text-success border border-success-subtle">
-                                    <i class="fas fa-hotel me-1"></i> {{ __('With Hotel') }}
-                                </span>
-                                @if($booking->hotel_name)
-                                    <div class="text-muted extra-small mt-1" style="font-size: 0.72rem;">{{ $booking->hotel_name }}</div>
-                                @endif
-                            @else
-                                <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle">
-                                    <i class="fas fa-bus me-1"></i> {{ __('Seat Only') }}
-                                </span>
-                            @endif
-                        </td>
-                        <td>
-                            <div class="small">
-                                <strong>{{ currency_symbol() }}{{ number_format($booking->total_amount, 2) }}</strong>
-                                <div class="extra-small text-muted">
-                                    {{ __('Paid:') }} <span class="text-success">{{ currency_symbol() }}{{ number_format($booking->paid_amount, 2) }}</span>
-                                    @if($booking->balance_due > 0)
-                                        &bull; {{ __('Due:') }} <span class="text-danger fw-bold">{{ currency_symbol() }}{{ number_format($booking->balance_due, 2) }}</span>
-                                    @endif
-                                </div>
-                            </div>
-                        </td>
-                        <td>
-                            <span class="badge {{ $booking->paymentBadgeClass() }}">
-                                {{ __(ucfirst($booking->payment_status)) }}
-                            </span>
-                            @if($booking->booking_status === 'cancelled')
-                                <span class="badge bg-danger-subtle text-danger border border-danger-subtle ms-1">{{ __('Cancelled') }}</span>
-                            @endif
-                        </td>
-                        <td class="text-end">
-                            <div class="d-flex justify-content-end gap-1">
-                                <a href="{{ route('travel.bookings.voucher', $booking->id) }}" target="_blank" class="btn btn-sm btn-light border p-1 px-2" title="{{ __('Print Ticket / Boarding Pass') }}">
-                                    <i class="fas fa-print text-primary"></i>
-                                </a>
-                                <a href="{{ route('travel.bookings.show', $booking->id) }}" class="btn btn-sm btn-light border p-1 px-2" title="{{ __('View Details') }}">
-                                    <i class="fas fa-eye text-info"></i>
-                                </a>
-                                <a href="{{ route('travel.bookings.edit', $booking->id) }}" class="btn btn-sm btn-light border p-1 px-2" title="{{ __('Edit') }}">
-                                    <i class="fas fa-edit text-warning"></i>
-                                </a>
-                            </div>
-                        </td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="8" class="text-center py-5 text-muted">
-                            <i class="fas fa-ticket-alt fa-3x opacity-25 mb-2 d-block"></i>
-                            {{ __('No passenger bookings found.') }}
-                            <div class="mt-2">
-                                <a href="{{ route('travel.bookings.create') }}" class="btn btn-sm btn-primary-modern">
-                                    <i class="fas fa-plus-circle me-1"></i> {{ __('Book a Seat Now') }}
-                                </a>
-                            </div>
-                        </td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
-    </div>
+                        @else
+                            <span class="text-muted small">---</span>
+                        @endif
+                    </td>
 
-    @if($bookings->hasPages())
-        <div class="p-3 border-top">
-            {{ $bookings->links() }}
-        </div>
+                    <!-- Package -->
+                    <td>
+                        @if($booking->package_type === 'with_hotel')
+                            <span class="badge-soft badge-soft-success">
+                                <i class="fas fa-hotel me-1"></i> {{ __('With Hotel') }}
+                            </span>
+                            @if($booking->hotel_name)
+                                <div class="text-muted extra-small mt-1 text-truncate" style="max-width: 150px;" title="{{ $booking->hotel_name }}">
+                                    {{ $booking->hotel_name }}
+                                </div>
+                            @endif
+                        @else
+                            <span class="badge-soft badge-soft-info">
+                                <i class="fas fa-bus me-1"></i> {{ __('Bus Only') }}
+                            </span>
+                        @endif
+                    </td>
+
+                    <!-- Financials -->
+                    <td>
+                        <div class="fw-bold text-dark font-monospace" style="font-size: 0.9rem;">
+                            {{ format_currency($booking->total_amount) }}
+                        </div>
+                        <div class="extra-small text-muted mt-1">
+                            {{ __('Paid:') }} <span class="text-success fw-bold">{{ format_currency($booking->paid_amount) }}</span>
+                            @if($booking->balance_due > 0)
+                                &bull; {{ __('Due:') }} <span class="text-danger fw-bold">{{ format_currency($booking->balance_due) }}</span>
+                            @endif
+                        </div>
+                    </td>
+
+                    <!-- Payment & Booking Status -->
+                    <td>
+                        @php
+                            $pBadge = match($booking->payment_status) {
+                                'paid' => 'badge-soft-success',
+                                'partial' => 'badge-soft-warning',
+                                default => 'badge-soft-danger'
+                            };
+                        @endphp
+                        <span class="badge-soft {{ $pBadge }}">
+                            {{ __(ucfirst($booking->payment_status)) }}
+                        </span>
+                        @if($booking->booking_status === 'cancelled')
+                            <span class="badge-soft badge-soft-danger ms-1">{{ __('Cancelled') }}</span>
+                        @endif
+                    </td>
+
+                    <!-- Action Buttons -->
+                    <td class="text-end pe-4">
+                        <div class="btn-group btn-group-sm">
+                            <a href="{{ route('travel.bookings.voucher', $booking->id) }}" target="_blank" class="btn btn-sm btn-light border p-1 px-2" title="{{ __('Print Boarding Pass Voucher') }}">
+                                <i class="fas fa-print text-dark"></i>
+                            </a>
+                            <a href="{{ route('travel.bookings.show', $booking->id) }}" class="btn btn-sm btn-light border p-1 px-2" title="{{ __('View Details') }}">
+                                <i class="fas fa-eye text-primary"></i>
+                            </a>
+                            <a href="{{ route('travel.bookings.edit', $booking->id) }}" class="btn btn-sm btn-light border p-1 px-2" title="{{ __('Edit') }}">
+                                <i class="fas fa-edit text-warning"></i>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+            @endforeach
+        </x-table>
+
+        @if($bookings->hasPages())
+            <div class="p-3 border-top bg-light">
+                {{ $bookings->links() }}
+            </div>
+        @endif
     @endif
-</div>
+</x-card>
 @endsection

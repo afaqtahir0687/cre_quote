@@ -29,12 +29,14 @@
 .country-phone-group {
     display: flex !important;
     flex-direction: row !important;
+    flex-wrap: nowrap !important;
     align-items: stretch !important;
     border: 1px solid #ced4da !important;
     border-radius: 0.375rem !important;
     background: #ffffff !important;
     position: relative;
-    width: 100%;
+    width: 100% !important;
+    overflow: hidden;
 }
 .country-phone-group:focus-within {
     border-color: #4361EE !important;
@@ -46,12 +48,15 @@
 .country-phone-group .dropdown {
     display: flex !important;
     align-items: stretch !important;
-    flex-shrink: 0 !important;
+    flex: 0 0 auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
 }
 .country-picker-btn {
     background: #f8fafc !important;
     border: none !important;
     border-right: 1px solid #ced4da !important;
+    border-left: none !important;
     color: #212529 !important;
     font-weight: 600;
     font-size: 0.875rem;
@@ -59,15 +64,13 @@
     display: inline-flex !important;
     align-items: center !important;
     gap: 0.4rem;
-    border-top-left-radius: 0.375rem !important;
-    border-bottom-left-radius: 0.375rem !important;
-    border-top-right-radius: 0 !important;
-    border-bottom-right-radius: 0 !important;
+    border-radius: 0 !important;
     white-space: nowrap !important;
     cursor: pointer;
     box-shadow: none !important;
     outline: none !important;
     min-height: 38px;
+    height: 100%;
     transition: background 0.15s ease;
 }
 .country-picker-btn:hover, 
@@ -78,8 +81,10 @@
 }
 .country-phone-group .phone-input {
     flex: 1 1 auto !important;
+    width: 1% !important;
+    min-width: 0 !important;
     border: none !important;
-    border-radius: 0 0.375rem 0.375rem 0 !important;
+    border-radius: 0 !important;
     padding: 0.375rem 0.75rem !important;
     font-size: 0.875rem;
     background: transparent !important;
@@ -87,7 +92,7 @@
     outline: none !important;
     color: #212529 !important;
     min-height: 38px;
-    width: 100%;
+    height: auto;
 }
 .country-phone-group .phone-input:focus {
     box-shadow: none !important;
@@ -165,39 +170,37 @@
 }
 
 /* RTL overrides */
-[dir="rtl"] .country-picker-btn {
+[dir="rtl"] .country-picker-btn,
+html[dir="rtl"] .country-picker-btn,
+body[dir="rtl"] .country-picker-btn {
     border-right: none !important;
     border-left: 1px solid #ced4da !important;
-    border-top-right-radius: 0.375rem !important;
-    border-bottom-right-radius: 0.375rem !important;
-    border-top-left-radius: 0 !important;
-    border-bottom-left-radius: 0 !important;
 }
-[dir="rtl"] .country-phone-group .phone-input {
-    border-radius: 0.375rem 0 0 0.375rem !important;
-    direction: ltr;
-    text-align: right;
+[dir="rtl"] .country-phone-group .phone-input,
+html[dir="rtl"] .country-phone-group .phone-input,
+body[dir="rtl"] .country-phone-group .phone-input {
+    direction: ltr !important;
+    text-align: right !important;
 }
 [dir="rtl"] .country-item .fi {
-    margin-right: 0;
-    margin-left: 8px;
+    margin-right: 0 !important;
+    margin-left: 8px !important;
 }
 [dir="rtl"] .country-item .c-code {
-    margin-left: 0;
-    margin-right: 8px;
+    margin-left: 0 !important;
+    margin-right: 8px !important;
 }
 </style>
 @endonce
 
-<div class="country-phone-group input-group @if($error) has-error @endif" id="{{ $id }}_group" style="display: flex !important; flex-direction: row !important; align-items: stretch !important; flex-wrap: nowrap !important; width: 100% !important; border: 1px solid #ced4da; border-radius: 0.375rem; background: #ffffff;">
-    <div class="dropdown" style="display: flex !important; align-items: stretch !important; flex-shrink: 0 !important;">
+<div class="country-phone-group @if($error) has-error @endif" id="{{ $id }}_group">
+    <div class="dropdown">
         <button class="country-picker-btn dropdown-toggle" 
                 type="button" 
                 id="{{ $id }}_btn" 
                 data-bs-toggle="dropdown" 
                 data-bs-auto-close="outside"
-                aria-expanded="false"
-                style="display: inline-flex !important; align-items: center !important; gap: 0.4rem; white-space: nowrap !important; border: none !important; border-right: 1px solid #ced4da !important; border-top-left-radius: 0.375rem !important; border-bottom-left-radius: 0.375rem !important; border-top-right-radius: 0 !important; border-bottom-right-radius: 0 !important; padding: 0.375rem 0.75rem !important; background: #f8fafc !important; font-weight: 600; font-size: 0.875rem;">
+                aria-expanded="false">
             <span class="fi fi-{{ $currentIso }}" id="{{ $id }}_flag"></span>
             <span class="country-code-text fw-semibold ms-1" id="{{ $id }}_code_text">{{ $currentCode }}</span>
         </button>
@@ -230,7 +233,6 @@
            value="{{ old($name, $value) }}" 
            placeholder="{{ $placeholder }}" 
            autocomplete="tel"
-           style="flex: 1 1 auto !important; width: auto !important; min-width: 0 !important; border: none !important; border-radius: 0 0.375rem 0.375rem 0 !important; padding: 0.375rem 0.75rem !important; background: transparent !important; box-shadow: none !important; font-size: 0.875rem;"
            {{ $required ? 'required' : '' }}>
 </div>
 

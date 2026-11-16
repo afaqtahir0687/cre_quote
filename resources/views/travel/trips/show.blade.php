@@ -40,44 +40,64 @@
 <!-- Trip Summary Bar -->
 <div class="row g-3 mb-4">
     <div class="col-sm-6 col-md-3">
-        <div class="p-3 bg-white rounded-4 border shadow-xs h-100">
-            <div class="text-muted extra-small uppercase fw-bold mb-1">{{ __('Departure Schedule') }}</div>
+        <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+                <span class="text-muted small fw-semibold">{{ __('Departure Schedule') }}</span>
+                <div class="d-inline-flex p-2 rounded-3 bg-primary-subtle text-primary">
+                    <i class="fas fa-clock"></i>
+                </div>
+            </div>
             <strong class="text-dark fs-6 d-block">{{ $trip->departure_date ? $trip->departure_date->format('d M, Y - h:i A') : 'N/A' }}</strong>
-            <span class="text-muted extra-small">{{ __('Return:') }} {{ $trip->return_date ? $trip->return_date->format('d M, Y') : __('Open') }}</span>
+            <span class="text-muted extra-small mt-auto">{{ __('Return:') }} {{ $trip->return_date ? $trip->return_date->format('d M, Y') : __('Open') }}</span>
         </div>
     </div>
     <div class="col-sm-6 col-md-3">
-        <div class="p-3 bg-white rounded-4 border shadow-xs h-100">
-            <div class="text-muted extra-small uppercase fw-bold mb-1">{{ __('Seat Capacity & Status') }}</div>
-            <div class="d-flex justify-content-between align-items-center">
+        <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+                <span class="text-muted small fw-semibold">{{ __('Seat Occupancy') }}</span>
+                <div class="d-inline-flex p-2 rounded-3 bg-success-subtle text-success">
+                    <i class="fas fa-chair"></i>
+                </div>
+            </div>
+            <div class="d-flex justify-content-between align-items-baseline">
                 <h4 class="fw-bold text-dark mb-0">{{ $trip->bookedSeatsCount() }} / {{ $trip->total_seats }}</h4>
-                <span class="badge {{ $trip->availableSeatsCount() > 0 ? 'bg-success-subtle text-success' : 'bg-danger-subtle text-danger' }} border">
+                <span class="badge {{ $trip->availableSeatsCount() > 0 ? 'badge-soft-success' : 'badge-soft-danger' }}">
                     {{ $trip->availableSeatsCount() }} {{ __('Available') }}
                 </span>
             </div>
-            <div class="progress mt-2" style="height: 6px;">
+            <div class="progress mt-2" style="height: 6px; border-radius: 4px;">
                 <div class="progress-bar bg-success" style="width: {{ round(($trip->bookedSeatsCount() / max(1, $trip->total_seats)) * 100) }}%;"></div>
             </div>
         </div>
     </div>
     <div class="col-sm-6 col-md-3">
-        <div class="p-3 bg-white rounded-4 border shadow-xs h-100">
-            <div class="text-muted extra-small uppercase fw-bold mb-1">{{ __('Package Fares') }}</div>
+        <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+                <span class="text-muted small fw-semibold">{{ __('Package Fares') }}</span>
+                <div class="d-inline-flex p-2 rounded-3 bg-info-subtle text-info">
+                    <i class="fas fa-tags"></i>
+                </div>
+            </div>
             <div class="d-flex justify-content-between small">
-                <span>{{ __('Travel Only:') }}</span>
-                <strong class="text-dark">{{ currency_symbol() }}{{ number_format($trip->price_without_hotel, 2) }}</strong>
+                <span class="text-muted">{{ __('Travel Only:') }}</span>
+                <strong class="text-dark">{{ format_currency($trip->price_without_hotel) }}</strong>
             </div>
             <div class="d-flex justify-content-between small text-success mt-1">
                 <span>{{ __('With Hotel:') }}</span>
-                <strong>{{ currency_symbol() }}{{ number_format($trip->price_with_hotel, 2) }}</strong>
+                <strong>{{ format_currency($trip->price_with_hotel) }}</strong>
             </div>
         </div>
     </div>
     <div class="col-sm-6 col-md-3">
-        <div class="p-3 bg-white rounded-4 border shadow-xs h-100">
-            <div class="text-muted extra-small uppercase fw-bold mb-1">{{ __('Trip Revenue Realized') }}</div>
-            <h4 class="fw-bold text-success mb-0">{{ currency_symbol() }}{{ number_format($trip->totalRevenue(), 2) }}</h4>
-            <span class="text-muted extra-small">{{ __('Across') }} {{ $trip->bookedSeatsCount() }} {{ __('confirmed bookings') }}</span>
+        <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+                <span class="text-muted small fw-semibold">{{ __('Revenue Realized') }}</span>
+                <div class="d-inline-flex p-2 rounded-3 bg-warning-subtle text-warning">
+                    <i class="fas fa-coins"></i>
+                </div>
+            </div>
+            <h4 class="fw-bold text-success mb-0">{{ format_currency($trip->totalRevenue()) }}</h4>
+            <span class="text-muted extra-small mt-auto">{{ __('Across') }} {{ $trip->bookedSeatsCount() }} {{ __('confirmed bookings') }}</span>
         </div>
     </div>
 </div>
@@ -85,7 +105,7 @@
 <div class="row g-4 mb-4">
     <!-- Visual Bus Layout Card -->
     <div class="col-xl-5 col-lg-6">
-        <div class="card border rounded-4 shadow-xs h-100 bg-white">
+        <div class="card border-0 shadow-sm rounded-4 h-100 bg-white">
             <div class="card-header bg-white border-bottom p-3 d-flex justify-content-between align-items-center">
                 <div>
                     <h5 class="fw-bold text-dark mb-0">
@@ -241,7 +261,7 @@
 
     <!-- Right: Passenger Manifest Table & Action Roster -->
     <div class="col-xl-7 col-lg-6">
-        <div class="card border rounded-4 shadow-xs h-100 bg-white">
+        <div class="card border-0 shadow-sm rounded-4 h-100 bg-white">
             <div class="card-header bg-white border-bottom p-3 d-flex justify-content-between align-items-center">
                 <div>
                     <h5 class="fw-bold text-dark mb-0">
@@ -304,9 +324,9 @@
                                         @endif
                                     </td>
                                     <td>
-                                        <strong class="text-dark d-block">{{ currency_symbol() }}{{ number_format($booking->total_amount, 2) }}</strong>
+                                        <strong class="text-dark d-block">{{ format_currency($booking->total_amount) }}</strong>
                                         @if($booking->balance_due > 0)
-                                            <span class="text-danger extra-small">{{ __('Due:') }} {{ currency_symbol() }}{{ number_format($booking->balance_due, 2) }}</span>
+                                            <span class="text-danger extra-small">{{ __('Due:') }} {{ format_currency($booking->balance_due) }}</span>
                                         @else
                                             <span class="text-success extra-small">{{ __('Paid in Full') }}</span>
                                         @endif
