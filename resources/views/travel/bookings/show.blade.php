@@ -25,7 +25,7 @@
                 @endif
             </div>
             <p class="text-muted small mb-0 mt-1">
-                {{ $booking->passenger_name }} &bull; {{ $booking->trip ? $booking->trip->title : '' }} ({{ $booking->trip ? $booking->trip->trip_code : '' }})
+                {{ tdb($booking->passenger_name) }} &bull; {{ $booking->trip ? tdb($booking->trip->title) : '' }} ({{ $booking->trip ? $booking->trip->trip_code : '' }})
             </p>
         </div>
     </div>
@@ -54,7 +54,7 @@
                 <div class="col-md-6">
                     <div class="p-3 bg-light rounded-3 border">
                         <span class="text-muted extra-small d-block text-uppercase fw-bold">{{ __('Passenger Name') }}</span>
-                        <span class="fs-5 fw-bold text-dark d-block">{{ $booking->passenger_name }}</span>
+                        <span class="fs-5 fw-bold text-dark d-block">{{ tdb($booking->passenger_name) }}</span>
                         <span class="badge bg-secondary-subtle text-secondary extra-small mt-1">
                             <i class="fas fa-{{ $booking->passenger_gender === 'female' ? 'venus' : 'mars' }} me-1"></i>
                             {{ ucfirst(__($booking->passenger_gender)) }}
@@ -121,9 +121,9 @@
                     </div>
                     <div>
                         <span class="badge bg-warning text-dark extra-small mb-1 fw-bold text-uppercase">{{ __('Allocated Coach Seat') }}</span>
-                        <h5 class="fw-bold mb-0 text-white">{{ $booking->trip ? $booking->trip->bus_name : 'Umrah Coach' }} (49 Seats)</h5>
+                        <h5 class="fw-bold mb-0 text-white">{{ $booking->trip ? tdb($booking->trip->bus_name) : 'Umrah Coach' }} (49 Seats)</h5>
                         <p class="extra-small mb-0 opacity-75 mt-1">
-                            <i class="fas fa-route me-1 text-info"></i>{{ $booking->trip ? $booking->trip->departure_city : '' }} &rarr; {{ $booking->trip ? $booking->trip->destination_city : '' }}
+                            <i class="fas fa-route me-1 text-info"></i>{{ $booking->trip ? tdb($booking->trip->departure_city) : '' }} &rarr; {{ $booking->trip ? tdb($booking->trip->destination_city) : '' }}
                             @if($booking->trip && $booking->trip->bus_number) &bull; Plate: {{ $booking->trip->bus_number }} @endif
                         </p>
                     </div>

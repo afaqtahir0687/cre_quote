@@ -33,9 +33,9 @@
                 <div class="p-3 bg-light rounded-3 border mb-3 d-flex justify-content-between align-items-center">
                     <div>
                         <span class="text-muted extra-small uppercase fw-bold d-block">{{ __('Scheduled Trip') }}</span>
-                        <span class="fw-bold text-dark fs-6">{{ $booking->trip ? $booking->trip->title : 'Trip' }} ({{ $booking->trip ? $booking->trip->trip_code : '' }})</span>
+                        <span class="fw-bold text-dark fs-6">{{ $booking->trip ? tdb($booking->trip->title) : __('Trip') }} ({{ $booking->trip ? $booking->trip->trip_code : '' }})</span>
                         <div class="extra-small text-muted">
-                            {{ $booking->trip ? $booking->trip->departure_city : '' }} &rarr; {{ $booking->trip ? $booking->trip->destination_city : '' }}
+                            {{ $booking->trip ? tdb($booking->trip->departure_city) : '' }} &rarr; {{ $booking->trip ? tdb($booking->trip->destination_city) : '' }}
                             &bull; {{ $booking->trip->departure_date ? $booking->trip->departure_date->format('d M Y') : '' }}
                         </div>
                     </div>

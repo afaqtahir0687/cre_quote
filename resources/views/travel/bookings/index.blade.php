@@ -196,7 +196,7 @@
                     <!-- Passenger Details -->
                     <td>
                         <a href="{{ route('travel.bookings.show', $booking->id) }}" class="fw-bold text-dark text-decoration-none d-block">
-                            {{ $booking->passenger_name }}
+                            {{ tdb($booking->passenger_name) }}
                         </a>
                         <div class="extra-small text-muted mt-1">
                             <i class="fas fa-phone-alt text-primary me-1"></i>
@@ -208,7 +208,7 @@
                         @if($booking->shop)
                             <div class="mt-1">
                                 <span class="badge bg-primary-subtle text-primary border border-primary-subtle extra-small" style="font-size: 0.7rem;">
-                                    <i class="fas fa-store me-1"></i>{{ $booking->shop->name }}
+                                    <i class="fas fa-store me-1"></i>{{ tdb($booking->shop->name) }}
                                 </span>
                             </div>
                         @endif
@@ -218,10 +218,10 @@
                     <td>
                         @if($booking->trip)
                             <a href="{{ route('travel.trips.show', $booking->trip->id) }}" class="fw-semibold text-dark text-decoration-none small d-block text-truncate" style="max-width: 220px;">
-                                {{ $booking->trip->title }}
+                                {{ tdb($booking->trip->title) }}
                             </a>
                             <div class="text-muted extra-small mt-1">
-                                <i class="fas fa-route text-primary me-1"></i>{{ $booking->trip->departure_city }} &rarr; {{ $booking->trip->destination_city }}
+                                <i class="fas fa-route text-primary me-1"></i>{{ tdb($booking->trip->departure_city) }} &rarr; {{ tdb($booking->trip->destination_city) }}
                                 &bull; {{ $booking->trip->departure_date ? $booking->trip->departure_date->format('d M, Y') : '' }}
                             </div>
                         @else

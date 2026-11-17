@@ -292,6 +292,10 @@ class TravelBookingController extends Controller
      */
     public function printVoucher($id)
     {
+        if (request()->has('lang') && in_array(request('lang'), ['ar', 'en'])) {
+            app()->setLocale(request('lang'));
+        }
+
         $booking = TravelBooking::forCurrentShop()
             ->with(['trip', 'customer', 'shop.setting'])
             ->findOrFail($id);

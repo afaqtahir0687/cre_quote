@@ -38,7 +38,7 @@
                                     data-hotel="{{ $t->hotel_name }}"
                                     data-duration="{{ $t->duration_days }}"
                                     {{ $selectedTrip && $selectedTrip->id == $t->id ? 'selected' : '' }}>
-                                {{ $t->trip_code }} — {{ $t->title }} ({{ $t->availableSeatsCount() }} {{ __('Seats Free') }})
+                                {{ $t->trip_code }} — {{ tdb($t->title) }} ({{ $t->availableSeatsCount() }} {{ __('Seats Free') }})
                             </option>
                         @endforeach
                     </select>

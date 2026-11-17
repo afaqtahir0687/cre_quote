@@ -147,17 +147,17 @@
                     </td>
                     <td>
                         <a href="{{ route('travel.trips.show', $trip->id) }}" class="fw-bold text-dark text-decoration-none d-block">
-                            {{ $trip->title }}
+                            {{ tdb($trip->title) }}
                         </a>
                         <div class="text-muted extra-small mt-1">
-                            <i class="fas fa-route text-primary me-1"></i>{{ $trip->departure_city }} &rarr; {{ $trip->destination_city }}
+                            <i class="fas fa-route text-primary me-1"></i>{{ tdb($trip->departure_city) }} &rarr; {{ tdb($trip->destination_city) }}
                             @if($trip->hotel_name)
-                                &bull; <i class="fas fa-hotel text-warning ms-1 me-1"></i>{{ $trip->hotel_name }}
+                                &bull; <i class="fas fa-hotel text-warning ms-1 me-1"></i>{{ tdb($trip->hotel_name) }}
                             @endif
                         </div>
                     </td>
                     <td class="text-nowrap">
-                        <div class="fw-semibold text-dark small"><i class="fas fa-bus text-primary me-1"></i>{{ $trip->bus_name }}</div>
+                        <div class="fw-semibold text-dark small"><i class="fas fa-bus text-primary me-1"></i>{{ tdb($trip->bus_name) }}</div>
                         @if($trip->bus_number)
                             <div class="extra-small text-muted font-monospace">{{ $trip->bus_number }}</div>
                         @endif

@@ -11,15 +11,15 @@
         </a>
         <div>
             <div class="d-flex align-items-center gap-2">
-                <h2 class="fw-bold text-dark mb-0">{{ $trip->title }}</h2>
+                <h2 class="fw-bold text-dark mb-0">{{ tdb($trip->title) }}</h2>
                 <span class="badge-soft badge-soft-primary">{{ $trip->trip_code }}</span>
                 <span class="badge-soft {{ $trip->status === 'upcoming' ? 'badge-soft-info' : ($trip->status === 'completed' ? 'badge-soft-success' : 'badge-soft-warning') }}">
                     {{ __(ucfirst($trip->status)) }}
                 </span>
             </div>
             <p class="text-muted small mb-0 mt-1">
-                <i class="fas fa-route text-primary me-1"></i> {{ $trip->departure_city }} &rarr; {{ $trip->destination_city }}
-                &bull; <i class="fas fa-bus text-secondary ms-2 me-1"></i> {{ $trip->bus_name }} ({{ $trip->bus_number ?: __('Reg. Pending') }})
+                <i class="fas fa-route text-primary me-1"></i> {{ tdb($trip->departure_city) }} &rarr; {{ tdb($trip->destination_city) }}
+                &bull; <i class="fas fa-bus text-secondary ms-2 me-1"></i> {{ tdb($trip->bus_name) }} ({{ $trip->bus_number ?: __('Reg. Pending') }})
                 &bull; <i class="fas fa-calendar-day text-muted ms-2 me-1"></i> {{ $trip->duration_days }} {{ __('Days Trip') }}
             </p>
         </div>
@@ -328,7 +328,7 @@
                                     </td>
                                     <td>
                                         <a href="{{ route('travel.bookings.show', $booking->id) }}" class="fw-bold text-dark text-decoration-none">
-                                            {{ $booking->passenger_name }}
+                                            {{ tdb($booking->passenger_name) }}
                                         </a>
                                         <div class="text-muted extra-small">
                                             <i class="fas fa-phone-alt me-1 text-primary"></i>{{ $booking->passenger_phone }}
@@ -340,7 +340,7 @@
                                             <span class="badge bg-light text-muted border extra-small">{{ $booking->booking_reference }}</span>
                                             @if($booking->shop)
                                                 <span class="badge bg-primary-subtle text-primary border border-primary-subtle extra-small">
-                                                    <i class="fas fa-store me-1"></i>{{ $booking->shop->name }}
+                                                    <i class="fas fa-store me-1"></i>{{ tdb($booking->shop->name) }}
                                                 </span>
                                             @endif
                                         </div>
@@ -351,7 +351,7 @@
                                                 <i class="fas fa-hotel me-1"></i> {{ __('With Hotel') }}
                                             </span>
                                             @if($booking->hotel_name)
-                                                <div class="text-muted extra-small mt-1" style="font-size: 0.72rem;">{{ $booking->hotel_name }} ({{ ucfirst(str_replace('_', ' ', $booking->room_type)) }})</div>
+                                                <div class="text-muted extra-small mt-1" style="font-size: 0.72rem;">{{ tdb($booking->hotel_name) }} ({{ $booking->room_type ? __(ucwords(str_replace('_', ' ', $booking->room_type))) : '' }})</div>
                                             @endif
                                         @else
                                             <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle">
