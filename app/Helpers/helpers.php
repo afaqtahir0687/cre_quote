@@ -332,11 +332,22 @@ if (!function_exists('currency_symbol')) {
     /**
      * Get the active shop's currency symbol (or fallback to setting or 'SAR').
      */
-    function currency_symbol(): string
+    function currency_symbol($shop = null): string
     {
-        $shop = current_shop();
+        if ($shop === null) {
+            $shop = current_shop();
+        }
         $setting = current_setting();
-        return $shop?->currency_symbol ?? $setting?->currency_symbol ?? 'SAR';
+
+        // Check shop first, then setting
+        $symbol = $shop?->currency_symbol ?? $setting?->currency_symbol ?? 'SAR';
+
+        // Treat generic '$' as unconfigured placeholder in Saudi ERP and convert to SAR
+        if (empty($symbol) || $symbol === '$') {
+            return 'SAR';
+        }
+
+        return $symbol;
     }
 }
 
@@ -344,9 +355,13 @@ if (!function_exists('format_currency')) {
     /**
      * Format an amount with the current shop's currency symbol.
      */
-    function format_currency($amount): string
+    function format_currency($amount, ?string $currency = null): string
     {
-        return currency_symbol() . ' ' . number_format((float) $amount, 2);
+        $symbol = $currency ?: currency_symbol();
+        if (empty($symbol) || $symbol === '$') {
+            $symbol = 'SAR';
+        }
+        return $symbol . ' ' . number_format((float) $amount, 2);
     }
 }
 

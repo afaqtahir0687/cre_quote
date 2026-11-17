@@ -32,7 +32,10 @@
 
     <div class="d-flex gap-2">
         <a href="{{ route('travel.bookings.voucher', $booking->id) }}" target="_blank" class="btn btn-primary-modern d-flex align-items-center shadow-sm">
-            <i class="fas fa-print me-2"></i> {{ __('Print Boarding Pass') }}
+            <i class="fas fa-print me-2"></i> {{ __('Print Ticket (A5)') }}
+        </a>
+        <a href="{{ route('travel.bookings.pdf', $booking->id) }}" target="_blank" class="btn btn-outline-danger d-flex align-items-center shadow-sm">
+            <i class="fas fa-file-pdf me-2"></i> {{ __('Download A5 PDF') }}
         </a>
         <a href="{{ route('travel.bookings.edit', $booking->id) }}" class="btn btn-outline-info d-flex align-items-center shadow-sm">
             <i class="fas fa-edit me-2"></i> {{ __('Edit') }}
@@ -111,20 +114,39 @@
                 </div>
             </div>
 
+            @php
+                $groupSeats = isset($groupBookings) && $groupBookings->isNotEmpty() ? $groupBookings : collect([$booking]);
+                $seatsList = $groupSeats->pluck('seat_number')->all();
+            @endphp
             <!-- Seat & Route Highlight Banner -->
             <div class="mt-3 p-3 rounded-3 text-white d-flex flex-wrap justify-content-between align-items-center gap-3" 
                  style="background: linear-gradient(135deg, #0F172A 0%, #1E293B 60%, #1E3A8A 100%); border-left: 4px solid var(--erp-primary);">
                 <div class="d-flex align-items-center gap-3">
-                    <div class="rounded-3 d-flex align-items-center justify-content-center text-white fw-bold shadow-sm" 
-                         style="width: 58px; height: 58px; background: var(--erp-primary, #4361EE); font-size: 1.4rem;">
-                        #{{ $booking->seat_number }}
+                    <div class="rounded-3 d-flex flex-column align-items-center justify-content-center text-white fw-bold shadow-sm p-2 text-center" 
+                         style="min-width: 65px; height: 58px; background: var(--erp-primary, #4361EE); font-size: {{ count($seatsList) > 2 ? '0.95rem' : '1.3rem' }};">
+                        @if(count($seatsList) > 1)
+                            <div class="extra-small text-white-50" style="font-size: 0.6rem;">{{ count($seatsList) }} {{ __('Seats') }}</div>
+                            <div class="text-truncate" style="max-width: 80px;">#{{ implode(',#', $seatsList) }}</div>
+                        @else
+                            #{{ $booking->seat_number }}
+                        @endif
                     </div>
                     <div>
-                        <span class="badge bg-warning text-dark extra-small mb-1 fw-bold text-uppercase">{{ __('Allocated Coach Seat') }}</span>
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="badge bg-warning text-dark extra-small mb-1 fw-bold text-uppercase">{{ __('Allocated Coach Seat') }}</span>
+                            @if(count($seatsList) > 1)
+                                <span class="badge bg-success text-white extra-small mb-1 fw-bold">
+                                    {{ __('Group / Family Booking') }} ({{ count($seatsList) }} {{ __('Seats') }})
+                                </span>
+                            @endif
+                        </div>
                         <h5 class="fw-bold mb-0 text-white">{{ $booking->trip ? tdb($booking->trip->bus_name) : 'Umrah Coach' }} (49 Seats)</h5>
                         <p class="extra-small mb-0 opacity-75 mt-1">
                             <i class="fas fa-route me-1 text-info"></i>{{ $booking->trip ? tdb($booking->trip->departure_city) : '' }} &rarr; {{ $booking->trip ? tdb($booking->trip->destination_city) : '' }}
                             @if($booking->trip && $booking->trip->bus_number) &bull; Plate: {{ $booking->trip->bus_number }} @endif
+                            @if(count($seatsList) > 1)
+                                &bull; <strong class="text-warning">{{ __('Seats') }}: #{{ implode(', #', $seatsList) }}</strong>
+                            @endif
                         </p>
                     </div>
                 </div>
@@ -197,49 +219,64 @@
     <!-- Right Column: Financial Breakdown & Payment Summary -->
     <div class="col-lg-5">
         <x-card :title="__('Financial & Payment Breakdown')" class="border-0 shadow-sm rounded-4">
+            @php
+                $totFare = $groupSeats->sum('travel_fare');
+                $totHotel = $groupSeats->sum('hotel_expense');
+                $totExtra = $groupSeats->sum('extra_charges');
+                $totDisc = $groupSeats->sum('discount');
+                $totTax = $groupSeats->sum('tax_amount');
+                $totGrand = $groupSeats->sum('total_amount');
+                $totPaid = $groupSeats->sum('paid_amount');
+                $totBal = $groupSeats->sum('balance_due');
+            @endphp
             <div class="table-responsive">
                 <table class="table table-sm align-middle mb-0">
                     <tbody>
                         <tr>
-                            <td class="text-muted">{{ __('Travel Bus Fare') }}</td>
-                            <td class="text-end fw-bold font-monospace">{{ format_currency($booking->travel_fare) }}</td>
+                            <td class="text-muted">
+                                {{ __('Travel Bus Fare') }}
+                                @if(count($seatsList) > 1)
+                                    <span class="badge bg-light text-dark border extra-small ms-1">({{ count($seatsList) }} {{ __('Seats') }}: #{{ implode(', #', $seatsList) }})</span>
+                                @endif
+                            </td>
+                            <td class="text-end fw-bold font-monospace">{{ format_currency($totFare) }}</td>
                         </tr>
-                        @if($booking->hotel_expense > 0)
+                        @if($totHotel > 0)
                             <tr>
                                 <td class="text-muted">{{ __('Hotel & Accommodation Expense') }}</td>
-                                <td class="text-end fw-bold font-monospace">{{ format_currency($booking->hotel_expense) }}</td>
+                                <td class="text-end fw-bold font-monospace">{{ format_currency($totHotel) }}</td>
                             </tr>
                         @endif
-                        @if($booking->extra_charges > 0)
+                        @if($totExtra > 0)
                             <tr>
                                 <td class="text-muted">{{ __('Extra Services / Charges') }}</td>
-                                <td class="text-end fw-bold font-monospace">+ {{ format_currency($booking->extra_charges) }}</td>
+                                <td class="text-end fw-bold font-monospace">+ {{ format_currency($totExtra) }}</td>
                             </tr>
                         @endif
-                        @if($booking->discount > 0)
+                        @if($totDisc > 0)
                             <tr>
                                 <td class="text-muted">{{ __('Discount Applied') }}</td>
-                                <td class="text-end fw-bold text-danger font-monospace">- {{ format_currency($booking->discount) }}</td>
+                                <td class="text-end fw-bold text-danger font-monospace">- {{ format_currency($totDisc) }}</td>
                             </tr>
                         @endif
-                        @if($booking->tax_amount > 0)
+                        @if($totTax > 0)
                             <tr>
                                 <td class="text-muted">{{ __('Tax / VAT') }}</td>
-                                <td class="text-end fw-bold font-monospace">+ {{ format_currency($booking->tax_amount) }}</td>
+                                <td class="text-end fw-bold font-monospace">+ {{ format_currency($totTax) }}</td>
                             </tr>
                         @endif
                         <tr class="border-top table-light">
                             <td class="fw-bold fs-6 text-dark py-3">{{ __('Total Package Amount') }}</td>
-                            <td class="text-end fw-bold fs-5 text-primary font-monospace py-3">{{ format_currency($booking->total_amount) }}</td>
+                            <td class="text-end fw-bold fs-5 text-primary font-monospace py-3">{{ format_currency($totGrand) }}</td>
                         </tr>
                         <tr>
                             <td class="text-success fw-bold">{{ __('Amount Paid') }}</td>
-                            <td class="text-end fw-bold text-success font-monospace">{{ format_currency($booking->paid_amount) }}</td>
+                            <td class="text-end fw-bold text-success font-monospace">{{ format_currency($totPaid) }}</td>
                         </tr>
-                        <tr class="{{ $booking->balance_due > 0 ? 'table-warning' : 'table-success' }}">
+                        <tr class="{{ $totBal > 0 ? 'table-warning' : 'table-success' }}">
                             <td class="fw-bold">{{ __('Balance Due') }}</td>
-                            <td class="text-end fw-bold fs-6 font-monospace {{ $booking->balance_due > 0 ? 'text-danger' : 'text-success' }}">
-                                {{ format_currency($booking->balance_due) }}
+                            <td class="text-end fw-bold fs-6 font-monospace {{ $totBal > 0 ? 'text-danger' : 'text-success' }}">
+                                {{ format_currency($totBal) }}
                             </td>
                         </tr>
                     </tbody>

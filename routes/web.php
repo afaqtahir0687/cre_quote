@@ -213,6 +213,7 @@ Route::group(['middleware' => 'auth'], function () {
         // Seat & Passenger Bookings
         Route::post('bookings/{booking}/cancel', [\App\Http\Controllers\TravelBookingController::class, 'cancel'])->name('bookings.cancel');
         Route::get('bookings/{booking}/voucher', [\App\Http\Controllers\TravelBookingController::class, 'printVoucher'])->name('bookings.voucher');
+        Route::get('bookings/{booking}/pdf', [\App\Http\Controllers\TravelBookingController::class, 'downloadPdf'])->name('bookings.pdf');
         Route::resource('bookings', \App\Http\Controllers\TravelBookingController::class);
     });
 

@@ -156,7 +156,7 @@
                 <div class="mb-3">
                     <label class="form-label fw-bold text-dark">{{ __('Travel Bus Fare *') }}</label>
                     <div class="input-group">
-                        <span class="input-group-text"><i class="fas fa-bus"></i></span>
+                        <span class="input-group-text bg-light fw-bold">{{ currency_symbol() }}</span>
                         <input type="number" step="0.01" name="travel_fare" id="travelFare" class="form-control font-monospace" value="{{ old('travel_fare', $booking->travel_fare) }}" required oninput="recalcTotals()">
                     </div>
                 </div>
@@ -164,7 +164,7 @@
                 <div class="mb-3">
                     <label class="form-label fw-bold text-dark">{{ __('Hotel / Accommodation Expense') }}</label>
                     <div class="input-group">
-                        <span class="input-group-text"><i class="fas fa-hotel"></i></span>
+                        <span class="input-group-text bg-light fw-bold">{{ currency_symbol() }}</span>
                         <input type="number" step="0.01" name="hotel_expense" id="hotelExpense" class="form-control font-monospace" value="{{ old('hotel_expense', $booking->hotel_expense) }}" oninput="recalcTotals()">
                     </div>
                 </div>
@@ -172,17 +172,26 @@
                 <div class="row g-2 mb-3">
                     <div class="col-6">
                         <label class="form-label fw-bold text-dark extra-small">{{ __('Extra Charges') }}</label>
-                        <input type="number" step="0.01" name="extra_charges" id="extraCharges" class="form-control font-monospace form-control-sm" value="{{ old('extra_charges', $booking->extra_charges) }}" oninput="recalcTotals()">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text bg-light fw-bold">{{ currency_symbol() }}</span>
+                            <input type="number" step="0.01" name="extra_charges" id="extraCharges" class="form-control font-monospace form-control-sm" value="{{ old('extra_charges', $booking->extra_charges) }}" oninput="recalcTotals()">
+                        </div>
                     </div>
                     <div class="col-6">
                         <label class="form-label fw-bold text-dark extra-small">{{ __('Discount') }}</label>
-                        <input type="number" step="0.01" name="discount" id="discountInput" class="form-control font-monospace form-control-sm" value="{{ old('discount', $booking->discount) }}" oninput="recalcTotals()">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text bg-light fw-bold">{{ currency_symbol() }}</span>
+                            <input type="number" step="0.01" name="discount" id="discountInput" class="form-control font-monospace form-control-sm" value="{{ old('discount', $booking->discount) }}" oninput="recalcTotals()">
+                        </div>
                     </div>
                 </div>
 
                 <div class="mb-3">
                     <label class="form-label fw-bold text-dark extra-small">{{ __('Tax / VAT') }}</label>
-                    <input type="number" step="0.01" name="tax_amount" id="taxAmount" class="form-control font-monospace form-control-sm" value="{{ old('tax_amount', $booking->tax_amount) }}" oninput="recalcTotals()">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text bg-light fw-bold">{{ currency_symbol() }}</span>
+                        <input type="number" step="0.01" name="tax_amount" id="taxAmount" class="form-control font-monospace form-control-sm" value="{{ old('tax_amount', $booking->tax_amount) }}" oninput="recalcTotals()">
+                    </div>
                 </div>
 
                 <!-- Live Computed Totals -->
@@ -190,19 +199,22 @@
                     <div class="d-flex justify-content-between align-items-center mb-2">
                         <span class="fw-bold text-dark">{{ __('Total Amount') }}:</span>
                         <span class="fs-5 fw-bold text-primary font-monospace" id="displayTotal">
-                            {{ number_format($booking->total_amount, 2) }}
+                            {{ currency_symbol() }} {{ number_format($booking->total_amount, 2) }}
                         </span>
                     </div>
 
                     <div class="mb-2">
                         <label class="form-label fw-bold text-dark extra-small mb-1">{{ __('Paid Amount') }}</label>
-                        <input type="number" step="0.01" name="paid_amount" id="paidAmount" class="form-control font-monospace" value="{{ old('paid_amount', $booking->paid_amount) }}" oninput="recalcTotals()">
+                        <div class="input-group">
+                            <span class="input-group-text bg-success-subtle text-success fw-bold">{{ currency_symbol() }}</span>
+                            <input type="number" step="0.01" name="paid_amount" id="paidAmount" class="form-control font-monospace" value="{{ old('paid_amount', $booking->paid_amount) }}" oninput="recalcTotals()">
+                        </div>
                     </div>
 
                     <div class="d-flex justify-content-between align-items-center pt-2 border-top">
                         <span class="fw-bold text-dark">{{ __('Balance Due') }}:</span>
                         <span class="fs-6 fw-bold font-monospace text-danger" id="displayBalance">
-                            {{ number_format($booking->balance_due, 2) }}
+                            {{ currency_symbol() }} {{ number_format($booking->balance_due, 2) }}
                         </span>
                     </div>
                 </div>
@@ -251,8 +263,8 @@ function recalcTotals() {
     const total = Math.max(0, fare + hotel + extra - disc + tax);
     const balance = Math.max(0, total - paid);
 
-    document.getElementById('displayTotal').textContent = total.toFixed(2);
-    document.getElementById('displayBalance').textContent = balance.toFixed(2);
+    document.getElementById('displayTotal').textContent = '{{ currency_symbol() }} ' + total.toFixed(2);
+    document.getElementById('displayBalance').textContent = '{{ currency_symbol() }} ' + balance.toFixed(2);
 }
 
 document.addEventListener('DOMContentLoaded', function() {

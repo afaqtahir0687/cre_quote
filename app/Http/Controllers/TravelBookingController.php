@@ -97,13 +97,33 @@ class TravelBookingController extends Controller
     public function store(Request $request)
     {
         $shopId = current_shop_id() ?? auth()->user()->shop_id;
+        $shopId = current_shop_id();
         if (!$shopId) {
             return redirect()->back()->with('error', __('Active shop context not found.'));
         }
 
+        // Support both multiple seats (seat_numbers) and single seat (seat_number)
+        $rawSeats = $request->input('seat_numbers') ?: $request->input('seat_number');
+        $seatNumbers = [];
+        if (is_array($rawSeats)) {
+            $seatNumbers = array_filter(array_map('intval', $rawSeats));
+        } elseif (is_string($rawSeats)) {
+            $seatNumbers = array_filter(array_map('intval', explode(',', $rawSeats)));
+        } elseif (is_numeric($rawSeats)) {
+            $seatNumbers = [(int) $rawSeats];
+        }
+
+        $seatNumbers = array_values(array_unique($seatNumbers));
+        sort($seatNumbers);
+
+        if (empty($seatNumbers)) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', __('Please select at least one available seat on the bus.'));
+        }
+
         $validated = $request->validate([
             'travel_trip_id' => 'required|exists:travel_trips,id',
-            'seat_number' => 'required|integer|min:1|max:100',
             'passenger_name' => 'required|string|max:255',
             'passenger_phone' => 'required|string|max:50',
             'passenger_id_number' => 'nullable|string|max:50',
@@ -125,32 +145,31 @@ class TravelBookingController extends Controller
         ]);
 
         $trip = TravelTrip::forCurrentShop()->findOrFail($validated['travel_trip_id']);
-        $seatNumber = (int) $validated['seat_number'];
 
-        // 1. Strict anti-collision check: prevent double booking of seat on the same trip
-        $collision = TravelBooking::where('travel_trip_id', $trip->id)
-            ->where('seat_number', $seatNumber)
+        // 1. Strict anti-collision check: prevent double booking of ANY selected seat on this trip
+        $collisions = TravelBooking::where('travel_trip_id', $trip->id)
+            ->whereIn('seat_number', $seatNumbers)
             ->where('booking_status', 'confirmed')
-            ->first();
+            ->get();
 
-        if ($collision) {
+        if ($collisions->isNotEmpty()) {
+            $taken = $collisions->map(fn($c) => "#{$c->seat_number} ({$c->passenger_name})")->join(', ');
             return redirect()->back()
                 ->withInput()
-                ->with('error', __("Seat #:seat is already booked for this trip by :name (:ref). Please choose another seat.", [
-                    'seat' => $seatNumber,
-                    'name' => $collision->passenger_name,
-                    'ref' => $collision->booking_reference,
+                ->with('error', __("Selected seats (:seats) are already booked. Please choose other seats.", [
+                    'seats' => $taken,
                 ]));
         }
 
-        // 2. Calculate Financial Breakdown
-        $travelFare = (float) $validated['travel_fare'];
-        $hotelExpense = $validated['package_type'] === 'with_hotel' ? (float) ($validated['hotel_expense'] ?? 0) : 0.00;
-        $extraCharges = (float) ($validated['extra_charges'] ?? 0);
-        $discount = (float) ($validated['discount'] ?? 0);
-        $taxAmount = (float) ($validated['tax_amount'] ?? 0);
+        // 2. Calculate Financial Totals
+        $seatsCount = count($seatNumbers);
+        $totalTravelFare = (float) $validated['travel_fare'];
+        $totalHotelExpense = $validated['package_type'] === 'with_hotel' ? (float) ($validated['hotel_expense'] ?? 0) : 0.00;
+        $totalExtraCharges = (float) ($validated['extra_charges'] ?? 0);
+        $totalDiscount = (float) ($validated['discount'] ?? 0);
+        $totalTaxAmount = (float) ($validated['tax_amount'] ?? 0);
 
-        $totalAmount = max(0, ($travelFare + $hotelExpense + $extraCharges - $discount + $taxAmount));
+        $totalAmount = max(0, ($totalTravelFare + $totalHotelExpense + $totalExtraCharges - $totalDiscount + $totalTaxAmount));
         $paidAmount = min($totalAmount, (float) ($validated['paid_amount'] ?? 0));
         $balanceDue = max(0, $totalAmount - $paidAmount);
 
@@ -161,7 +180,11 @@ class TravelBookingController extends Controller
             $paymentStatus = 'partial';
         }
 
-        $booking = DB::transaction(function () use ($validated, $trip, $seatNumber, $shopId, $travelFare, $hotelExpense, $extraCharges, $discount, $taxAmount, $totalAmount, $paidAmount, $balanceDue, $paymentStatus, $request) {
+        $firstBooking = DB::transaction(function () use (
+            $validated, $trip, $seatNumbers, $seatsCount, $shopId,
+            $totalTravelFare, $totalHotelExpense, $totalExtraCharges, $totalDiscount,
+            $totalTaxAmount, $totalAmount, $paidAmount, $balanceDue, $paymentStatus, $request
+        ) {
             // Auto-create Customer in CRM if not found
             $customerId = $validated['customer_id'] ?? null;
             if (!$customerId) {
@@ -189,41 +212,15 @@ class TravelBookingController extends Controller
                 }
             }
 
-            // Create Booking
-            $booking = TravelBooking::create([
-                'shop_id' => $shopId,
-                'travel_trip_id' => $trip->id,
-                'customer_id' => $customerId,
-                'booking_reference' => TravelBooking::generateReference($shopId),
-                'passenger_name' => $validated['passenger_name'],
-                'passenger_phone' => $validated['passenger_phone'],
-                'passenger_id_number' => $validated['passenger_id_number'] ?? null,
-                'passenger_gender' => $validated['passenger_gender'],
-                'seat_number' => $seatNumber,
-                'package_type' => $validated['package_type'],
-                'hotel_name' => $validated['package_type'] === 'with_hotel' ? (($validated['hotel_name'] ?? null) ?: $trip->hotel_name) : null,
-                'room_type' => $validated['package_type'] === 'with_hotel' ? (($validated['room_type'] ?? null) ?: 'quad_sharing') : null,
-                'nights_count' => $validated['package_type'] === 'with_hotel' ? (($validated['nights_count'] ?? null) ?: $trip->duration_days) : null,
-                'travel_fare' => $travelFare,
-                'hotel_expense' => $hotelExpense,
-                'extra_charges' => $extraCharges,
-                'discount' => $discount,
-                'tax_amount' => $taxAmount,
-                'total_amount' => $totalAmount,
-                'paid_amount' => $paidAmount,
-                'balance_due' => $balanceDue,
-                'payment_status' => $paymentStatus,
-                'payment_method' => $validated['payment_method'],
-                'booking_status' => 'confirmed',
-                'notes' => $validated['notes'] ?? null,
-                'created_by' => auth()->id(),
-            ]);
+            // Shared unique Booking Reference for this entire group reservation
+            $sharedBookingRef = TravelBooking::generateReference($shopId);
+            $invoiceId = null;
 
-            // Optional: Generate official invoice if requested or if invoices module enabled
+            // Optional: Generate ONE official consolidated invoice for all selected seats
             if ($request->boolean('generate_invoice') && shop_has_module('invoices')) {
                 $shop = $trip->shop;
                 $invPrefix = $shop->invoice_prefix ?: 'INV-';
-                $invNumber = $invPrefix . date('Ymd') . '-' . str_pad($booking->id, 3, '0', STR_PAD_LEFT);
+                $invNumber = $invPrefix . date('Ymd') . '-' . substr(md5(uniqid()), 0, 5);
 
                 $invoice = Invoice::create([
                     'shop_id' => $shopId,
@@ -231,47 +228,118 @@ class TravelBookingController extends Controller
                     'invoice_number' => $invNumber,
                     'invoice_date' => now(),
                     'due_date' => $trip->departure_date,
-                    'sub_total' => $travelFare + $hotelExpense + $extraCharges,
-                    'discount' => $discount,
-                    'tax_amount' => $taxAmount,
+                    'sub_total' => $totalTravelFare + $totalHotelExpense + $totalExtraCharges,
+                    'discount' => $totalDiscount,
+                    'tax_amount' => $totalTaxAmount,
                     'grand_total' => $totalAmount,
                     'paid_amount' => $paidAmount,
                     'balance_due' => $balanceDue,
                     'status' => $paymentStatus === 'paid' ? 'Paid' : ($paidAmount > 0 ? 'Partially Paid' : 'Unpaid'),
                     'payment_method' => $validated['payment_method'],
-                    'notes' => "Umrah Bus Ticket - Seat #{$seatNumber} ({$trip->title})",
+                    'notes' => "Umrah Bus Ticket - Seats: #" . implode(', #', $seatNumbers) . " ({$trip->title})",
                 ]);
 
-                // Item 1: Seat & Bus Transportation
-                InvoiceItem::create([
-                    'invoice_id' => $invoice->id,
-                    'description' => "Seat #{$seatNumber} - {$trip->bus_name} ({$trip->departure_city} to {$trip->destination_city})",
-                    'quantity' => 1,
-                    'unit_price' => $travelFare,
-                    'total' => $travelFare,
-                ]);
-
-                // Item 2: Hotel & Accommodations (if with_hotel)
-                if ($hotelExpense > 0) {
+                // Item lines for each seat
+                $perSeatFare = round($totalTravelFare / $seatsCount, 2);
+                foreach ($seatNumbers as $sNum) {
                     InvoiceItem::create([
                         'invoice_id' => $invoice->id,
-                        'description' => "Hotel Accommodation: " . ($booking->hotel_name ?: 'Standard Hotel') . " (" . ucfirst(str_replace('_', ' ', $booking->room_type)) . ")",
+                        'description' => "Seat #{$sNum} - {$trip->bus_name} ({$trip->departure_city} to {$trip->destination_city})",
                         'quantity' => 1,
-                        'unit_price' => $hotelExpense,
-                        'total' => $hotelExpense,
+                        'unit_price' => $perSeatFare,
+                        'total' => $perSeatFare,
                     ]);
                 }
 
-                $booking->update(['invoice_id' => $invoice->id]);
+                // Item: Hotel Accommodation (if applicable)
+                if ($totalHotelExpense > 0) {
+                    InvoiceItem::create([
+                        'invoice_id' => $invoice->id,
+                        'description' => "Hotel Accommodation: " . ($validated['hotel_name'] ?: ($trip->hotel_name ?: 'Designated Hotel')) . " (" . ucfirst(str_replace('_', ' ', $validated['room_type'] ?? 'quad_sharing')) . ")",
+                        'quantity' => 1,
+                        'unit_price' => $totalHotelExpense,
+                        'total' => $totalHotelExpense,
+                    ]);
+                }
+
+                if ($totalExtraCharges > 0) {
+                    InvoiceItem::create([
+                        'invoice_id' => $invoice->id,
+                        'description' => "Extra Charges & Service Fees",
+                        'quantity' => 1,
+                        'unit_price' => $totalExtraCharges,
+                        'total' => $totalExtraCharges,
+                    ]);
+                }
+
+                $invoiceId = $invoice->id;
             }
 
-            return $booking;
+            // Create individual confirmed TravelBooking records for each seat
+            // Distribute financial totals cleanly across seats so sums equal totals exactly
+            $createdBookings = [];
+            $accumFare = 0; $accumHotel = 0; $accumExtra = 0; $accumDisc = 0; $accumTax = 0; $accumTotal = 0; $accumPaid = 0; $accumBal = 0;
+
+            foreach ($seatNumbers as $idx => $sNum) {
+                $isLast = ($idx === $seatsCount - 1);
+
+                $sFare = $isLast ? ($totalTravelFare - $accumFare) : round($totalTravelFare / $seatsCount, 2);
+                $sHotel = $isLast ? ($totalHotelExpense - $accumHotel) : round($totalHotelExpense / $seatsCount, 2);
+                $sExtra = $isLast ? ($totalExtraCharges - $accumExtra) : round($totalExtraCharges / $seatsCount, 2);
+                $sDisc = $isLast ? ($totalDiscount - $accumDisc) : round($totalDiscount / $seatsCount, 2);
+                $sTax = $isLast ? ($totalTaxAmount - $accumTax) : round($totalTaxAmount / $seatsCount, 2);
+                $sTotal = $isLast ? ($totalAmount - $accumTotal) : round($totalAmount / $seatsCount, 2);
+                $sPaid = $isLast ? ($paidAmount - $accumPaid) : round($paidAmount / $seatsCount, 2);
+                $sBal = $isLast ? ($balanceDue - $accumBal) : round($balanceDue / $seatsCount, 2);
+
+                $accumFare += $sFare;
+                $accumHotel += $sHotel;
+                $accumExtra += $sExtra;
+                $accumDisc += $sDisc;
+                $accumTax += $sTax;
+                $accumTotal += $sTotal;
+                $accumPaid += $sPaid;
+                $accumBal += $sBal;
+
+                $createdBookings[] = TravelBooking::create([
+                    'shop_id' => $shopId,
+                    'travel_trip_id' => $trip->id,
+                    'customer_id' => $customerId,
+                    'booking_reference' => $sharedBookingRef,
+                    'passenger_name' => $validated['passenger_name'],
+                    'passenger_phone' => $validated['passenger_phone'],
+                    'passenger_id_number' => $validated['passenger_id_number'] ?? null,
+                    'passenger_gender' => $validated['passenger_gender'],
+                    'seat_number' => $sNum,
+                    'package_type' => $validated['package_type'],
+                    'hotel_name' => $validated['package_type'] === 'with_hotel' ? (($validated['hotel_name'] ?? null) ?: $trip->hotel_name) : null,
+                    'room_type' => $validated['package_type'] === 'with_hotel' ? (($validated['room_type'] ?? null) ?: 'quad_sharing') : null,
+                    'nights_count' => $validated['package_type'] === 'with_hotel' ? (($validated['nights_count'] ?? null) ?: $trip->duration_days) : null,
+                    'travel_fare' => $sFare,
+                    'hotel_expense' => $sHotel,
+                    'extra_charges' => $sExtra,
+                    'discount' => $sDisc,
+                    'tax_amount' => $sTax,
+                    'total_amount' => $sTotal,
+                    'paid_amount' => $sPaid,
+                    'balance_due' => $sBal,
+                    'payment_status' => $paymentStatus,
+                    'payment_method' => $validated['payment_method'],
+                    'booking_status' => 'confirmed',
+                    'invoice_id' => $invoiceId,
+                    'notes' => $validated['notes'] ?? null,
+                    'created_by' => auth()->id(),
+                ]);
+            }
+
+            return $createdBookings[0];
         });
 
-        return redirect()->route('travel.bookings.show', $booking->id)
-            ->with('success', __('Seat #:seat has been successfully booked for :name!', [
-                'seat' => $booking->seat_number,
-                'name' => $booking->passenger_name,
+        $seatsList = implode(', #', $seatNumbers);
+        return redirect()->route('travel.bookings.voucher', $firstBooking->id)
+            ->with('success', __('Seats (:seats) successfully booked under reference :ref!', [
+                'seats' => $seatsList,
+                'ref' => $firstBooking->booking_reference,
             ]));
     }
 
@@ -284,7 +352,13 @@ class TravelBookingController extends Controller
             ->with(['trip', 'customer', 'invoice'])
             ->findOrFail($id);
 
-        return view('travel.bookings.show', compact('booking'));
+        $groupBookings = TravelBooking::where('booking_reference', $booking->booking_reference)
+            ->where('travel_trip_id', $booking->travel_trip_id)
+            ->where('booking_status', 'confirmed')
+            ->orderBy('seat_number')
+            ->get();
+
+        return view('travel.bookings.show', compact('booking', 'groupBookings'));
     }
 
     /**
@@ -297,10 +371,60 @@ class TravelBookingController extends Controller
         }
 
         $booking = TravelBooking::forCurrentShop()
-            ->with(['trip', 'customer', 'shop.setting'])
+            ->with(['trip', 'customer', 'shop.setting', 'invoice'])
             ->findOrFail($id);
 
-        return view('travel.bookings.voucher', compact('booking'));
+        $groupBookings = TravelBooking::where('booking_reference', $booking->booking_reference)
+            ->where('travel_trip_id', $booking->travel_trip_id)
+            ->where('booking_status', 'confirmed')
+            ->orderBy('seat_number')
+            ->get();
+
+        return view('travel.bookings.voucher', compact('booking', 'groupBookings'));
+    }
+
+    /**
+     * Download A5 PDF Boarding Pass / Ticket Invoice.
+     */
+    public function downloadPdf($id)
+    {
+        if (request()->has('lang') && in_array(request('lang'), ['ar', 'en'])) {
+            app()->setLocale(request('lang'));
+        }
+
+        $booking = TravelBooking::forCurrentShop()
+            ->with(['trip', 'customer', 'shop.setting', 'invoice'])
+            ->findOrFail($id);
+
+        $groupBookings = TravelBooking::where('booking_reference', $booking->booking_reference)
+            ->where('travel_trip_id', $booking->travel_trip_id)
+            ->where('booking_status', 'confirmed')
+            ->orderBy('seat_number')
+            ->get();
+
+        $mpdf = new \Mpdf\Mpdf([
+            'mode' => 'utf-8',
+            'format' => 'A5',
+            'margin_left' => 5,
+            'margin_right' => 5,
+            'margin_top' => 5,
+            'margin_bottom' => 5,
+            'default_font' => 'amiri',
+            'autoScriptToLang' => true,
+            'autoLangToFont'   => true,
+        ]);
+
+        if (app()->getLocale() === 'ar') {
+            $mpdf->SetDirectionality('rtl');
+        }
+
+        $html = view('travel.bookings.pdf', compact('booking', 'groupBookings'))->render();
+        $mpdf->WriteHTML($html);
+
+        $filename = 'Ticket_' . $booking->booking_reference . '.pdf';
+        return response($mpdf->Output('', 'S'))
+            ->header('Content-Type', 'application/pdf')
+            ->header('Content-Disposition', 'inline; filename="' . $filename . '"');
     }
 
     /**

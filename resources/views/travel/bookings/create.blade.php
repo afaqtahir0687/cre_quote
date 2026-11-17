@@ -45,28 +45,38 @@
                     @error('travel_trip_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
                 </div>
 
-                <!-- Selected Seat Banner -->
-                <div class="p-3 rounded-3 mb-3 d-flex justify-content-between align-items-center border" style="background: #F0FDF4; border-color: #86EFAC !important;">
-                    <div>
-                        <span class="text-muted extra-small d-block uppercase fw-bold">{{ __('Allocated Seat Number') }}</span>
-                        <div class="d-flex align-items-center gap-2">
-                            <span class="fs-4 fw-bold text-success" id="selectedSeatDisplay">
-                                {{ $selectedSeat ? '#' . $selectedSeat : __('Click a Seat Below') }}
-                            </span>
-                            <span class="badge bg-success text-white extra-small" id="seatConfirmedBadge" style="{{ $selectedSeat ? '' : 'display:none;' }}">
-                                <i class="fas fa-check-circle me-1"></i> {{ __('Selected') }}
+                <!-- Selected Seats Banner -->
+                <div class="p-3 rounded-3 mb-3 border shadow-xs" style="background: #F0FDF4; border-color: #86EFAC !important;">
+                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                        <div>
+                            <span class="text-muted extra-small d-block uppercase fw-bold mb-1">{{ __('Allocated Seat Numbers') }}</span>
+                            <div class="d-flex align-items-center gap-2 flex-wrap">
+                                <div id="selectedSeatDisplay" class="d-flex flex-wrap gap-1 align-items-center">
+                                    @if($selectedSeat)
+                                        <span class="badge bg-primary fs-6">#{{ $selectedSeat }}</span>
+                                    @else
+                                        <span class="text-muted fs-6">{{ __('Click one or more seats below') }}</span>
+                                    @endif
+                                </div>
+                                <span class="badge bg-success text-white extra-small" id="seatConfirmedBadge" style="{{ $selectedSeat ? '' : 'display:none;' }}">
+                                    <i class="fas fa-check-circle me-1"></i> <span id="seatsCountBadgeText">{{ $selectedSeat ? '1 ' . __('Seat Selected') : '' }}</span>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="text-end">
+                            <button type="button" class="btn btn-outline-danger btn-sm py-0 px-2 extra-small mb-1" id="clearSeatsBtn" style="{{ $selectedSeat ? '' : 'display:none;' }}" onclick="clearAllSelectedSeats()">
+                                <i class="fas fa-undo me-1"></i> {{ __('Clear Selected Seats') }}
+                            </button>
+                            <span class="badge bg-danger-subtle text-danger border extra-small d-block">
+                                <i class="fas fa-lock me-1"></i> {{ __('Anti-Collision Protected') }}
                             </span>
                         </div>
                     </div>
-                    <input type="hidden" name="seat_number" id="seatNumberInput" value="{{ old('seat_number', $selectedSeat) }}" required>
-                    <div class="text-end">
-                        <span class="badge bg-danger-subtle text-danger border extra-small d-block mb-1">
-                            <i class="fas fa-lock me-1"></i> {{ __('Anti-Collision Protected') }}
-                        </span>
-                        <small class="text-muted extra-small">{{ __('Double-booking strictly blocked') }}</small>
-                    </div>
+                    <input type="hidden" name="seat_numbers" id="seatNumbersInput" value="{{ old('seat_numbers', $selectedSeat ? (string)$selectedSeat : '') }}">
+                    <input type="hidden" name="seat_number" id="seatNumberInput" value="{{ old('seat_number', $selectedSeat) }}">
                 </div>
                 @error('seat_number') <div class="alert alert-danger py-2 small mb-3">{{ $message }}</div> @enderror
+                @error('seat_numbers') <div class="alert alert-danger py-2 small mb-3">{{ $message }}</div> @enderror
 
                 <!-- Visual 49-Seat Bus Grid Picker -->
                 <div class="border rounded-4 p-3 bg-light" style="border: 2px solid #E2E8F0 !important;">
@@ -194,6 +204,7 @@
                             <span class="input-group-text bg-light fw-bold">{{ currency_symbol() }}</span>
                             <input type="number" step="0.01" name="travel_fare" id="travelFareInput" class="form-control" value="{{ old('travel_fare', $selectedTrip?->price_without_hotel ?? 250) }}" required oninput="recalcBooking()">
                         </div>
+                        <small class="text-primary extra-small fw-semibold d-block mt-1" id="fareMultiplierNote"></small>
                     </div>
 
                     <div class="col-md-6" id="hotelExpenseCol">
@@ -341,7 +352,10 @@
 @push('scripts')
 <script>
     let currentTripData = null;
-    let selectedSeatNumber = {{ $selectedSeat ? (int)$selectedSeat : 'null' }};
+    let selectedSeats = [];
+    @if($selectedSeat)
+        selectedSeats = [{{ (int) $selectedSeat }}];
+    @endif
 
     function onTripSelectChanged(tripId) {
         if (!tripId) return;
@@ -445,29 +459,67 @@
             btn.innerHTML = `<span>${seatNum}</span><i class="fas fa-lock" style="font-size: 0.6rem;"></i>`;
         } else {
             btn.classList.add('seat-state-free');
-            if (selectedSeatNumber === seatNum) {
+            if (selectedSeats.includes(seatNum)) {
                 btn.classList.add('seat-state-selected');
             }
             btn.title = `{{ __("Seat") }} #${seatNum} - {{ __("Available") }}`;
             btn.innerHTML = `<span>${seatNum}</span><i class="fas fa-chair" style="font-size: 0.6rem;"></i>`;
-            btn.onclick = () => selectSeat(seatNum);
+            btn.onclick = () => toggleSeat(seatNum);
         }
 
         return btn;
     }
 
-    function selectSeat(seatNum) {
-        selectedSeatNumber = seatNum;
-        document.getElementById('seatNumberInput').value = seatNum;
-        document.getElementById('selectedSeatDisplay').innerText = '#' + seatNum;
-        document.getElementById('seatConfirmedBadge').style.display = 'inline-block';
-
-        // Clear previous selected styling
-        document.querySelectorAll('.seat-state-selected').forEach(el => el.classList.remove('seat-state-selected'));
-        const newBtn = document.getElementById('seatBtn_' + seatNum);
-        if (newBtn) {
-            newBtn.classList.add('seat-state-selected');
+    function toggleSeat(seatNum) {
+        const idx = selectedSeats.indexOf(seatNum);
+        if (idx > -1) {
+            selectedSeats.splice(idx, 1);
+        } else {
+            selectedSeats.push(seatNum);
         }
+        selectedSeats.sort((a, b) => a - b);
+        updateSelectedSeatsUI();
+    }
+
+    function clearAllSelectedSeats() {
+        selectedSeats = [];
+        updateSelectedSeatsUI();
+    }
+
+    function updateSelectedSeatsUI() {
+        const inputSeats = document.getElementById('seatNumbersInput');
+        const inputSingle = document.getElementById('seatNumberInput');
+        const displayEl = document.getElementById('selectedSeatDisplay');
+        const badgeEl = document.getElementById('seatConfirmedBadge');
+        const badgeCount = document.getElementById('seatsCountBadgeText');
+        const clearBtn = document.getElementById('clearSeatsBtn');
+
+        inputSeats.value = selectedSeats.join(',');
+        inputSingle.value = selectedSeats.length > 0 ? selectedSeats[0] : '';
+
+        // Update button visual states
+        document.querySelectorAll('.seat-picker-btn').forEach(btn => {
+            const num = parseInt(btn.id.replace('seatBtn_', ''));
+            if (selectedSeats.includes(num)) {
+                btn.classList.add('seat-state-selected');
+            } else {
+                btn.classList.remove('seat-state-selected');
+            }
+        });
+
+        if (selectedSeats.length === 0) {
+            displayEl.innerHTML = '<span class="text-muted fs-6">{{ __("Click one or more seats below") }}</span>';
+            badgeEl.style.display = 'none';
+            if (clearBtn) clearBtn.style.display = 'none';
+        } else {
+            const badges = selectedSeats.map(s => `<span class="badge bg-primary fs-6 me-1">#${s}</span>`).join(' ');
+            displayEl.innerHTML = badges;
+            badgeEl.style.display = 'inline-block';
+            badgeCount.innerText = selectedSeats.length + ' ' + (selectedSeats.length === 1 ? '{{ __("1 Seat Selected") }}' : '{{ __("seats selected") }}');
+            if (clearBtn) clearBtn.style.display = 'inline-block';
+        }
+
+        recalcAutoFares();
     }
 
     function onPackageTypeChanged(pkgType) {
@@ -489,27 +541,36 @@
             lblWith.classList.remove('border-success', 'bg-success-subtle');
         }
 
-        if (currentTripData) {
-            updateFaresFromTrip(currentTripData, pkgType);
-        } else {
-            recalcBooking();
-        }
+        recalcAutoFares();
     }
 
     function updateFaresFromTrip(trip, pkgType) {
+        recalcAutoFares();
+    }
+
+    function recalcAutoFares() {
+        const count = Math.max(1, selectedSeats.length);
         const fareInput = document.getElementById('travelFareInput');
         const hotelInput = document.getElementById('hotelExpenseInput');
+        const noteEl = document.getElementById('fareMultiplierNote');
 
-        const noHotelPrice = parseFloat(trip.price_without_hotel) || 0;
-        const withHotelPrice = parseFloat(trip.price_with_hotel) || 0;
+        if (currentTripData) {
+            const unitFare = parseFloat(currentTripData.price_without_hotel) || 0;
+            const unitWithHotel = parseFloat(currentTripData.price_with_hotel) || 0;
+            const pkgType = document.querySelector('input[name="package_type"]:checked')?.value || 'with_hotel';
 
-        fareInput.value = noHotelPrice.toFixed(2);
+            fareInput.value = (unitFare * count).toFixed(2);
 
-        if (pkgType === 'with_hotel') {
-            const hotelDiff = Math.max(0, withHotelPrice - noHotelPrice);
-            hotelInput.value = hotelDiff.toFixed(2);
-        } else {
-            hotelInput.value = '0.00';
+            if (pkgType === 'with_hotel') {
+                const unitHotelDiff = Math.max(0, unitWithHotel - unitFare);
+                hotelInput.value = (unitHotelDiff * count).toFixed(2);
+            } else {
+                hotelInput.value = '0.00';
+            }
+
+            if (noteEl) {
+                noteEl.innerText = count + ' {{ __("Seats") }} × {{ currency_symbol() }} ' + unitFare.toFixed(2) + ' = {{ currency_symbol() }} ' + (unitFare * count).toFixed(2);
+            }
         }
 
         recalcBooking();
@@ -523,19 +584,19 @@
         const taxAmount = parseFloat(document.getElementById('taxInput').value) || 0;
 
         const total = Math.max(0, (travelFare + hotelExpense + extraCharges - discount + taxAmount));
-        document.getElementById('totalAmountDisplay').innerText = '{{ currency_symbol() }}' + total.toFixed(2);
+        document.getElementById('totalAmountDisplay').innerText = '{{ currency_symbol() }} ' + total.toFixed(2);
 
         const paidInput = document.getElementById('paidAmountInput');
         let paid = parseFloat(paidInput.value) || 0;
 
-        // Auto-fill paid if pristine 0 on first calculate
-        if (paid === 0 && !paidInput.dataset.userEdited) {
+        // Auto-fill paid if user hasn't explicitly customized paid amount
+        if (!paidInput.dataset.userEdited || paid === 0) {
             paidInput.value = total.toFixed(2);
             paid = total;
         }
 
         const balance = Math.max(0, total - paid);
-        document.getElementById('balanceDueDisplay').innerText = '{{ currency_symbol() }}' + balance.toFixed(2);
+        document.getElementById('balanceDueDisplay').innerText = '{{ currency_symbol() }} ' + balance.toFixed(2);
     }
 
     document.getElementById('paidAmountInput')?.addEventListener('input', function() {
