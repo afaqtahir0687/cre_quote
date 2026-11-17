@@ -172,6 +172,8 @@
                     <strong>Price:</strong> {{ format_currency($product->price) }}
                 </div>
 
+                
+
                 <div class="stock-grid">
                     <div class="stock-col">
                         <div class="stock-label">Total Stock / الإجمالي</div>
