@@ -2557,7 +2557,7 @@
     "Passenger \/ الراكب": "الراكب",
     "Passenger Full Name *": "اسم الراكب الكامل *",
     "Passenger Info": "بيانات الراكب",
-    "Passenger Manifest": "كشف ركاب الرحلة",
+    "Passenger Manifest": "بيان الركاب والمقاعد",
     "Passenger Name \/ اسم الراكب": "اسم الراكب",
     "Passenger arranged independent accommodation.": "قام الراكب بترتيب إقامته الفندقية بشكل مستقل.",
     "Passenger handles their own accommodation; bus travel only.": "الراكب مسؤول عن سكنه؛ نقل بالحافلة فقط.",
@@ -2782,5 +2782,13 @@
     "Conductor Sig": "توقيع السائق",
     "Verified Official Travel Voucher": "وثيقة سفر رسمية معتمدة",
     "Thank you for traveling with us. Verified Official Travel Voucher.": "شكراً لاختياركم خدماتنا. وثيقة سفر رسمية معتمدة.",
-    "Thank you for choosing :name": "شكراً لاختياركم :name. رحلة مباركة وعمرة مقبولة."
+    "Thank you for choosing :name": "شكراً لاختياركم :name. رحلة مباركة وعمرة مقبولة.",
+    "Passenger Names per Allocated Seat": "أسماء وبيانات الركاب لكل مقعد",
+    "Enter individual passenger name, gender, and ID\/Iqama for each allocated seat.": "يرجى إدخال اسم الراكب، الجنس، ورقم الهوية\/الإقامة لكل مقعد مخصص.",
+    "Lead": "الرئيسي",
+    "Lead Booker": "المسافر الرئيسي",
+    "Booker": "المسافر الرئيسي",
+    "Passenger Details per Seat": "تفاصيل الركاب لكل مقعد",
+    "Allocated Seats & Passengers": "المقاعد المخصصة وبيانات الركاب",
+    "Passenger List": "قائمة المسافرين"
 }

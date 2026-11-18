@@ -161,6 +161,41 @@
                     </div>
                 @endif
             </div>
+
+            @if(count($groupSeats) > 1)
+                <div class="mt-4 pt-3 border-top">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h6 class="fw-bold text-dark mb-0">
+                            <i class="fas fa-users text-primary me-1"></i> {{ __('Allocated Seats & Passengers') }}
+                        </h6>
+                        <span class="badge bg-primary text-white">{{ count($groupSeats) }} {{ __('Passengers') }}</span>
+                    </div>
+                    <div class="table-responsive rounded-3 border bg-white">
+                        <table class="table table-sm align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="text-center" style="width: 80px;">{{ __('Seat #') }}</th>
+                                    <th>{{ __('Passenger Name') }}</th>
+                                    <th class="text-center" style="width: 100px;">{{ __('Gender') }}</th>
+                                    <th>{{ __('ID / Iqama / Passport') }}</th>
+                                    <th class="text-end" style="width: 120px;">{{ __('Travel Fare') }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($groupSeats as $gb)
+                                    <tr>
+                                        <td class="text-center"><span class="badge bg-primary fs-6 px-2">#{{ $gb->seat_number }}</span></td>
+                                        <td class="fw-bold text-dark">{{ tdb($gb->passenger_name) }}</td>
+                                        <td class="text-center"><span class="badge bg-light text-dark border">{{ ucfirst(__($gb->passenger_gender)) }}</span></td>
+                                        <td class="font-monospace text-muted">{{ $gb->passenger_id_number ?: '—' }}</td>
+                                        <td class="text-end fw-bold font-monospace">{{ format_currency($gb->travel_fare) }}</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            @endif
         </x-card>
 
         <!-- Accommodation Details Card -->

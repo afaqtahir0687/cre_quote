@@ -180,10 +180,12 @@ class TravelBookingController extends Controller
             $paymentStatus = 'partial';
         }
 
+        $passengersInput = $request->input('passengers', []);
+
         $firstBooking = DB::transaction(function () use (
             $validated, $trip, $seatNumbers, $seatsCount, $shopId,
             $totalTravelFare, $totalHotelExpense, $totalExtraCharges, $totalDiscount,
-            $totalTaxAmount, $totalAmount, $paidAmount, $balanceDue, $paymentStatus, $request
+            $totalTaxAmount, $totalAmount, $paidAmount, $balanceDue, $paymentStatus, $request, $passengersInput
         ) {
             // Auto-create Customer in CRM if not found
             $customerId = $validated['customer_id'] ?? null;
@@ -239,12 +241,14 @@ class TravelBookingController extends Controller
                     'notes' => "Umrah Bus Ticket - Seats: #" . implode(', #', $seatNumbers) . " ({$trip->title})",
                 ]);
 
-                // Item lines for each seat
+                // Item lines for each seat with specific passenger name if provided
                 $perSeatFare = round($totalTravelFare / $seatsCount, 2);
-                foreach ($seatNumbers as $sNum) {
+                foreach ($seatNumbers as $idx => $sNum) {
+                    $sPass = $passengersInput[$sNum] ?? [];
+                    $sName = !empty($sPass['name']) ? trim($sPass['name']) : ($idx === 0 ? $validated['passenger_name'] : $validated['passenger_name'] . ' (' . __('Seat') . ' #' . $sNum . ')');
                     InvoiceItem::create([
                         'invoice_id' => $invoice->id,
-                        'description' => "Seat #{$sNum} - {$trip->bus_name} ({$trip->departure_city} to {$trip->destination_city})",
+                        'description' => "Seat #{$sNum} - {$sName} - {$trip->bus_name} ({$trip->departure_city} to {$trip->destination_city})",
                         'quantity' => 1,
                         'unit_price' => $perSeatFare,
                         'total' => $perSeatFare,
@@ -301,15 +305,27 @@ class TravelBookingController extends Controller
                 $accumPaid += $sPaid;
                 $accumBal += $sBal;
 
+                // Seat specific passenger details
+                $seatPassenger = $passengersInput[$sNum] ?? [];
+                if ($idx === 0) {
+                    $pName = !empty($seatPassenger['name']) ? trim($seatPassenger['name']) : $validated['passenger_name'];
+                    $pGender = !empty($seatPassenger['gender']) ? $seatPassenger['gender'] : $validated['passenger_gender'];
+                    $pIdNum = !empty($seatPassenger['id_number']) ? trim($seatPassenger['id_number']) : ($validated['passenger_id_number'] ?? null);
+                } else {
+                    $pName = !empty($seatPassenger['name']) ? trim($seatPassenger['name']) : ($validated['passenger_name'] . ' (' . __('Seat') . ' #' . $sNum . ')');
+                    $pGender = !empty($seatPassenger['gender']) ? $seatPassenger['gender'] : $validated['passenger_gender'];
+                    $pIdNum = !empty($seatPassenger['id_number']) ? trim($seatPassenger['id_number']) : null;
+                }
+
                 $createdBookings[] = TravelBooking::create([
                     'shop_id' => $shopId,
                     'travel_trip_id' => $trip->id,
                     'customer_id' => $customerId,
                     'booking_reference' => $sharedBookingRef,
-                    'passenger_name' => $validated['passenger_name'],
+                    'passenger_name' => $pName,
                     'passenger_phone' => $validated['passenger_phone'],
-                    'passenger_id_number' => $validated['passenger_id_number'] ?? null,
-                    'passenger_gender' => $validated['passenger_gender'],
+                    'passenger_id_number' => $pIdNum,
+                    'passenger_gender' => $pGender,
                     'seat_number' => $sNum,
                     'package_type' => $validated['package_type'],
                     'hotel_name' => $validated['package_type'] === 'with_hotel' ? (($validated['hotel_name'] ?? null) ?: $trip->hotel_name) : null,

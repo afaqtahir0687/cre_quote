@@ -81,42 +81,29 @@
     <!-- FontAwesome 6 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Google Fonts: Cairo & Libre Barcode 39 -->
+    <!-- Google Fonts: Cairo & Amiri -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Libre+Barcode+39&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
 
     <style>
-        :root {
-            --brand-primary: #00aeef;
-            --brand-primary-dark: #008cc0;
-            --brand-navy: #0F172A;
-            --brand-navy-light: #1E293B;
-            --brand-gold: #D97706;
-            --brand-success: #10B981;
-            --brand-danger: #EF4444;
-            --brand-border: #CBD5E1;
-            --brand-bg-soft: #F8FAFC;
-        }
-
         body {
-            font-family: {{ $isAr ? "'Cairo', sans-serif" : "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" }};
+            font-family: {{ $isAr ? "'Cairo', 'Amiri', sans-serif" : "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" }};
             background: #E2E8F0;
             color: #0F172A;
             margin: 0;
             padding: 16px 8px;
             -webkit-font-smoothing: antialiased;
-            text-rendering: optimizeLegibility;
         }
 
-        /* Toolbar on Screen */
+        /* Screen Print Toolbar */
         .print-toolbar {
-            max-width: 620px;
+            max-width: 600px;
             margin: 0 auto 12px auto;
             background: #FFFFFF;
             padding: 10px 14px;
-            border-radius: 10px;
-            border: 1px solid var(--brand-border);
+            border-radius: 8px;
+            border: 1px solid #CBD5E1;
             box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
         }
 
@@ -131,246 +118,197 @@
             gap: 4px;
         }
 
-        /* A5 Compact Ticket Wrapper */
-        .ticket-wrapper {
-            max-width: 620px;
+        /* A5 Ticket Card */
+        .ticket-box {
+            max-width: 600px;
             margin: 0 auto;
-            background: #FFFFFF;
-            border-radius: 8px;
-            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.10);
-            border: 1.5px solid var(--brand-primary-dark);
-            overflow: hidden;
-            position: relative;
+            border: 1.5px solid #008cc0;
+            padding: 8px 10px;
+            background-color: #ffffff;
+            border-radius: 4px;
+            box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+            font-size: 9pt;
+            line-height: 1.25;
         }
 
-        /* Top Header */
-        .ticket-header {
-            padding: 10px 14px;
-            background: #FFFFFF;
-            border-bottom: 2px solid var(--brand-primary);
+        table {
+            width: 100%;
+            border-collapse: collapse;
         }
 
-        .agency-logo-img {
-            max-height: 48px;
-            max-width: 140px;
-            object-fit: contain;
-            display: block;
+        td, th {
+            vertical-align: top;
+            padding: 2px 4px;
         }
 
-        .agency-logo-placeholder {
-            width: 44px;
-            height: 44px;
-            border-radius: 8px;
-            background: linear-gradient(135deg, var(--brand-navy) 0%, var(--brand-primary-dark) 100%);
-            color: #FFFFFF;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.3rem;
+        /* Header */
+        .header-table td {
+            vertical-align: middle;
         }
 
         .agency-title {
-            font-size: 1.1rem;
-            font-weight: 900;
-            color: var(--brand-navy);
-            line-height: 1.15;
-            margin-bottom: 2px;
+            font-size: 13pt;
+            font-weight: bold;
+            color: #0f172a;
+            margin: 0;
+            line-height: 1.1;
         }
 
         .agency-meta {
-            font-size: 0.72rem;
+            font-size: 7.5pt;
             color: #475569;
             line-height: 1.25;
         }
 
-        .pnr-badge-box {
-            background: #F0F9FF;
-            border: 1.5px solid #00aeef;
-            padding: 4px 8px;
-            border-radius: 6px;
-            text-align: {{ $isAr ? 'left' : 'right' }};
-        }
-
-        .pnr-code {
-            font-family: monospace;
-            font-size: 0.98rem;
-            font-weight: 800;
-            color: var(--brand-primary-dark);
+        .pnr-badge {
+            display: inline-block;
+            background-color: #008cc0;
+            color: #ffffff;
+            font-weight: bold;
+            font-size: 10pt;
+            padding: 3px 8px;
+            border-radius: 4px;
             letter-spacing: 0.5px;
-            line-height: 1;
         }
 
-        /* Journey Banner */
-        .journey-banner {
-            background: linear-gradient(135deg, #F0F9FF 0%, #E0F2FE 100%);
-            border-bottom: 1px solid #BAE6FD;
-            padding: 8px 14px;
+        /* Route Banner */
+        .route-table {
+            margin-top: 5px;
+            background-color: #f0f9ff;
+            border: 1px solid #bae6fd;
+            border-radius: 4px;
+        }
+
+        .route-table td {
+            padding: 4px 6px;
         }
 
         .city-label {
-            font-size: 0.65rem;
-            font-weight: 800;
+            font-size: 7pt;
+            color: #0369a1;
+            font-weight: bold;
             text-transform: uppercase;
-            color: #0369A1;
-            letter-spacing: 0.5px;
-            margin-bottom: 1px;
         }
 
-        .city-name {
-            font-size: 1.15rem;
-            font-weight: 900;
-            color: #0C4A6E;
-            line-height: 1.15;
+        .city-title {
+            font-size: 11pt;
+            font-weight: bold;
+            color: #0c4a6e;
         }
 
-        .journey-meta {
-            font-size: 0.74rem;
+        .trip-meta {
+            font-size: 7.5pt;
             color: #334155;
-            font-weight: 600;
         }
 
         /* Passenger & Seat Box */
-        .passenger-seat-grid {
-            padding: 8px 14px;
-            border-bottom: 1px solid var(--brand-border);
-            background: #FFFFFF;
+        .info-grid-table {
+            margin-top: 5px;
+            border: 1px solid #e2e8f0;
+            background-color: #fafafa;
+        }
+
+        .info-grid-table td {
+            padding: 4px 6px;
+            border: 1px solid #e2e8f0;
+            font-size: 8pt;
         }
 
         .field-lbl {
-            font-size: 0.65rem;
-            font-weight: 800;
+            font-size: 7pt;
+            color: #64748b;
+            font-weight: bold;
             text-transform: uppercase;
-            color: #64748B;
-            letter-spacing: 0.03em;
-            margin-bottom: 1px;
         }
 
         .field-val {
-            font-size: 0.88rem;
-            font-weight: 800;
-            color: var(--brand-navy);
-            line-height: 1.2;
+            font-size: 8.5pt;
+            font-weight: bold;
+            color: #0f172a;
         }
 
-        .seat-badge-hero {
-            background: linear-gradient(135deg, #00aeef 0%, #008cc0 100%);
-            color: #FFFFFF;
-            padding: 6px 12px;
-            border-radius: 6px;
-            text-align: center;
-            box-shadow: 0 3px 8px rgba(0, 174, 239, 0.25);
-        }
-
-        .seat-badge-hero .seat-txt {
-            font-size: 1.25rem;
-            font-weight: 900;
-            letter-spacing: 0.5px;
+        .seat-numbers-text {
+            font-size: 13pt;
+            font-weight: bold;
+            color: #008cc0;
             line-height: 1;
         }
 
-        /* Package Details */
-        .package-strip {
-            padding: 5px 14px;
-            background: #F8FAFC;
-            border-bottom: 1px solid var(--brand-border);
-            font-size: 0.75rem;
-        }
-
         /* Financial Statement */
-        .fare-table-card {
-            padding: 8px 14px;
-            background: #FFFFFF;
+        .fare-table {
+            margin-top: 5px;
+            border: 1px solid #cbd5e1;
         }
 
-        .ticket-table {
-            width: 100%;
-            margin-bottom: 0;
-            font-size: 0.78rem;
-            border-collapse: collapse;
-        }
-
-        .ticket-table th {
-            background: #F1F5F9;
+        .fare-table th {
+            background-color: #f1f5f9;
             color: #334155;
-            font-weight: 700;
-            font-size: 0.70rem;
-            padding: 4px 8px;
-            border: 1px solid #CBD5E1;
+            font-size: 7.5pt;
+            font-weight: bold;
+            border: 1px solid #cbd5e1;
+            padding: 3px 5px;
             text-transform: uppercase;
         }
 
-        .ticket-table td {
-            padding: 4px 8px;
-            border: 1px solid #E2E8F0;
-            vertical-align: middle;
+        .fare-table td {
+            border: 1px solid #e2e8f0;
+            padding: 3px 5px;
+            font-size: 8pt;
         }
 
-        .ticket-table .total-row td {
-            background: #F8FAFC;
-            font-weight: 800;
-            font-size: 0.82rem;
-            border-top: 1.5px solid #CBD5E1;
+        .fare-total-row td {
+            background-color: #f8fafc;
+            font-weight: bold;
+            font-size: 8.5pt;
         }
 
-        /* Passenger Guidelines */
-        .guidelines-strip {
-            padding: 6px 14px;
-            background: #FFFBEB;
-            border-top: 1px solid #FEF3C7;
-            border-bottom: 1px solid #FEF3C7;
-            font-size: 0.68rem;
-            color: #92400E;
-            line-height: 1.35;
+        /* Guidelines */
+        .rules-box {
+            margin-top: 4px;
+            background-color: #fffbeb;
+            border: 1px solid #fef3c7;
+            padding: 3px 6px;
+            font-size: 7pt;
+            color: #92400e;
+            line-height: 1.25;
         }
 
-        /* Perforated Conductor Tear Stub */
+        /* Conductor Tear Stub */
         .cut-line {
-            padding: 4px 14px;
-            background: #F1F5F9;
+            border-top: 1.5px dashed #94a3b8;
+            margin: 6px 0 5px 0;
             text-align: center;
-            font-size: 0.65rem;
-            font-weight: 700;
-            color: #64748B;
+            font-size: 7pt;
+            color: #64748b;
             letter-spacing: 1px;
-            border-top: 1.5px dashed #94A3B8;
-            border-bottom: 1.5px dashed #94A3B8;
         }
 
-        .conductor-stub {
-            padding: 8px 14px;
-            background: #FAFCFE;
-            position: relative;
+        .stub-box {
+            background-color: #f8fafc;
+            border: 1px solid #cbd5e1;
+            padding: 4px 6px;
+        }
+
+        .stub-table td {
+            padding: 2px 4px;
+            font-size: 7.5pt;
         }
 
         .stub-seat-box {
-            background: var(--brand-navy);
-            color: #FCD34D;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 1.05rem;
-            font-weight: 900;
+            background-color: #0f172a;
+            color: #fcd34d;
+            font-size: 11pt;
+            font-weight: bold;
             text-align: center;
-            line-height: 1.1;
+            padding: 3px 6px;
+            border-radius: 3px;
         }
 
-        .barcode-strip {
-            font-family: 'Libre Barcode 39', cursive;
-            font-size: 34px;
-            letter-spacing: 2px;
-            line-height: 0.85;
-            color: var(--brand-navy);
+        .footer-note {
             text-align: center;
-            user-select: none;
-            margin-top: 2px;
-        }
-
-        /* Bottom Security Footer */
-        .ticket-footer {
-            padding: 6px 14px;
-            background: #F8FAFC;
-            border-top: 1px solid var(--brand-border);
-            font-size: 0.68rem;
-            color: #64748B;
+            font-size: 6.5pt;
+            color: #94a3b8;
+            margin-top: 3px;
         }
 
         /* Print Media Styles: Guaranteed 1-page A5 print */
@@ -391,25 +329,25 @@
                 display: none !important;
             }
 
-            .ticket-wrapper {
+            .ticket-box {
                 max-width: 100% !important;
                 width: 100% !important;
                 box-shadow: none !important;
-                border: 1px solid #334155 !important;
-                border-radius: 4px !important;
+                border: 1.5px solid #008cc0 !important;
+                padding: 6px 8px !important;
                 margin: 0 !important;
                 page-break-inside: avoid !important;
                 break-inside: avoid !important;
             }
 
-            .ticket-header,
-            .journey-banner,
-            .seat-badge-hero,
-            .stub-seat-box,
-            .ticket-table th,
-            .ticket-table .total-row td,
-            .guidelines-strip,
-            .badge {
+            .pnr-badge,
+            .route-table,
+            .info-grid-table,
+            .fare-table th,
+            .fare-total-row td,
+            .rules-box,
+            .stub-box,
+            .stub-seat-box {
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
             }
@@ -445,11 +383,11 @@
             <!-- Download A5 PDF via mPDF -->
             <a href="{{ route('travel.bookings.pdf', ['booking' => $booking->id, 'lang' => app()->getLocale()]) }}" 
                class="btn btn-danger btn-sm px-3 shadow-sm fw-bold">
-                <i class="fas fa-file-pdf me-1"></i> {{ __('A5 PDF') }}
+                <i class="fas fa-file-pdf me-1"></i> {{ __('Download A5 PDF') }}
             </a>
             <!-- Browser Print A5 -->
-            <button onclick="window.print()" class="btn btn-primary btn-sm px-3 shadow-sm fw-bold" style="background: var(--brand-primary); border-color: var(--brand-primary);">
-                <i class="fas fa-print me-1"></i> {{ __('Print Ticket') }}
+            <button onclick="window.print()" class="btn btn-primary btn-sm px-3 shadow-sm fw-bold" style="background: #00aeef; border-color: #00aeef;">
+                <i class="fas fa-print me-1"></i> {{ __('Print Ticket (A5)') }}
             </button>
             <button onclick="window.close()" class="btn btn-outline-dark btn-sm">
                 <i class="fas fa-times"></i>
@@ -457,264 +395,345 @@
         </div>
     </div>
 
-    <!-- 2. Main A5 Boarding Ticket (Faisal Movers / Intercity Bus Format) -->
-    <div class="ticket-wrapper">
+    <!-- 2. Main A5 Boarding Ticket Box -->
+    <div class="ticket-box">
 
-        <!-- Top Header: Agency Details + PNR Identifier -->
-        <div class="ticket-header">
-            <div class="row align-items-center g-2">
-                <div class="col-7 d-flex align-items-center gap-2">
-                    @if($logoSrc)
-                        <img src="{{ $logoSrc }}" alt="{{ $brandName }}" class="agency-logo-img">
-                    @else
-                        <div class="agency-logo-placeholder">
-                            <i class="fas fa-bus-alt"></i>
-                        </div>
-                    @endif
-                    <div>
-                        <div class="agency-title">{{ $brandName }}</div>
-                        <div class="agency-meta">
-                            <div><i class="fas fa-map-marker-alt text-danger me-1"></i> {{ tdb($companyAddress) }}@if($companyCity) - {{ tdb($companyCity) }}@endif</div>
-                            <div>
-                                @if($companyPhone) <span class="me-2"><i class="fas fa-phone-alt text-success me-1"></i> {{ $companyPhone }}</span> @endif
-                                @if($companyCr) <span class="badge bg-light text-dark border p-0 px-1"><strong>{{ __('CR') }}:</strong> {{ $companyCr }}</span> @endif
-                                @if($companyVat) <span class="badge bg-light text-dark border p-0 px-1"><strong>{{ __('VAT') }}:</strong> {{ $companyVat }}</span> @endif
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-5">
-                    <div class="pnr-badge-box">
-                        <div class="text-uppercase fw-bold text-primary" style="font-size: 0.65rem;">
-                            {{ __('Official Passenger Ticket') }}
-                        </div>
-                        <div class="pnr-code">{{ $booking->booking_reference }}</div>
-                        <div class="text-muted" style="font-size: 0.62rem; margin-top: 1px;">
-                            <i class="far fa-calendar-alt me-1"></i> {{ $booking->created_at->format('d M Y, h:i A') }}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Journey Banner: Origin -> Destination + Bus Fleet -->
-        <div class="journey-banner">
-            <div class="row align-items-center g-2 text-center text-md-{{ $isAr ? 'end' : 'start' }}">
-                <div class="col-5">
-                    <div class="city-label"><i class="fas fa-map-pin text-danger me-1"></i> {{ __('Origin / نقطة الانطلاق') }}</div>
-                    <div class="city-name">{{ $trip ? tdb($trip->departure_city) : __('Departure City') }}</div>
-                    <div class="journey-meta mt-1">
-                        <i class="far fa-clock text-primary me-1"></i>
-                        {{ $trip && $trip->departure_date ? $trip->departure_date->format('d M Y - h:i A') : __('Scheduled') }}
-                    </div>
-                </div>
-
-                <div class="col-2 text-center">
-                    <div class="text-primary fs-5"><i class="fas fa-bus"></i> &rarr;</div>
-                    <span class="badge bg-primary text-white extra-small" style="font-size: 0.65rem;">
-                        {{ $trip ? $trip->duration_days : 10 }} {{ __('Days') }}
-                    </span>
-                </div>
-
-                <div class="col-5 text-md-{{ $isAr ? 'start' : 'end' }}">
-                    <div class="city-label"><i class="fas fa-kaaba text-success me-1"></i> {{ __('Destination / الوجهة') }}</div>
-                    <div class="city-name text-primary">{{ $trip ? tdb($trip->destination_city) : __('Destination') }}</div>
-                    <div class="journey-meta mt-1">
-                        <i class="fas fa-bus-alt text-secondary me-1"></i>
-                        {{ $trip ? tdb($trip->bus_name) : __('Coach') }}
-                        @if($trip && $trip->bus_number) &bull; <strong>{{ $trip->bus_number }}</strong> @endif
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Passenger & Allocated Seats Grid -->
-        <div class="passenger-seat-grid">
-            <div class="row align-items-center g-2">
-                <div class="col-5">
-                    <div class="field-lbl"><i class="fas fa-user text-primary me-1"></i> {{ __('Passenger Name / اسم الراكب') }}</div>
-                    <div class="field-val text-truncate">{{ tdb($booking->passenger_name) }}</div>
-                    <div class="text-muted" style="font-size: 0.70rem;">
-                        <i class="fas fa-phone-alt text-success me-1"></i> {{ $booking->passenger_phone }} &bull; {{ ucfirst(__($booking->passenger_gender)) }}
-                    </div>
-                </div>
-
-                <div class="col-3">
-                    <div class="field-lbl"><i class="fas fa-id-card text-info me-1"></i> {{ __('ID / Iqama / Passport') }}</div>
-                    <div class="field-val font-monospace">{{ $booking->passenger_id_number ?: '—' }}</div>
-                    <div class="text-muted" style="font-size: 0.70rem;">
-                        {{ __('Trip') }}: <strong>{{ $trip ? $trip->trip_code : '—' }}</strong>
-                    </div>
-                </div>
-
-                <div class="col-4 text-end">
-                    <div class="seat-badge-hero">
-                        <div class="text-uppercase text-white-50" style="font-size: 0.62rem; font-weight: 800;">
-                            {{ $seatsCount > 1 ? __('Allocated Seats (' . $seatsCount . ')') : __('Allocated Seat') }}
-                        </div>
-                        <div class="seat-txt">{{ $seatNumbersText }}</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Package & Accommodation Strip -->
-        <div class="package-strip d-flex flex-wrap justify-content-between align-items-center">
-            <div>
-                <strong>{{ __('Package') }}:</strong>
-                @if($booking->package_type === 'with_hotel')
-                    <span class="badge bg-success text-white"><i class="fas fa-hotel me-1"></i> {{ __('With Hotel') }}</span>
-                    <span class="fw-bold ms-1">{{ $booking->hotel_name ? tdb($booking->hotel_name) : ($trip->hotel_name ? tdb($trip->hotel_name) : __('Hotel Accommodation')) }}</span>
-                    <span class="text-muted">({{ ucfirst(str_replace('_', ' ', $booking->room_type ?: 'quad_sharing')) }})</span>
-                    @if($booking->nights_count) &bull; {{ $booking->nights_count }} {{ __('Nights') }} @endif
-                @else
-                    <span class="badge bg-primary text-white"><i class="fas fa-bus me-1"></i> {{ __('Seat Only (Transportation Only)') }}</span>
-                @endif
-            </div>
-            <div class="text-muted font-monospace" style="font-size: 0.70rem;">
-                {{ __('Issued') }}: {{ $booking->created_at->format('d/m/Y') }}
-            </div>
-        </div>
-
-        <!-- Financial Statement (Itemized Table) -->
-        <div class="fare-table-card">
-            <table class="ticket-table">
-                <thead>
-                    <tr>
-                        <th>{{ __('Description / البيان') }}</th>
-                        <th class="text-center" style="width: 90px;">{{ __('Status') }}</th>
-                        <th class="text-end" style="width: 120px;">{{ __('Amount') }} (SAR)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>
-                            <strong>{{ __('Bus Seat Ticket Fare') }}</strong> 
-                            ({{ $seatNumbersText }} - {{ $seatsCount }} {{ __('Seat(s)') }})
-                        </td>
-                        <td class="text-center">
-                            <span class="badge bg-light text-primary border p-0 px-1">{{ __('Confirmed') }}</span>
-                        </td>
-                        <td class="text-end font-monospace fw-bold">{{ format_currency($totalTravelFare) }}</td>
-                    </tr>
-                    @if($totalHotelExpense > 0)
+        <!-- Top Header: Logo + Agency Details + PNR -->
+        <table class="header-table">
+            <tr>
+                <td style="width: 50%; vertical-align: middle;">
+                    <table style="width: 100%;">
                         <tr>
-                            <td>{{ __('Hotel Accommodation Expense') }}</td>
-                            <td class="text-center"><span class="badge bg-light text-success border p-0 px-1">{{ __('Reserved') }}</span></td>
-                            <td class="text-end font-monospace fw-bold">{{ format_currency($totalHotelExpense) }}</td>
-                        </tr>
-                    @endif
-                    @if($totalExtraCharges > 0)
-                        <tr>
-                            <td>{{ __('Extra Charges & Service Fees') }}</td>
-                            <td class="text-center">—</td>
-                            <td class="text-end font-monospace">+ {{ format_currency($totalExtraCharges) }}</td>
-                        </tr>
-                    @endif
-                    @if($totalDiscount > 0)
-                        <tr>
-                            <td class="text-danger">{{ __('Promotional Discount') }}</td>
-                            <td class="text-center">—</td>
-                            <td class="text-end text-danger font-monospace">- {{ format_currency($totalDiscount) }}</td>
-                        </tr>
-                    @endif
-                    <tr class="total-row">
-                        <td>{{ __('Total Voucher Fare / إجمالي القيمة') }}</td>
-                        <td class="text-center">
-                            @if($booking->payment_status === 'paid')
-                                <span class="badge bg-success text-white p-0 px-1">{{ __('PAID') }}</span>
-                            @elseif($booking->payment_status === 'partial')
-                                <span class="badge bg-warning text-dark p-0 px-1">{{ __('PARTIAL') }}</span>
-                            @else
-                                <span class="badge bg-danger text-white p-0 px-1">{{ __('UNPAID') }}</span>
+                            @if($logoSrc)
+                                <td style="width: 48px; vertical-align: middle; padding: 0;">
+                                    <img src="{{ $logoSrc }}" style="max-height: 38px; max-width: 45px; object-fit: contain;" />
+                                </td>
                             @endif
-                        </td>
-                        <td class="text-end font-monospace text-primary fs-6">{{ format_currency($totalVoucherAmount) }}</td>
-                    </tr>
-                    <tr>
-                        <td class="text-success"><i class="fas fa-check-circle me-1"></i> {{ __('Amount Paid / المبلغ المدفوع') }} ({{ ucfirst(str_replace('_', ' ', $booking->payment_method)) }})</td>
-                        <td></td>
-                        <td class="text-end text-success font-monospace fw-bold">{{ format_currency($totalPaidAmount) }}</td>
-                    </tr>
-                    @if($totalBalanceDue > 0)
-                        <tr class="table-warning fw-bold text-danger">
-                            <td><i class="fas fa-exclamation-triangle me-1"></i> {{ __('Balance Due at Bus / المتبقي للتحصيل') }}</td>
-                            <td class="text-center"><span class="badge bg-danger text-white p-0 px-1">{{ __('Collect') }}</span></td>
-                            <td class="text-end font-monospace">{{ format_currency($totalBalanceDue) }}</td>
+                            <td style="vertical-align: middle; padding-{{ $isAr ? 'right' : 'left' }}: 6px;">
+                                <div class="agency-title">{{ $brandName }}</div>
+                                <div class="agency-meta">
+                                    {{ tdb($companyAddress) }}@if($companyCity) - {{ tdb($companyCity) }}@endif
+                                    @if($companyPhone) &bull; {{ __('Tel') }}: {{ $companyPhone }}@endif
+                                    @if($companyCr || $companyVat)
+                                        <br>
+                                        @if($companyCr) <strong>{{ __('CR') }}:</strong> {{ $companyCr }} @endif
+                                        @if($companyVat) <strong>{{ __('VAT') }}:</strong> {{ $companyVat }} @endif
+                                    @endif
+                                </div>
+                            </td>
                         </tr>
-                    @endif
-                </tbody>
-            </table>
-        </div>
-
-        <!-- Passenger Guidelines Strip -->
-        <div class="guidelines-strip">
-            <strong><i class="fas fa-info-circle me-1"></i> {{ __('Travel Guidelines') }}:</strong>
-            1. {{ __('Arrive at departure terminal 30-45 mins before departure.') }}
-            &bull; 2. {{ __('Original Iqama/Passport is mandatory.') }}
-            &bull; 3. {{ __('Baggage limit: 1 piece (max 25kg) + 1 hand luggage.') }}
-        </div>
-
-        <!-- Perforated Cut Line -->
-        <div class="cut-line">
-            ✂ - - - - - - - - - - - - - - - {{ __('TEAR-OFF CONDUCTOR STUB / قسيمة السائق') }} - - - - - - - - - - - - - - - ✂
-        </div>
-
-        <!-- Conductor Inspection Tear Stub -->
-        <div class="conductor-stub">
-            <div class="row align-items-center g-2">
-                <div class="col-5">
-                    <div class="fw-bold text-dark small text-truncate">{{ $brandName }}</div>
-                    <div style="font-size: 0.72rem;"><strong>{{ __('Passenger') }}:</strong> {{ tdb($booking->passenger_name) }}</div>
-                    <div style="font-size: 0.72rem;"><strong>{{ __('Phone') }}:</strong> {{ $booking->passenger_phone }}</div>
-                    <div style="font-size: 0.72rem;">
-                        <strong>{{ __('Route') }}:</strong> {{ $trip ? tdb($trip->departure_city) : '' }} &rarr; {{ $trip ? tdb($trip->destination_city) : '' }}
+                    </table>
+                </td>
+                <td style="width: 50%; vertical-align: middle; text-align: {{ $isAr ? 'left' : 'right' }};">
+                    <div style="font-size: 6.8pt; font-weight: bold; color: #008cc0; text-transform: uppercase; white-space: nowrap;">
+                        {{ __('PASSENGER TICKET & BOARDING PASS') }}
                     </div>
-                </div>
-
-                <div class="col-4 text-center">
-                    <div class="extra-small text-muted text-uppercase fw-bold">{{ __('Allocated Seat(s)') }}</div>
-                    <div class="stub-seat-box">
-                        {{ $seatNumbersText }}
+                    <div style="font-size: 6.5pt; color: #64748b; margin-top: 1px;">
+                        {{ __('Booking Reference / رقم الحجز') }}
                     </div>
-                    <div class="mt-1" style="font-size: 0.70rem;">
-                        @if($totalBalanceDue > 0)
-                            <span class="badge bg-danger text-white">{{ __('DUE') }}: {{ format_currency($totalBalanceDue) }}</span>
-                        @else
-                            <span class="badge bg-success text-white">{{ __('FARE PAID') }}</span>
-                        @endif
-                    </div>
-                </div>
-
-                <div class="col-3 text-end">
-                    <div class="p-1 border rounded bg-white text-center" style="font-size: 0.65rem;">
-                        <i class="far fa-square text-primary"></i> <strong>{{ __('Boarded / صعد') }}</strong>
-                        <div class="text-muted mt-2 border-top pt-1" style="font-size: 0.60rem;">{{ __('Conductor Sig') }}</div>
-                    </div>
-                </div>
-
-                <!-- Code 39 Barcode (NO QR CODE) -->
-                <div class="col-12 text-center pt-1">
-                    <div class="barcode-strip">*{{ $booking->booking_reference }}*</div>
-                    <div class="font-monospace text-muted" style="font-size: 0.68rem; letter-spacing: 1px;">
+                    <div class="pnr-badge">
                         {{ $booking->booking_reference }}
                     </div>
+                    <div style="font-size: 6.5pt; color: #64748b; margin-top: 2px;">
+                        {{ __('Date') }}: {{ $booking->created_at->format('d M Y, h:i A') }}
+                    </div>
+                </td>
+            </tr>
+        </table>
+
+        <!-- Journey Banner: Origin -> Destination + Bus Fleet -->
+        <table class="route-table">
+            <tr>
+                <td style="width: 45%;">
+                    <div class="city-label">{{ __('Origin / نقطة الانطلاق') }}</div>
+                    <div class="city-title">{{ $trip ? tdb($trip->departure_city) : __('Departure City') }}</div>
+                    <div class="trip-meta" style="font-size: 6.5pt; white-space: nowrap;">
+                        <strong>{{ __('Departure') }}:</strong>
+                        {{ $trip && $trip->departure_date ? $trip->departure_date->format('d M Y - h:i A') : __('Scheduled') }}
+                    </div>
+                </td>
+                <td style="width: 10%; text-align: center; vertical-align: middle;">
+                    <div style="font-size: 11pt; font-weight: bold; color: #008cc0;">&rarr;</div>
+                    <div style="font-size: 6.5pt; font-weight: bold; color: #0369a1; white-space: nowrap;">
+                        {{ $trip ? $trip->duration_days : 10 }} {{ __('Days') }}
+                    </div>
+                </td>
+                <td style="width: 45%; text-align: {{ $isAr ? 'left' : 'right' }};">
+                    <div class="city-label">{{ __('Destination / الوجهة') }}</div>
+                    <div class="city-title">{{ $trip ? tdb($trip->destination_city) : __('Destination') }}</div>
+                    <div class="trip-meta" style="font-size: 6.5pt; white-space: nowrap;">
+                        <strong>{{ __('Coach Fleet') }}:</strong>
+                        {{ $trip ? tdb($trip->bus_name) : __('Luxury Coach') }}
+                        @if($trip && $trip->bus_number) ({{ $trip->bus_number }}) @endif
+                    </div>
+                </td>
+            </tr>
+        </table>
+
+        <!-- Passenger Grid -->
+        <table class="info-grid-table">
+            <tr>
+                <td style="width: 55%;">
+                    <div class="field-lbl">{{ $seatsCount > 1 ? __('Lead Booker / المسافر الرئيسي') : __('Passenger Name / اسم الراكب') }}</div>
+                    <div class="field-val" style="white-space: nowrap; font-size: 8pt;">{{ tdb($booking->passenger_name) }}</div>
+                    <div style="font-size: 7pt; color: #64748b; white-space: nowrap;">
+                        {{ __('Phone') }}: {{ $booking->passenger_phone }} &bull; {{ ucfirst(__($booking->passenger_gender)) }}
+                    </div>
+                </td>
+                <td style="width: 45%;">
+                    <div class="field-lbl">{{ __('ID / Iqama / Passport') }}</div>
+                    <div class="field-val">{{ $booking->passenger_id_number ?: '—' }}</div>
+                    <div style="font-size: 7pt; color: #64748b;">
+                        {{ __('Trip Code') }}: {{ $trip ? $trip->trip_code : '—' }}
+                        @if($seatsCount == 1)
+                            &bull; <strong style="color: #008cc0;">{{ __('Seat') }}: #{{ $booking->seat_number }}</strong>
+                        @endif
+                    </div>
+                </td>
+            </tr>
+            @if($seatsCount > 1)
+                <tr>
+                    <td colspan="2" style="padding: 0; border-top: 1px solid #bae6fd;">
+                        @if($seatsCount <= 4)
+                            <table style="width: 100%; border-collapse: collapse;">
+                                <tr style="background-color: #f0f9ff;">
+                                    <th style="width: 12%; font-size: 6.5pt; color: #0369a1; text-align: center; padding: 2px 4px; border: 1px solid #e0f2fe;">{{ __('Seat #') }}</th>
+                                    <th style="width: 46%; font-size: 6.5pt; color: #0369a1; text-align: {{ $isAr ? 'right' : 'left' }}; padding: 2px 4px; border: 1px solid #e0f2fe;">{{ __('Passenger Name / اسم الراكب') }}</th>
+                                    <th style="width: 16%; font-size: 6.5pt; color: #0369a1; text-align: center; padding: 2px 4px; border: 1px solid #e0f2fe;">{{ __('Gender') }}</th>
+                                    <th style="width: 26%; font-size: 6.5pt; color: #0369a1; text-align: {{ $isAr ? 'left' : 'right' }}; padding: 2px 4px; border: 1px solid #e0f2fe;">{{ __('ID / Iqama') }}</th>
+                                </tr>
+                                @foreach($groupBookings as $gb)
+                                    <tr>
+                                        <td style="text-align: center; font-weight: bold; color: #008cc0; font-size: 6.8pt; padding: 1.5px 4px; border: 1px solid #e2e8f0;">
+                                            #{{ $gb->seat_number }}
+                                        </td>
+                                        <td style="font-weight: bold; font-size: 6.8pt; padding: 1.5px 4px; border: 1px solid #e2e8f0; white-space: nowrap;">
+                                            {{ tdb($gb->passenger_name) }}
+                                        </td>
+                                        <td style="text-align: center; font-size: 6.5pt; padding: 1.5px 4px; border: 1px solid #e2e8f0;">
+                                            {{ ucfirst(__($gb->passenger_gender)) }}
+                                        </td>
+                                        <td style="font-family: monospace; font-size: 6.5pt; text-align: {{ $isAr ? 'left' : 'right' }}; padding: 1.5px 4px; border: 1px solid #e2e8f0;">
+                                            {{ $gb->passenger_id_number ?: '—' }}
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </table>
+                        @else
+                            {{-- 2-column layout for 5 or more passengers --}}
+                            @php
+                                $chunks = $groupBookings->chunk(2);
+                            @endphp
+                            <table style="width: 100%; border-collapse: collapse;">
+                                <tr style="background-color: #f0f9ff;">
+                                    <th style="width: 8%; font-size: 6pt; color: #0369a1; text-align: center; padding: 1.5px 2px; border: 1px solid #e0f2fe;">{{ __('Seat') }}</th>
+                                    <th style="width: 26%; font-size: 6pt; color: #0369a1; text-align: {{ $isAr ? 'right' : 'left' }}; padding: 1.5px 2px; border: 1px solid #e0f2fe;">{{ __('Passenger Name') }}</th>
+                                    <th style="width: 16%; font-size: 6pt; color: #0369a1; text-align: {{ $isAr ? 'left' : 'right' }}; padding: 1.5px 2px; border: 1px solid #e0f2fe;">{{ __('ID / Iqama') }}</th>
+                                    <th style="width: 8%; font-size: 6pt; color: #0369a1; text-align: center; padding: 1.5px 2px; border: 1px solid #e0f2fe;">{{ __('Seat') }}</th>
+                                    <th style="width: 26%; font-size: 6pt; color: #0369a1; text-align: {{ $isAr ? 'right' : 'left' }}; padding: 1.5px 2px; border: 1px solid #e0f2fe;">{{ __('Passenger Name') }}</th>
+                                    <th style="width: 16%; font-size: 6pt; color: #0369a1; text-align: {{ $isAr ? 'left' : 'right' }}; padding: 1.5px 2px; border: 1px solid #e0f2fe;">{{ __('ID / Iqama') }}</th>
+                                </tr>
+                                @foreach($chunks as $chunk)
+                                    @php
+                                        $p1 = $chunk->values()->get(0);
+                                        $p2 = $chunk->values()->get(1);
+                                    @endphp
+                                    <tr>
+                                        <td style="text-align: center; font-weight: bold; color: #008cc0; font-size: 6.5pt; padding: 1px 2px; border: 1px solid #e2e8f0;">
+                                            #{{ $p1->seat_number }}
+                                        </td>
+                                        <td style="font-weight: bold; font-size: 6.2pt; padding: 1px 2px; border: 1px solid #e2e8f0; white-space: nowrap;">
+                                            {{ tdb($p1->passenger_name) }}
+                                        </td>
+                                        <td style="font-family: monospace; font-size: 5.8pt; text-align: {{ $isAr ? 'left' : 'right' }}; padding: 1px 2px; border: 1px solid #e2e8f0;">
+                                            {{ $p1->passenger_id_number ?: '—' }}
+                                        </td>
+                                        @if($p2)
+                                            <td style="text-align: center; font-weight: bold; color: #008cc0; font-size: 6.5pt; padding: 1px 2px; border: 1px solid #e2e8f0;">
+                                                #{{ $p2->seat_number }}
+                                            </td>
+                                            <td style="font-weight: bold; font-size: 6.2pt; padding: 1px 2px; border: 1px solid #e2e8f0; white-space: nowrap;">
+                                                {{ tdb($p2->passenger_name) }}
+                                            </td>
+                                            <td style="font-family: monospace; font-size: 5.8pt; text-align: {{ $isAr ? 'left' : 'right' }}; padding: 1px 2px; border: 1px solid #e2e8f0;">
+                                                {{ $p2->passenger_id_number ?: '—' }}
+                                            </td>
+                                        @else
+                                            <td colspan="3" style="border: 1px solid #e2e8f0; background-color: #fafafa;"></td>
+                                        @endif
+                                    </tr>
+                                @endforeach
+                            </table>
+                        @endif
+                    </td>
+                </tr>
+            @endif
+            <tr>
+                <td colspan="2" style="background-color: #ffffff; padding: 3px 6px;">
+                    <span class="field-lbl">{{ __('Package / نوع الباقة') }}:</span>
+                    @if($booking->package_type === 'with_hotel')
+                        <strong style="color: #065f46;">{{ __('With Hotel Included') }}</strong>
+                        &bull; {{ $booking->hotel_name ? tdb($booking->hotel_name) : ($trip->hotel_name ? tdb($trip->hotel_name) : __('Hotel Accommodation')) }}
+                        ({{ ucfirst(str_replace('_', ' ', $booking->room_type ?: 'quad_sharing')) }})
+                        @if($booking->nights_count) - {{ $booking->nights_count }} {{ __('Nights') }} @endif
+                    @else
+                        <strong style="color: #1e40af;">{{ __('Seat Only (Transportation Only)') }}</strong>
+                    @endif
+                </td>
+            </tr>
+        </table>
+
+        <!-- Itemized Financial Breakdown (SAR) -->
+        <table class="fare-table">
+            <thead>
+                <tr>
+                    <th style="text-align: {{ $isAr ? 'right' : 'left' }};">{{ __('Description / البيان') }}</th>
+                    <th style="width: 100px; text-align: center;">{{ __('Status / الحالة') }}</th>
+                    <th style="width: 120px; text-align: {{ $isAr ? 'left' : 'right' }};">{{ __('Amount / المبلغ') }} (SAR)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        {{ __('Bus Seat Ticket Fare') }} ({{ $seatNumbersText }} - {{ $seatsCount }} {{ __('Seat(s)') }})
+                    </td>
+                    <td style="text-align: center; font-size: 7.5pt; color: #0284c7;">
+                        {{ __('Confirmed') }}
+                    </td>
+                    <td style="text-align: {{ $isAr ? 'left' : 'right' }}; font-weight: bold;">
+                        {{ format_currency($totalTravelFare) }}
+                    </td>
+                </tr>
+                @if($totalHotelExpense > 0)
+                    <tr>
+                        <td>{{ __('Hotel Accommodation Expense') }}</td>
+                        <td style="text-align: center; font-size: 7.5pt; color: #059669;">{{ __('Reserved') }}</td>
+                        <td style="text-align: {{ $isAr ? 'left' : 'right' }}; font-weight: bold;">{{ format_currency($totalHotelExpense) }}</td>
+                    </tr>
+                @endif
+                @if($totalExtraCharges > 0)
+                    <tr>
+                        <td>{{ __('Extra Charges & Service Fees') }}</td>
+                        <td style="text-align: center;">—</td>
+                        <td style="text-align: {{ $isAr ? 'left' : 'right' }};">+ {{ format_currency($totalExtraCharges) }}</td>
+                    </tr>
+                @endif
+                @if($totalDiscount > 0)
+                    <tr>
+                        <td style="color: #b91c1c;">{{ __('Promotional Discount') }}</td>
+                        <td style="text-align: center;">—</td>
+                        <td style="text-align: {{ $isAr ? 'left' : 'right' }}; color: #b91c1c;">- {{ format_currency($totalDiscount) }}</td>
+                    </tr>
+                @endif
+                <tr class="fare-total-row">
+                    <td>{{ __('Total Voucher Fare / إجمالي القيمة') }}</td>
+                    <td style="text-align: center;">
+                        @if($booking->payment_status === 'paid')
+                            <strong style="color: #16a34a;">{{ __('PAID') }}</strong>
+                        @elseif($booking->payment_status === 'partial')
+                            <strong style="color: #d97706;">{{ __('PARTIAL') }}</strong>
+                        @else
+                            <strong style="color: #dc2626;">{{ __('UNPAID') }}</strong>
+                        @endif
+                    </td>
+                    <td style="text-align: {{ $isAr ? 'left' : 'right' }}; color: #008cc0;">
+                        {{ format_currency($totalVoucherAmount) }}
+                    </td>
+                </tr>
+                <tr>
+                    <td style="color: #16a34a;">
+                        {{ __('Amount Paid / المبلغ المدفوع') }} ({{ ucfirst(str_replace('_', ' ', $booking->payment_method)) }})
+                    </td>
+                    <td></td>
+                    <td style="text-align: {{ $isAr ? 'left' : 'right' }}; color: #16a34a; font-weight: bold;">
+                        {{ format_currency($totalPaidAmount) }}
+                    </td>
+                </tr>
+                @if($totalBalanceDue > 0)
+                    <tr style="background-color: #fef2f2; font-weight: bold;">
+                        <td style="color: #dc2626;">
+                            {{ __('Balance Due at Bus / المتبقي للتحصيل عند الحافلة') }}
+                        </td>
+                        <td style="text-align: center; color: #dc2626; font-size: 7.5pt;">{{ __('Collect') }}</td>
+                        <td style="text-align: {{ $isAr ? 'left' : 'right' }}; color: #dc2626;">
+                            {{ format_currency($totalBalanceDue) }}
+                        </td>
+                    </tr>
+                @endif
+            </tbody>
+        </table>
+
+        <!-- Important Guidelines -->
+        <div class="rules-box">
+            <strong>{{ __('Travel Guidelines') }}:</strong>
+            1. {{ __('Arrive at the departure terminal at least 30-45 minutes before departure.') }}
+            2. {{ __('Original Iqama/Passport is mandatory.') }}
+            3. {{ __('Baggage limit: 1 standard piece (max 25kg) + 1 hand luggage.') }}
+        </div>
+
+        <!-- Perforation Cut Line -->
+        <div class="cut-line">
+            ✂ - - - - - - - - - - - - - - - - - - - - {{ __('TEAR-OFF CONDUCTOR STUB / قسيمة السائق') }} - - - - - - - - - - - - - - - - - - - - ✂
+        </div>
+
+        <!-- Tear-Off Conductor Inspection Counterfoil (NO BARCODE LINES) -->
+        <div class="stub-box">
+            <table class="stub-table">
+                <tr>
+                    <td style="width: 48%;">
+                        <div style="font-weight: bold; font-size: 7.5pt; color: #0f172a;">{{ $brandName }}</div>
+                        @if($seatsCount > 1)
+                            <div style="font-size: 6.5pt; white-space: nowrap;"><strong>{{ __('Booker') }}:</strong> {{ tdb($booking->passenger_name) }}</div>
+                            @if($seatsCount <= 3)
+                                <div style="font-size: 5.8pt; color: #334155; margin-bottom: 1px;">
+                                    @foreach($groupBookings as $gb)
+                                        <span style="white-space: nowrap; margin-right: 3px;">#{{ $gb->seat_number }}: {{ tdb($gb->passenger_name) }}</span>
+                                    @endforeach
+                                </div>
+                            @else
+                                <div style="font-size: 5.8pt; color: #334155; margin-bottom: 1px; white-space: nowrap;">
+                                    <strong>{{ __('Group') }}:</strong> {{ $seatsCount }} {{ __('Passengers Booked') }}
+                                </div>
+                            @endif
+                        @else
+                            <div style="font-size: 6.5pt; white-space: nowrap;"><strong>{{ __('Passenger') }}:</strong> {{ tdb($booking->passenger_name) }}</div>
+                        @endif
+                        <div style="font-size: 6.5pt; white-space: nowrap;"><strong>{{ __('Phone') }}:</strong> {{ $booking->passenger_phone }}</div>
+                        <div style="font-size: 6.5pt; white-space: nowrap;"><strong>{{ __('Route') }}:</strong> {{ $trip ? tdb($trip->departure_city) : '' }} &rarr; {{ $trip ? tdb($trip->destination_city) : '' }}</div>
+                    </td>
+                    <td style="width: 28%; text-align: center;">
+                        <div style="font-size: 6pt; color: #64748b; text-transform: uppercase;">{{ __('Allocated Seat(s)') }}</div>
+                        <div class="stub-seat-box">
+                            {{ $seatNumbersText }}
+                        </div>
+                        <div style="font-size: 6.5pt; margin-top: 2px;">
+                            @if($totalBalanceDue > 0)
+                                <strong style="color: #dc3545;">{{ __('DUE') }}: {{ format_currency($totalBalanceDue) }}</strong>
+                            @else
+                                <strong style="color: #16a34a;">{{ __('FARE PAID') }}</strong>
+                            @endif
+                        </div>
+                    </td>
+                    <td style="width: 24%; text-align: {{ $isAr ? 'left' : 'right' }}; vertical-align: middle;">
+                        <div style="border: 1px solid #cbd5e1; background-color: #ffffff; padding: 4px; text-align: center;">
+                            <div style="font-size: 6.5pt; color: #64748b;">[ &nbsp; ] {{ __('Boarded / صعد') }}</div>
+                            <div style="font-size: 6pt; color: #94a3b8; margin-top: 6px;">{{ __('Conductor Signature') }}</div>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+
+            <!-- Booking Reference Centered - NO BARCODE LINES -->
+            <div style="text-align: center; margin-top: 3px;">
+                <div style="font-size: 7pt; font-family: monospace; font-weight: bold; color: #475569; letter-spacing: 1px;">
+                    {{ $booking->booking_reference }}
                 </div>
             </div>
         </div>
 
-        <!-- Security Verification Footer -->
-        <div class="ticket-footer d-flex justify-content-between align-items-center">
-            <div>
-                <i class="fas fa-shield-alt text-success me-1"></i>
-                <span>{{ __('Verified Official Travel Voucher') }}</span>
-            </div>
-            <div>
-                <span>{{ __('Thank you for choosing :name', ['name' => $brandName]) }}</span>
-            </div>
+        <div class="footer-note">
+            {{ __('Thank you for traveling with us. Verified Official Travel Voucher.') }} &bull; {{ now()->format('d M Y, h:i A') }}
         </div>
-
     </div>
 
 </body>

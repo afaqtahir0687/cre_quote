@@ -132,9 +132,23 @@
 
                     <div class="col-md-6">
                         <label class="form-label fw-bold text-dark">{{ __('National ID / Iqama / Passport #') }}</label>
-                        <input type="text" name="passenger_id_number" class="form-control @error('passenger_id_number') is-invalid @enderror" placeholder="{{ __('e.g. 2489012345 or Passport #') }}" value="{{ old('passenger_id_number') }}">
+                        <input type="text" name="passenger_id_number" id="passengerIdInput" class="form-control @error('passenger_id_number') is-invalid @enderror" placeholder="{{ __('e.g. 2489012345 or Passport #') }}" value="{{ old('passenger_id_number') }}">
                         @error('passenger_id_number') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
+                </div>
+
+                <!-- Multiple Passengers per Seat Details Container -->
+                <div id="multiplePassengersSection" class="mt-4 pt-3 border-top" style="display: none;">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <label class="form-label fw-bold text-primary mb-0">
+                            <i class="fas fa-users me-1"></i> {{ __('Passenger Names per Allocated Seat') }}
+                        </label>
+                        <span class="badge bg-primary text-white" id="multiPassCountBadge"></span>
+                    </div>
+                    <p class="text-muted extra-small mb-3">
+                        {{ __('Enter individual passenger name, gender, and ID/Iqama for each allocated seat.') }}
+                    </p>
+                    <div id="passengerSeatsList" class="d-flex flex-column gap-2"></div>
                 </div>
             </x-card>
 
@@ -520,6 +534,69 @@
         }
 
         recalcAutoFares();
+        updateMultiplePassengersUI();
+    }
+
+    function updateMultiplePassengersUI() {
+        const sec = document.getElementById('multiplePassengersSection');
+        const list = document.getElementById('passengerSeatsList');
+        const badge = document.getElementById('multiPassCountBadge');
+        if (!sec || !list) return;
+
+        if (selectedSeats.length > 1) {
+            sec.style.display = 'block';
+            badge.innerText = selectedSeats.length + ' {{ __("Seats") }}';
+
+            // Preserve currently entered values in a temporary map
+            const currentVals = {};
+            list.querySelectorAll('[data-seat-row]').forEach(row => {
+                const s = row.getAttribute('data-seat-row');
+                currentVals[s] = {
+                    name: row.querySelector(`[name="passengers[${s}][name]"]`)?.value || '',
+                    gender: row.querySelector(`[name="passengers[${s}][gender]"]`)?.value || 'male',
+                    id_number: row.querySelector(`[name="passengers[${s}][id_number]"]`)?.value || ''
+                };
+            });
+
+            // Rebuild rows
+            list.innerHTML = '';
+            selectedSeats.forEach((sNum, idx) => {
+                const saved = currentVals[sNum] || {};
+                const isLead = (idx === 0);
+                const defaultGender = saved.gender || (isLead ? (document.querySelector('[name="passenger_gender"]')?.value || 'male') : 'male');
+                
+                const row = document.createElement('div');
+                row.className = 'p-2 rounded-3 border bg-light';
+                row.setAttribute('data-seat-row', sNum);
+                row.innerHTML = `
+                    <div class="row g-2 align-items-center">
+                        <div class="col-md-2 d-flex align-items-center gap-1">
+                            <span class="badge bg-primary fs-6 px-2 py-1">#${sNum}</span>
+                            <span class="badge ${isLead ? 'bg-success' : 'bg-secondary'} extra-small">${isLead ? '{{ __("Lead") }}' : '#' + (idx + 1)}</span>
+                        </div>
+                        <div class="col-md-4">
+                            <input type="text" name="passengers[${sNum}][name]" class="form-control form-control-sm bg-white" 
+                                placeholder="${isLead ? '{{ __("Lead Passenger Name") }}' : '{{ __("Passenger Full Name") }}'}" 
+                                value="${saved.name || (isLead ? (document.querySelector('[name="passenger_name"]')?.value || '') : '')}">
+                        </div>
+                        <div class="col-md-3">
+                            <select name="passengers[${sNum}][gender]" class="form-select form-select-sm bg-white">
+                                <option value="male" ${defaultGender === 'male' ? 'selected' : ''}>{{ __('Male (ذكر)') }}</option>
+                                <option value="female" ${defaultGender === 'female' ? 'selected' : ''}>{{ __('Female (أنثى)') }}</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <input type="text" name="passengers[${sNum}][id_number]" class="form-control form-control-sm bg-white" 
+                                placeholder="{{ __('ID / Iqama / Passport #') }}" value="${saved.id_number || (isLead ? (document.querySelector('[name="passenger_id_number"]')?.value || '') : '')}">
+                        </div>
+                    </div>
+                `;
+                list.appendChild(row);
+            });
+        } else {
+            sec.style.display = 'none';
+            list.innerHTML = '';
+        }
     }
 
     function onPackageTypeChanged(pkgType) {
