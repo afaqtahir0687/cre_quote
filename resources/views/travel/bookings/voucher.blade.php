@@ -413,11 +413,11 @@
                                 <div class="agency-title">{{ $brandName }}</div>
                                 <div class="agency-meta">
                                     {{ tdb($companyAddress) }}@if($companyCity) - {{ tdb($companyCity) }}@endif
-                                    @if($companyPhone) &bull; {{ __('Tel') }}: {{ $companyPhone }}@endif
+                                    @if($companyPhone) &bull; {{ __('Tel') }}: <span dir="ltr">{{ $companyPhone }}</span>@endif
                                     @if($companyCr || $companyVat)
                                         <br>
-                                        @if($companyCr) <strong>{{ __('CR') }}:</strong> {{ $companyCr }} @endif
-                                        @if($companyVat) <strong>{{ __('VAT') }}:</strong> {{ $companyVat }} @endif
+                                        @if($companyCr) <strong>{{ __('CR') }}:</strong> <span dir="ltr">{{ $companyCr }}</span> @endif
+                                        @if($companyVat) <strong>{{ __('VAT') }}:</strong> <span dir="ltr">{{ $companyVat }}</span> @endif
                                     @endif
                                 </div>
                             </td>
@@ -431,11 +431,11 @@
                     <div style="font-size: 6.5pt; color: #64748b; margin-top: 1px;">
                         {{ __('Booking Reference / رقم الحجز') }}
                     </div>
-                    <div class="pnr-badge">
+                    <div class="pnr-badge" dir="ltr">
                         {{ $booking->booking_reference }}
                     </div>
                     <div style="font-size: 6.5pt; color: #64748b; margin-top: 2px;">
-                        {{ __('Date') }}: {{ $booking->created_at->format('d M Y, h:i A') }}
+                        {{ __('Date') }}: <span dir="ltr">{{ $booking->created_at->format('d M Y, h:i A') }}</span>
                     </div>
                 </td>
             </tr>
@@ -449,11 +449,11 @@
                     <div class="city-title">{{ $trip ? tdb($trip->departure_city) : __('Departure City') }}</div>
                     <div class="trip-meta" style="font-size: 6.5pt; white-space: nowrap;">
                         <strong>{{ __('Departure') }}:</strong>
-                        {{ $trip && $trip->departure_date ? $trip->departure_date->format('d M Y - h:i A') : __('Scheduled') }}
+                        <span dir="ltr">{{ $trip && $trip->departure_date ? $trip->departure_date->format('d M Y - h:i A') : __('Scheduled') }}</span>
                     </div>
                 </td>
                 <td style="width: 10%; text-align: center; vertical-align: middle;">
-                    <div style="font-size: 11pt; font-weight: bold; color: #008cc0;">&rarr;</div>
+                    <div style="font-size: 11pt; font-weight: bold; color: #008cc0;">{!! $isAr ? '&larr;' : '&rarr;' !!}</div>
                     <div style="font-size: 6.5pt; font-weight: bold; color: #0369a1; white-space: nowrap;">
                         {{ $trip ? $trip->duration_days : 10 }} {{ __('Days') }}
                     </div>
@@ -464,7 +464,7 @@
                     <div class="trip-meta" style="font-size: 6.5pt; white-space: nowrap;">
                         <strong>{{ __('Coach Fleet') }}:</strong>
                         {{ $trip ? tdb($trip->bus_name) : __('Luxury Coach') }}
-                        @if($trip && $trip->bus_number) ({{ $trip->bus_number }}) @endif
+                        @if($trip && $trip->bus_number) (<span dir="ltr">{{ $trip->bus_number }}</span>) @endif
                     </div>
                 </td>
             </tr>
@@ -477,16 +477,16 @@
                     <div class="field-lbl">{{ $seatsCount > 1 ? __('Lead Booker / المسافر الرئيسي') : __('Passenger Name / اسم الراكب') }}</div>
                     <div class="field-val" style="white-space: nowrap; font-size: 8pt;">{{ tdb($booking->passenger_name) }}</div>
                     <div style="font-size: 7pt; color: #64748b; white-space: nowrap;">
-                        {{ __('Phone') }}: {{ $booking->passenger_phone }} &bull; {{ ucfirst(__($booking->passenger_gender)) }}
+                        {{ __('Phone') }}: <span dir="ltr">{{ $booking->passenger_phone }}</span> &bull; {{ $booking->passenger_gender === 'female' ? __('Female') : __('Male') }}
                     </div>
                 </td>
                 <td style="width: 45%;">
                     <div class="field-lbl">{{ __('ID / Iqama / Passport') }}</div>
-                    <div class="field-val">{{ $booking->passenger_id_number ?: '—' }}</div>
+                    <div class="field-val" style="font-family: monospace; font-size: 8pt;">{{ $booking->passenger_id_number ?: '—' }}</div>
                     <div style="font-size: 7pt; color: #64748b;">
-                        {{ __('Trip Code') }}: {{ $trip ? $trip->trip_code : '—' }}
+                        {{ __('Trip Code') }}: <span dir="ltr">{{ $trip ? $trip->trip_code : '—' }}</span>
                         @if($seatsCount == 1)
-                            &bull; <strong style="color: #008cc0;">{{ __('Seat') }}: #{{ $booking->seat_number }}</strong>
+                            &bull; <strong style="color: #008cc0;">{{ __('Seat') }}: <span dir="ltr">#{{ $booking->seat_number }}</span></strong>
                         @endif
                     </div>
                 </td>
@@ -505,13 +505,13 @@
                                 @foreach($groupBookings as $gb)
                                     <tr>
                                         <td style="text-align: center; font-weight: bold; color: #008cc0; font-size: 6.8pt; padding: 1.5px 4px; border: 1px solid #e2e8f0;">
-                                            #{{ $gb->seat_number }}
+                                            <span dir="ltr">#{{ $gb->seat_number }}</span>
                                         </td>
                                         <td style="font-weight: bold; font-size: 6.8pt; padding: 1.5px 4px; border: 1px solid #e2e8f0; white-space: nowrap;">
                                             {{ tdb($gb->passenger_name) }}
                                         </td>
                                         <td style="text-align: center; font-size: 6.5pt; padding: 1.5px 4px; border: 1px solid #e2e8f0;">
-                                            {{ ucfirst(__($gb->passenger_gender)) }}
+                                            {{ $gb->passenger_gender === 'female' ? __('Female') : __('Male') }}
                                         </td>
                                         <td style="font-family: monospace; font-size: 6.5pt; text-align: {{ $isAr ? 'left' : 'right' }}; padding: 1.5px 4px; border: 1px solid #e2e8f0;">
                                             {{ $gb->passenger_id_number ?: '—' }}
@@ -540,7 +540,7 @@
                                     @endphp
                                     <tr>
                                         <td style="text-align: center; font-weight: bold; color: #008cc0; font-size: 6.5pt; padding: 1px 2px; border: 1px solid #e2e8f0;">
-                                            #{{ $p1->seat_number }}
+                                            <span dir="ltr">#{{ $p1->seat_number }}</span>
                                         </td>
                                         <td style="font-weight: bold; font-size: 6.2pt; padding: 1px 2px; border: 1px solid #e2e8f0; white-space: nowrap;">
                                             {{ tdb($p1->passenger_name) }}
@@ -550,7 +550,7 @@
                                         </td>
                                         @if($p2)
                                             <td style="text-align: center; font-weight: bold; color: #008cc0; font-size: 6.5pt; padding: 1px 2px; border: 1px solid #e2e8f0;">
-                                                #{{ $p2->seat_number }}
+                                                <span dir="ltr">#{{ $p2->seat_number }}</span>
                                             </td>
                                             <td style="font-weight: bold; font-size: 6.2pt; padding: 1px 2px; border: 1px solid #e2e8f0; white-space: nowrap;">
                                                 {{ tdb($p2->passenger_name) }}
@@ -574,7 +574,7 @@
                     @if($booking->package_type === 'with_hotel')
                         <strong style="color: #065f46;">{{ __('With Hotel Included') }}</strong>
                         &bull; {{ $booking->hotel_name ? tdb($booking->hotel_name) : ($trip->hotel_name ? tdb($trip->hotel_name) : __('Hotel Accommodation')) }}
-                        ({{ ucfirst(str_replace('_', ' ', $booking->room_type ?: 'quad_sharing')) }})
+                        ({{ __($booking->room_type ?: 'quad_sharing') }})
                         @if($booking->nights_count) - {{ $booking->nights_count }} {{ __('Nights') }} @endif
                     @else
                         <strong style="color: #1e40af;">{{ __('Seat Only (Transportation Only)') }}</strong>
@@ -595,34 +595,34 @@
             <tbody>
                 <tr>
                     <td>
-                        {{ __('Bus Seat Ticket Fare') }} ({{ $seatNumbersText }} - {{ $seatsCount }} {{ __('Seat(s)') }})
+                        {{ __('Bus Seat Ticket Fare') }} (<span dir="ltr">{{ $seatNumbersText }}</span> - {{ $seatsCount }} {{ $seatsCount > 1 ? __('Seat(s)') : __('Seat') }})
                     </td>
                     <td style="text-align: center; font-size: 7.5pt; color: #0284c7;">
                         {{ __('Confirmed') }}
                     </td>
                     <td style="text-align: {{ $isAr ? 'left' : 'right' }}; font-weight: bold;">
-                        {{ format_currency($totalTravelFare) }}
+                        <span dir="ltr">{{ format_currency($totalTravelFare) }}</span>
                     </td>
                 </tr>
                 @if($totalHotelExpense > 0)
                     <tr>
                         <td>{{ __('Hotel Accommodation Expense') }}</td>
                         <td style="text-align: center; font-size: 7.5pt; color: #059669;">{{ __('Reserved') }}</td>
-                        <td style="text-align: {{ $isAr ? 'left' : 'right' }}; font-weight: bold;">{{ format_currency($totalHotelExpense) }}</td>
+                        <td style="text-align: {{ $isAr ? 'left' : 'right' }}; font-weight: bold;"><span dir="ltr">{{ format_currency($totalHotelExpense) }}</span></td>
                     </tr>
                 @endif
                 @if($totalExtraCharges > 0)
                     <tr>
                         <td>{{ __('Extra Charges & Service Fees') }}</td>
                         <td style="text-align: center;">—</td>
-                        <td style="text-align: {{ $isAr ? 'left' : 'right' }};">+ {{ format_currency($totalExtraCharges) }}</td>
+                        <td style="text-align: {{ $isAr ? 'left' : 'right' }};">+ <span dir="ltr">{{ format_currency($totalExtraCharges) }}</span></td>
                     </tr>
                 @endif
                 @if($totalDiscount > 0)
                     <tr>
                         <td style="color: #b91c1c;">{{ __('Promotional Discount') }}</td>
                         <td style="text-align: center;">—</td>
-                        <td style="text-align: {{ $isAr ? 'left' : 'right' }}; color: #b91c1c;">- {{ format_currency($totalDiscount) }}</td>
+                        <td style="text-align: {{ $isAr ? 'left' : 'right' }}; color: #b91c1c;">- <span dir="ltr">{{ format_currency($totalDiscount) }}</span></td>
                     </tr>
                 @endif
                 <tr class="fare-total-row">
@@ -637,16 +637,16 @@
                         @endif
                     </td>
                     <td style="text-align: {{ $isAr ? 'left' : 'right' }}; color: #008cc0;">
-                        {{ format_currency($totalVoucherAmount) }}
+                        <span dir="ltr">{{ format_currency($totalVoucherAmount) }}</span>
                     </td>
                 </tr>
                 <tr>
                     <td style="color: #16a34a;">
-                        {{ __('Amount Paid / المبلغ المدفوع') }} ({{ ucfirst(str_replace('_', ' ', $booking->payment_method)) }})
+                        {{ __('Amount Paid / المبلغ المدفوع') }} ({{ __($booking->payment_method ?: 'cash') }})
                     </td>
                     <td></td>
                     <td style="text-align: {{ $isAr ? 'left' : 'right' }}; color: #16a34a; font-weight: bold;">
-                        {{ format_currency($totalPaidAmount) }}
+                        <span dir="ltr">{{ format_currency($totalPaidAmount) }}</span>
                     </td>
                 </tr>
                 @if($totalBalanceDue > 0)
@@ -656,7 +656,7 @@
                         </td>
                         <td style="text-align: center; color: #dc2626; font-size: 7.5pt;">{{ __('Collect') }}</td>
                         <td style="text-align: {{ $isAr ? 'left' : 'right' }}; color: #dc2626;">
-                            {{ format_currency($totalBalanceDue) }}
+                            <span dir="ltr">{{ format_currency($totalBalanceDue) }}</span>
                         </td>
                     </tr>
                 @endif
@@ -687,7 +687,7 @@
                             @if($seatsCount <= 3)
                                 <div style="font-size: 5.8pt; color: #334155; margin-bottom: 1px;">
                                     @foreach($groupBookings as $gb)
-                                        <span style="white-space: nowrap; margin-right: 3px;">#{{ $gb->seat_number }}: {{ tdb($gb->passenger_name) }}</span>
+                                        <span style="white-space: nowrap; margin-{{ $isAr ? 'left' : 'right' }}: 4px;"><span dir="ltr">#{{ $gb->seat_number }}</span>: {{ tdb($gb->passenger_name) }}</span>
                                     @endforeach
                                 </div>
                             @else
@@ -698,17 +698,17 @@
                         @else
                             <div style="font-size: 6.5pt; white-space: nowrap;"><strong>{{ __('Passenger') }}:</strong> {{ tdb($booking->passenger_name) }}</div>
                         @endif
-                        <div style="font-size: 6.5pt; white-space: nowrap;"><strong>{{ __('Phone') }}:</strong> {{ $booking->passenger_phone }}</div>
-                        <div style="font-size: 6.5pt; white-space: nowrap;"><strong>{{ __('Route') }}:</strong> {{ $trip ? tdb($trip->departure_city) : '' }} &rarr; {{ $trip ? tdb($trip->destination_city) : '' }}</div>
+                        <div style="font-size: 6.5pt; white-space: nowrap;"><strong>{{ __('Phone') }}:</strong> <span dir="ltr">{{ $booking->passenger_phone }}</span></div>
+                        <div style="font-size: 6.5pt; white-space: nowrap;"><strong>{{ __('Route') }}:</strong> {{ $trip ? tdb($trip->departure_city) : '' }} {!! $isAr ? '&larr;' : '&rarr;' !!} {{ $trip ? tdb($trip->destination_city) : '' }}</div>
                     </td>
                     <td style="width: 28%; text-align: center;">
                         <div style="font-size: 6pt; color: #64748b; text-transform: uppercase;">{{ __('Allocated Seat(s)') }}</div>
-                        <div class="stub-seat-box">
+                        <div class="stub-seat-box" dir="ltr">
                             {{ $seatNumbersText }}
                         </div>
                         <div style="font-size: 6.5pt; margin-top: 2px;">
                             @if($totalBalanceDue > 0)
-                                <strong style="color: #dc3545;">{{ __('DUE') }}: {{ format_currency($totalBalanceDue) }}</strong>
+                                <strong style="color: #dc3545;">{{ __('DUE') }}: <span dir="ltr">{{ format_currency($totalBalanceDue) }}</span></strong>
                             @else
                                 <strong style="color: #16a34a;">{{ __('FARE PAID') }}</strong>
                             @endif
@@ -725,14 +725,14 @@
 
             <!-- Booking Reference Centered - NO BARCODE LINES -->
             <div style="text-align: center; margin-top: 3px;">
-                <div style="font-size: 7pt; font-family: monospace; font-weight: bold; color: #475569; letter-spacing: 1px;">
+                <div style="font-size: 7pt; font-family: monospace; font-weight: bold; color: #475569; letter-spacing: 1px;" dir="ltr">
                     {{ $booking->booking_reference }}
                 </div>
             </div>
         </div>
 
-        <div class="footer-note">
-            {{ __('Thank you for traveling with us. Verified Official Travel Voucher.') }} &bull; {{ now()->format('d M Y, h:i A') }}
+        <div class="footer-note" dir="{{ $dir }}">
+            {{ __('Thank you for traveling with us. Verified Official Travel Voucher.') }} &bull; <span dir="ltr">{{ now()->format('d M Y, h:i A') }}</span>
         </div>
     </div>
 
