@@ -1,7 +1,7 @@
 @extends('website.layouts.app')
 
-@section('title', ($page->meta_title ?: $page->title) . ' - ' . ($settings['site_name'] ?? 'CreLogics ERP'))
-@section('meta_description', $page->meta_description ?: ($page->subtitle ?: Str::limit(strip_tags($page->content), 160)))
+@section('title', __($page->meta_title ?: $page->title) . ' - ' . ($settings['site_name'] ?? 'CreLogics ERP'))
+@section('meta_description', __($page->meta_description ?: ($page->subtitle ?: Str::limit(strip_tags($page->content), 160))))
 
 @push('styles')
 <style>
@@ -302,7 +302,17 @@
             <div class="col-lg-8">
                 <article class="cms-main-card">
                     <div class="cms-article-body">
-                        {!! $page->content !!}
+                        @php
+                            $isAr = app()->getLocale() === 'ar';
+                            $arSlugUnderscore = str_replace('-', '_', $page->slug);
+                        @endphp
+                        @if($isAr && view()->exists("website.pages.ar.{$arSlugUnderscore}"))
+                            @include("website.pages.ar.{$arSlugUnderscore}")
+                        @elseif($isAr && view()->exists("website.pages.ar.{$page->slug}"))
+                            @include("website.pages.ar.{$page->slug}")
+                        @else
+                            {!! $page->content !!}
+                        @endif
                     </div>
 
                     {{-- Code-driven rich components for About Us --}}
@@ -384,9 +394,9 @@
                                 {{ __('CreLogics maintains active technology engineering and customer success operations across Pakistan and the United States, providing around-the-clock implementation support, training, and custom workflow consultations.') }}
                             </p>
                             <div class="d-flex flex-wrap gap-4 text-white small">
-                                <div><i class="fas fa-map-marker-alt text-warning me-2"></i><strong>Lahore, Pakistan:</strong> Airline Housing Society</div>
-                                <div><i class="fas fa-map-marker-alt text-warning me-2"></i><strong>Montana, USA:</strong> Kalispell, MT 59901</div>
-                                <div><i class="fas fa-envelope text-info me-2"></i><strong>Email:</strong> info@crelogics.com</div>
+                                <div><i class="fas fa-map-marker-alt text-warning me-2"></i><strong>{{ __('Lahore, Pakistan:') }}</strong> {{ __('Airline Housing Society') }}</div>
+                                <div><i class="fas fa-map-marker-alt text-warning me-2"></i><strong>{{ __('Montana, USA:') }}</strong> {{ __('KALISPELL, MT 59901 USA.') }}</div>
+                                <div><i class="fas fa-envelope text-info me-2"></i><strong>{{ __('Email:') }}</strong> info@crelogics.com</div>
                             </div>
                         </div>
                     @endif
@@ -529,7 +539,7 @@
                             <span class="badge bg-success-subtle text-success fw-bold" style="font-size: 0.7rem;">{{ __('PAKISTAN') }}</span>
                             <span class="text-muted small">+92 3451438102</span>
                         </div>
-                        <div class="small text-muted">First Floor, Bldg 184-Commercial, Airline Housing, Lahore</div>
+                        <div class="small text-muted">{{ __('First Floor, Building No. 184-Commercial,') }} {{ __('Airline Housing Society, Lahore, Pakistan') }}</div>
                     </div>
 
                     <!-- USA Contact -->
@@ -538,7 +548,7 @@
                             <span class="badge bg-primary-subtle text-primary fw-bold" style="font-size: 0.7rem;">{{ __('USA') }}</span>
                             <span class="text-muted small">+14062251210</span>
                         </div>
-                        <div class="small text-muted">KALISPELL, MT 59901 USA</div>
+                        <div class="small text-muted">{{ __('KALISPELL, MT 59901 USA.') }}</div>
                     </div>
 
                     <div class="d-grid gap-2">

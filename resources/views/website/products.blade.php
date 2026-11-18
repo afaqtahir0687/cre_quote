@@ -110,16 +110,16 @@
                                 @endif
                             </div>
 
-                            <h5 class="fw-bold text-dark mt-2 mb-2 fs-6" style="line-height: 1.35;">{{ $product->name }}</h5>
+                            <h5 class="fw-bold text-dark mt-2 mb-2 fs-6" style="line-height: 1.35;">{{ __($product->name) }}</h5>
                             <p class="text-muted small mb-3 flex-grow-1" style="font-size: 0.84rem; line-height: 1.5;">
-                                {{ Str::limit($product->description, 75) ?: __('Industrial grade certified material engineered for architectural and commercial signage.') }}
+                                {{ Str::limit(__($product->description), 75) ?: __('Industrial grade certified material engineered for architectural and commercial signage.') }}
                             </p>
 
                             <div class="mt-auto pt-3 border-top d-flex justify-content-between align-items-center">
                                 <div>
                                     <span class="text-muted extra-small d-block" style="font-size: 0.72rem;">{{ __('Rate / Unit:') }}</span>
                                     <strong class="text-primary fs-5">{{ format_currency($product->sale_price ?: $product->price) }}</strong>
-                                    <span class="text-muted extra-small" style="font-size: 0.75rem;">/ {{ $product->unit->name ?? 'pc' }}</span>
+                                    <span class="text-muted extra-small" style="font-size: 0.75rem;">/ {{ __($product->unit->name ?? 'pc') }}</span>
                                 </div>
                                 <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $settings['whatsapp_number'] ?? '996598500143') }}?text={{ urlencode('Hello, I would like to order / inquire about: ' . $product->name . ' (SKU: ' . $product->sku . ')') }}" 
                                    target="_blank" 
