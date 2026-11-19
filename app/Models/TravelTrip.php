@@ -26,6 +26,7 @@ class TravelTrip extends Model
         'price_without_hotel',
         'price_with_hotel',
         'hotel_name',
+        'hotel_address',
         'hotel_rating',
         'status',
         'notes',

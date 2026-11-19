@@ -118,6 +118,12 @@
                             <option value="Economy" {{ old('hotel_rating', $trip->hotel_rating) === 'Economy' ? 'selected' : '' }}>Economy Standard</option>
                         </select>
                     </div>
+
+                    <div class="col-12">
+                        <label class="form-label fw-bold text-dark">{{ __('Hotel Address / Location') }}</label>
+                        <input type="text" name="hotel_address" class="form-control @error('hotel_address') is-invalid @enderror" placeholder="{{ __('e.g. Ibrahim Al Khalil Road, Makkah / Near Haram') }}" value="{{ old('hotel_address', $trip->hotel_address) }}">
+                        @error('hotel_address') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                    </div>
                 </div>
             </x-card>
         </div>

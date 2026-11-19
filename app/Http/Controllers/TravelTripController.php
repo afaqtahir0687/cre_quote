@@ -84,6 +84,7 @@ class TravelTripController extends Controller
             'price_without_hotel' => 'required|numeric|min:0',
             'price_with_hotel' => 'required|numeric|min:0',
             'hotel_name' => 'nullable|string|max:255',
+            'hotel_address' => 'nullable|string|max:255',
             'hotel_rating' => 'nullable|string|max:50',
             'status' => 'required|in:upcoming,ongoing,completed,cancelled',
             'description' => 'nullable|string',
@@ -144,6 +145,7 @@ class TravelTripController extends Controller
             'price_without_hotel' => 'required|numeric|min:0',
             'price_with_hotel' => 'required|numeric|min:0',
             'hotel_name' => 'nullable|string|max:255',
+            'hotel_address' => 'nullable|string|max:255',
             'hotel_rating' => 'nullable|string|max:50',
             'status' => 'required|in:upcoming,ongoing,completed,cancelled',
             'description' => 'nullable|string',
@@ -207,6 +209,8 @@ class TravelTripController extends Controller
             'available_count' => $totalSeats - count($bookings),
             'price_without_hotel' => (float)$trip->price_without_hotel,
             'price_with_hotel' => (float)$trip->price_with_hotel,
+            'hotel_name' => $trip->hotel_name,
+            'hotel_address' => $trip->hotel_address,
             'seats' => $seats,
         ]);
     }

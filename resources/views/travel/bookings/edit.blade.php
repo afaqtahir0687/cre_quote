@@ -98,6 +98,15 @@
                         </select>
                         @error('payment_method') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold text-dark"><i class="fas fa-user-tag text-primary me-1"></i> {{ __('Salesman / Agent / البائع أو مسؤول الحجز') }}</label>
+                        <input type="text" name="salesman_name" class="form-control" value="{{ old('salesman_name', $booking->effective_salesman) }}">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold text-dark"><i class="fas fa-phone-alt text-primary me-1"></i> {{ __('Salesman Phone / هاتف البائع') }}</label>
+                        <input type="text" name="salesman_phone" class="form-control" placeholder="{{ __('e.g. +966 50 123 4567') }}" value="{{ old('salesman_phone', $booking->effective_salesman_phone) }}">
+                    </div>
                 </div>
             </x-card>
 
@@ -140,6 +149,11 @@
                     <div class="col-md-3" id="nightsCountGroup">
                         <label class="form-label fw-bold text-dark">{{ __('Hotel Nights') }}</label>
                         <input type="number" name="nights_count" class="form-control" min="1" max="90" value="{{ old('nights_count', $booking->nights_count ?: ($booking->trip?->duration_days ?: 10)) }}">
+                    </div>
+
+                    <div class="col-12" id="hotelAddressGroup">
+                        <label class="form-label fw-bold text-dark"><i class="fas fa-map-marker-alt text-danger me-1"></i> {{ __('Hotel Address / Location in Makkah / Madinah') }}</label>
+                        <input type="text" name="hotel_address" class="form-control" placeholder="{{ __('e.g. Ibrahim Al Khalil Road, Makkah / Near Haram') }}" value="{{ old('hotel_address', $booking->hotel_address ?: $booking->trip?->hotel_address) }}">
                     </div>
 
                     <div class="col-12">

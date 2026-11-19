@@ -19,9 +19,12 @@ class TravelBooking extends Model
         'passenger_phone',
         'passenger_id_number',
         'passenger_gender',
+        'salesman_name',
+        'salesman_phone',
         'seat_number',
         'package_type',
         'hotel_name',
+        'hotel_address',
         'room_type',
         'nights_count',
         'travel_fare',
@@ -120,6 +123,53 @@ class TravelBooking extends Model
     {
         $count = self::where('shop_id', $shopId)->count() + 1;
         return 'BK-' . date('Ym') . '-' . str_pad($count, 4, '0', STR_PAD_LEFT);
+    }
+
+    /**
+     * Effective Salesman name.
+     */
+    public function getEffectiveSalesmanAttribute(): string
+    {
+        if (!empty($this->salesman_name)) {
+            return $this->salesman_name;
+        }
+        if ($this->creator && !empty($this->creator->name)) {
+            return $this->creator->name;
+        }
+        return 'Umrah Agent';
+    }
+
+    /**
+     * Effective Salesman Phone.
+     */
+    public function getEffectiveSalesmanPhoneAttribute(): ?string
+    {
+        if (!empty($this->salesman_phone)) {
+            return $this->salesman_phone;
+        }
+        if ($this->creator && !empty($this->creator->employee?->phone)) {
+            return $this->creator->employee->phone;
+        }
+        if ($this->creator && !empty($this->creator->phone)) {
+            return $this->creator->phone;
+        }
+        return $this->shop?->phone;
+    }
+
+    /**
+     * Effective Hotel Name.
+     */
+    public function getEffectiveHotelNameAttribute(): ?string
+    {
+        return $this->hotel_name ?: $this->trip?->hotel_name;
+    }
+
+    /**
+     * Effective Hotel Address.
+     */
+    public function getEffectiveHotelAddressAttribute(): ?string
+    {
+        return $this->hotel_address ?: $this->trip?->hotel_address;
     }
 
     /**

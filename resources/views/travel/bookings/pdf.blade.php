@@ -424,16 +424,42 @@
             </tr>
         @endif
         <tr>
-            <td colspan="2" style="background-color: #ffffff; padding: 3px 6px;">
-                <span class="field-lbl">{{ __('Package / نوع الباقة') }}:</span>
-                @if($booking->package_type === 'with_hotel')
-                    <strong style="color: #065f46;">{{ __('With Hotel Included') }}</strong>
-                    &bull; {{ $booking->hotel_name ? tdb($booking->hotel_name) : ($trip->hotel_name ? tdb($trip->hotel_name) : __('Hotel Accommodation')) }}
-                    ({{ __($booking->room_type ?: 'quad_sharing') }})
-                    @if($booking->nights_count) - {{ $booking->nights_count }} {{ __('Nights') }} @endif
-                @else
-                    <strong style="color: #1e40af;">{{ __('Seat Only (Transportation Only)') }}</strong>
-                @endif
+            <td colspan="2" style="background-color: #f8fafc; padding: 3px 6px; border-top: 1px solid #bae6fd;">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <tr>
+                        <td style="width: 65%; vertical-align: top; padding: 0;">
+                            <span class="field-lbl" style="font-size: 6pt; color: #0369a1; text-transform: uppercase;">{{ __('Package & Accommodation / الفندق والإقامة') }}:</span>
+                            @if($booking->package_type === 'with_hotel')
+                                <div style="font-size: 7.5pt; font-weight: bold; color: #065f46; margin-top: 1px;">
+                                    <strong>{{ __('Hotel / الفندق') }}:</strong> {{ tdb($booking->effective_hotel_name ?: __('Hotel Accommodation')) }}
+                                    <span style="font-weight: normal; font-size: 6.8pt; color: #334155;">({{ __($booking->room_type ?: 'quad_sharing') }})</span>
+                                    @if($booking->nights_count) - {{ $booking->nights_count }} {{ __('Nights') }} @endif
+                                </div>
+                                @if($booking->effective_hotel_address)
+                                    <div style="font-size: 6.5pt; color: #475569; margin-top: 1px;">
+                                        <strong>{{ __('Hotel Address / عنوان الفندق') }}:</strong>
+                                        {{ tdb($booking->effective_hotel_address) }}
+                                    </div>
+                                @endif
+                            @else
+                                <div style="font-size: 7.5pt; font-weight: bold; color: #1e40af; margin-top: 1px;">
+                                    {{ __('Seat Only (Transportation Only / مقعد فقط بدون فندق)') }}
+                                </div>
+                            @endif
+                        </td>
+                        <td style="width: 35%; text-align: {{ $isAr ? 'left' : 'right' }}; vertical-align: top; padding: 0;">
+                            <div style="font-size: 6pt; color: #64748b; text-transform: uppercase;">{{ __('Agent / مسؤول الحجز') }}:</div>
+                            <div style="font-size: 7.5pt; font-weight: bold; color: #0f172a; margin-top: 1px;">
+                                {{ tdb($booking->effective_salesman) }}
+                            </div>
+                            @if($booking->effective_salesman_phone)
+                                <div style="font-size: 6.8pt; color: #0284c7; margin-top: 1px;">
+                                    <span dir="ltr">{{ $booking->effective_salesman_phone }}</span>
+                                </div>
+                            @endif
+                        </td>
+                    </tr>
+                </table>
             </td>
         </tr>
     </table>
@@ -442,9 +468,15 @@
     <table class="fare-table">
         <thead>
             <tr>
-                <th style="text-align: {{ $isAr ? 'right' : 'left' }};">{{ __('Description / البيان') }}</th>
-                <th style="width: 100px; text-align: center;">{{ __('Status / الحالة') }}</th>
-                <th style="width: 120px; text-align: {{ $isAr ? 'left' : 'right' }};">{{ __('Amount / المبلغ') }} (SAR)</th>
+                <th style="font-size: 6.5pt; text-align: {{ $isAr ? 'right' : 'left' }};">
+    {{ __('Description / البيان') }}
+</th>
+<th style="width: 100px; font-size: 6.5pt; text-align: center;">
+    {{ __('Status / الحالة') }}
+</th>
+<th style="width: 120px; font-size: 6.5pt; text-align: {{ $isAr ? 'left' : 'right' }};">
+    {{ __('Amount / المبلغ') }} (SAR)
+</th>
             </tr>
         </thead>
         <tbody>
@@ -555,7 +587,20 @@
                     @endif
                     <div style="font-size: 6.5pt; white-space: nowrap;"><strong>{{ __('Phone') }}:</strong> <span dir="ltr">{{ $booking->passenger_phone }}</span></div>
                     <div style="font-size: 6.5pt; white-space: nowrap;"><strong>{{ __('Route') }}:</strong> {{ $trip ? tdb($trip->departure_city) : '' }} {!! $isAr ? '&larr;' : '&rarr;' !!} {{ $trip ? tdb($trip->destination_city) : '' }}</div>
-                </td>
+<div style="font-size: 6.2pt; color: #475569; white-space: nowrap;">
+    <strong>{{ __('Agent') }}:</strong>
+    {{ tdb($booking->effective_salesman) }}
+    @if($booking->effective_salesman_phone)
+        (<span dir="ltr">{{ $booking->effective_salesman_phone }}</span>)
+    @endif
+</div>
+
+@if($booking->package_type === 'with_hotel' && $booking->effective_hotel_name)
+    <div style="font-size: 6.2pt; color: #475569; white-space: nowrap;">
+        <strong>{{ __('Hotel') }}:</strong>
+        {{ tdb($booking->effective_hotel_name) }}
+    </div>
+@endif                </td>
                 <td style="width: 28%; text-align: center;">
                     <div style="font-size: 6pt; color: #64748b; text-transform: uppercase;">{{ __('Allocated Seat(s)') }}</div>
                     <div class="stub-seat-box" dir="ltr">

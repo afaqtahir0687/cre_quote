@@ -36,6 +36,7 @@
                                     data-fare-no-hotel="{{ $t->price_without_hotel }}"
                                     data-fare-with-hotel="{{ $t->price_with_hotel }}"
                                     data-hotel="{{ $t->hotel_name }}"
+                                    data-hotel-address="{{ $t->hotel_address }}"
                                     data-duration="{{ $t->duration_days }}"
                                     {{ $selectedTrip && $selectedTrip->id == $t->id ? 'selected' : '' }}>
                                 {{ $t->trip_code }} — {{ tdb($t->title) }} ({{ $t->availableSeatsCount() }} {{ __('Seats Free') }})
@@ -205,6 +206,11 @@
                             <label class="form-label fw-bold text-dark small">{{ __('Hotel Nights') }}</label>
                             <input type="number" name="nights_count" id="nightsCountInput" class="form-control" min="1" max="90" placeholder="10" value="{{ old('nights_count', $selectedTrip?->duration_days ?: 10) }}">
                         </div>
+
+                        <div class="col-12">
+                            <label class="form-label fw-bold text-dark small"><i class="fas fa-map-marker-alt text-danger me-1"></i> {{ __('Hotel Address / Location in Makkah / Madinah') }}</label>
+                            <input type="text" name="hotel_address" id="hotelAddressInput" class="form-control" placeholder="{{ __('e.g. Ibrahim Al Khalil Road, Makkah / Near Clock Tower') }}" value="{{ old('hotel_address', $selectedTrip?->hotel_address) }}">
+                        </div>
                     </div>
                 </div>
             </x-card>
@@ -302,6 +308,17 @@
                     </div>
                 @endif
 
+                <div class="row g-2 mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold text-dark small"><i class="fas fa-user-tag text-primary me-1"></i> {{ __('Salesman / Agent / البائع أو مسؤول الحجز') }}</label>
+                        <input type="text" name="salesman_name" class="form-control" placeholder="{{ __('e.g. Salesman Name') }}" value="{{ old('salesman_name', auth()->user()?->name) }}">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold text-dark small"><i class="fas fa-phone-alt text-primary me-1"></i> {{ __('Salesman Phone / هاتف البائع') }}</label>
+                        <input type="text" name="salesman_phone" class="form-control" placeholder="{{ __('e.g. +966 50 123 4567') }}" value="{{ old('salesman_phone', auth()->user()?->employee?->phone ?: (auth()->user()?->phone ?: '')) }}">
+                    </div>
+                </div>
+
                 <div class="mb-3">
                     <label class="form-label fw-bold text-dark small">{{ __('Special Requests / Notes') }}</label>
                     <textarea name="notes" rows="2" class="form-control" placeholder="{{ __('e.g. Needs front seat, travelling with family, wheelchair request...') }}">{{ old('notes') }}</textarea>
@@ -386,6 +403,15 @@
                 // Update default fares
                 const pkgType = document.querySelector('input[name="package_type"]:checked')?.value || 'with_hotel';
                 updateFaresFromTrip(data, pkgType);
+
+                if (data.hotel_name) {
+                    const hNameInput = document.getElementById('hotelNameInput');
+                    if (hNameInput) hNameInput.value = data.hotel_name;
+                }
+                if (data.hotel_address) {
+                    const hAddrInput = document.getElementById('hotelAddressInput');
+                    if (hAddrInput) hAddrInput.value = data.hotel_address;
+                }
             })
             .catch(err => console.error('Error loading seats:', err));
     }

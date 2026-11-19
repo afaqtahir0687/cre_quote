@@ -128,8 +128,11 @@ class TravelBookingController extends Controller
             'passenger_phone' => 'required|string|max:50',
             'passenger_id_number' => 'nullable|string|max:50',
             'passenger_gender' => 'required|in:male,female',
+            'salesman_name' => 'nullable|string|max:100',
+            'salesman_phone' => 'nullable|string|max:50',
             'package_type' => 'required|in:with_hotel,without_hotel',
             'hotel_name' => 'nullable|string|max:255',
+            'hotel_address' => 'nullable|string|max:255',
             'room_type' => 'nullable|string|max:50',
             'nights_count' => 'nullable|integer|min:1',
             'travel_fare' => 'required|numeric|min:0',
@@ -326,9 +329,12 @@ class TravelBookingController extends Controller
                     'passenger_phone' => $validated['passenger_phone'],
                     'passenger_id_number' => $pIdNum,
                     'passenger_gender' => $pGender,
+                    'salesman_name' => $validated['salesman_name'] ?? (auth()->user()?->name ?: null),
+                    'salesman_phone' => $validated['salesman_phone'] ?? (auth()->user()?->employee?->phone ?: (auth()->user()?->phone ?: null)),
                     'seat_number' => $sNum,
                     'package_type' => $validated['package_type'],
                     'hotel_name' => $validated['package_type'] === 'with_hotel' ? (($validated['hotel_name'] ?? null) ?: $trip->hotel_name) : null,
+                    'hotel_address' => $validated['package_type'] === 'with_hotel' ? (($validated['hotel_address'] ?? null) ?: $trip->hotel_address) : null,
                     'room_type' => $validated['package_type'] === 'with_hotel' ? (($validated['room_type'] ?? null) ?: 'quad_sharing') : null,
                     'nights_count' => $validated['package_type'] === 'with_hotel' ? (($validated['nights_count'] ?? null) ?: $trip->duration_days) : null,
                     'travel_fare' => $sFare,
@@ -467,8 +473,11 @@ class TravelBookingController extends Controller
             'passenger_phone' => 'required|string|max:50',
             'passenger_id_number' => 'nullable|string|max:50',
             'passenger_gender' => 'required|in:male,female',
+            'salesman_name' => 'nullable|string|max:100',
+            'salesman_phone' => 'nullable|string|max:50',
             'package_type' => 'required|in:with_hotel,without_hotel',
             'hotel_name' => 'nullable|string|max:255',
+            'hotel_address' => 'nullable|string|max:255',
             'room_type' => 'nullable|string|max:50',
             'nights_count' => 'nullable|integer|min:1',
             'travel_fare' => 'required|numeric|min:0',
@@ -527,9 +536,11 @@ class TravelBookingController extends Controller
 
         if ($validated['package_type'] === 'with_hotel') {
             $validated['nights_count'] = $validated['nights_count'] ?? $booking->nights_count ?? $booking->trip?->duration_days;
+            $validated['hotel_address'] = $validated['hotel_address'] ?? $booking->hotel_address ?? $booking->trip?->hotel_address;
         } else {
             $validated['nights_count'] = null;
             $validated['hotel_name'] = null;
+            $validated['hotel_address'] = null;
             $validated['room_type'] = null;
         }
 

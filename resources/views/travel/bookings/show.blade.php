@@ -100,7 +100,7 @@
                     </div>
                 </div>
 
-                <div class="col-md-12">
+                <div class="col-md-6">
                     <div class="p-2 px-3 bg-light rounded-3 border d-flex justify-content-between align-items-center">
                         <div class="d-flex align-items-center gap-2">
                             <i class="fas fa-store text-primary fs-5"></i>
@@ -109,7 +109,23 @@
                                 <strong class="text-dark small">{{ $booking->shop?->name ?? __('Main Office') }}</strong>
                             </div>
                         </div>
-                        <span class="badge bg-primary text-white extra-small">{{ __('Branch Ledger Account') }}</span>
+                        <span class="badge bg-primary text-white extra-small">{{ __('Branch') }}</span>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="p-2 px-3 bg-light rounded-3 border d-flex justify-content-between align-items-center">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="fas fa-user-tag text-primary fs-5"></i>
+                            <div>
+                                <span class="text-muted extra-small d-block text-uppercase fw-bold">{{ __('Booking Agent / Salesman') }}</span>
+                                <strong class="text-dark small">{{ tdb($booking->effective_salesman) }}</strong>
+                                @if($booking->effective_salesman_phone)
+                                    <div class="text-muted extra-small mt-1"><i class="fas fa-phone-alt me-1 text-primary"></i><span dir="ltr">{{ $booking->effective_salesman_phone }}</span></div>
+                                @endif
+                            </div>
+                        </div>
+                        <span class="badge bg-primary text-white extra-small">{{ __('Staff') }}</span>
                     </div>
                 </div>
             </div>
@@ -225,7 +241,7 @@
                 <div class="row g-3">
                     <div class="col-md-5">
                         <label class="form-label text-muted extra-small uppercase fw-bold mb-1">{{ __('Hotel Name') }}</label>
-                        <div class="fw-bold text-dark fs-6">{{ $booking->hotel_name ?: ($booking->trip->hotel_name ?? __('Designated Hotel')) }}</div>
+                        <div class="fw-bold text-dark fs-6">{{ tdb($booking->effective_hotel_name ?: __('Designated Hotel')) }}</div>
                     </div>
                     <div class="col-md-4">
                         <label class="form-label text-muted extra-small uppercase fw-bold mb-1">{{ __('Room Sharing Category') }}</label>
@@ -239,6 +255,12 @@
                         <label class="form-label text-muted extra-small uppercase fw-bold mb-1">{{ __('Stay Duration') }}</label>
                         <div class="fw-bold text-dark fs-6">{{ $booking->nights_count ?: ($booking->trip?->duration_days ?: 10) }} {{ __('Nights') }}</div>
                     </div>
+                    @if($booking->effective_hotel_address)
+                        <div class="col-12 mt-2">
+                            <label class="form-label text-muted extra-small uppercase fw-bold mb-1"><i class="fas fa-map-marker-alt text-danger me-1"></i> {{ __('Hotel Address / Location') }}</label>
+                            <div class="p-2 rounded bg-light border text-dark small">{{ tdb($booking->effective_hotel_address) }}</div>
+                        </div>
+                    @endif
                 </div>
             @endif
 
