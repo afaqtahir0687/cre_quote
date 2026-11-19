@@ -13,28 +13,51 @@ use Illuminate\Support\Str;
 class BranchController extends Controller
 {
     /**
+     * Resolve the active shop model safely for both Admin and Super Admin.
+     */
+    protected function resolveShop($user): ?Shop
+    {
+        // 1. Session active shop (if selected via switcher)
+        $sessionShop = current_shop();
+        if ($sessionShop) {
+            return $sessionShop;
+        }
+
+        // 2. User's explicitly assigned shop
+        if ($user->shop) {
+            return $user->shop;
+        }
+
+        // 3. Fallback: First available shop on platform
+        return Shop::first();
+    }
+
+    /**
      * Display all branches for this Business Account.
      */
     public function index()
     {
         $user = auth()->user();
-        $shop = $user->shop;
+        $shop = $this->resolveShop($user);
 
         if (!$shop) {
-            abort(403, 'No shop assigned.');
+            if ($user->isSuperAdmin()) {
+                return redirect()->route('super_admin.shops.create')->with('info', __('Please create your first shop.'));
+            }
+            abort(403, __('No shop assigned.'));
         }
 
         // Get the main / parent shop
         $mainShop = ($shop->parent_shop_id && $shop->parentShop) ? $shop->parentShop : $shop;
 
-        // Check if on Business plan
-        $isBusiness = $mainShop->isBusinessAccount();
+        // Check if on Business plan (Super Admin always has business permissions)
+        $isBusiness = $user->isSuperAdmin() || $mainShop->isBusinessAccount();
         $package = $mainShop->package;
 
         $branches = $mainShop->branches()->with(['setting', 'admins', 'departments'])->latest('id')->get();
-        $maxShops = $package->max_shops ?? 1;
+        $maxShops = $user->isSuperAdmin() ? max(5, (int)($package->max_shops ?? 5)) : (int)($package->max_shops ?? 1);
         $usedShops = $branches->count() + 1; // main shop + branches
-        $canAddMore = $isBusiness && $usedShops < $maxShops;
+        $canAddMore = $user->isSuperAdmin() || ($isBusiness && $usedShops < $maxShops);
 
         return view('admin.branches.index', compact('mainShop', 'branches', 'isBusiness', 'package', 'maxShops', 'usedShops', 'canAddMore'));
     }
@@ -45,10 +68,16 @@ class BranchController extends Controller
     public function create()
     {
         $user = auth()->user();
-        $mainShop = ($user->shop->parent_shop_id && $user->shop->parentShop) ? $user->shop->parentShop : $user->shop;
+        $shop = $this->resolveShop($user);
 
-        if (!$mainShop->canAddBranch()) {
-            return redirect()->route('branches.index')->with('error', 'You have reached the maximum allowed shops for your Business Package.');
+        if (!$shop) {
+            abort(403, __('No shop assigned.'));
+        }
+
+        $mainShop = ($shop->parent_shop_id && $shop->parentShop) ? $shop->parentShop : $shop;
+
+        if (!$user->isSuperAdmin() && !$mainShop->canAddBranch()) {
+            return redirect()->route('branches.index')->with('error', __('You have reached the maximum allowed shops for your Business Package.'));
         }
 
         return view('admin.branches.create', compact('mainShop'));
@@ -60,10 +89,16 @@ class BranchController extends Controller
     public function store(Request $request)
     {
         $user = auth()->user();
-        $mainShop = ($user->shop->parent_shop_id && $user->shop->parentShop) ? $user->shop->parentShop : $user->shop;
+        $shop = $this->resolveShop($user);
 
-        if (!$mainShop->canAddBranch()) {
-            return redirect()->route('branches.index')->with('error', 'Maximum shops limit reached for your Business Package.');
+        if (!$shop) {
+            abort(403, __('No shop assigned.'));
+        }
+
+        $mainShop = ($shop->parent_shop_id && $shop->parentShop) ? $shop->parentShop : $shop;
+
+        if (!$user->isSuperAdmin() && !$mainShop->canAddBranch()) {
+            return redirect()->route('branches.index')->with('error', __('Maximum shops limit reached for your Business Package.'));
         }
 
         $request->validate([
@@ -155,31 +190,37 @@ class BranchController extends Controller
                 'user_id' => $user->id,
                 'action' => 'BRANCH_CREATED',
                 'model_type' => 'Shop',
-                'description' => "Business Admin created new branch '{$branch->name}'.",
+                'description' => "Created new branch '{$branch->name}' under '{$mainShop->name}'.",
             ]);
         });
 
-        return redirect()->route('branches.index')->with('success', 'New Branch created successfully under your Business Account!');
+        return redirect()->route('branches.index')->with('success', __('New Branch created successfully under your Business Account!'));
     }
 
     /**
-     * Switch active branch for Business Admin.
+     * Switch active branch for Business Admin or Super Admin.
      */
     public function switchBranch($shopId)
     {
         $user = auth()->user();
-        $mainShop = ($user->shop->parent_shop_id && $user->shop->parentShop) ? $user->shop->parentShop : $user->shop;
+        $shop = $this->resolveShop($user);
 
-        // Verify that target shop is either main shop or one of its branches
+        if (!$shop) {
+            abort(403, __('No shop assigned.'));
+        }
+
+        $mainShop = ($shop->parent_shop_id && $shop->parentShop) ? $shop->parentShop : $shop;
+
+        // Verify that target shop is either main shop or one of its branches (Super Admin can switch to any shop)
         $allowedIds = $mainShop->branches()->pluck('id')->push($mainShop->id)->all();
 
-        if (!in_array((int)$shopId, $allowedIds)) {
-            abort(403, 'Unauthorized shop access.');
+        if (!$user->isSuperAdmin() && !in_array((int)$shopId, $allowedIds)) {
+            abort(403, __('Unauthorized shop access.'));
         }
 
         session(['active_shop_id' => (int)$shopId]);
         $target = Shop::findOrFail($shopId);
 
-        return redirect()->route('dashboard')->with('success', "Switched active branch to: {$target->name}");
+        return redirect()->route('dashboard')->with('success', __("Switched active branch to: :name", ['name' => $target->name]));
     }
 }

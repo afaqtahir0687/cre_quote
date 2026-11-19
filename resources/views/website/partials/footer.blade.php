@@ -35,7 +35,7 @@
                         @foreach($cmsCompanyPages as $cPage)
                             <li>
                                 <a href="{{ route('website.page', $cPage->slug) }}">
-                                    {{ __($cPage->title) }}
+                                    {{ $cPage->effective_title }}
                                 </a>
                             </li>
                         @endforeach
@@ -74,7 +74,7 @@
                         @foreach($cmsLegalPages as $lPage)
                             <li>
                                 <a href="{{ route('website.page', $lPage->slug) }}">
-                                    {{ __($lPage->title) }}
+                                    {{ $lPage->effective_title }}
                                 </a>
                             </li>
                         @endforeach

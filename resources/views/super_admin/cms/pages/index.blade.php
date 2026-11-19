@@ -139,8 +139,17 @@
                                 </div>
                                 <div>
                                     <strong class="text-dark d-block">{{ $page->title }}</strong>
+                                    @if($page->title_ar)
+                                        <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-0 extra-small rounded-pill">
+                                            🇸🇦 {{ $page->title_ar }}
+                                        </span>
+                                    @else
+                                        <span class="badge bg-warning-subtle text-warning border border-warning-subtle px-2 py-0 extra-small rounded-pill">
+                                            Missing AR
+                                        </span>
+                                    @endif
                                     @if($page->subtitle)
-                                        <span class="text-muted small">{{ Str::limit($page->subtitle, 65) }}</span>
+                                        <div class="text-muted small mt-1">{{ Str::limit($page->subtitle, 60) }}</div>
                                     @endif
                                 </div>
                             </div>

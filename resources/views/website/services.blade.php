@@ -94,20 +94,20 @@
 
                             <h3 class="fw-bold text-dark fs-4 mb-2" style="line-height: 1.35;">
                                 <a href="{{ route('website.service_detail', $srv->slug) }}" class="text-dark text-decoration-none service-title-hover">
-                                    {{ __($srv->name) }}
+                                    {{ $srv->effective_name }}
                                 </a>
                             </h3>
                             <p class="text-muted mb-4" style="line-height: 1.65; font-size: 0.95rem;">
-                                {{ __($srv->description ?: 'Full commercial service execution including scoping, production, quality assurance, and on-time fulfillment.') }}
+                                {{ $srv->effective_description ?: __('Full commercial service execution including scoping, production, quality assurance, and on-time fulfillment.') }}
                             </p>
 
-                            @if(is_array($srv->features) && count($srv->features) > 0)
+                            @if(count($srv->effective_features) > 0)
                                 <div class="p-3 rounded-3 mb-4" style="background: #F8FAFC; border: 1px solid #EDF2F7;">
                                     <h6 class="fw-bold text-dark mb-2 small text-uppercase" style="letter-spacing: 0.05em; font-size: 0.75rem;">
                                         <i class="fas fa-check-double text-success me-1"></i> {{ __('Key Deliverables & Scope:') }}
                                     </h6>
                                     <ul class="list-unstyled mb-0 d-flex flex-column gap-2 small text-muted">
-                                        @foreach($srv->features as $item)
+                                        @foreach($srv->effective_features as $item)
                                             <li class="d-flex align-items-start">
                                                 <i class="fas fa-check-circle text-success me-2 mt-1" style="font-size: 0.85rem;"></i>
                                                 <span>{{ __($item) }}</span>

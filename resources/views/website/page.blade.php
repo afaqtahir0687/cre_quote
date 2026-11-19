@@ -1,7 +1,7 @@
 @extends('website.layouts.app')
 
-@section('title', __($page->meta_title ?: $page->title) . ' - ' . ($settings['site_name'] ?? 'CreLogics ERP'))
-@section('meta_description', __($page->meta_description ?: ($page->subtitle ?: Str::limit(strip_tags($page->content), 160))))
+@section('title', ($page->effective_meta_title ?: $page->effective_title) . ' - ' . ($settings['site_name'] ?? 'CreLogics ERP'))
+@section('meta_description', $page->effective_meta_description)
 
 @push('styles')
 <style>
@@ -252,7 +252,7 @@
             <ol class="breadcrumb cms-breadcrumb mb-0">
                 <li class="breadcrumb-item"><a href="{{ route('home') }}"><i class="fas fa-home me-1"></i> {{ __('Home') }}</a></li>
                 <li class="breadcrumb-item"><a href="{{ route('home') }}#footer">{{ __('Pages') }}</a></li>
-                <li class="breadcrumb-item active text-dark fw-bold" aria-current="page">{{ __($page->title) }}</li>
+                <li class="breadcrumb-item active text-dark fw-bold" aria-current="page">{{ $page->effective_title }}</li>
             </ol>
         </nav>
 
@@ -273,14 +273,11 @@
                     </span>
                 </div>
                 <h1 class="display-6 fw-bold text-dark mb-2">
-                    {{ __($page->title) }}
+                    {{ $page->effective_title }}
                 </h1>
-                @php
-                    $leadDesc = $page->subtitle ?: $page->meta_description;
-                @endphp
-                @if(!empty($leadDesc))
+                @if(!empty($page->effective_subtitle))
                     <p class="lead text-muted mb-0" style="font-size: 1.1rem;">
-                        {{ __($leadDesc) }}
+                        {{ $page->effective_subtitle }}
                     </p>
                 @endif
             </div>
@@ -302,17 +299,7 @@
             <div class="col-lg-8">
                 <article class="cms-main-card">
                     <div class="cms-article-body">
-                        @php
-                            $isAr = app()->getLocale() === 'ar';
-                            $arSlugUnderscore = str_replace('-', '_', $page->slug);
-                        @endphp
-                        @if($isAr && view()->exists("website.pages.ar.{$arSlugUnderscore}"))
-                            @include("website.pages.ar.{$arSlugUnderscore}")
-                        @elseif($isAr && view()->exists("website.pages.ar.{$page->slug}"))
-                            @include("website.pages.ar.{$page->slug}")
-                        @else
-                            {!! $page->content !!}
-                        @endif
+                        {!! $page->effective_content !!}
                     </div>
 
                     {{-- Code-driven rich components for About Us --}}
@@ -515,7 +502,7 @@
                                         @else
                                             <i class="fas fa-file-alt text-muted me-2" style="font-size: 0.85rem;"></i>
                                         @endif
-                                        {{ __($p->title) }}
+                                        {{ $p->effective_title }}
                                     </span>
                                     <i class="fas fa-chevron-right fa-xs"></i>
                                 </a>

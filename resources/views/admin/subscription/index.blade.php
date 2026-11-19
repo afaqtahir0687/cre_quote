@@ -20,19 +20,53 @@
     </div>
 @endif
 
+@if(auth()->check() && auth()->user()->isSuperAdmin())
+    <div class="alert alert-info d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 rounded-3 mb-4 shadow-sm border-0" style="background-color: #e0f2fe; color: #0369a1;">
+        <div>
+            <i class="fas fa-crown text-primary me-2"></i>
+            <strong>{{ __('Super Admin Platform View') }}:</strong>
+            {{ __('Viewing subscription details for shop:') }} <strong>{{ $shop->name }}</strong>.
+        </div>
+        <div class="d-flex gap-2 align-items-center">
+            @if(\App\Models\Shop::count() > 1)
+                <div class="dropdown">
+                    <button class="btn btn-sm btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                        <i class="fas fa-exchange-alt me-1"></i> {{ __('View Another Shop') }}
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow">
+                        @foreach(\App\Models\Shop::all() as $sOption)
+                            <li>
+                                <form action="{{ route('super_admin.switch_shop', $sOption->id) }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="dropdown-item {{ $sOption->id === $shop->id ? 'active' : '' }}">
+                                        {{ $sOption->name }}
+                                    </button>
+                                </form>
+                            </li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+            <a href="{{ route('super_admin.subscriptions.index') }}" class="btn btn-sm btn-primary">
+                <i class="fas fa-tasks me-1"></i> {{ __('Manage All Platform Subscriptions') }}
+            </a>
+        </div>
+    </div>
+@endif
+
 @php
     $pkg = $shop->package;
     $daysRemaining = $shop->subscriptionDaysRemaining();
-    $is{{ __('Expired') }} = $shop->isSubscription{{ __('Expired') }}();
+    $isExpired = $shop->isSubscriptionExpired();
 @endphp
 
 <!-- Current Plan Overview Card -->
-<div class="card border-0 shadow-sm rounded-4 mb-4 overflow-hidden position-relative" style="background: linear-gradient(135deg, #ffffff 0%, #f8faff 100%); border-left: 5px solid {{ $is{{ __('Expired') }} ? '#dc3545' : '#0d6efd' }} !important;">
+<div class="card border-0 shadow-sm rounded-4 mb-4 overflow-hidden position-relative" style="background: linear-gradient(135deg, #ffffff 0%, #f8faff 100%); border-left: 5px solid {{ $isExpired ? '#dc3545' : '#0d6efd' }} !important;">
     <div class="card-body p-4">
         <div class="row align-items-center g-4">
             <div class="col-lg-8">
                 <div class="d-flex align-items-center gap-3 mb-3">
-                    <div class="rounded-circle {{ $is{{ __('Expired') }} ? 'bg-danger bg-opacity-10 text-danger' : 'bg-primary bg-opacity-10 text-primary' }} p-3 d-flex align-items-center justify-content-center" style="width: 56px; height: 56px;">
+                    <div class="rounded-circle {{ $isExpired ? 'bg-danger bg-opacity-10 text-danger' : 'bg-primary bg-opacity-10 text-primary' }} p-3 d-flex align-items-center justify-content-center" style="width: 56px; height: 56px;">
                         @if($pkg && $pkg->isTrial())
                             <i class="fas fa-flask fs-4"></i>
                         @elseif($pkg && $pkg->isBusiness())
@@ -43,8 +77,8 @@
                     </div>
                     <div>
                         <div class="d-flex align-items-center gap-2 flex-wrap">
-                            <h4 class="fw-bold text-dark mb-0">{{ $pkg ? $pkg->name : 'No {{ __('Active') }} Package' }}</h4>
-                            @if($is{{ __('Expired') }})
+                            <h4 class="fw-bold text-dark mb-0">{{ $pkg ? $pkg->name : __('No Active Package') }}</h4>
+                            @if($isExpired)
                                 <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-2 py-1 rounded-pill">
                                     <i class="fas fa-clock me-1"></i> {{ __('Expired') }}
                                 </span>
@@ -75,7 +109,7 @@
                     <div class="col-sm-4">
                         <div class="p-3 bg-white rounded-3 border">
                             <div class="text-muted small">Expiration Date</div>
-                            <div class="fw-bold {{ $is{{ __('Expired') }} ? 'text-danger' : 'text-dark' }} mt-1">
+                            <div class="fw-bold {{ $isExpired ? 'text-danger' : 'text-dark' }} mt-1">
                                 {{ $shop->subscription_expires_at ? $shop->subscription_expires_at->format('d M, Y') : 'N/A' }}
                             </div>
                         </div>
@@ -98,8 +132,8 @@
             <div class="col-lg-4 text-center text-lg-end">
                 <div class="p-4 bg-light rounded-4 text-center">
                     <div class="text-muted small">Time Remaining</div>
-                    <div class="display-6 fw-bold {{ $is{{ __('Expired') }} ? 'text-danger' : ($daysRemaining <= 7 ? 'text-warning' : 'text-primary') }} my-1">
-                        {{ $is{{ __('Expired') }} ? '0' : $daysRemaining }}
+                    <div class="display-6 fw-bold {{ $isExpired ? 'text-danger' : ($daysRemaining <= 7 ? 'text-warning' : 'text-primary') }} my-1">
+                        {{ $isExpired ? '0' : $daysRemaining }}
                     </div>
                     <div class="small text-muted mb-3">{{ __('Days Remaining') }}</div>
                     <button type="button" class="btn btn-outline-primary btn-sm w-100" data-bs-toggle="modal" data-bs-target="#requestUpgradeModal">
@@ -161,7 +195,7 @@
                 <div class="mt-auto">
                     <button type="button" class="btn {{ $pkg && $pkg->id === $p->id ? 'btn-outline-secondary disabled' : 'btn-primary-modern' }} w-100"
                         data-bs-toggle="modal" data-bs-target="#requestUpgradeModal" data-package-id="{{ $p->id }}" data-package-name="{{ $p->name }}">
-                        {{ $pkg && $pkg->id === $p->id ? '{{ __('Active') }} Plan' : 'Select & Request' }}
+                        {{ $pkg && $pkg->id === $p->id ? __('Active Plan') : __('Select & Request') }}
                     </button>
                 </div>
             </div>

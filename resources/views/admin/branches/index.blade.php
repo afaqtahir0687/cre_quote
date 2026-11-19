@@ -22,6 +22,40 @@
     </div>
 @endif
 
+@if(auth()->check() && auth()->user()->isSuperAdmin())
+    <div class="alert alert-info d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 rounded-3 mb-4 shadow-sm border-0" style="background-color: #e0f2fe; color: #0369a1;">
+        <div>
+            <i class="fas fa-crown text-primary me-2"></i>
+            <strong>{{ __('Super Admin Platform View') }}:</strong>
+            {{ __('Managing branches for central business:') }} <strong>{{ $mainShop->name }}</strong>.
+        </div>
+        <div class="d-flex gap-2 align-items-center">
+            @if(\App\Models\Shop::whereNull('parent_shop_id')->count() > 1)
+                <div class="dropdown">
+                    <button class="btn btn-sm btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                        <i class="fas fa-exchange-alt me-1"></i> {{ __('Switch Central Shop') }}
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow">
+                        @foreach(\App\Models\Shop::whereNull('parent_shop_id')->get() as $sOption)
+                            <li>
+                                <form action="{{ route('super_admin.switch_shop', $sOption->id) }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="dropdown-item {{ $sOption->id === $mainShop->id ? 'active' : '' }}">
+                                        {{ $sOption->name }}
+                                    </button>
+                                </form>
+                            </li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+            <a href="{{ route('super_admin.shops.index') }}" class="btn btn-sm btn-outline-secondary">
+                <i class="fas fa-store me-1"></i> {{ __('All Shops') }}
+            </a>
+        </div>
+    </div>
+@endif
+
 @if(!$isBusiness)
     <!-- Non-Business Package Notice -->
     <div class="card border-0 shadow-sm rounded-4 mb-4 bg-white border-start border-4 border-warning">

@@ -291,6 +291,7 @@
                 </div>
                 <div style="font-size: 6.5pt; color: #64748b; margin-top: 2px;">
                     {{ __('Date') }}: <span dir="ltr">{{ $booking->created_at->format('d M Y, h:i A') }}</span>
+                    &bull; <strong>{{ __('Agent') }}:</strong> {{ tdb($booking->effective_salesman) }}@if($booking->effective_salesman_phone) (<span dir="ltr">{{ $booking->effective_salesman_phone }}</span>)@endif
                 </div>
             </td>
         </tr>
@@ -587,20 +588,8 @@
                     @endif
                     <div style="font-size: 6.5pt; white-space: nowrap;"><strong>{{ __('Phone') }}:</strong> <span dir="ltr">{{ $booking->passenger_phone }}</span></div>
                     <div style="font-size: 6.5pt; white-space: nowrap;"><strong>{{ __('Route') }}:</strong> {{ $trip ? tdb($trip->departure_city) : '' }} {!! $isAr ? '&larr;' : '&rarr;' !!} {{ $trip ? tdb($trip->destination_city) : '' }}</div>
-<div style="font-size: 6.2pt; color: #475569; white-space: nowrap;">
-    <strong>{{ __('Agent') }}:</strong>
-    {{ tdb($booking->effective_salesman) }}
-    @if($booking->effective_salesman_phone)
-        (<span dir="ltr">{{ $booking->effective_salesman_phone }}</span>)
-    @endif
-</div>
-
-@if($booking->package_type === 'with_hotel' && $booking->effective_hotel_name)
-    <div style="font-size: 6.2pt; color: #475569; white-space: nowrap;">
-        <strong>{{ __('Hotel') }}:</strong>
-        {{ tdb($booking->effective_hotel_name) }}
-    </div>
-@endif                </td>
+                    <div style="font-size: 6.2pt; color: #475569; white-space: nowrap;"><strong>{{ __('Agent') }}:</strong> {{ tdb($booking->effective_salesman) }}@if($booking->effective_salesman_phone) (<span dir="ltr">{{ $booking->effective_salesman_phone }}</span>)@endif @if($booking->package_type === 'with_hotel' && $booking->effective_hotel_name) &bull; <strong>{{ __('Hotel') }}:</strong> {{ tdb($booking->effective_hotel_name) }}@endif</div>
+                </td>
                 <td style="width: 28%; text-align: center;">
                     <div style="font-size: 6pt; color: #64748b; text-transform: uppercase;">{{ __('Allocated Seat(s)') }}</div>
                     <div class="stub-seat-box" dir="ltr">

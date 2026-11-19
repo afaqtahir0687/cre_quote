@@ -74,56 +74,132 @@
     <div class="row g-4">
         <!-- Main Content (Left 8 cols) -->
         <div class="col-lg-8">
-            <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
-                <h5 class="fw-bold text-dark mb-3"><i class="fas fa-edit text-primary me-2"></i> {{ __('Page Details & Content') }}</h5>
+            <!-- Language Nav Pills -->
+            <ul class="nav nav-pills mb-3 gap-2" id="langTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active px-4 py-2 rounded-pill fw-bold border shadow-sm" id="en-tab" data-bs-toggle="pill" data-bs-target="#en-content" type="button" role="tab">
+                        <i class="fas fa-globe-americas me-1 text-primary"></i> 🇬🇧 English Content
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link px-4 py-2 rounded-pill fw-bold border shadow-sm" id="ar-tab" data-bs-toggle="pill" data-bs-target="#ar-content" type="button" role="tab">
+                        <i class="fas fa-language me-1 text-success"></i> 🇸🇦 Arabic Content (المحتوى بالعربية)
+                    </button>
+                </li>
+            </ul>
 
-                <!-- Title -->
-                <div class="mb-3">
-                    <label class="form-label fw-bold text-dark">{{ __('Page Title') }} <span class="text-danger">*</span></label>
-                    <input type="text" name="title" id="pageTitle" class="form-control form-control-lg @error('title') is-invalid @enderror" 
-                           placeholder="e.g. Careers, Quality Standards, About Us" value="{{ old('title') }}" required>
-                    @error('title') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                </div>
+            <div class="tab-content" id="langTabContent">
+                <!-- English Tab -->
+                <div class="tab-pane fade show active" id="en-content" role="tabpanel">
+                    <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
+                        <h5 class="fw-bold text-dark mb-3"><i class="fas fa-edit text-primary me-2"></i> {{ __('English Page Details & Content') }}</h5>
 
-                <!-- Subtitle / Tagline -->
-                <div class="mb-3">
-                    <label class="form-label fw-semibold text-dark">{{ __('Hero Subtitle / Tagline') }}</label>
-                    <input type="text" name="subtitle" class="form-control @error('subtitle') is-invalid @enderror" 
-                           placeholder="Short summary displayed under the title in the page header hero" value="{{ old('subtitle') }}">
-                    <div class="form-text small">{{ __('Optional. Displayed as a lead paragraph in the header banner.') }}</div>
-                    @error('subtitle') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                </div>
+                        <!-- Title -->
+                        <div class="mb-3">
+                            <label class="form-label fw-bold text-dark">{{ __('Page Title') }} (EN) <span class="text-danger">*</span></label>
+                            <input type="text" name="title" id="pageTitle" class="form-control form-control-lg @error('title') is-invalid @enderror" 
+                                   placeholder="e.g. Careers, Quality Standards, About Us" value="{{ old('title') }}" required>
+                            @error('title') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                        </div>
 
-                <!-- Content Body -->
-                <div class="mb-3">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <label class="form-label fw-bold text-dark m-0">{{ __('Page Body Content') }} <span class="text-danger">*</span></label>
-                        <span class="badge bg-light text-muted border px-2 py-1 small">
-                            <i class="fas fa-check-circle text-success me-1"></i> Visual WYSIWYG
-                        </span>
+                        <!-- Subtitle / Tagline -->
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold text-dark">{{ __('Hero Subtitle / Tagline') }} (EN)</label>
+                            <input type="text" name="subtitle" class="form-control @error('subtitle') is-invalid @enderror" 
+                                   placeholder="Short summary displayed under the title in the page header hero" value="{{ old('subtitle') }}">
+                            <div class="form-text small">{{ __('Optional. Displayed as a lead paragraph in the header banner.') }}</div>
+                            @error('subtitle') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                        </div>
+
+                        <!-- Content Body -->
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <label class="form-label fw-bold text-dark m-0">{{ __('Page Body Content') }} (EN) <span class="text-danger">*</span></label>
+                                <span class="badge bg-light text-muted border px-2 py-1 small">
+                                    <i class="fas fa-check-circle text-success me-1"></i> Visual WYSIWYG
+                                </span>
+                            </div>
+
+                            <div class="alert alert-light border p-2 px-3 rounded-3 mb-2 small text-muted d-flex align-items-center gap-2">
+                                <i class="fas fa-info-circle text-primary"></i>
+                                <span>Design and typography are automatically formatted. Use normal text, headings and bullet points.</span>
+                            </div>
+
+                            <textarea name="content" id="pageContent" class="form-control @error('content') is-invalid @enderror" 
+                                      required>{{ old('content') }}</textarea>
+                            @error('content') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                        </div>
                     </div>
 
-                    <div class="alert alert-light border p-2 px-3 rounded-3 mb-2 small text-muted d-flex align-items-center gap-2">
-                        <i class="fas fa-info-circle text-primary"></i>
-                        <span>Aapko koi <code>&lt;div&gt;</code> ya CSS styles likhne ki zaroorat nahi hai. Design code mein auto-applied hai — yahan sirf normal text, headings aur bullet points likhein.</span>
+                    <!-- SEO Settings Card (EN) -->
+                    <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
+                        <h5 class="fw-bold text-dark mb-3"><i class="fas fa-search text-success me-2"></i> {{ __('Search Engine Optimization (SEO) - English') }}</h5>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold text-dark">{{ __('Meta Title') }} (EN)</label>
+                            <input type="text" name="meta_title" class="form-control" placeholder="Browser tab title (defaults to Page Title if empty)" value="{{ old('meta_title') }}">
+                        </div>
+                        <div class="mb-0">
+                            <label class="form-label fw-semibold text-dark">{{ __('Meta Description') }} (EN)</label>
+                            <textarea name="meta_description" rows="2" class="form-control" placeholder="Brief summary of the page for Google search snippets...">{{ old('meta_description') }}</textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Arabic Tab -->
+                <div class="tab-pane fade" id="ar-content" role="tabpanel">
+                    <div class="card border-0 shadow-sm rounded-4 p-4 mb-4" dir="rtl">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="fw-bold text-dark mb-0"><i class="fas fa-language text-success ms-2"></i> تفاصيل ومحتوى الصفحة بالعربية (Arabic)</h5>
+                            <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-1 rounded-pill small">النسخة العربية المباشرة</span>
+                        </div>
+
+                        <!-- Title AR -->
+                        <div class="mb-3 text-end">
+                            <label class="form-label fw-bold text-dark">عنوان الصفحة بالعربية (Arabic Title)</label>
+                            <input type="text" name="title_ar" id="pageTitleAr" class="form-control form-control-lg @error('title_ar') is-invalid @enderror" 
+                                   value="{{ old('title_ar') }}" placeholder="مثال: من نحن أو سياسة الخصوصية">
+                            @error('title_ar') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                        </div>
+
+                        <!-- Subtitle AR -->
+                        <div class="mb-3 text-end">
+                            <label class="form-label fw-semibold text-dark">العنوان الفرعي في الهيدر (Arabic Subtitle / Tagline)</label>
+                            <input type="text" name="subtitle_ar" class="form-control @error('subtitle_ar') is-invalid @enderror" 
+                                   value="{{ old('subtitle_ar') }}" placeholder="وصف قصير يظهر تحت العنوان الرئيسي">
+                            @error('subtitle_ar') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                        </div>
+
+                        <!-- Content Body AR -->
+                        <div class="mb-3 text-end">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <label class="form-label fw-bold text-dark m-0">نص ومحتوى الصفحة بالعربية (Arabic Page Content)</label>
+                                <span class="badge bg-light text-muted border px-2 py-1 small">
+                                    <i class="fas fa-check-circle text-success ms-1"></i> محرر مرئي متكامل
+                                </span>
+                            </div>
+
+                            <div class="alert alert-light border p-2 px-3 rounded-3 mb-2 small text-muted d-flex align-items-center gap-2 text-end">
+                                <i class="fas fa-info-circle text-success"></i>
+                                <span>يتم حفظ هذا المحتوى في قاعدة البيانات ويظهر مباشرة للزوار عند اختيار اللغة العربية.</span>
+                            </div>
+
+                            <textarea name="content_ar" id="pageContentAr" class="form-control @error('content_ar') is-invalid @enderror">{{ old('content_ar') }}</textarea>
+                            @error('content_ar') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                        </div>
                     </div>
 
-                    <textarea name="content" id="pageContent" class="form-control @error('content') is-invalid @enderror" 
-                              required>{{ old('content') }}</textarea>
-                    @error('content') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                </div>
-            </div>
-
-            <!-- SEO Settings Card -->
-            <div class="card border-0 shadow-sm rounded-4 p-4">
-                <h5 class="fw-bold text-dark mb-3"><i class="fas fa-search text-success me-2"></i> {{ __('Search Engine Optimization (SEO)') }}</h5>
-                <div class="mb-3">
-                    <label class="form-label fw-semibold text-dark">{{ __('Meta Title') }}</label>
-                    <input type="text" name="meta_title" class="form-control" placeholder="Browser tab title (defaults to Page Title if empty)" value="{{ old('meta_title') }}">
-                </div>
-                <div class="mb-0">
-                    <label class="form-label fw-semibold text-dark">{{ __('Meta Description') }}</label>
-                    <textarea name="meta_description" rows="2" class="form-control" placeholder="Brief summary of the page for Google search snippets...">{{ old('meta_description') }}</textarea>
+                    <!-- SEO Settings Card (AR) -->
+                    <div class="card border-0 shadow-sm rounded-4 p-4 mb-4" dir="rtl">
+                        <h5 class="fw-bold text-dark mb-3 text-end"><i class="fas fa-search text-success ms-2"></i> تهيئة محركات البحث بالعربية (SEO Arabic)</h5>
+                        <div class="mb-3 text-end">
+                            <label class="form-label fw-semibold text-dark">عنوان السيو بالعربية (Meta Title)</label>
+                            <input type="text" name="meta_title_ar" class="form-control" value="{{ old('meta_title_ar') }}" placeholder="عنوان الصفحة في جوجل">
+                        </div>
+                        <div class="mb-0 text-end">
+                            <label class="form-label fw-semibold text-dark">وصف السيو بالعربية (Meta Description)</label>
+                            <textarea name="meta_description_ar" rows="2" class="form-control" placeholder="وصف مختصر يظهر في نتائج البحث">{{ old('meta_description_ar') }}</textarea>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -215,8 +291,7 @@
 <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-lite.min.js"></script>
 <script>
 $(document).ready(function() {
-    $('#pageContent').summernote({
-        placeholder: 'Yahan apna page content type karein...',
+    var summernoteConfig = {
         tabsize: 2,
         height: 420,
         toolbar: [
@@ -233,7 +308,15 @@ $(document).ready(function() {
             { title: 'Heading 4', tag: 'h4', className: '' },
             { title: 'Quote Callout', tag: 'blockquote', className: '' }
         ]
-    });
+    };
+
+    $('#pageContent').summernote($.extend({}, summernoteConfig, {
+        placeholder: 'Enter English page content here...'
+    }));
+
+    $('#pageContentAr').summernote($.extend({}, summernoteConfig, {
+        placeholder: 'اكتب محتوى الصفحة باللغة العربية هنا...'
+    }));
 
     const titleInput = document.getElementById('pageTitle');
     const slugInput = document.getElementById('pageSlug');

@@ -14,12 +14,17 @@ class CmsPage extends Model
 
     protected $fillable = [
         'title',
+        'title_ar',
         'slug',
         'subtitle',
+        'subtitle_ar',
         'content',
+        'content_ar',
         'footer_column',
         'meta_title',
+        'meta_title_ar',
         'meta_description',
+        'meta_description_ar',
         'sort_order',
         'is_active',
         'is_system',
@@ -30,6 +35,61 @@ class CmsPage extends Model
         'is_system' => 'boolean',
         'sort_order' => 'integer',
     ];
+
+    /**
+     * Effective localized Title (English or Arabic based on active locale).
+     */
+    public function getEffectiveTitleAttribute(): string
+    {
+        if (app()->getLocale() === 'ar' && !empty($this->title_ar)) {
+            return $this->title_ar;
+        }
+        return $this->title ?? '';
+    }
+
+    /**
+     * Effective localized Subtitle.
+     */
+    public function getEffectiveSubtitleAttribute(): ?string
+    {
+        if (app()->getLocale() === 'ar' && !empty($this->subtitle_ar)) {
+            return $this->subtitle_ar;
+        }
+        return $this->subtitle;
+    }
+
+    /**
+     * Effective localized Content / Body.
+     */
+    public function getEffectiveContentAttribute(): string
+    {
+        if (app()->getLocale() === 'ar' && !empty($this->content_ar)) {
+            return $this->content_ar;
+        }
+        return $this->content ?? '';
+    }
+
+    /**
+     * Effective localized Meta Title.
+     */
+    public function getEffectiveMetaTitleAttribute(): ?string
+    {
+        if (app()->getLocale() === 'ar' && !empty($this->meta_title_ar)) {
+            return $this->meta_title_ar;
+        }
+        return $this->meta_title ?: $this->effective_title;
+    }
+
+    /**
+     * Effective localized Meta Description.
+     */
+    public function getEffectiveMetaDescriptionAttribute(): ?string
+    {
+        if (app()->getLocale() === 'ar' && !empty($this->meta_description_ar)) {
+            return $this->meta_description_ar;
+        }
+        return $this->meta_description ?: ($this->effective_subtitle ?: Str::limit(strip_tags($this->effective_content), 160));
+    }
 
     /**
      * Scope active pages ordered.
@@ -71,4 +131,3 @@ class CmsPage extends Model
         });
     }
 }
-

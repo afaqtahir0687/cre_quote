@@ -61,12 +61,17 @@ class CmsPageController extends Controller
     {
         $validated = $request->validate([
             'title' => 'required|string|max:200',
+            'title_ar' => 'nullable|string|max:200',
             'slug' => 'nullable|string|max:200|unique:cms_pages,slug',
             'subtitle' => 'nullable|string|max:255',
+            'subtitle_ar' => 'nullable|string|max:255',
             'footer_column' => 'required|in:company,legal,quick_links,none',
             'content' => 'required|string',
+            'content_ar' => 'nullable|string',
             'meta_title' => 'nullable|string|max:255',
+            'meta_title_ar' => 'nullable|string|max:255',
             'meta_description' => 'nullable|string|max:500',
+            'meta_description_ar' => 'nullable|string|max:500',
             'sort_order' => 'required|integer',
             'is_active' => 'nullable|boolean',
         ]);
@@ -98,12 +103,17 @@ class CmsPageController extends Controller
     {
         $validated = $request->validate([
             'title' => 'required|string|max:200',
+            'title_ar' => 'nullable|string|max:200',
             'slug' => 'required|string|max:200|unique:cms_pages,slug,' . $page->id,
             'subtitle' => 'nullable|string|max:255',
+            'subtitle_ar' => 'nullable|string|max:255',
             'footer_column' => 'required|in:company,legal,quick_links,none',
             'content' => 'required|string',
+            'content_ar' => 'nullable|string',
             'meta_title' => 'nullable|string|max:255',
+            'meta_title_ar' => 'nullable|string|max:255',
             'meta_description' => 'nullable|string|max:500',
+            'meta_description_ar' => 'nullable|string|max:500',
             'sort_order' => 'required|integer',
             'is_active' => 'nullable|boolean',
         ]);

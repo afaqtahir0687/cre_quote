@@ -11,11 +11,33 @@ use Illuminate\Http\Request;
 class SubscriptionController extends Controller
 {
     /**
+     * Resolve the active shop model safely for both Admin and Super Admin.
+     */
+    protected function resolveShop($user): ?Shop
+    {
+        // 1. Session active shop (if selected via switcher)
+        $sessionShop = current_shop();
+        if ($sessionShop) {
+            return $sessionShop;
+        }
+
+        // 2. User's explicitly assigned shop
+        if ($user->shop) {
+            return $user->shop;
+        }
+
+        // 3. Fallback: First available shop on platform
+        return Shop::first();
+    }
+
+    /**
      * Show the subscription expired screen.
      */
     public function expired()
     {
-        $shop = auth()->user()->shop;
+        $user = auth()->user();
+        $shop = $this->resolveShop($user);
+
         if (!$shop) {
             return redirect()->route('dashboard');
         }
@@ -41,7 +63,13 @@ class SubscriptionController extends Controller
             'notes' => 'nullable|string|max:500',
         ]);
 
-        $shop = auth()->user()->shop;
+        $user = auth()->user();
+        $shop = $this->resolveShop($user);
+
+        if (!$shop) {
+            return back()->with('error', __('No active shop found to request renewal for.'));
+        }
+
         $package = Package::findOrFail($request->package_id);
 
         // Record a pending subscription record for super admin approval
@@ -67,7 +95,7 @@ class SubscriptionController extends Controller
             'description' => "Shop '{$shop->name}' requested renewal for {$package->name} via Cash By Hand.",
         ]);
 
-        return back()->with('success', 'Your Cash By Hand renewal request has been sent to Super Admin. Once verified, your account will be activated.');
+        return back()->with('success', __('Your Cash By Hand renewal request has been sent to Super Admin. Once verified, your account will be activated.'));
     }
 
     /**
@@ -75,9 +103,14 @@ class SubscriptionController extends Controller
      */
     public function mySubscription()
     {
-        $shop = auth()->user()->shop;
+        $user = auth()->user();
+        $shop = $this->resolveShop($user);
+
         if (!$shop) {
-            abort(403, 'No shop assigned.');
+            if ($user->isSuperAdmin()) {
+                return redirect()->route('super_admin.subscriptions.index')->with('info', __('Please create or select a shop first.'));
+            }
+            abort(403, __('No shop assigned.'));
         }
 
         $packages = Package::where('is_active', true)->orderBy('sort_order')->get();

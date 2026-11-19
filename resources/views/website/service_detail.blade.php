@@ -1,7 +1,7 @@
 @extends('website.layouts.app')
 
-@section('title', ($service->meta_title ?: $service->name) . ' - ' . ($settings['site_name'] ?? 'Crelogics'))
-@section('meta_description', $service->meta_description ?: Str::limit(strip_tags($service->description), 160))
+@section('title', ($service->meta_title ?: $service->effective_name) . ' - ' . ($settings['site_name'] ?? 'Crelogics'))
+@section('meta_description', $service->meta_description ?: Str::limit(strip_tags($service->effective_description), 160))
 
 @section('content')
 <!-- CreLogics Logo Theme Vibrant Waves Hero Banner (Orange #FA7436 & Blue #0A6FB7) -->
@@ -14,7 +14,7 @@
     </div>
     <div class="container position-relative py-5" style="z-index: 3;">
         <h1 class="service-crelogics-title fw-bold text-white mb-0">
-            {{ __($service->name) }}
+            {{ $service->effective_name }}
         </h1>
     </div>
 </section>
@@ -29,7 +29,7 @@
                     <!-- Dynamic verified chip -->
                     <div class="service-mini-chip bg-white shadow-sm rounded-pill px-3 py-1 position-absolute top-0 end-0 m-4 d-inline-flex align-items-center gap-2 extra-small text-dark fw-bold" style="font-size: 0.75rem; border: 1px solid #D6E8F7; z-index: 2;">
                         <span class="rounded-circle" style="width: 8px; height: 8px; background: #FA7436;"></span>
-                        <span>{{ __($service->badge_text ?: 'Verified Quality') }}</span>
+                        <span>{{ $service->effective_badge_text ?: __('Verified Quality') }}</span>
                     </div>
 
                     <div class="text-center py-2">
@@ -108,15 +108,15 @@
             <!-- Right Column: 100% Dynamic Text & Feature Highlight Boxes -->
             <div class="col-lg-6">
                 <span class="text-uppercase fw-bold small d-block mb-2" style="letter-spacing: 0.14em; font-size: 0.85rem; color: #FA7436;">
-                    {{ __($service->sub_tag ?: 'BEST FOR YOU') }}
+                    {{ $service->effective_sub_tag ?: __('BEST FOR YOU') }}
                 </span>
 
                 <h2 class="fw-bold text-dark mb-3" style="font-size: clamp(1.8rem, 2.6vw, 2.45rem); line-height: 1.25; letter-spacing: -0.01em;">
-                    {{ __($service->headline ?: 'Boosts Your Business Traffic & Revenue!') }}
+                    {{ $service->effective_headline ?: __('Boosts Your Business Traffic & Revenue!') }}
                 </h2>
 
                 <p class="text-muted mb-4" style="font-size: 1.05rem; line-height: 1.7;">
-                    {{ __($service->description) }}
+                    {{ $service->effective_description }}
                 </p>
 
                 <!-- Two Side-by-Side Highlight Feature Boxes (100% Dynamic with Logo Colors) -->
@@ -165,19 +165,19 @@
 </section>
 
 <!-- Dynamic Key Deliverables & Scope Checklist Section -->
-@if(is_array($service->features) && count($service->features) > 0)
+@if(count($service->effective_features) > 0)
 <section class="py-5" style="background-color: #F8FAFC; border-top: 1px solid #EDF2F7; border-bottom: 1px solid #EDF2F7;">
     <div class="container py-3">
         <div class="text-center mb-5">
             <span class="badge px-3 py-1 text-uppercase fw-bold mb-2" style="background: rgba(10, 111, 183, 0.08); color: #0A6FB7; font-size: 0.75rem; letter-spacing: 0.08em; border-radius: 4px;">{{ __('Detailed Scope') }}</span>
-            <h2 class="fw-bold text-dark fs-2 mb-2">{{ __('Key Deliverables Included in') }} {{ __($service->name) }}</h2>
+            <h2 class="fw-bold text-dark fs-2 mb-2">{{ __('Key Deliverables Included in') }} {{ $service->effective_name }}</h2>
             <p class="text-muted mx-auto" style="max-width: 650px;">
                 {{ __('A transparent, agile execution roadmap designed to ensure seamless milestones and guaranteed outcomes.') }}
             </p>
         </div>
 
         <div class="row g-4">
-            @foreach($service->features as $item)
+            @foreach($service->effective_features as $item)
                 <div class="col-lg-3 col-md-6">
                     <div class="p-4 rounded-4 bg-white border h-100 shadow-sm d-flex flex-column" style="border-color: #E2E8F0 !important; transition: transform 0.2s ease;">
                         <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-3" style="width: 44px; height: 44px; background: rgba(10, 111, 183, 0.12); color: #0A6FB7; font-size: 1.1rem;">
@@ -194,7 +194,7 @@
 @endif
 
 <!-- Custom Body Content / Strategic Overview -->
-@if(!empty($service->content))
+@if(!empty($service->effective_content))
 <section class="py-5 bg-white">
     <div class="container py-2">
         <div class="p-4 p-md-5 rounded-4 border" style="background: linear-gradient(180deg, #FDFDFE 0%, #F8FAFC 100%); border-color: #E2E8F0 !important;">
@@ -203,7 +203,7 @@
             </div>
             <h3 class="fw-bold text-dark fs-3 mb-3">{{ __('Overview & Core Strategic Value') }}</h3>
             <div class="service-content-body text-secondary" style="font-size: 1.02rem; line-height: 1.8;">
-                {!! __($service->content) !!}
+                {!! $service->effective_content !!}
             </div>
         </div>
     </div>
@@ -217,19 +217,19 @@
             <span class="badge px-3 py-1 text-uppercase fw-bold mb-2" style="background: rgba(250, 116, 54, 0.1); color: #FA7436; font-size: 0.75rem; letter-spacing: 0.08em; border-radius: 4px;">{{ __('Methodology') }}</span>
             <h2 class="fw-bold text-dark fs-2 mb-2">{{ __('Our 4-Stage Project Lifecycle') }}</h2>
             <p class="text-muted mx-auto" style="max-width: 650px;">
-                {{ __('A transparent, agile execution roadmap designed specifically for') }} {{ __($service->name) }} {{ __('to ensure seamless milestones and guaranteed outcomes.') }}
+                {{ __('A transparent, agile execution roadmap designed specifically for') }} {{ $service->effective_name }} {{ __('to ensure seamless milestones and guaranteed outcomes.') }}
             </p>
         </div>
 
         <div class="row g-4">
             @php
-                $steps = is_array($service->process_steps) && count($service->process_steps) > 0 
-                    ? $service->process_steps 
+                $steps = count($service->effective_process_steps) > 0 
+                    ? $service->effective_process_steps 
                     : [
-                        ['title' => 'Discovery & Strategy', 'desc' => 'Detailed review of business goals, technical requirements, target audience, and timeline milestones.'],
-                        ['title' => 'Proofing & Mockups', 'desc' => 'Interactive prototypes, wireframes, or 3D architectural mockups for client feedback and sign-off.'],
-                        ['title' => 'Agile Production', 'desc' => 'Precision coding, CNC fabrication, or digital marketing execution with rigorous internal QA testing.'],
-                        ['title' => 'Deployment & Support', 'desc' => 'Final delivery, on-site setup, full source file IP handover, and ongoing 24/7 post-launch warranty.']
+                        ['title' => __('Discovery & Strategy'), 'desc' => __('Detailed review of business goals, technical requirements, target audience, and timeline milestones.')],
+                        ['title' => __('Proofing & Mockups'), 'desc' => __('Interactive prototypes, wireframes, or 3D architectural mockups for client feedback and sign-off.')],
+                        ['title' => __('Agile Production'), 'desc' => __('Precision coding, CNC fabrication, or digital marketing execution with rigorous internal QA testing.')],
+                        ['title' => __('Deployment & Support'), 'desc' => __('Final delivery, on-site setup, full source file IP handover, and ongoing 24/7 post-launch warranty.')]
                     ];
                 $stepColors = ['#0A6FB7', '#00B894', '#FA7436', '#17243A'];
             @endphp
@@ -239,8 +239,8 @@
                         <div class="rounded-circle text-white d-inline-flex align-items-center justify-content-center mb-3 fw-bold" style="width: 48px; height: 48px; font-size: 1.15rem; background: {{ $stepColors[$idx % count($stepColors)] }};">
                             {{ $idx + 1 }}
                         </div>
-                        <h5 class="fw-bold text-dark fs-6 mb-2">{{ is_array($step) ? __($step['title'] ?? '') : __($step) }}</h5>
-                        <p class="text-muted small mb-0" style="line-height: 1.5;">{{ is_array($step) ? __($step['desc'] ?? '') : '' }}</p>
+                        <h5 class="fw-bold text-dark fs-6 mb-2">{{ is_array($step) ? (__($step['title'] ?? '')) : __($step) }}</h5>
+                        <p class="text-muted small mb-0" style="line-height: 1.5;">{{ is_array($step) ? (__($step['desc'] ?? '')) : '' }}</p>
                     </div>
                 </div>
             @endforeach
@@ -269,8 +269,8 @@
                         <div class="d-inline-flex align-items-center justify-content-center rounded-3 mb-3" style="width: 44px; height: 44px; background: rgba(10, 111, 183, 0.08); color: #0A6FB7; font-size: 1.1rem;">
                             <i class="{{ $rel->icon ?: 'fas fa-concierge-bell' }}"></i>
                         </div>
-                        <h5 class="fw-bold text-dark fs-6 mb-2">{{ __($rel->name) }}</h5>
-                        <p class="text-muted extra-small mb-3" style="line-height: 1.5;">{{ Str::limit(__($rel->description), 70) }}</p>
+                        <h5 class="fw-bold text-dark fs-6 mb-2">{{ $rel->effective_name }}</h5>
+                        <p class="text-muted extra-small mb-3" style="line-height: 1.5;">{{ Str::limit($rel->effective_description, 70) }}</p>
                         <div class="mt-auto d-flex align-items-center justify-content-between pt-2 border-top text-primary small fw-semibold" style="color: #0A6FB7 !important;">
                             <span>{{ __('Explore Page') }}</span>
                             <i class="fas fa-arrow-right"></i>
@@ -286,9 +286,9 @@
 <!-- Dynamic Logo Theme Call to Action Banner (Navy #17243A to Blue #0A6FB7 to Orange #FA7436) -->
 <section class="py-5 text-white position-relative overflow-hidden" style="background: linear-gradient(135deg, #17243A 0%, #0A6FB7 50%, #FA7436 100%);">
     <div class="container text-center py-4 position-relative" style="z-index: 2;">
-        <h2 class="fw-bold fs-2 mb-3">{{ __($service->cta_title ?: ('Ready to Accelerate with ' . $service->name . '?')) }}</h2>
+        <h2 class="fw-bold fs-2 mb-3">{{ $service->effective_cta_title ?: ((app()->getLocale() === 'ar' ? 'هل أنت مستعد للانطلاق مع ' : 'Ready to Accelerate with ') . $service->effective_name . (app()->getLocale() === 'ar' ? '؟' : '?')) }}</h2>
         <p class="mx-auto mb-4" style="max-width: 650px; opacity: 0.95; font-size: 1.05rem;">
-            {{ __($service->cta_subtitle) }}
+            {{ $service->effective_cta_subtitle }}
         </p>
         <div class="d-flex flex-wrap justify-content-center gap-3">
             <button type="button" class="btn fw-semibold px-4 py-2 text-white btn-logo-orange shadow" data-bs-toggle="modal" data-bs-target="#proposalModal">

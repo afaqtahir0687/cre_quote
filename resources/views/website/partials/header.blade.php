@@ -56,7 +56,7 @@
                                                             <li>
                                                                 <a href="{{ route('website.service_detail', $sItem->slug) }}" class="services-sub-item-link">
                                                                     <i class="{{ $sItem->icon ?: 'fas fa-chevron-right' }} extra-small" style="color: #FA7436; font-size: 0.75rem;"></i>
-                                                                    <span>{{ __($sItem->name) }}</span>
+                                                                    <span>{{ $sItem->effective_name ?? __($sItem->name) }}</span>
                                                                 </a>
                                                             </li>
                                                         @endforeach
@@ -107,7 +107,7 @@
                                                     <li>
                                                         <a href="{{ route('website.service_detail', $sItem->slug) }}" class="services-sub-item-link">
                                                             <i class="{{ $sItem->icon ?: 'fas fa-chevron-right' }} extra-small" style="color: #FA7436; font-size: 0.75rem;"></i>
-                                                            <span>{{ __($sItem->name) }}</span>
+                                                            <span>{{ $sItem->effective_name ?? __($sItem->name) }}</span>
                                                         </a>
                                                     </li>
                                                 @endforeach

@@ -58,16 +58,23 @@ class ServiceController extends Controller
         $validated = $request->validate([
             'category' => 'required|string|max:100',
             'name' => 'required|string|max:200',
+            'name_ar' => 'nullable|string|max:200',
             'sub_tag' => 'nullable|string|max:150',
+            'sub_tag_ar' => 'nullable|string|max:150',
             'headline' => 'nullable|string|max:255',
+            'headline_ar' => 'nullable|string|max:255',
             'badge_text' => 'nullable|string|max:100',
+            'badge_text_ar' => 'nullable|string|max:100',
             'slug' => 'nullable|string|max:220|unique:services,slug',
             'icon' => 'nullable|string|max:100',
             'description' => 'nullable|string',
+            'description_ar' => 'nullable|string',
             'content' => 'nullable|string',
+            'content_ar' => 'nullable|string',
             'meta_title' => 'nullable|string|max:255',
             'meta_description' => 'nullable|string',
             'features' => 'nullable|string',
+            'features_ar' => 'nullable|string',
             'feature_1_title' => 'nullable|string|max:150',
             'feature_1_text' => 'nullable|string|max:255',
             'feature_1_icon' => 'nullable|string|max:100',
@@ -75,7 +82,9 @@ class ServiceController extends Controller
             'feature_2_text' => 'nullable|string|max:255',
             'feature_2_icon' => 'nullable|string|max:100',
             'cta_title' => 'nullable|string|max:255',
+            'cta_title_ar' => 'nullable|string|max:255',
             'cta_subtitle' => 'nullable|string',
+            'cta_subtitle_ar' => 'nullable|string',
             'starting_price' => 'nullable|numeric|min:0',
             'price_unit' => 'nullable|string|max:50',
             'sort_order' => 'nullable|integer',
@@ -98,6 +107,66 @@ class ServiceController extends Controller
             $validated['features'] = $featuresList;
         } else {
             $validated['features'] = [];
+        }
+
+        // Parse features_ar from newline-delimited text
+        if (!empty($request->features_ar)) {
+            $featuresArList = array_values(array_filter(array_map('trim', preg_split('/[\r\n]+/', $request->features_ar))));
+            $validated['features_ar'] = $featuresArList;
+        } else {
+            $validated['features_ar'] = [];
+        }
+
+        // Process 4-Stage Project Lifecycle steps
+        if ($request->has('steps')) {
+            $enSteps = [];
+            $arSteps = [];
+            foreach ($request->input('steps', []) as $sData) {
+                if (!empty($sData['title_en']) || !empty($sData['desc_en'])) {
+                    $enSteps[] = [
+                        'title' => trim($sData['title_en'] ?? ''),
+                        'desc' => trim($sData['desc_en'] ?? ''),
+                    ];
+                }
+                if (!empty($sData['title_ar']) || !empty($sData['desc_ar'])) {
+                    $arSteps[] = [
+                        'title' => trim($sData['title_ar'] ?? ''),
+                        'desc' => trim($sData['desc_ar'] ?? ''),
+                    ];
+                }
+            }
+            if (!empty($enSteps)) {
+                $validated['process_steps'] = $enSteps;
+            }
+            if (!empty($arSteps)) {
+                $validated['process_steps_ar'] = $arSteps;
+            }
+        }
+
+        // Process 4-Stage Project Lifecycle steps
+        if ($request->has('steps')) {
+            $enSteps = [];
+            $arSteps = [];
+            foreach ($request->input('steps', []) as $sData) {
+                if (!empty($sData['title_en']) || !empty($sData['desc_en'])) {
+                    $enSteps[] = [
+                        'title' => trim($sData['title_en'] ?? ''),
+                        'desc' => trim($sData['desc_en'] ?? ''),
+                    ];
+                }
+                if (!empty($sData['title_ar']) || !empty($sData['desc_ar'])) {
+                    $arSteps[] = [
+                        'title' => trim($sData['title_ar'] ?? ''),
+                        'desc' => trim($sData['desc_ar'] ?? ''),
+                    ];
+                }
+            }
+            if (!empty($enSteps)) {
+                $validated['process_steps'] = $enSteps;
+            }
+            if (!empty($arSteps)) {
+                $validated['process_steps_ar'] = $arSteps;
+            }
         }
 
         $shop = Shop::first();
@@ -131,16 +200,23 @@ class ServiceController extends Controller
         $validated = $request->validate([
             'category' => 'required|string|max:100',
             'name' => 'required|string|max:200',
+            'name_ar' => 'nullable|string|max:200',
             'sub_tag' => 'nullable|string|max:150',
+            'sub_tag_ar' => 'nullable|string|max:150',
             'headline' => 'nullable|string|max:255',
+            'headline_ar' => 'nullable|string|max:255',
             'badge_text' => 'nullable|string|max:100',
+            'badge_text_ar' => 'nullable|string|max:100',
             'slug' => 'nullable|string|max:220|unique:services,slug,' . $service->id,
             'icon' => 'nullable|string|max:100',
             'description' => 'nullable|string',
+            'description_ar' => 'nullable|string',
             'content' => 'nullable|string',
+            'content_ar' => 'nullable|string',
             'meta_title' => 'nullable|string|max:255',
             'meta_description' => 'nullable|string',
             'features' => 'nullable|string',
+            'features_ar' => 'nullable|string',
             'feature_1_title' => 'nullable|string|max:150',
             'feature_1_text' => 'nullable|string|max:255',
             'feature_1_icon' => 'nullable|string|max:100',
@@ -148,7 +224,9 @@ class ServiceController extends Controller
             'feature_2_text' => 'nullable|string|max:255',
             'feature_2_icon' => 'nullable|string|max:100',
             'cta_title' => 'nullable|string|max:255',
+            'cta_title_ar' => 'nullable|string|max:255',
             'cta_subtitle' => 'nullable|string',
+            'cta_subtitle_ar' => 'nullable|string',
             'starting_price' => 'nullable|numeric|min:0',
             'price_unit' => 'nullable|string|max:50',
             'sort_order' => 'nullable|integer',
@@ -164,6 +242,39 @@ class ServiceController extends Controller
             $validated['features'] = $featuresList;
         } else {
             $validated['features'] = [];
+        }
+
+        if (!empty($request->features_ar)) {
+            $featuresArList = array_values(array_filter(array_map('trim', preg_split('/[\r\n]+/', $request->features_ar))));
+            $validated['features_ar'] = $featuresArList;
+        } else {
+            $validated['features_ar'] = [];
+        }
+
+        // Process 4-Stage Project Lifecycle steps
+        if ($request->has('steps')) {
+            $enSteps = [];
+            $arSteps = [];
+            foreach ($request->input('steps', []) as $sData) {
+                if (!empty($sData['title_en']) || !empty($sData['desc_en'])) {
+                    $enSteps[] = [
+                        'title' => trim($sData['title_en'] ?? ''),
+                        'desc' => trim($sData['desc_en'] ?? ''),
+                    ];
+                }
+                if (!empty($sData['title_ar']) || !empty($sData['desc_ar'])) {
+                    $arSteps[] = [
+                        'title' => trim($sData['title_ar'] ?? ''),
+                        'desc' => trim($sData['desc_ar'] ?? ''),
+                    ];
+                }
+            }
+            if (!empty($enSteps)) {
+                $validated['process_steps'] = $enSteps;
+            }
+            if (!empty($arSteps)) {
+                $validated['process_steps_ar'] = $arSteps;
+            }
         }
 
         $validated['is_active'] = $request->has('is_active') ? $request->boolean('is_active') : false;
