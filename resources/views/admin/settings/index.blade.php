@@ -129,9 +129,12 @@
                                             @php
                                                 $stampUrl = !empty($setting?->company_stamp) && file_exists(public_path($setting->company_stamp))
                                                     ? asset($setting->company_stamp)
-                                                    : (file_exists(public_path('uploads/logo/stamp.png')) ? asset('uploads/logo/stamp.png') : null);
+                                                    : null;
                                             @endphp
-                                            <img id="stampPreviewImg" src="{{ $stampUrl }}" style="max-height: 48px; max-width: 95px; object-fit: contain; {{ !$stampUrl ? 'display:none;' : '' }}" alt="Stamp">
+                                            <img id="stampPreviewImg" src="{{ $stampUrl ?? '' }}" style="max-height: 48px; max-width: 95px; object-fit: contain; {{ !$stampUrl ? 'display:none;' : '' }}" alt="Stamp">
+                                            <div id="noStampPlaceholder" style="font-size: 8.5px; color: #94a3b8; border: 1px dashed #cbd5e1; padding: 4px 8px; border-radius: 4px; display: {{ $stampUrl ? 'none' : 'inline-block' }}; text-align: center;">
+                                                <i class="fas fa-stamp me-1"></i>{{ __('No Stamp') }}
+                                            </div>
                                         </td>
                                     </tr>
                                     <tr>
@@ -262,6 +265,15 @@
                                 </label>
                                 <input type="file" name="company_stamp" id="company_stamp_input" class="form-control form-control-sm" accept="image/png,image/jpeg,image/jpg,image/webp">
                                 <div class="form-text small">Upload transparent PNG/JPG official stamp.</div>
+                                @if(!empty($setting?->company_stamp) && file_exists(public_path($setting->company_stamp)))
+                                    <div class="mt-2 d-flex align-items-center gap-2">
+                                        <img src="{{ asset($setting->company_stamp) }}" style="max-height: 38px; max-width: 80px; object-fit: contain;" class="border rounded p-1 bg-white">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="remove_stamp" value="1" id="removeStamp">
+                                            <label class="form-check-label text-danger small fw-semibold" for="removeStamp">{{ __('Remove Current Stamp') }}</label>
+                                        </div>
+                                    </div>
+                                @endif
                             </div>
 
                             <div class="col-md-6">
@@ -270,6 +282,15 @@
                                 </label>
                                 <input type="file" name="bank_stamp_logo" id="bank_stamp_logo_input" class="form-control form-control-sm" accept="image/png,image/jpeg,image/jpg,image/webp">
                                 <div class="form-text small">If you prefer uploading a pre-made image instead.</div>
+                                @if(!empty($setting?->bank_stamp_logo) && file_exists(public_path($setting->bank_stamp_logo)))
+                                    <div class="mt-2 d-flex align-items-center gap-2">
+                                        <img src="{{ asset($setting->bank_stamp_logo) }}" style="max-height: 38px; max-width: 80px; object-fit: contain;" class="border rounded p-1 bg-white">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="remove_bank_stamp_logo" value="1" id="removeBankStamp">
+                                            <label class="form-check-label text-danger small fw-semibold" for="removeBankStamp">{{ __('Remove Graphic Image') }}</label>
+                                        </div>
+                                    </div>
+                                @endif
                             </div>
 
                             @if(!empty($setting?->bank_stamp_logo))
@@ -466,9 +487,13 @@
             const reader = new FileReader();
             reader.onload = function(evt) {
                 const stampImg = document.getElementById('stampPreviewImg');
+                const placeholder = document.getElementById('noStampPlaceholder');
                 if (stampImg) {
                     stampImg.src = evt.target.result;
                     stampImg.style.display = 'inline-block';
+                }
+                if (placeholder) {
+                    placeholder.style.display = 'none';
                 }
             };
             reader.readAsDataURL(file);

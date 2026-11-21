@@ -2,7 +2,7 @@
     $useCustomImg = !empty($setting?->use_custom_bank_image) && !empty($setting?->bank_stamp_logo) && file_exists(public_path($setting->bank_stamp_logo));
     $stampPath = !empty($setting?->company_stamp) && file_exists(public_path($setting->company_stamp))
         ? public_path($setting->company_stamp)
-        : (file_exists(public_path('uploads/logo/stamp.png')) ? public_path('uploads/logo/stamp.png') : null);
+        : null;
     $hasBankDetails = !empty($setting?->bank_name) || !empty($setting?->bank_account_no) || !empty($setting?->bank_iban);
 @endphp
 

@@ -267,10 +267,6 @@ if (!function_exists('shop_bank_stamp_url')) {
             return asset($setting->bank_stamp_logo);
         }
 
-        if (file_exists(public_path('uploads/logo/stamp_logo.jpeg'))) {
-            return asset('uploads/logo/stamp_logo.jpeg');
-        }
-
         return null;
     }
 }
@@ -300,10 +296,6 @@ if (!function_exists('shop_bank_stamp_path')) {
             }
         } elseif ($setting && !empty($setting->bank_stamp_logo) && file_exists(public_path($setting->bank_stamp_logo))) {
             return public_path($setting->bank_stamp_logo);
-        }
-
-        if (file_exists(public_path('uploads/logo/stamp_logo.jpeg'))) {
-            return public_path('uploads/logo/stamp_logo.jpeg');
         }
 
         return null;
