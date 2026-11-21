@@ -80,6 +80,18 @@
                     </div>
 
                     <div class="col-md-6">
+                        <label class="form-label fw-bold text-dark">{{ __('Nationality (الجنسية)') }}</label>
+                        <input type="text" name="passenger_nationality" class="form-control @error('passenger_nationality') is-invalid @enderror" value="{{ old('passenger_nationality', $booking->passenger_nationality ?: 'PAK') }}" placeholder="PAK, IND, BAN, SAU, EGY">
+                        @error('passenger_nationality') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold text-dark">{{ __('Pickup / Boarding Location (موقع الركوب)') }}</label>
+                        <input type="text" name="pickup_location" class="form-control @error('pickup_location') is-invalid @enderror" value="{{ old('pickup_location', $booking->pickup_location ?: $booking->shop?->name) }}" placeholder="e.g. Office, Batha, Villa 12, Nesto">
+                        @error('pickup_location') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                    </div>
+
+                    <div class="col-md-6">
                         <label class="form-label fw-bold text-dark">{{ __('Booking Status *') }}</label>
                         <select name="booking_status" class="form-select @error('booking_status') is-invalid @enderror" required>
                             <option value="confirmed" {{ old('booking_status', $booking->booking_status) === 'confirmed' ? 'selected' : '' }}>{{ __('Confirmed (Active Seat Lock)') }}</option>

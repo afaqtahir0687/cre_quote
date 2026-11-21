@@ -128,6 +128,8 @@ class TravelBookingController extends Controller
             'passenger_phone' => 'required|string|max:50',
             'passenger_id_number' => 'nullable|string|max:50',
             'passenger_gender' => 'required|in:male,female',
+            'passenger_nationality' => 'nullable|string|max:50',
+            'pickup_location' => 'nullable|string|max:150',
             'salesman_name' => 'nullable|string|max:100',
             'salesman_phone' => 'nullable|string|max:50',
             'package_type' => 'required|in:with_hotel,without_hotel',
@@ -314,10 +316,14 @@ class TravelBookingController extends Controller
                     $pName = !empty($seatPassenger['name']) ? trim($seatPassenger['name']) : $validated['passenger_name'];
                     $pGender = !empty($seatPassenger['gender']) ? $seatPassenger['gender'] : $validated['passenger_gender'];
                     $pIdNum = !empty($seatPassenger['id_number']) ? trim($seatPassenger['id_number']) : ($validated['passenger_id_number'] ?? null);
+                    $pNat = !empty($seatPassenger['nationality']) ? trim($seatPassenger['nationality']) : ($validated['passenger_nationality'] ?? null);
+                    $pLoc = !empty($seatPassenger['pickup_location']) ? trim($seatPassenger['pickup_location']) : ($validated['pickup_location'] ?? null);
                 } else {
                     $pName = !empty($seatPassenger['name']) ? trim($seatPassenger['name']) : ($validated['passenger_name'] . ' (' . __('Seat') . ' #' . $sNum . ')');
                     $pGender = !empty($seatPassenger['gender']) ? $seatPassenger['gender'] : $validated['passenger_gender'];
                     $pIdNum = !empty($seatPassenger['id_number']) ? trim($seatPassenger['id_number']) : null;
+                    $pNat = !empty($seatPassenger['nationality']) ? trim($seatPassenger['nationality']) : ($validated['passenger_nationality'] ?? null);
+                    $pLoc = !empty($seatPassenger['pickup_location']) ? trim($seatPassenger['pickup_location']) : ($validated['pickup_location'] ?? null);
                 }
 
                 $createdBookings[] = TravelBooking::create([
@@ -329,6 +335,8 @@ class TravelBookingController extends Controller
                     'passenger_phone' => $validated['passenger_phone'],
                     'passenger_id_number' => $pIdNum,
                     'passenger_gender' => $pGender,
+                    'passenger_nationality' => $pNat,
+                    'pickup_location' => $pLoc,
                     'salesman_name' => $validated['salesman_name'] ?? (auth()->user()?->name ?: null),
                     'salesman_phone' => $validated['salesman_phone'] ?? (auth()->user()?->employee?->phone ?: (auth()->user()?->phone ?: null)),
                     'seat_number' => $sNum,
@@ -473,6 +481,8 @@ class TravelBookingController extends Controller
             'passenger_phone' => 'required|string|max:50',
             'passenger_id_number' => 'nullable|string|max:50',
             'passenger_gender' => 'required|in:male,female',
+            'passenger_nationality' => 'nullable|string|max:50',
+            'pickup_location' => 'nullable|string|max:150',
             'salesman_name' => 'nullable|string|max:100',
             'salesman_phone' => 'nullable|string|max:50',
             'package_type' => 'required|in:with_hotel,without_hotel',

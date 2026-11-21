@@ -207,6 +207,8 @@ Route::group(['middleware' => 'auth'], function () {
     // ================= TRAVEL & UMRAH AGENCY MODULE =================
     Route::group(['prefix' => 'travel', 'as' => 'travel.', 'middleware' => 'shop.module:travel_tourism'], function () {
         // Trips Management
+        Route::get('trips/{trip}/manifest', [\App\Http\Controllers\TravelTripController::class, 'manifest'])->name('trips.manifest');
+        Route::get('trips/{trip}/manifest-pdf', [\App\Http\Controllers\TravelTripController::class, 'manifestPdf'])->name('trips.manifest_pdf');
         Route::get('trips/{trip}/seats-json', [\App\Http\Controllers\TravelTripController::class, 'seatsJson'])->name('trips.seats_json');
         Route::resource('trips', \App\Http\Controllers\TravelTripController::class);
 

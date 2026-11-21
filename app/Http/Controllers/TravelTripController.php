@@ -75,6 +75,12 @@ class TravelTripController extends Controller
             'title' => 'required|string|max:255',
             'bus_name' => 'required|string|max:100',
             'bus_number' => 'nullable|string|max:50',
+            'driver_1_name' => 'nullable|string|max:150',
+            'driver_1_nationality' => 'nullable|string|max:50',
+            'driver_1_phone' => 'nullable|string|max:50',
+            'driver_2_name' => 'nullable|string|max:150',
+            'driver_2_nationality' => 'nullable|string|max:50',
+            'driver_2_phone' => 'nullable|string|max:50',
             'total_seats' => 'required|integer|min:10|max:100',
             'departure_city' => 'required|string|max:100',
             'destination_city' => 'required|string|max:100',
@@ -136,6 +142,12 @@ class TravelTripController extends Controller
             'title' => 'required|string|max:255',
             'bus_name' => 'required|string|max:100',
             'bus_number' => 'nullable|string|max:50',
+            'driver_1_name' => 'nullable|string|max:150',
+            'driver_1_nationality' => 'nullable|string|max:50',
+            'driver_1_phone' => 'nullable|string|max:50',
+            'driver_2_name' => 'nullable|string|max:150',
+            'driver_2_nationality' => 'nullable|string|max:50',
+            'driver_2_phone' => 'nullable|string|max:50',
             'total_seats' => 'required|integer|min:' . max(10, $trip->bookedSeatsCount()),
             'departure_city' => 'required|string|max:100',
             'destination_city' => 'required|string|max:100',
@@ -213,5 +225,64 @@ class TravelTripController extends Controller
             'hotel_address' => $trip->hotel_address,
             'seats' => $seats,
         ]);
+    }
+
+    /**
+     * Display the official Trip Passenger Manifest / Bus Statement sheet (HTML printable view).
+     */
+    public function manifest($id)
+    {
+        if (request()->has('lang') && in_array(request('lang'), ['ar', 'en'])) {
+            app()->setLocale(request('lang'));
+        }
+
+        $trip = TravelTrip::forCurrentShop()
+            ->with(['confirmedBookings.shop', 'confirmedBookings.customer', 'creator', 'shop.setting'])
+            ->findOrFail($id);
+
+        $bookings = $trip->confirmedBookings->sortBy('seat_number');
+
+        return view('travel.trips.manifest', compact('trip', 'bookings'));
+    }
+
+    /**
+     * Download or stream the official Trip Passenger Manifest / Bus Statement PDF.
+     */
+    public function manifestPdf($id)
+    {
+        if (request()->has('lang') && in_array(request('lang'), ['ar', 'en'])) {
+            app()->setLocale(request('lang'));
+        }
+
+        $trip = TravelTrip::forCurrentShop()
+            ->with(['confirmedBookings.shop', 'confirmedBookings.customer', 'creator', 'shop.setting'])
+            ->findOrFail($id);
+
+        $bookings = $trip->confirmedBookings->sortBy('seat_number');
+
+        $mpdf = new \Mpdf\Mpdf([
+            'mode' => 'utf-8',
+            'format' => 'A4',
+            'orientation' => 'P',
+            'margin_left' => 5,
+            'margin_right' => 5,
+            'margin_top' => 5,
+            'margin_bottom' => 5,
+            'default_font' => 'amiri',
+        ]);
+
+        if (app()->getLocale() === 'ar') {
+            $mpdf->SetDirectionality('rtl');
+        }
+
+        $html = view('travel.trips.manifest_pdf', compact('trip', 'bookings'))->render();
+        $mpdf->WriteHTML($html);
+
+        $filename = 'Trip-Manifest-' . $trip->trip_code . '-' . date('Ymd') . '.pdf';
+        $disposition = request()->has('download') ? 'attachment' : 'inline';
+
+        return response($mpdf->Output('', 'S'))
+            ->header('Content-Type', 'application/pdf')
+            ->header('Content-Disposition', $disposition . '; filename="' . $filename . '"');
     }
 }

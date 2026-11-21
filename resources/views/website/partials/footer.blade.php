@@ -14,13 +14,15 @@
         <div class="row g-4 justify-content-between">
             <!-- Col 1: Brand & Overview -->
             <div class="col-lg-3 col-md-6 col-12">
-                <div class="footer-brand-title">
-                    @if($logo && (file_exists(public_path('uploads/logo/crelogics-logo.png')) || !empty($settings['website_logo']) || platform_logo_url()))
-                        <img src="{{ $logo }}" alt="CreLogics" style="max-height: 40px; max-width: 150px; object-fit: contain; filter: brightness(0) invert(1);">
-                    @else
-                        Cre<span>Logics</span>
-                    @endif
-                    <span class="navbar-brand-badge ms-1" style="background: rgba(255,255,255,0.1); color: #fff;">ERP</span>
+                <div class="footer-brand-title mb-2">
+                    <a href="{{ url('/') }}" class="d-inline-flex align-items-center text-decoration-none">
+                        @if($logo && (file_exists(public_path('uploads/logo/crelogics-logo.png')) || !empty($settings['website_logo']) || platform_logo_url()))
+                            <img src="{{ $logo }}" alt="CreLogics" class="footer-brand-logo" style="max-height: 42px; max-width: 170px; object-fit: contain;">
+                        @else
+                            Cre<span>Logics</span>
+                        @endif
+                        <span class="navbar-brand-badge ms-2">ERP</span>
+                    </a>
                 </div>
                 <p class="footer-desc mt-3">
                     {{ __($footerDesc) }}

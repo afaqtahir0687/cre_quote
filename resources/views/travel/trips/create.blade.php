@@ -97,8 +97,45 @@
                 </div>
             </x-card>
 
+            <!-- Driver & Crew Details (For Manifest Statement) -->
+            <x-card :title="__('2. Driver & Crew Details (For Manifest Statement / بيان السائقين)')" class="mt-4">
+                <div class="row g-3">
+                    <div class="col-12">
+                        <span class="badge bg-primary text-white mb-2">{{ __('Primary Driver 1 (السائق الأول)') }}</span>
+                    </div>
+                    <div class="col-md-5">
+                        <label class="form-label fw-bold text-dark small">{{ __('Driver 1 Full Name') }}</label>
+                        <input type="text" name="driver_1_name" class="form-control" placeholder="{{ __('e.g. Adnan Khan') }}" value="{{ old('driver_1_name') }}">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label fw-bold text-dark small">{{ __('Nationality / Country') }}</label>
+                        <input type="text" name="driver_1_nationality" class="form-control" placeholder="{{ __('e.g. PAK, SAU, IND, EGY') }}" value="{{ old('driver_1_nationality', 'PAK') }}">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold text-dark small">{{ __('Phone / Iqama Number') }}</label>
+                        <input type="text" name="driver_1_phone" class="form-control" placeholder="{{ __('e.g. 2580796130 / 0501234567') }}" value="{{ old('driver_1_phone') }}">
+                    </div>
+
+                    <div class="col-12 mt-3 pt-2 border-top">
+                        <span class="badge bg-secondary text-white mb-2">{{ __('Co-Driver 2 (السائق الثاني - اختياري)') }}</span>
+                    </div>
+                    <div class="col-md-5">
+                        <label class="form-label fw-bold text-dark small">{{ __('Driver 2 Full Name') }}</label>
+                        <input type="text" name="driver_2_name" class="form-control" placeholder="{{ __('e.g. Showkat') }}" value="{{ old('driver_2_name') }}">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label fw-bold text-dark small">{{ __('Nationality / Country') }}</label>
+                        <input type="text" name="driver_2_nationality" class="form-control" placeholder="{{ __('e.g. PAK, SAU, IND, EGY') }}" value="{{ old('driver_2_nationality', 'PAK') }}">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold text-dark small">{{ __('Phone / Iqama Number') }}</label>
+                        <input type="text" name="driver_2_phone" class="form-control" placeholder="{{ __('e.g. 2620061750 / 0509876543') }}" value="{{ old('driver_2_phone') }}">
+                    </div>
+                </div>
+            </x-card>
+
             <!-- Hotel & Accommodation Details -->
-            <x-card :title="__('2. Hotel & Accommodation Partner (Optional)')" class="mt-4">
+            <x-card :title="__('3. Hotel & Accommodation Partner (Optional)')" class="mt-4">
                 <div class="row g-3">
                     <div class="col-md-8">
                         <label class="form-label fw-bold text-dark">{{ __('Hotel Name in Makkah / Madinah') }}</label>

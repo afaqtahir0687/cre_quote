@@ -113,15 +113,14 @@
     @else
         <x-table>
             <x-slot name="thead">
-                <th class="text-nowrap">{{ __('Trip Code') }}</th>
-                <th style="min-width: 220px;">{{ __('Trip / Route') }}</th>
-                <th class="text-nowrap">{{ __('Coach Bus') }}</th>
-                <th class="text-nowrap">{{ __('Departure Schedule') }}</th>
-                <th class="text-nowrap">{{ __('Duration') }}</th>
-                <th style="min-width: 170px;">{{ __('Seat Occupancy') }}</th>
+                <th class="text-nowrap" style="width: 100px;">{{ __('Trip Code') }}</th>
+                <th style="min-width: 190px;">{{ __('Trip / Route') }}</th>
+                <th class="text-nowrap" style="min-width: 150px;">{{ __('Coach Bus') }}</th>
+                <th class="text-nowrap" style="min-width: 140px;">{{ __('Departure & Duration') }}</th>
+                <th style="min-width: 140px;">{{ __('Seat Occupancy') }}</th>
                 <th class="text-nowrap">{{ __('Fares') }}</th>
                 <th class="text-nowrap">{{ __('Status') }}</th>
-                <th class="text-end pe-4 text-nowrap">{{ __('Action') }}</th>
+                <th class="text-end pe-3 text-nowrap" style="width: 70px;">{{ __('Action') }}</th>
             </x-slot>
 
             @foreach($trips as $trip)
@@ -146,7 +145,7 @@
                         </span>
                     </td>
                     <td>
-                        <a href="{{ route('travel.trips.show', $trip->id) }}" class="fw-bold text-dark text-decoration-none d-block">
+                        <a href="{{ route('travel.trips.show', $trip->id) }}" class="fw-semibold text-dark text-decoration-none d-block">
                             {{ tdb($trip->title) }}
                         </a>
                         <div class="text-muted extra-small mt-1">
@@ -157,7 +156,9 @@
                         </div>
                     </td>
                     <td class="text-nowrap">
-                        <div class="fw-semibold text-dark small"><i class="fas fa-bus text-primary me-1"></i>{{ tdb($trip->bus_name) }}</div>
+                        <div class="fw-semibold text-dark small text-truncate" style="max-width: 170px;" title="{{ $trip->bus_name }}">
+                            <i class="fas fa-bus text-primary me-1"></i>{{ tdb($trip->bus_name) }}
+                        </div>
                         @if($trip->bus_number)
                             <div class="extra-small text-muted font-monospace">{{ $trip->bus_number }}</div>
                         @endif
@@ -165,12 +166,10 @@
                     <td class="text-nowrap">
                         <span class="d-none">{{ $trip->departure_date ? $trip->departure_date->format('Y-m-d') : '' }}</span>
                         <div class="fw-semibold text-dark small">{{ $trip->departure_date ? $trip->departure_date->format('d-M-Y') : 'N/A' }}</div>
-                        <div class="extra-small text-muted">{{ $trip->departure_date ? $trip->departure_date->format('h:i A') : '' }}</div>
-                    </td>
-                    <td class="text-nowrap">
-                        <span class="badge bg-light text-dark border">
-                            <i class="fas fa-calendar-day text-primary me-1"></i>{{ $trip->duration_days }} {{ __('Days') }}
-                        </span>
+                        <div class="extra-small text-muted">
+                            {{ $trip->departure_date ? $trip->departure_date->format('h:i A') : '' }} 
+                            &bull; <span class="badge bg-light text-primary border py-0 px-1">{{ $trip->duration_days }} {{ __('Days') }}</span>
+                        </div>
                     </td>
                     <td>
                         <div class="d-flex justify-content-between extra-small mb-1">
@@ -190,36 +189,46 @@
                     <td class="text-nowrap">
                         <span class="badge-soft {{ $statusBadge }}">{{ __(ucfirst(str_replace('_', ' ', $trip->status))) }}</span>
                     </td>
-                    <td class="text-end pe-4">
+                    <td class="text-end pe-3">
                         <div class="dropdown">
-                            <button class="btn btn-sm btn-light" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="fas fa-ellipsis-v"></i>
+                            <button class="btn btn-light btn-sm rounded-circle shadow-none" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-ellipsis-v text-muted"></i>
                             </button>
-                            <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                            <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 py-2" style="min-width: 220px;">
                                 <li>
-                                    <a class="dropdown-item" href="{{ route('travel.trips.show', $trip->id) }}">
+                                    <a class="dropdown-item py-2" href="{{ route('travel.trips.show', $trip->id) }}">
                                         <i class="fas fa-bus me-2 text-primary"></i> {{ __('Seat Layout & Roster') }}
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item py-2" href="{{ route('travel.trips.manifest', $trip->id) }}" target="_blank">
+                                        <i class="fas fa-clipboard-list me-2 text-info"></i> {{ __('Trip Manifest (بيان الرحلة)') }}
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item py-2" href="{{ route('travel.trips.manifest_pdf', $trip->id) }}" target="_blank">
+                                        <i class="fas fa-file-pdf me-2 text-danger"></i> {{ __('Download Manifest PDF') }}
                                     </a>
                                 </li>
                                 @if($availableSeats > 0)
                                     <li>
-                                        <a class="dropdown-item" href="{{ route('travel.bookings.create', ['trip_id' => $trip->id]) }}">
+                                        <a class="dropdown-item py-2" href="{{ route('travel.bookings.create', ['trip_id' => $trip->id]) }}">
                                             <i class="fas fa-ticket-alt me-2 text-success"></i> {{ __('Book Passenger Seat') }}
                                         </a>
                                     </li>
                                 @endif
                                 <li>
-                                    <a class="dropdown-item" href="{{ route('travel.trips.edit', $trip->id) }}">
+                                    <a class="dropdown-item py-2" href="{{ route('travel.trips.edit', $trip->id) }}">
                                         <i class="fas fa-edit me-2 text-warning"></i> {{ __('Edit Trip') }}
                                     </a>
                                 </li>
                                 @if($bookedCount == 0)
-                                    <li><hr class="dropdown-divider"></li>
+                                    <li><hr class="dropdown-divider my-1"></li>
                                     <li>
                                         <form action="{{ route('travel.trips.destroy', $trip->id) }}" method="POST" class="delete-form" onsubmit="return confirm('{{ __('Are you sure you want to delete this trip?') }}')">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="dropdown-item text-danger">
+                                            <button type="submit" class="dropdown-item py-2 text-danger">
                                                 <i class="fas fa-trash me-2"></i> {{ __('Delete') }}
                                             </button>
                                         </form>

@@ -1,4 +1,4 @@
-<div class="table-responsive-lg" style="min-height: 250px;">
+<div class="table-responsive" style="min-height: 250px;">
     <table {{ $attributes->merge(['class' => 'table-modern']) }}>
         <thead>
             <tr>

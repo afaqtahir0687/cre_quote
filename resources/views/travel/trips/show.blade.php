@@ -24,7 +24,13 @@
             </p>
         </div>
     </div>
-    <div class="d-flex align-items-center gap-2">
+    <div class="d-flex align-items-center gap-2 flex-wrap">
+        <a href="{{ route('travel.trips.manifest', $trip->id) }}" target="_blank" class="btn btn-outline-primary d-flex align-items-center shadow-sm">
+            <i class="fas fa-file-invoice text-primary me-2"></i> {{ __('Trip Manifest / بيان الرحلة') }}
+        </a>
+        <a href="{{ route('travel.trips.manifest_pdf', $trip->id) }}" target="_blank" class="btn btn-outline-danger d-flex align-items-center shadow-sm">
+            <i class="fas fa-file-pdf text-danger me-2"></i> {{ __('PDF Manifest') }}
+        </a>
         <a href="{{ route('travel.trips.edit', $trip->id) }}" class="btn btn-outline-info d-flex align-items-center shadow-sm">
             <i class="fas fa-edit me-2"></i> {{ __('Edit Trip') }}
         </a>
@@ -291,18 +297,23 @@
     <!-- Right: Passenger Manifest Table & Action Roster -->
     <div class="col-xl-7 col-lg-6">
         <div class="card border-0 shadow-sm rounded-4 h-100 bg-white">
-            <div class="card-header bg-white border-bottom p-3 d-flex justify-content-between align-items-center">
+            <div class="card-header bg-white border-bottom p-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
                 <div>
                     <h5 class="fw-bold text-dark mb-0">
                         <i class="fas fa-clipboard-list text-success me-2"></i>{{ __('Confirmed Passenger Manifest') }}
                     </h5>
                     <span class="text-muted extra-small">{{ $trip->bookedSeatsCount() }} {{ __('passengers registered on this bus') }}</span>
                 </div>
-                @if($trip->availableSeatsCount() > 0)
-                    <a href="{{ route('travel.bookings.create', ['trip_id' => $trip->id]) }}" class="btn btn-sm btn-primary-modern">
-                        <i class="fas fa-plus-circle me-1"></i> {{ __('Book Passenger') }}
+                <div class="d-flex align-items-center gap-2">
+                    <a href="{{ route('travel.trips.manifest_pdf', $trip->id) }}" target="_blank" class="btn btn-sm btn-outline-danger">
+                        <i class="fas fa-file-pdf me-1"></i> {{ __('Download Statement PDF') }}
                     </a>
-                @endif
+                    @if($trip->availableSeatsCount() > 0)
+                        <a href="{{ route('travel.bookings.create', ['trip_id' => $trip->id]) }}" class="btn btn-sm btn-primary-modern">
+                            <i class="fas fa-plus-circle me-1"></i> {{ __('Book Passenger') }}
+                        </a>
+                    @endif
+                </div>
             </div>
 
             <div class="card-body p-0">

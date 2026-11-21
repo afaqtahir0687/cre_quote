@@ -136,6 +136,18 @@
                         <input type="text" name="passenger_id_number" id="passengerIdInput" class="form-control @error('passenger_id_number') is-invalid @enderror" placeholder="{{ __('e.g. 2489012345 or Passport #') }}" value="{{ old('passenger_id_number') }}">
                         @error('passenger_id_number') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold text-dark">{{ __('Nationality (الجنسية)') }}</label>
+                        <input type="text" name="passenger_nationality" id="passengerNatInput" class="form-control @error('passenger_nationality') is-invalid @enderror" placeholder="{{ __('e.g. PAK, IND, BAN, SAU, EGY, SRI') }}" value="{{ old('passenger_nationality', 'PAK') }}">
+                        @error('passenger_nationality') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold text-dark">{{ __('Pickup / Boarding Office Location (موقع الركوب)') }}</label>
+                        <input type="text" name="pickup_location" id="pickupLocationInput" class="form-control @error('pickup_location') is-invalid @enderror" placeholder="{{ __('e.g. Main Office, Batha, Villa 12, Nesto') }}" value="{{ old('pickup_location', current_shop()?->name ?? 'Office') }}">
+                        @error('pickup_location') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                    </div>
                 </div>
 
                 <!-- Multiple Passengers per Seat Details Container -->
@@ -580,7 +592,9 @@
                 currentVals[s] = {
                     name: row.querySelector(`[name="passengers[${s}][name]"]`)?.value || '',
                     gender: row.querySelector(`[name="passengers[${s}][gender]"]`)?.value || 'male',
-                    id_number: row.querySelector(`[name="passengers[${s}][id_number]"]`)?.value || ''
+                    id_number: row.querySelector(`[name="passengers[${s}][id_number]"]`)?.value || '',
+                    nationality: row.querySelector(`[name="passengers[${s}][nationality]"]`)?.value || '',
+                    pickup_location: row.querySelector(`[name="passengers[${s}][pickup_location]"]`)?.value || ''
                 };
             });
 
@@ -590,9 +604,11 @@
                 const saved = currentVals[sNum] || {};
                 const isLead = (idx === 0);
                 const defaultGender = saved.gender || (isLead ? (document.querySelector('[name="passenger_gender"]')?.value || 'male') : 'male');
+                const defaultNat = saved.nationality || (isLead ? (document.querySelector('[name="passenger_nationality"]')?.value || 'PAK') : 'PAK');
+                const defaultLoc = saved.pickup_location || (isLead ? (document.querySelector('[name="pickup_location"]')?.value || 'Office') : 'Office');
                 
                 const row = document.createElement('div');
-                row.className = 'p-2 rounded-3 border bg-light';
+                row.className = 'p-2 rounded-3 border bg-light mb-2';
                 row.setAttribute('data-seat-row', sNum);
                 row.innerHTML = `
                     <div class="row g-2 align-items-center">
@@ -600,20 +616,28 @@
                             <span class="badge bg-primary fs-6 px-2 py-1">#${sNum}</span>
                             <span class="badge ${isLead ? 'bg-success' : 'bg-secondary'} extra-small">${isLead ? '{{ __("Lead") }}' : '#' + (idx + 1)}</span>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <input type="text" name="passengers[${sNum}][name]" class="form-control form-control-sm bg-white" 
                                 placeholder="${isLead ? '{{ __("Lead Passenger Name") }}' : '{{ __("Passenger Full Name") }}'}" 
                                 value="${saved.name || (isLead ? (document.querySelector('[name="passenger_name"]')?.value || '') : '')}">
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-2">
+                            <input type="text" name="passengers[${sNum}][id_number]" class="form-control form-control-sm bg-white" 
+                                placeholder="{{ __('ID / Iqama') }}" value="${saved.id_number || (isLead ? (document.querySelector('[name="passenger_id_number"]')?.value || '') : '')}">
+                        </div>
+                        <div class="col-md-1">
+                            <input type="text" name="passengers[${sNum}][nationality]" class="form-control form-control-sm bg-white text-center" 
+                                placeholder="PAK" value="${saved.nationality || defaultNat}">
+                        </div>
+                        <div class="col-md-2">
+                            <input type="text" name="passengers[${sNum}][pickup_location]" class="form-control form-control-sm bg-white" 
+                                placeholder="{{ __('Office/Location') }}" value="${saved.pickup_location || defaultLoc}">
+                        </div>
+                        <div class="col-md-2">
                             <select name="passengers[${sNum}][gender]" class="form-select form-select-sm bg-white">
                                 <option value="male" ${defaultGender === 'male' ? 'selected' : ''}>{{ __('Male (ذكر)') }}</option>
                                 <option value="female" ${defaultGender === 'female' ? 'selected' : ''}>{{ __('Female (أنثى)') }}</option>
                             </select>
-                        </div>
-                        <div class="col-md-3">
-                            <input type="text" name="passengers[${sNum}][id_number]" class="form-control form-control-sm bg-white" 
-                                placeholder="{{ __('ID / Iqama / Passport #') }}" value="${saved.id_number || (isLead ? (document.querySelector('[name="passenger_id_number"]')?.value || '') : '')}">
                         </div>
                     </div>
                 `;

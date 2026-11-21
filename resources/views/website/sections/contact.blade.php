@@ -16,47 +16,47 @@
         <div class="row g-5 justify-content-center">
             <!-- Left Info Column -->
             <div class="col-lg-5">
-                <div class="p-4 p-lg-5 rounded-4 h-100" style="background: var(--clr-light); border: 1px solid var(--clr-border);">
+                <div class="p-4 p-lg-5 rounded-4 h-100"
+                    style="background: var(--clr-light); border: 1px solid var(--clr-border);">
                     <h4 class="fw-bold text-dark mb-4">{{ __('Contact Information') }}</h4>
-                    
+
                     <div class="d-flex align-items-start gap-3 mb-4">
-                        <div class="p-3 rounded-circle bg-white shadow-sm text-primary fs-5" style="width: 48px; height: 48px; display: flex; align-items: center; justify-content: center;">
+                        <div class="p-3 rounded-circle bg-white shadow-sm text-primary fs-5"
+                            style="width: 48px; height: 48px; display: flex; align-items: center; justify-content: center;">
                             <i class="fas fa-envelope"></i>
                         </div>
                         <div>
                             <div class="text-muted small">{{ __('Email Address') }}</div>
-                            <a href="mailto:{{ $settings['contact_email'] ?? 'support@crelogics.com' }}" class="fw-bold text-dark text-decoration-none">
-                                {{ $settings['contact_email'] ?? 'support@crelogics.com' }}
-                            </a>
+                            <div class="d-flex flex-column">
+
+                                <a href="mailto:info@crelogics.com" class="fw-bold text-dark text-decoration-none">
+                                    info@crelogics.com
+                                </a>
+                            </div>
                         </div>
                     </div>
 
                     <div class="d-flex align-items-start gap-3 mb-4">
-                        <div class="p-3 rounded-circle bg-white shadow-sm text-primary fs-5" style="width: 48px; height: 48px; display: flex; align-items: center; justify-content: center;">
-                            <i class="fas fa-phone-alt"></i>
-                        </div>
-                        <div>
-                            <div class="text-muted small">{{ __('Direct Line') }}</div>
-                            <span class="fw-bold text-dark">
-                                {{ $settings['contact_phone'] ?? '+996 598 500 143' }}
-                            </span>
-                        </div>
-                    </div>
-
-                    <div class="d-flex align-items-start gap-3 mb-4">
-                        <div class="p-3 rounded-circle bg-white shadow-sm text-success fs-5" style="width: 48px; height: 48px; display: flex; align-items: center; justify-content: center;">
+                        <div class="p-3 rounded-circle bg-white shadow-sm text-success fs-5"
+                            style="width: 48px; height: 48px; display: flex; align-items: center; justify-content: center;">
                             <i class="fab fa-whatsapp"></i>
                         </div>
                         <div>
                             <div class="text-muted small">{{ __('WhatsApp Support') }}</div>
-                            <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $settings['whatsapp_number'] ?? '996598500143') }}" target="_blank" class="fw-bold text-success text-decoration-none">
+                            <a href="https://wa.me/923451438102" target="_blank"
+                                class="fw-bold text-success text-decoration-none d-block">
+                                03451438102
+                            </a>
+                            <a href="https://wa.me/923451438102" target="_blank"
+                                class="text-success small text-decoration-none">
                                 {{ __('Instant Chat on WhatsApp →') }}
                             </a>
                         </div>
                     </div>
 
                     <div class="d-flex align-items-start gap-3">
-                        <div class="p-3 rounded-circle bg-white shadow-sm text-primary fs-5" style="width: 48px; height: 48px; display: flex; align-items: center; justify-content: center;">
+                        <div class="p-3 rounded-circle bg-white shadow-sm text-primary fs-5"
+                            style="width: 48px; height: 48px; display: flex; align-items: center; justify-content: center;">
                             <i class="fas fa-map-marker-alt"></i>
                         </div>
                         <div>
@@ -77,11 +77,13 @@
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <label class="form-label fw-bold small">{{ __('Your Full Name *') }}</label>
-                                <input type="text" name="name" class="form-control" required placeholder="e.g. Ali Imran">
+                                <input type="text" name="name" class="form-control" required
+                                    placeholder="e.g. Ali Imran">
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label fw-bold small">{{ __('Your Email Address *') }}</label>
-                                <input type="email" name="email" class="form-control" required placeholder="ali@example.com">
+                                <input type="email" name="email" class="form-control" required
+                                    placeholder="ali@example.com">
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label fw-bold small">{{ __('Phone Number') }}</label>
@@ -89,11 +91,13 @@
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label fw-bold small">{{ __('Subject') }}</label>
-                                <input type="text" name="subject" class="form-control" placeholder="Inquiry about Multi-Branch ERP">
+                                <input type="text" name="subject" class="form-control"
+                                    placeholder="Inquiry about Multi-Branch ERP">
                             </div>
                             <div class="col-12">
                                 <label class="form-label fw-bold small">{{ __('Your Message *') }}</label>
-                                <textarea name="message" class="form-control" rows="5" required placeholder="Tell us about your business requirements..."></textarea>
+                                <textarea name="message" class="form-control" rows="5" required
+                                    placeholder="Tell us about your business requirements..."></textarea>
                             </div>
                             <div class="col-12 text-end mt-4">
                                 <button type="submit" class="btn-erp-primary py-3 px-5">
@@ -108,4 +112,3 @@
         </div>
     </div>
 </section>
-

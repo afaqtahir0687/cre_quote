@@ -19,6 +19,8 @@ class TravelBooking extends Model
         'passenger_phone',
         'passenger_id_number',
         'passenger_gender',
+        'passenger_nationality',
+        'pickup_location',
         'salesman_name',
         'salesman_phone',
         'seat_number',
@@ -170,6 +172,20 @@ class TravelBooking extends Model
     public function getEffectiveHotelAddressAttribute(): ?string
     {
         return $this->hotel_address ?: $this->trip?->hotel_address;
+    }
+
+    /**
+     * Effective Pickup / Boarding Location.
+     */
+    public function getEffectivePickupLocationAttribute(): string
+    {
+        if (!empty($this->pickup_location)) {
+            return $this->pickup_location;
+        }
+        if ($this->shop && !empty($this->shop->name)) {
+            return $this->shop->name;
+        }
+        return 'Office';
     }
 
     /**
