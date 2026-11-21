@@ -8,13 +8,15 @@ use App\Models\Shop;
 
 class SettingController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $user = auth()->user();
 
         $shopId = null;
-        if ($user->isSuperAdmin()) {
-            $shopId = current_shop_id() ?: Shop::first()?->id;
+        if ($request->filled('shop_id') && $user->isSuperAdmin()) {
+            $shopId = (int) $request->shop_id;
+        } elseif ($user->isSuperAdmin()) {
+            $shopId = current_shop_id() ?: ($user->shop_id ?: Shop::first()?->id);
         } else {
             $shopId = (int) $user->shop_id;
         }
@@ -76,8 +78,10 @@ class SettingController extends Controller
         $user = auth()->user();
 
         $shopId = null;
-        if ($user->isSuperAdmin()) {
-            $shopId = current_shop_id() ?: Shop::first()?->id;
+        if ($request->filled('shop_id') && $user->isSuperAdmin()) {
+            $shopId = (int) $request->shop_id;
+        } elseif ($user->isSuperAdmin()) {
+            $shopId = current_shop_id() ?: ($user->shop_id ?: Shop::first()?->id);
         } else {
             $shopId = (int) $user->shop_id;
         }

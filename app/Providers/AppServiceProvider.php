@@ -24,9 +24,13 @@ class AppServiceProvider extends ServiceProvider
 
         // Share multi-shop context with all views
         view()->composer('*', function ($view) {
-            $view->with('setting', current_setting());
-            $view->with('currentShop', current_shop());
-            if (auth()->check() && auth()->user()->isSuperAdmin()) {
+            if (!$view->offsetExists('setting')) {
+                $view->with('setting', current_setting());
+            }
+            if (!$view->offsetExists('currentShop')) {
+                $view->with('currentShop', current_shop());
+            }
+            if (auth()->check() && auth()->user()->isSuperAdmin() && !$view->offsetExists('allShops')) {
                 $view->with('allShops', \App\Models\Shop::orderBy('name')->get());
             }
         });

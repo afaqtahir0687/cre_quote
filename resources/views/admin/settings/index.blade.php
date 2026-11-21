@@ -16,7 +16,7 @@
         <p class="text-muted small mb-0">Control company title, upload branding logo, manage billing prefixes, and invoice header information.</p>
     </div>
     
-    @if(auth()->user()->isSuperAdmin())
+    @if(auth()->user()?->isSuperAdmin())
         <div class="d-flex align-items-center gap-2">
             <a href="{{ route('super_admin.platform_settings') }}" class="btn btn-warning-subtle text-warning-emphasis border border-warning-subtle btn-sm">
                 <i class="fas fa-paint-brush me-1 text-warning"></i> Master Branding (Super Admin)
@@ -31,19 +31,34 @@
     @endif
 </div>
 
-@if(auth()->user()->isSuperAdmin())
-    <div class="alert alert-info d-flex align-items-center mb-4 shadow-sm border-0 border-start border-4 border-info">
-        <i class="fas fa-info-circle fa-2x text-info me-3"></i>
-        <div>
-            <div class="fw-bold text-dark">Currently Configuring: {{ $shop->name }} (Branch #{{ $shop->id }})</div>
-            <div class="small text-muted">All logo and branding changes saved on this page apply <strong>strictly to this shop</strong>. To change the master system logo for the Super Admin portal and login page, please visit <a href="{{ route('super_admin.platform_settings') }}" class="fw-bold text-primary text-decoration-underline">Master Branding</a>.</div>
+@if(auth()->user()?->isSuperAdmin())
+    <div class="alert alert-info d-flex flex-column flex-md-row align-items-md-center justify-content-between mb-4 shadow-sm border-0 border-start border-4 border-info gap-3">
+        <div class="d-flex align-items-center">
+            <i class="fas fa-info-circle fa-2x text-info me-3"></i>
+            <div>
+                <div class="fw-bold text-dark">{{ __('Currently Configuring') }}: {{ $shop->name }} ({{ __('Branch') }} #{{ $shop->id }})</div>
+                <div class="small text-muted">{{ __('All settings, logo, and bank details saved here apply strictly to this shop.') }}</div>
+            </div>
         </div>
+        @if(isset($allShops) && $allShops->count() > 1)
+            <div class="d-flex align-items-center gap-2">
+                <label class="form-label mb-0 small fw-bold text-dark text-nowrap"><i class="fas fa-store me-1 text-primary"></i> {{ __('Switch Shop') }}:</label>
+                <select class="form-select form-select-sm bg-white" onchange="window.location.href = '{{ route('settings.index') }}?shop_id=' + this.value" style="min-width: 200px;">
+                    @foreach($allShops as $sh)
+                        <option value="{{ $sh->id }}" {{ $sh->id == $shop->id ? 'selected' : '' }}>
+                            {{ $sh->name }} (#{{ $sh->id }})
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+        @endif
     </div>
 @endif
 
 <form action="{{ route('settings.update') }}" method="POST" enctype="multipart/form-data">
     @csrf
     @method('PUT')
+    <input type="hidden" name="shop_id" value="{{ $shop->id }}">
 
     <div class="row g-4">
         <!-- Card 1: Visual Brand & Logo Identity -->
@@ -106,8 +121,8 @@
                                     <tr>
                                         <td style="width: 55%; vertical-align: middle; text-align: left; padding-bottom: 8px;">
                                             <div style="background-color: #2b2e35; color: #ffffff; padding: 5px 12px; border-radius: 6px; display: inline-block;">
-                                                <div id="prev_bank_name" style="font-size: 14px; font-weight: bold; letter-spacing: 1px; line-height: 1.1;">{{ $setting->bank_name ?? 'SNB' }}</div>
-                                                <div id="prev_bank_name_ar" style="font-size: 8.5px; color: #d0d4dc; margin-top: 2px;">{{ $setting->bank_name_ar ?? 'البنك الأهلي السعودي' }}</div>
+                                                <div id="prev_bank_name" style="font-size: 14px; font-weight: bold; letter-spacing: 1px; line-height: 1.1;">{{ $setting?->bank_name ?: '-' }}</div>
+                                                <div id="prev_bank_name_ar" style="font-size: 8.5px; color: #d0d4dc; margin-top: 2px;">{{ $setting?->bank_name_ar ?: '-' }}</div>
                                             </div>
                                         </td>
                                         <td style="width: 45%; vertical-align: middle; text-align: right; padding-bottom: 8px;">
@@ -126,7 +141,7 @@
                                                     <td style="width: 22%; font-size: 10.5px; font-weight: bold; color: #222; text-align: left; white-space: nowrap;">Name :</td>
                                                     <td style="width: 56%; text-align: center; vertical-align: middle;">
                                                         <div id="prev_account_name" style="background-color: #2b2e35; color: #ffffff; font-size: 10px; font-weight: bold; padding: 4px 6px; border-radius: 5px; line-height: 1.2;">
-                                                            {{ $setting->bank_account_name ?? 'شركة وكالة الإعلان الجديد للدعاية والإعلان' }}
+                                                            {{ $setting?->bank_account_name ?: '-' }}
                                                         </div>
                                                     </td>
                                                     <td style="width: 22%; font-size: 10.5px; font-weight: bold; color: #222; text-align: right; white-space: nowrap; direction: rtl;">: الإسم</td>
@@ -141,7 +156,7 @@
                                                     <td style="width: 22%; font-size: 10.5px; font-weight: bold; color: #222; text-align: left; white-space: nowrap;">A.C. No. :</td>
                                                     <td style="width: 56%; text-align: center; vertical-align: middle;">
                                                         <div id="prev_account_no" style="background-color: #2b2e35; color: #ffffff; font-size: 11px; font-weight: bold; padding: 4px 6px; border-radius: 5px; letter-spacing: 0.5px;">
-                                                            {{ $setting->bank_account_no ?? '24400001567203' }}
+                                                            {{ $setting?->bank_account_no ?: '-' }}
                                                         </div>
                                                     </td>
                                                     <td style="width: 22%; font-size: 10.5px; font-weight: bold; color: #222; text-align: right; white-space: nowrap; direction: rtl;">: رقم الحساب</td>
@@ -156,7 +171,7 @@
                                                     <td style="width: 22%; font-size: 10.5px; font-weight: bold; color: #222; text-align: left; white-space: nowrap;">IBAN. :</td>
                                                     <td style="width: 56%; text-align: center; vertical-align: middle;">
                                                         <div id="prev_iban" style="background-color: #2b2e35; color: #ffffff; font-size: 9px; font-weight: bold; padding: 4px 6px; border-radius: 5px; letter-spacing: 0.3px;">
-                                                            {{ $setting->bank_iban ?? 'SA0210000024400001567203' }}
+                                                            {{ $setting?->bank_iban ?: '-' }}
                                                         </div>
                                                     </td>
                                                     <td style="width: 22%; font-size: 10.5px; font-weight: bold; color: #222; text-align: right; white-space: nowrap; direction: rtl;">: رقم الآيبان</td>
@@ -171,7 +186,7 @@
                                                     <td style="width: 22%; font-size: 10.5px; font-weight: bold; color: #222; text-align: left; white-space: nowrap;">SWIFT. :</td>
                                                     <td style="width: 56%; text-align: center; vertical-align: middle;">
                                                         <div id="prev_swift" style="background-color: #2b2e35; color: #ffffff; font-size: 11px; font-weight: bold; padding: 4px 6px; border-radius: 5px; letter-spacing: 1px;">
-                                                            {{ $setting->bank_swift ?? 'NCBKSAJE' }}
+                                                            {{ $setting?->bank_swift ?: '-' }}
                                                         </div>
                                                     </td>
                                                     <td style="width: 22%; font-size: 10.5px; font-weight: bold; color: #222; text-align: right; white-space: nowrap; direction: rtl;">: رمز السويفت</td>
@@ -196,7 +211,7 @@
                                     {{ __('Bank Name (English)') }}
                                 </label>
                                 <input type="text" name="bank_name" id="in_bank_name" class="form-control"
-                                       value="{{ old('bank_name', $setting?->bank_name ?? 'SNB') }}" placeholder="e.g. SNB">
+                                       value="{{ old('bank_name', $setting?->bank_name) }}" placeholder="e.g. SNB, Al Rajhi Bank">
                             </div>
 
                             <div class="col-md-6">
@@ -204,23 +219,23 @@
                                     {{ __('Bank Name (Arabic)') }}
                                 </label>
                                 <input type="text" name="bank_name_ar" id="in_bank_name_ar" class="form-control" dir="rtl"
-                                       value="{{ old('bank_name_ar', $setting?->bank_name_ar ?? 'البنك الأهلي السعودي') }}" placeholder="البنك الأهلي السعودي">
+                                       value="{{ old('bank_name_ar', $setting?->bank_name_ar) }}" placeholder="مثال: مصرف الراجحي، البنك الأهلي">
                             </div>
 
                             <div class="col-12">
                                 <label class="form-label fw-bold text-dark small">
-                                    {{ __('Account Holder / Company Name') }} *
+                                    {{ __('Account Holder / Company Name') }}
                                 </label>
                                 <input type="text" name="bank_account_name" id="in_account_name" class="form-control"
-                                       value="{{ old('bank_account_name', $setting?->bank_account_name ?? 'شركة وكالة الإعلان الجديد للدعاية والإعلان') }}" placeholder="e.g. شركة وكالة الإعلان الجديد للدعاية والإعلان">
+                                       value="{{ old('bank_account_name', $setting?->bank_account_name) }}" placeholder="{{ __('e.g. Company Bank Account Title') }}">
                             </div>
 
                             <div class="col-md-6">
                                 <label class="form-label fw-bold text-dark small">
-                                    {{ __('Account Number') }} *
+                                    {{ __('Account Number') }}
                                 </label>
                                 <input type="text" name="bank_account_no" id="in_account_no" class="form-control font-monospace"
-                                       value="{{ old('bank_account_no', $setting?->bank_account_no ?? '24400001567203') }}" placeholder="24400001567203">
+                                       value="{{ old('bank_account_no', $setting?->bank_account_no) }}" placeholder="e.g. 24400001567203">
                             </div>
 
                             <div class="col-md-6">
@@ -228,15 +243,15 @@
                                     {{ __('SWIFT Code') }}
                                 </label>
                                 <input type="text" name="bank_swift" id="in_swift" class="form-control font-monospace"
-                                       value="{{ old('bank_swift', $setting?->bank_swift ?? 'NCBKSAJE') }}" placeholder="NCBKSAJE">
+                                       value="{{ old('bank_swift', $setting?->bank_swift) }}" placeholder="e.g. NCBKSAJE">
                             </div>
 
                             <div class="col-12">
                                 <label class="form-label fw-bold text-dark small">
-                                    {{ __('IBAN Number') }} *
+                                    {{ __('IBAN Number') }}
                                 </label>
                                 <input type="text" name="bank_iban" id="in_iban" class="form-control font-monospace"
-                                       value="{{ old('bank_iban', $setting?->bank_iban ?? 'SA0210000024400001567203') }}" placeholder="SA0210000024400001567203">
+                                       value="{{ old('bank_iban', $setting?->bank_iban) }}" placeholder="e.g. SA0210000024400001567203">
                             </div>
 
                             <div class="col-md-12"><hr class="my-1 opacity-25"></div>
