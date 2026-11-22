@@ -23,12 +23,21 @@ class TravelBookingController extends Controller
      */
     public function index(Request $request)
     {
+        $isEmployee = auth()->user()->role === 'employee';
         $query = TravelBooking::forCurrentShop()
-            ->with(['trip', 'customer', 'shop'])
+            ->with(['trip', 'customer', 'shop', 'employee'])
             ->latest('id');
 
         if ($request->filled('trip_id')) {
             $query->where('travel_trip_id', $request->trip_id);
+        }
+
+        if ($request->filled('employee_id')) {
+            if ($request->employee_id === 'admin') {
+                $query->whereNull('employee_id');
+            } else {
+                $query->where('employee_id', $request->employee_id);
+            }
         }
 
         if ($request->filled('branch_id')) {
@@ -55,6 +64,7 @@ class TravelBookingController extends Controller
 
         $bookings = $query->paginate(15)->withQueryString();
         $trips = TravelTrip::forCurrentShop()->latest('departure_date')->get();
+        $employees = \App\Models\Employee::orderBy('name')->get();
         $currentShop = current_shop();
         $branches = ($currentShop && !$currentShop->parent_shop_id) ? $currentShop->branches : collect();
 
@@ -65,7 +75,7 @@ class TravelBookingController extends Controller
             'balance_due' => TravelBooking::forCurrentShop()->where('booking_status', 'confirmed')->sum('balance_due'),
         ];
 
-        return view('travel.bookings.index', compact('bookings', 'trips', 'stats', 'branches'));
+        return view('travel.bookings.index', compact('bookings', 'trips', 'stats', 'branches', 'employees', 'isEmployee'));
     }
 
     /**
@@ -87,8 +97,10 @@ class TravelBookingController extends Controller
         $selectedSeat = $request->filled('seat') ? (int) $request->seat : null;
 
         $customers = (current_shop_id() ? Customer::where('shop_id', current_shop_id()) : Customer::query())->orderBy('name')->get();
+        $employees = \App\Models\Employee::orderBy('name')->get();
+        $currentEmployee = \App\Models\Employee::where('user_id', auth()->id())->first();
 
-        return view('travel.bookings.create', compact('trips', 'selectedTrip', 'selectedSeat', 'customers'));
+        return view('travel.bookings.create', compact('trips', 'selectedTrip', 'selectedSeat', 'customers', 'employees', 'currentEmployee'));
     }
 
     /**
@@ -130,6 +142,11 @@ class TravelBookingController extends Controller
             'passenger_gender' => 'required|in:male,female',
             'passenger_nationality' => 'nullable|string|max:50',
             'pickup_location' => 'nullable|string|max:150',
+            'dropoff_location' => 'nullable|string|max:150',
+            'return_dropoff_location' => 'nullable|string|max:150',
+            'journey_type' => 'required|in:round_trip,one_way',
+            'one_way_direction' => 'nullable|in:outbound,return',
+            'employee_id' => 'nullable|exists:employees,id',
             'salesman_name' => 'nullable|string|max:100',
             'salesman_phone' => 'nullable|string|max:50',
             'package_type' => 'required|in:with_hotel,without_hotel',
@@ -187,12 +204,27 @@ class TravelBookingController extends Controller
 
         $passengersInput = $request->input('passengers', []);
 
-        $firstBooking = DB::transaction(function () use (
-            $validated, $trip, $seatNumbers, $seatsCount, $shopId,
-            $totalTravelFare, $totalHotelExpense, $totalExtraCharges, $totalDiscount,
-            $totalTaxAmount, $totalAmount, $paidAmount, $balanceDue, $paymentStatus, $request, $passengersInput
-        ) {
-            // Auto-create Customer in CRM if not found
+        try {
+            $firstBooking = DB::transaction(function () use (
+                $validated, $trip, $seatNumbers, $seatsCount, $shopId,
+                $totalTravelFare, $totalHotelExpense, $totalExtraCharges, $totalDiscount,
+                $totalTaxAmount, $totalAmount, $paidAmount, $balanceDue, $paymentStatus, $request, $passengersInput
+            ) {
+                // Strict concurrency anti-collision check inside transaction with lockForUpdate to prevent race condition across counters
+                $collision = TravelBooking::where('travel_trip_id', $trip->id)
+                    ->whereIn('seat_number', $seatNumbers)
+                    ->where('booking_status', 'confirmed')
+                    ->lockForUpdate()
+                    ->get();
+
+                if ($collision->isNotEmpty()) {
+                    $taken = $collision->map(fn($c) => "#{$c->seat_number} ({$c->passenger_name})")->join(', ');
+                    throw new \Exception(__("Selected seat(s) (:seats) were just booked by another counter/office. Please choose available seats.", [
+                        'seats' => $taken,
+                    ]));
+                }
+
+                // Auto-create Customer in CRM if not found
             $customerId = $validated['customer_id'] ?? null;
             if (!$customerId) {
                 $existingCust = Customer::where('shop_id', $shopId)
@@ -262,9 +294,10 @@ class TravelBookingController extends Controller
 
                 // Item: Hotel Accommodation (if applicable)
                 if ($totalHotelExpense > 0) {
+                    $roomLabel = TravelBooking::roomTypes()[$validated['room_type'] ?? 'quad_sharing']['label'] ?? ucfirst(str_replace('_', ' ', $validated['room_type'] ?? 'quad_sharing'));
                     InvoiceItem::create([
                         'invoice_id' => $invoice->id,
-                        'description' => "Hotel Accommodation: " . ($validated['hotel_name'] ?: ($trip->hotel_name ?: 'Designated Hotel')) . " (" . ucfirst(str_replace('_', ' ', $validated['room_type'] ?? 'quad_sharing')) . ")",
+                        'description' => "Hotel Accommodation: " . ($validated['hotel_name'] ?: ($trip->hotel_name ?: 'Designated Hotel')) . " (" . $roomLabel . ")",
                         'quantity' => 1,
                         'unit_price' => $totalHotelExpense,
                         'total' => $totalHotelExpense,
@@ -312,6 +345,8 @@ class TravelBookingController extends Controller
 
                 // Seat specific passenger details
                 $seatPassenger = $passengersInput[$sNum] ?? [];
+                $pDrop = !empty($seatPassenger['dropoff_location']) ? trim($seatPassenger['dropoff_location']) : ($validated['dropoff_location'] ?? null);
+                $pRetDrop = !empty($seatPassenger['return_dropoff_location']) ? trim($seatPassenger['return_dropoff_location']) : ($validated['return_dropoff_location'] ?? null);
                 if ($idx === 0) {
                     $pName = !empty($seatPassenger['name']) ? trim($seatPassenger['name']) : $validated['passenger_name'];
                     $pGender = !empty($seatPassenger['gender']) ? $seatPassenger['gender'] : $validated['passenger_gender'];
@@ -337,9 +372,15 @@ class TravelBookingController extends Controller
                     'passenger_gender' => $pGender,
                     'passenger_nationality' => $pNat,
                     'pickup_location' => $pLoc,
+                    'dropoff_location' => $pDrop,
+                    'return_dropoff_location' => $pRetDrop,
+                    'journey_type' => $validated['journey_type'] ?? 'round_trip',
+                    'one_way_direction' => ($validated['journey_type'] ?? 'round_trip') === 'one_way' ? ($validated['one_way_direction'] ?? 'outbound') : null,
+                    'employee_id' => $validated['employee_id'] ?? (auth()->user()?->employee?->id ?: null),
                     'salesman_name' => $validated['salesman_name'] ?? (auth()->user()?->name ?: null),
                     'salesman_phone' => $validated['salesman_phone'] ?? (auth()->user()?->employee?->phone ?: (auth()->user()?->phone ?: null)),
                     'seat_number' => $sNum,
+                    'seat_class' => $trip->getSeatClass((int)$sNum),
                     'package_type' => $validated['package_type'],
                     'hotel_name' => $validated['package_type'] === 'with_hotel' ? (($validated['hotel_name'] ?? null) ?: $trip->hotel_name) : null,
                     'hotel_address' => $validated['package_type'] === 'with_hotel' ? (($validated['hotel_address'] ?? null) ?: $trip->hotel_address) : null,
@@ -364,6 +405,11 @@ class TravelBookingController extends Controller
 
             return $createdBookings[0];
         });
+    } catch (\Exception $e) {
+        return redirect()->back()
+            ->withInput()
+            ->with('error', $e->getMessage());
+    }
 
         $seatsList = implode(', #', $seatNumbers);
         return redirect()->route('travel.bookings.voucher', $firstBooking->id)
@@ -483,6 +529,11 @@ class TravelBookingController extends Controller
             'passenger_gender' => 'required|in:male,female',
             'passenger_nationality' => 'nullable|string|max:50',
             'pickup_location' => 'nullable|string|max:150',
+            'dropoff_location' => 'nullable|string|max:150',
+            'return_dropoff_location' => 'nullable|string|max:150',
+            'journey_type' => 'required|in:round_trip,one_way',
+            'one_way_direction' => 'nullable|in:outbound,return',
+            'employee_id' => 'nullable|exists:employees,id',
             'salesman_name' => 'nullable|string|max:100',
             'salesman_phone' => 'nullable|string|max:50',
             'package_type' => 'required|in:with_hotel,without_hotel',

@@ -62,6 +62,7 @@
         </div>
     </div>
 
+    @if(!$isEmployee)
     <!-- 3. Cash Received -->
     <div class="col-sm-6 col-xl-3">
         <div class="card border-0 shadow-sm rounded-4 h-100 bg-white">
@@ -95,6 +96,42 @@
             </div>
         </div>
     </div>
+    @else
+    <!-- 3. Active Trips -->
+    <div class="col-sm-6 col-xl-3">
+        <div class="card border-0 shadow-sm rounded-4 h-100 bg-white">
+            <div class="card-body p-3 d-flex align-items-center gap-3">
+                <div class="rounded-circle d-flex align-items-center justify-content-center text-info shadow-xs" 
+                     style="width: 52px; height: 52px; background: rgba(14, 165, 233, 0.12); font-size: 1.35rem; flex-shrink: 0;">
+                    <i class="fas fa-bus"></i>
+                </div>
+                <div>
+                    <div class="text-muted extra-small text-uppercase fw-bold">{{ __('Active Scheduled Trips') }}</div>
+                    <h3 class="fw-bold text-dark mb-0">{{ $trips->count() }}</h3>
+                    <span class="extra-small text-muted">{{ __('Ready for seat booking') }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. Quick Actions -->
+    <div class="col-sm-6 col-xl-3">
+        <div class="card border-0 shadow-sm rounded-4 h-100 bg-white">
+            <div class="card-body p-3 d-flex align-items-center gap-3">
+                <div class="rounded-circle d-flex align-items-center justify-content-center text-success shadow-xs" 
+                     style="width: 52px; height: 52px; background: rgba(16, 185, 129, 0.12); font-size: 1.35rem; flex-shrink: 0;">
+                    <i class="fas fa-chair"></i>
+                </div>
+                <div>
+                    <div class="text-muted extra-small text-uppercase fw-bold">{{ __('Bus Availability') }}</div>
+                    <a href="{{ route('travel.trips.index') }}" class="btn btn-sm btn-outline-success mt-1 py-0 px-2 fw-semibold">
+                        <i class="fas fa-eye me-1"></i> {{ __('View Bus Seat Occupancy') }}
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
 </div>
 
 <!-- Filters Bar Card -->
@@ -118,7 +155,7 @@
                     </select>
                 </div>
             @endif
-            <div class="col-md-{{ isset($branches) && $branches->count() > 0 ? '2' : '3' }}">
+            <div class="col-md-2">
                 <select name="trip_id" class="form-select">
                     <option value="">{{ __('All Scheduled Trips') }}</option>
                     @foreach($trips as $t)
@@ -129,6 +166,19 @@
                 </select>
             </div>
             <div class="col-md-2">
+                <select name="employee_id" class="form-select">
+                    <option value="">{{ __('All Staff / Agents') }}</option>
+                    <option value="admin" {{ request('employee_id') === 'admin' ? 'selected' : '' }}>{{ __('Admin / Unassigned') }}</option>
+                    @if(isset($employees))
+                        @foreach($employees as $emp)
+                            <option value="{{ $emp->id }}" {{ request('employee_id') == $emp->id ? 'selected' : '' }}>
+                                {{ $emp->name }}
+                            </option>
+                        @endforeach
+                    @endif
+                </select>
+            </div>
+            <div class="col-md-2">
                 <select name="payment_status" class="form-select">
                     <option value="">{{ __('All Payment Statuses') }}</option>
                     <option value="paid" {{ request('payment_status') === 'paid' ? 'selected' : '' }}>{{ __('Paid in Full') }}</option>
@@ -136,11 +186,11 @@
                     <option value="unpaid" {{ request('payment_status') === 'unpaid' ? 'selected' : '' }}>{{ __('Unpaid') }}</option>
                 </select>
             </div>
-            <div class="col-md-{{ isset($branches) && $branches->count() > 0 ? '3' : '3' }} d-flex gap-2">
+            <div class="col-md d-flex gap-2">
                 <button type="submit" class="btn btn-primary-modern flex-grow-1">
                     <i class="fas fa-filter me-1"></i> {{ __('Filter') }}
                 </button>
-                @if(request()->has('search') || request()->has('trip_id') || request()->has('payment_status') || request()->has('branch_id'))
+                @if(request()->has('search') || request()->has('trip_id') || request()->has('payment_status') || request()->has('branch_id') || request()->has('employee_id'))
                     <a href="{{ route('travel.bookings.index') }}" class="btn btn-light border" title="{{ __('Clear Filters') }}">
                         <i class="fas fa-times"></i>
                     </a>
@@ -168,6 +218,7 @@
                 <th class="text-nowrap">{{ __('Booking Ref') }}</th>
                 <th style="min-width: 200px;">{{ __('Passenger Manifest') }}</th>
                 <th style="min-width: 190px;">{{ __('Trip & Route') }}</th>
+                <th class="text-nowrap">{{ __('Assigned Agent') }}</th>
                 <th class="text-nowrap">{{ __('Accommodation') }}</th>
                 <th class="text-nowrap">{{ __('Financials') }}</th>
                 <th class="text-nowrap">{{ __('Payment Status') }}</th>
@@ -179,8 +230,9 @@
                     <!-- Seat Number Badge -->
                     <td class="text-center">
                         <span class="badge bg-primary text-white fs-6 px-2 py-1 rounded-3 shadow-xs" style="min-width: 42px;">
-                            <i class="fas fa-chair extra-small me-1"></i>#{{ $booking->seat_number }}
+                            #{{ $booking->seat_number }}
                         </span>
+                        <div class="mt-1">{!! $booking->seatClassBadge() !!}</div>
                     </td>
 
                     <!-- Reference & Date -->
@@ -224,8 +276,33 @@
                                 <i class="fas fa-route text-primary me-1"></i>{{ tdb($booking->trip->departure_city) }} &rarr; {{ tdb($booking->trip->destination_city) }}
                                 &bull; {{ $booking->trip->departure_date ? $booking->trip->departure_date->format('d M, Y') : '' }}
                             </div>
+                            <div class="mt-1 d-flex align-items-center gap-1 flex-wrap">
+                                {!! $booking->journeyTypeBadge() !!}
+                                @if($booking->dropoff_location)
+                                    <span class="badge bg-light text-secondary border extra-small" title="{{ __('Drop-off Point') }}">
+                                        <i class="fas fa-map-marker-alt text-danger me-1"></i>{{ $booking->dropoff_location }}
+                                    </span>
+                                @endif
+                            </div>
                         @else
                             <span class="text-muted small">---</span>
+                        @endif
+                    </td>
+
+                    <!-- Assigned Agent -->
+                    <td>
+                        @if($booking->employee)
+                            <span class="badge bg-secondary-subtle text-secondary border extra-small d-inline-flex align-items-center gap-1">
+                                <i class="fas fa-user-tie text-primary"></i> {{ $booking->employee->name }}
+                            </span>
+                        @elseif($booking->salesman_name)
+                            <span class="badge bg-light text-dark border extra-small d-inline-flex align-items-center gap-1">
+                                <i class="fas fa-user text-muted"></i> {{ $booking->salesman_name }}
+                            </span>
+                        @else
+                            <span class="badge bg-light text-muted border extra-small">
+                                <i class="fas fa-user-shield text-muted me-1"></i>{{ __('Admin') }}
+                            </span>
                         @endif
                     </td>
 

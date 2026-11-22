@@ -92,6 +92,35 @@
                     </div>
 
                     <div class="col-md-6">
+                        <label class="form-label fw-bold text-dark">{{ __('Outbound Drop-off Point / Station (موقع النزول في الذهاب)') }}</label>
+                        <input type="text" name="dropoff_location" class="form-control @error('dropoff_location') is-invalid @enderror" value="{{ old('dropoff_location', $booking->dropoff_location) }}" placeholder="e.g. Makkah Haram, Kudai, Taif, Hotel">
+                        @error('dropoff_location') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold text-dark">{{ __('Return Journey Drop-off / Midway Stop (موقع النزول في العودة)') }}</label>
+                        <input type="text" name="return_dropoff_location" class="form-control @error('return_dropoff_location') is-invalid @enderror" value="{{ old('return_dropoff_location', $booking->return_dropoff_location) }}" placeholder="{{ __('e.g. Taif Highway Stop, Al-Kharj, Muzahimiyah, SASCO Station') }}">
+                        @error('return_dropoff_location') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold text-dark">{{ __('Journey Type (اتجاه الرحلة) *') }}</label>
+                        <select name="journey_type" class="form-select @error('journey_type') is-invalid @enderror" required onchange="document.getElementById('editOneWayDirGroup').style.display = this.value === 'one_way' ? 'block' : 'none'">
+                            <option value="round_trip" {{ old('journey_type', $booking->journey_type) === 'round_trip' ? 'selected' : '' }}>{{ __('Two-Way / Round Trip (ذهاب وعودة)') }}</option>
+                            <option value="one_way" {{ old('journey_type', $booking->journey_type) === 'one_way' ? 'selected' : '' }}>{{ __('One-Way (ذهاب فقط / اتجاه واحد)') }}</option>
+                        </select>
+                        @error('journey_type') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                    </div>
+
+                    <div class="col-md-6" id="editOneWayDirGroup" style="{{ old('journey_type', $booking->journey_type) === 'one_way' ? '' : 'display:none;' }}">
+                        <label class="form-label fw-bold text-dark">{{ __('One-Way Travel Direction') }}</label>
+                        <select name="one_way_direction" class="form-select">
+                            <option value="outbound" {{ old('one_way_direction', $booking->one_way_direction) === 'outbound' ? 'selected' : '' }}>{{ __('Outbound (ذهاب): Departure → Destination') }}</option>
+                            <option value="return" {{ old('one_way_direction', $booking->one_way_direction) === 'return' ? 'selected' : '' }}>{{ __('Inbound (عودة): Destination → Departure') }}</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-6">
                         <label class="form-label fw-bold text-dark">{{ __('Booking Status *') }}</label>
                         <select name="booking_status" class="form-select @error('booking_status') is-invalid @enderror" required>
                             <option value="confirmed" {{ old('booking_status', $booking->booking_status) === 'confirmed' ? 'selected' : '' }}>{{ __('Confirmed (Active Seat Lock)') }}</option>
@@ -149,12 +178,21 @@
                     </div>
 
                     <div class="col-md-4" id="roomTypeGroup">
-                        <label class="form-label fw-bold text-dark">{{ __('Room Sharing Type') }}</label>
+                        <label class="form-label fw-bold text-dark">{{ __('Room Category / Type') }}</label>
                         <select name="room_type" class="form-select">
-                            <option value="quad_sharing" {{ old('room_type', $booking->room_type) === 'quad_sharing' ? 'selected' : '' }}>{{ __('Quad Sharing (4 Beds)') }}</option>
-                            <option value="triple_sharing" {{ old('room_type', $booking->room_type) === 'triple_sharing' ? 'selected' : '' }}>{{ __('Triple Sharing (3 Beds)') }}</option>
-                            <option value="double_sharing" {{ old('room_type', $booking->room_type) === 'double_sharing' ? 'selected' : '' }}>{{ __('Double Sharing (2 Beds)') }}</option>
-                            <option value="single_private" {{ old('room_type', $booking->room_type) === 'single_private' ? 'selected' : '' }}>{{ __('Single Private Room') }}</option>
+                            <optgroup label="{{ __('Standard Shared Rooms (مشترك)') }}">
+                                <option value="quad_sharing" {{ old('room_type', $booking->room_type) === 'quad_sharing' ? 'selected' : '' }}>{{ __('Quad Sharing (رباعي - 4 Beds)') }}</option>
+                                <option value="triple_sharing" {{ old('room_type', $booking->room_type) === 'triple_sharing' ? 'selected' : '' }}>{{ __('Triple Sharing (ثلاثي - 3 Beds)') }}</option>
+                                <option value="double_sharing" {{ old('room_type', $booking->room_type) === 'double_sharing' ? 'selected' : '' }}>{{ __('Double Sharing (ثنائي - 2 Beds)') }}</option>
+                            </optgroup>
+                            <optgroup label="{{ __('Personal & Private Rooms (خاص / شخصي)') }}">
+                                <option value="single_private" {{ old('room_type', $booking->room_type) === 'single_private' ? 'selected' : '' }}>{{ __('Personal / Single Private Room (شخصي / مفرد)') }}</option>
+                                <option value="private_room" {{ old('room_type', $booking->room_type) === 'private_room' ? 'selected' : '' }}>{{ __('Private Family Room (غرفة عائلية خاصة)') }}</option>
+                            </optgroup>
+                            <optgroup label="{{ __('Luxury & VIP Suites (أجنحة وغرف فاخرة)') }}">
+                                <option value="luxury_haram_view" {{ old('room_type', $booking->room_type) === 'luxury_haram_view' ? 'selected' : '' }}>👑 {{ __('Luxury Haram View (إطلالة الحرم فاخرة)') }}</option>
+                                <option value="executive_suite" {{ old('room_type', $booking->room_type) === 'executive_suite' ? 'selected' : '' }}>⭐ {{ __('Executive Luxury Suite (جناح تنفيذي فاخر)') }}</option>
+                            </optgroup>
                         </select>
                     </div>
 

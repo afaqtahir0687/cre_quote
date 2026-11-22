@@ -160,8 +160,8 @@
                 <th class="iqama-col">{{ __('Iqama / Passport') }}<br><span style="font-size: 5.5pt; font-weight: normal;">{{ __('رقم الهوية / الجواز') }}</span></th>
                 <th class="mobile-col">{{ __('Mobile Number') }}<br><span style="font-size: 5.5pt; font-weight: normal;">{{ __('رقم الجوال') }}</span></th>
                 <th class="tkt-col">{{ __('Ticket #') }}<br><span style="font-size: 5.5pt; font-weight: normal;">{{ __('رقم التذكرة') }}</span></th>
-                <th class="day-col">{{ __('Duration') }}<br><span style="font-size: 5.5pt; font-weight: normal;">{{ __('المدة') }}</span></th>
-                <th class="loc-col">{{ __('Pickup Office') }}<br><span style="font-size: 5.5pt; font-weight: normal;">{{ __('موقع الركوب') }}</span></th>
+                <th class="day-col">{{ __('Type/Dur') }}<br><span style="font-size: 5.5pt; font-weight: normal;">{{ __('النوع/المدة') }}</span></th>
+                <th class="loc-col">{{ __('Pickup & Drop') }}<br><span style="font-size: 5.5pt; font-weight: normal;">{{ __('الركوب والنزول') }}</span></th>
                 <th class="unp-col">{{ __('Unpaid') }}<br><span style="font-size: 5.5pt; font-weight: normal;">{{ __('المتبقي') }}</span></th>
                 <th class="sar-col">{{ __('Total (SAR)') }}<br><span style="font-size: 5.5pt; font-weight: normal;">{{ __('المبلغ (ريال)') }}</span></th>
                 <th class="htl-col">{{ __('Hotel') }}<br><span style="font-size: 5.5pt; font-weight: normal;">{{ __('الفندق') }}</span></th>
@@ -191,10 +191,18 @@
                             $nat = substr($nat, 0, 3);
                         }
 
-                        $dayTag = ($trip->duration_days ?: 3) . 'DAY';
+                        $dayTag = $b->isOneWay() ? '1-WAY' : (($trip->duration_days ?: 3) . 'D');
                         $loc = $b->pickup_location ?: ($b->shop?->name ?: 'OFICE');
-                        if (strlen($loc) > 11) {
-                            $loc = substr($loc, 0, 10) . '.';
+                        $drop = $b->dropoff_location ?: '';
+                        $retDrop = $b->return_dropoff_location ?: '';
+                        if (strlen($loc) > 9) {
+                            $loc = substr($loc, 0, 8) . '.';
+                        }
+                        if (strlen($drop) > 9) {
+                            $drop = substr($drop, 0, 8) . '.';
+                        }
+                        if (strlen($retDrop) > 9) {
+                            $retDrop = substr($retDrop, 0, 8) . '.';
                         }
 
                         $tkt = preg_replace('/[^0-9]/', '', $b->booking_reference);
@@ -205,9 +213,14 @@
                             $htl = substr($htl, 0, 10) . '.';
                         }
                     }
+                    $sClass = $b ? ($b->seat_class ?: $trip->getSeatClass($sn)) : $trip->getSeatClass($sn);
+                    $classColor = $sClass === 'vip' ? '#b45309' : ($sClass === 'business' ? '#1d4ed8' : '#047857');
                 @endphp
                 <tr>
-                    <td class="sn-col">{{ $sn }}</td>
+                    <td class="sn-col">
+                        <strong>{{ $sn }}</strong>
+                        <span style="font-size: 5pt; color: {{ $classColor }}; display: block; font-weight: bold;">{{ strtoupper(substr($sClass, 0, 3)) }}</span>
+                    </td>
                     <td class="name-col">
                         @if($b)
                             {{ strtoupper($b->passenger_name) }}
@@ -220,7 +233,17 @@
                     <td class="mobile-col">{{ $b ? ($b->passenger_phone ?: '--') : '' }}</td>
                     <td class="tkt-col">{{ $b ? $tkt : '' }}</td>
                     <td class="day-col">{{ $b ? $dayTag : '' }}</td>
-                    <td class="loc-col">{{ $b ? $loc : '' }}</td>
+                    <td class="loc-col" style="font-size: 5pt; line-height: 1.1;">
+                        @if($b)
+                            <div><span style="color: #16a34a; font-weight: bold;">P:</span> {{ $loc }}</div>
+                            @if(!empty($drop))
+                                <div style="color: #dc2626;"><span style="font-weight: bold;">D:</span> {{ $drop }}</div>
+                            @endif
+                            @if(!empty($retDrop))
+                                <div style="color: #b45309;"><span style="font-weight: bold;">R:</span> {{ $retDrop }}</div>
+                            @endif
+                        @endif
+                    </td>
                     <td class="unp-col">{{ $b ? ((float)$b->balance_due > 0 ? number_format($b->balance_due, 0) : '0') : '' }}</td>
                     <td class="sar-col">{{ $b ? number_format($b->total_amount, 0) : '' }}</td>
                     <td class="htl-col">{{ $b ? $htl : '' }}</td>

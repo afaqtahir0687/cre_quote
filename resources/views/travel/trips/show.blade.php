@@ -31,9 +31,11 @@
         <a href="{{ route('travel.trips.manifest_pdf', $trip->id) }}" target="_blank" class="btn btn-outline-danger d-flex align-items-center shadow-sm">
             <i class="fas fa-file-pdf text-danger me-2"></i> {{ __('PDF Manifest') }}
         </a>
+        @if(!$isEmployee)
         <a href="{{ route('travel.trips.edit', $trip->id) }}" class="btn btn-outline-info d-flex align-items-center shadow-sm">
             <i class="fas fa-edit me-2"></i> {{ __('Edit Trip') }}
         </a>
+        @endif
         @if($trip->availableSeatsCount() > 0)
             <a href="{{ route('travel.bookings.create', ['trip_id' => $trip->id]) }}" class="btn btn-primary-modern d-flex align-items-center shadow-sm text-nowrap">
                 <i class="fas fa-plus me-2"></i> {{ __('Book Passenger Seat') }}
@@ -65,13 +67,13 @@
                 </div>
             </div>
             <div class="d-flex justify-content-between align-items-baseline">
-                <h4 class="fw-bold text-dark mb-0">{{ $trip->bookedSeatsCount() }} / {{ $trip->total_seats }}</h4>
-                <span class="badge {{ $trip->availableSeatsCount() > 0 ? 'badge-soft-success' : 'badge-soft-danger' }}">
+                <h4 class="fw-bold text-dark mb-0" id="showLiveOccupancyCount">{{ $trip->bookedSeatsCount() }} / {{ $trip->total_seats }}</h4>
+                <span class="badge {{ $trip->availableSeatsCount() > 0 ? 'badge-soft-success' : 'badge-soft-danger' }}" id="showLiveAvailableBadge">
                     {{ $trip->availableSeatsCount() }} {{ __('Available') }}
                 </span>
             </div>
             <div class="progress mt-2" style="height: 6px; border-radius: 4px;">
-                <div class="progress-bar bg-success" style="width: {{ round(($trip->bookedSeatsCount() / max(1, $trip->total_seats)) * 100) }}%;"></div>
+                <div class="progress-bar bg-success" id="showLiveProgressBar" style="width: {{ round(($trip->bookedSeatsCount() / max(1, $trip->total_seats)) * 100) }}%;"></div>
             </div>
         </div>
     </div>
@@ -84,8 +86,12 @@
                 </div>
             </div>
             <div class="d-flex justify-content-between small">
-                <span class="text-muted">{{ __('Travel Only:') }}</span>
+                <span class="text-muted">{{ __('Round-Trip:') }}</span>
                 <strong class="text-dark">{{ format_currency($trip->price_without_hotel) }}</strong>
+            </div>
+            <div class="d-flex justify-content-between small text-info mt-1">
+                <span>{{ __('One-Way Only:') }}</span>
+                <strong>{{ format_currency($trip->one_way_price ?: round($trip->price_without_hotel / 2, 2)) }}</strong>
             </div>
             <div class="d-flex justify-content-between small text-success mt-1">
                 <span>{{ __('With Hotel:') }}</span>
@@ -95,19 +101,30 @@
     </div>
     <div class="col-sm-6 col-md-3">
         <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
-            <div class="d-flex align-items-center justify-content-between mb-2">
-                <span class="text-muted small fw-semibold">{{ __('Revenue Realized') }}</span>
-                <div class="d-inline-flex p-2 rounded-3 bg-warning-subtle text-warning">
-                    <i class="fas fa-coins"></i>
+            @if($isEmployee)
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <span class="text-muted small fw-semibold">{{ __('Booking Access') }}</span>
+                    <div class="d-inline-flex p-2 rounded-3 bg-success-subtle text-success">
+                        <i class="fas fa-users"></i>
+                    </div>
                 </div>
-            </div>
-            <h4 class="fw-bold text-success mb-0">{{ format_currency($trip->totalRevenue()) }}</h4>
-            <span class="text-muted extra-small mt-auto">{{ __('Across') }} {{ $trip->bookedSeatsCount() }} {{ __('confirmed bookings') }}</span>
+                <h5 class="fw-bold text-success mb-0 text-truncate">{{ __('Open to All Staff') }}</h5>
+                <span class="text-muted extra-small mt-auto">{{ __('Live cross-counter sync active') }}</span>
+            @else
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <span class="text-muted small fw-semibold">{{ __('Revenue Realized') }}</span>
+                    <div class="d-inline-flex p-2 rounded-3 bg-warning-subtle text-warning">
+                        <i class="fas fa-coins"></i>
+                    </div>
+                </div>
+                <h4 class="fw-bold text-success mb-0">{{ format_currency($trip->totalRevenue()) }}</h4>
+                <span class="text-muted extra-small mt-auto">{{ __('Across') }} {{ $trip->bookedSeatsCount() }} {{ __('confirmed bookings') }}</span>
+            @endif
         </div>
     </div>
 </div>
 
-@if(isset($branchBreakdown) && $branchBreakdown->count() > 0)
+@if(!$isEmployee && isset($branchBreakdown) && $branchBreakdown->count() > 0)
 <!-- Multi-Branch Fleet Pooling Summary -->
 <div class="card border-0 shadow-sm rounded-4 mb-4 bg-white">
     <div class="card-body p-3">
@@ -146,12 +163,20 @@
                     <h5 class="fw-bold text-dark mb-0">
                         <i class="fas fa-bus text-primary me-2"></i>{{ __('Interactive 49-Seat Bus Layout') }}
                     </h5>
-                    <span class="text-muted extra-small">{{ __('Click any green seat to book passenger') }}</span>
+                    <div class="d-flex align-items-center gap-2 mt-1">
+                        <span class="text-muted extra-small">{{ __('Click any available seat to book passenger') }}</span>
+                        <span class="badge bg-success bg-opacity-25 text-success border border-success-subtle extra-small d-flex align-items-center gap-1" title="{{ __('Real-time seat status auto updates across all counters & offices without page refresh') }}">
+                            <span class="live-dot-pulse"></span>
+                            <span>{{ __('Live Sync Active') }}</span>
+                        </span>
+                    </div>
                 </div>
                 <!-- Legend -->
-                <div class="d-flex gap-2">
-                    <span class="badge bg-success-subtle text-success border border-success-subtle extra-small"><i class="fas fa-check-circle me-1"></i> {{ __('Available') }}</span>
-                    <span class="badge bg-danger-subtle text-danger border border-danger-subtle extra-small"><i class="fas fa-user me-1"></i> {{ __('Booked') }}</span>
+                <div class="d-flex gap-2 flex-wrap">
+                    <span class="badge bg-warning text-dark border border-warning-subtle extra-small"><i class="fas fa-crown text-dark me-1"></i> {{ __('VIP') }}</span>
+                    <span class="badge bg-primary text-white extra-small"><i class="fas fa-briefcase me-1"></i> {{ __('Business') }}</span>
+                    <span class="badge bg-success-subtle text-success border border-success-subtle extra-small"><i class="fas fa-chair me-1"></i> {{ __('Economy') }}</span>
+                    <span class="badge bg-danger text-white extra-small"><i class="fas fa-user me-1"></i> {{ __('Booked') }}</span>
                 </div>
             </div>
 
@@ -192,24 +217,36 @@
                                             $sNum = $seatCounter++;
                                             $isBooked = in_array($sNum, $bookedSeats, true);
                                             $b = $bookingsBySeat->get($sNum);
+                                            $sClass = $isBooked ? ($b?->seat_class ?: $trip->getSeatClass($sNum)) : $trip->getSeatClass($sNum);
+                                            $classStyle = match($sClass) {
+                                                'vip' => 'seat-vip',
+                                                'business' => 'seat-business',
+                                                default => 'seat-economy'
+                                            };
+                                            $classIcon = match($sClass) {
+                                                'vip' => 'fas fa-crown',
+                                                'business' => 'fas fa-briefcase',
+                                                default => 'fas fa-chair'
+                                            };
+                                            $classLabel = ucfirst($sClass);
                                         @endphp
-                                        <div class="seat-wrapper position-relative">
+                                        <div class="seat-wrapper position-relative" id="showSeatWrapper_{{ $sNum }}">
                                             @if($isBooked)
                                                 <a href="{{ route('travel.bookings.show', $b->id) }}" 
                                                    class="btn-seat seat-booked text-decoration-none"
                                                    data-bs-toggle="tooltip" 
                                                    data-bs-html="true"
-                                                   title="<strong>{{ __('Seat') }} #{{ $sNum }}</strong><br>{{ $b->passenger_name }}<br>{{ $b->passenger_phone }}<br><span class='badge bg-warning'>{{ $b->package_type === 'with_hotel' ? __('With Hotel') : __('No Hotel') }}</span>">
+                                                   title="<strong>{{ __('Seat') }} #{{ $sNum }} ({{ $classLabel }})</strong><br>{{ $b->passenger_name }}<br>{{ $b->passenger_phone }}<br><span class='badge bg-warning'>{{ $b->package_type === 'with_hotel' ? __('With Hotel') : __('No Hotel') }}</span>">
                                                     <span class="seat-num">{{ $sNum }}</span>
                                                     <i class="fas fa-user seat-icon"></i>
                                                 </a>
                                             @else
                                                 <a href="{{ route('travel.bookings.create', ['trip_id' => $trip->id, 'seat' => $sNum]) }}" 
-                                                   class="btn-seat seat-available text-decoration-none"
+                                                   class="btn-seat {{ $classStyle }} text-decoration-none"
                                                    data-bs-toggle="tooltip"
-                                                   title="{{ __('Seat #') }}{{ $sNum }} - {{ __('Available (Click to Book)') }}">
+                                                   title="{{ __('Seat #') }}{{ $sNum }} [{{ $classLabel }}] - {{ __('Available (Click to Book)') }}">
                                                     <span class="seat-num">{{ $sNum }}</span>
-                                                    <i class="fas fa-chair seat-icon"></i>
+                                                    <i class="{{ $classIcon }} seat-icon"></i>
                                                 </a>
                                             @endif
                                         </div>
@@ -228,24 +265,36 @@
                                             $sNum = $seatCounter++;
                                             $isBooked = in_array($sNum, $bookedSeats, true);
                                             $b = $bookingsBySeat->get($sNum);
+                                            $sClass = $isBooked ? ($b?->seat_class ?: $trip->getSeatClass($sNum)) : $trip->getSeatClass($sNum);
+                                            $classStyle = match($sClass) {
+                                                'vip' => 'seat-vip',
+                                                'business' => 'seat-business',
+                                                default => 'seat-economy'
+                                            };
+                                            $classIcon = match($sClass) {
+                                                'vip' => 'fas fa-crown',
+                                                'business' => 'fas fa-briefcase',
+                                                default => 'fas fa-chair'
+                                            };
+                                            $classLabel = ucfirst($sClass);
                                         @endphp
-                                        <div class="seat-wrapper position-relative">
+                                        <div class="seat-wrapper position-relative" id="showSeatWrapper_{{ $sNum }}">
                                             @if($isBooked)
                                                 <a href="{{ route('travel.bookings.show', $b->id) }}" 
                                                    class="btn-seat seat-booked text-decoration-none"
                                                    data-bs-toggle="tooltip" 
                                                    data-bs-html="true"
-                                                   title="<strong>{{ __('Seat') }} #{{ $sNum }}</strong><br>{{ $b->passenger_name }}<br>{{ $b->passenger_phone }}<br><span class='badge bg-warning'>{{ $b->package_type === 'with_hotel' ? __('With Hotel') : __('No Hotel') }}</span>">
+                                                   title="<strong>{{ __('Seat') }} #{{ $sNum }} ({{ $classLabel }})</strong><br>{{ $b->passenger_name }}<br>{{ $b->passenger_phone }}<br><span class='badge bg-warning'>{{ $b->package_type === 'with_hotel' ? __('With Hotel') : __('No Hotel') }}</span>">
                                                     <span class="seat-num">{{ $sNum }}</span>
                                                     <i class="fas fa-user seat-icon"></i>
                                                 </a>
                                             @else
                                                 <a href="{{ route('travel.bookings.create', ['trip_id' => $trip->id, 'seat' => $sNum]) }}" 
-                                                   class="btn-seat seat-available text-decoration-none"
+                                                   class="btn-seat {{ $classStyle }} text-decoration-none"
                                                    data-bs-toggle="tooltip"
-                                                   title="{{ __('Seat #') }}{{ $sNum }} - {{ __('Available (Click to Book)') }}">
+                                                   title="{{ __('Seat #') }}{{ $sNum }} [{{ $classLabel }}] - {{ __('Available (Click to Book)') }}">
                                                     <span class="seat-num">{{ $sNum }}</span>
-                                                    <i class="fas fa-chair seat-icon"></i>
+                                                    <i class="{{ $classIcon }} seat-icon"></i>
                                                 </a>
                                             @endif
                                         </div>
@@ -263,24 +312,36 @@
                                         $sNum = $seatCounter++;
                                         $isBooked = in_array($sNum, $bookedSeats, true);
                                         $b = $bookingsBySeat->get($sNum);
+                                        $sClass = $isBooked ? ($b?->seat_class ?: $trip->getSeatClass($sNum)) : $trip->getSeatClass($sNum);
+                                        $classStyle = match($sClass) {
+                                            'vip' => 'seat-vip',
+                                            'business' => 'seat-business',
+                                            default => 'seat-economy'
+                                        };
+                                        $classIcon = match($sClass) {
+                                            'vip' => 'fas fa-crown',
+                                            'business' => 'fas fa-briefcase',
+                                            default => 'fas fa-chair'
+                                        };
+                                        $classLabel = ucfirst($sClass);
                                     @endphp
-                                    <div class="seat-wrapper flex-grow-1 text-center">
+                                    <div class="seat-wrapper flex-grow-1 text-center" id="showSeatWrapper_{{ $sNum }}">
                                         @if($isBooked)
                                             <a href="{{ route('travel.bookings.show', $b->id) }}" 
                                                class="btn-seat seat-booked text-decoration-none w-100"
                                                data-bs-toggle="tooltip" 
                                                data-bs-html="true"
-                                               title="<strong>{{ __('Seat') }} #{{ $sNum }}</strong><br>{{ $b->passenger_name }}<br><span class='badge bg-warning'>{{ $b->package_type === 'with_hotel' ? __('With Hotel') : __('No Hotel') }}</span>">
+                                               title="<strong>{{ __('Seat') }} #{{ $sNum }} ({{ $classLabel }})</strong><br>{{ $b->passenger_name }}<br><span class='badge bg-warning'>{{ $b->package_type === 'with_hotel' ? __('With Hotel') : __('No Hotel') }}</span>">
                                                 <span class="seat-num">{{ $sNum }}</span>
                                                 <i class="fas fa-user seat-icon"></i>
                                             </a>
                                         @else
                                             <a href="{{ route('travel.bookings.create', ['trip_id' => $trip->id, 'seat' => $sNum]) }}" 
-                                               class="btn-seat seat-available text-decoration-none w-100"
+                                               class="btn-seat {{ $classStyle }} text-decoration-none w-100"
                                                data-bs-toggle="tooltip"
-                                               title="{{ __('Seat #') }}{{ $sNum }} - {{ __('Available (Click to Book)') }}">
+                                               title="{{ __('Seat #') }}{{ $sNum }} [{{ $classLabel }}] - {{ __('Available (Click to Book)') }}">
                                                 <span class="seat-num">{{ $sNum }}</span>
-                                                <i class="fas fa-chair seat-icon"></i>
+                                                <i class="{{ $classIcon }} seat-icon"></i>
                                             </a>
                                         @endif
                                     </div>
@@ -336,6 +397,7 @@
                                         <div class="p-2 rounded-3 text-center fw-bold bg-primary text-white" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem;">
                                             #{{ $booking->seat_number }}
                                         </div>
+                                        <div class="mt-1 text-center">{!! $booking->seatClassBadge() !!}</div>
                                     </td>
                                     <td>
                                         <a href="{{ route('travel.bookings.show', $booking->id) }}" class="fw-bold text-dark text-decoration-none">
@@ -438,6 +500,42 @@
     color: #047857;
 }
 
+.seat-vip {
+    background-color: #FEF3C7;
+    border: 1.5px solid #F59E0B;
+    color: #92400E;
+}
+.seat-vip:hover {
+    background-color: #F59E0B;
+    color: #FFFFFF;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(245, 158, 11, 0.4);
+}
+
+.seat-business {
+    background-color: #EFF6FF;
+    border: 1.5px solid #3B82F6;
+    color: #1D4ED8;
+}
+.seat-business:hover {
+    background-color: #3B82F6;
+    color: #FFFFFF;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(59, 130, 246, 0.4);
+}
+
+.seat-economy {
+    background-color: #ECFDF5;
+    border: 1.5px solid #10B981;
+    color: #047857;
+}
+.seat-economy:hover {
+    background-color: #10B981;
+    color: #FFFFFF;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(16, 185, 129, 0.35);
+}
+
 .seat-available:hover {
     background-color: #10B981;
     color: #FFFFFF;
@@ -463,16 +561,132 @@
     font-size: 0.72rem;
     margin-top: 2px;
 }
+
+.live-dot-pulse {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #10B981;
+    box-shadow: 0 0 0 rgba(16, 185, 129, 0.7);
+    animation: livePulseAnim 1.8s infinite;
+}
+
+@keyframes livePulseAnim {
+    0% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+    }
+    70% {
+        transform: scale(1.15);
+        box-shadow: 0 0 0 7px rgba(16, 185, 129, 0);
+    }
+    100% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+    }
+}
 </style>
 
 @push('scripts')
 <script>
-    // Initialize Bootstrap tooltips
+    let tripShowPollingInterval = null;
+
+    // Initialize Bootstrap tooltips & Start Live Sync
     document.addEventListener("DOMContentLoaded", function () {
+        initTooltips();
+        startTripShowLiveSync();
+    });
+
+    function initTooltips() {
         var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-            return new bootstrap.Tooltip(tooltipTriggerEl);
+        tooltipTriggerList.forEach(function (tooltipTriggerEl) {
+            new bootstrap.Tooltip(tooltipTriggerEl);
         });
+    }
+
+    function startTripShowLiveSync() {
+        tripShowPollingInterval = setInterval(() => {
+            fetch(`{{ url('travel/trips/' . $trip->id . '/seats-json') }}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (!data || !data.seats || !Array.isArray(data.seats)) return;
+                    let bookedCount = 0;
+
+                    data.seats.forEach(s => {
+                        if (s.is_booked) bookedCount++;
+                        const wrap = document.getElementById('showSeatWrapper_' + s.seat_number);
+                        if (!wrap) return;
+
+                        const curA = wrap.querySelector('a');
+                        const isNowBooked = !!s.is_booked;
+                        const wasBooked = curA?.classList.contains('seat-booked');
+
+                        if (isNowBooked && !wasBooked) {
+                            // Seat was booked by another counter / employee
+                            const sClass = (s.seat_class || 'economy').toUpperCase();
+                            const passName = s.passenger_name || '{{ __("Booked") }}';
+                            const passPhone = s.passenger_phone || '';
+                            const bookingId = s.booking_id;
+                            const bookingUrl = bookingId ? `{{ url('travel/bookings') }}/${bookingId}` : '#';
+
+                            wrap.innerHTML = `
+                                <a href="${bookingUrl}" 
+                                   class="btn-seat seat-booked text-decoration-none ${wrap.classList.contains('flex-grow-1') ? 'w-100' : ''}"
+                                   data-bs-toggle="tooltip" 
+                                   data-bs-html="true"
+                                   title="<strong>{{ __('Seat') }} #${s.seat_number} (${sClass})</strong><br>${passName}<br>${passPhone}">
+                                    <span class="seat-num">${s.seat_number}</span>
+                                    <i class="fas fa-user seat-icon"></i>
+                                </a>
+                            `;
+                            const newA = wrap.querySelector('a');
+                            if (newA) new bootstrap.Tooltip(newA);
+                        } else if (!isNowBooked && wasBooked) {
+                            // Seat was unbooked / freed
+                            const sClass = s.seat_class || 'economy';
+                            const classStyle = (sClass === 'vip') ? 'seat-vip' : (sClass === 'business' ? 'seat-business' : 'seat-economy');
+                            const classIcon = (sClass === 'vip') ? 'fas fa-crown' : (sClass === 'business' ? 'fas fa-briefcase' : 'fas fa-chair');
+                            const createUrl = `{{ route('travel.bookings.create', ['trip_id' => $trip->id]) }}&seat=${s.seat_number}`;
+
+                            wrap.innerHTML = `
+                                <a href="${createUrl}" 
+                                   class="btn-seat ${classStyle} text-decoration-none ${wrap.classList.contains('flex-grow-1') ? 'w-100' : ''}"
+                                   data-bs-toggle="tooltip"
+                                   title="{{ __('Seat #') }}${s.seat_number} [${sClass.toUpperCase()}] - {{ __('Available (Click to Book)') }}">
+                                    <span class="seat-num">${s.seat_number}</span>
+                                    <i class="${classIcon} seat-icon"></i>
+                                </a>
+                            `;
+                            const newA = wrap.querySelector('a');
+                            if (newA) new bootstrap.Tooltip(newA);
+                        }
+                    });
+
+                    // Update occupancy stats and progress bar live
+                    const total = {{ (int) $trip->total_seats }};
+                    const available = Math.max(0, total - bookedCount);
+                    const pct = Math.min(100, Math.round((bookedCount / total) * 100));
+
+                    const occEl = document.getElementById('showLiveOccupancyCount');
+                    const availEl = document.getElementById('showLiveAvailableBadge');
+                    const progEl = document.getElementById('showLiveProgressBar');
+
+                    if (occEl) occEl.innerText = `${bookedCount} / ${total}`;
+                    if (availEl) {
+                        availEl.innerText = `${available} {{ __('Available') }}`;
+                        availEl.className = `badge ${available > 0 ? 'badge-soft-success' : 'badge-soft-danger'}`;
+                    }
+                    if (progEl) {
+                        progEl.style.width = `${pct}%`;
+                    }
+                })
+                .catch(() => {});
+        }, 3000);
+    }
+
+    window.addEventListener('beforeunload', function() {
+        if (tripShowPollingInterval) clearInterval(tripShowPollingInterval);
     });
 </script>
 @endpush

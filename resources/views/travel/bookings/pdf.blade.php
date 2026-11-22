@@ -300,27 +300,38 @@
     <!-- Journey Banner: Origin -> Destination + Bus Fleet -->
     <table class="route-table">
         <tr>
-            <td style="width: 45%;">
+            <td style="width: 42%;">
                 <div class="city-label">{{ __('Origin / نقطة الانطلاق') }}</div>
                 <div class="city-title">{{ $trip ? tdb($trip->departure_city) : __('Departure City') }}</div>
                 <div class="trip-meta" style="font-size: 6.5pt; white-space: nowrap;">
-                    <strong>{{ __('Departure') }}:</strong>
-                    <span dir="ltr">{{ $trip && $trip->departure_date ? $trip->departure_date->format('d M Y - h:i A') : __('Scheduled') }}</span>
+                    <strong>{{ __('Boarding') }}:</strong> {{ $booking->effective_pickup_location }}
                 </div>
             </td>
-            <td style="width: 10%; text-align: center; vertical-align: middle;">
-                <div style="font-size: 11pt; font-weight: bold; color: #008cc0;">{!! $isAr ? '&larr;' : '&rarr;' !!}</div>
-                <div style="font-size: 6.5pt; font-weight: bold; color: #0369a1; white-space: nowrap;">
-                    {{ $trip ? $trip->duration_days : 10 }} {{ __('Days') }}
-                </div>
+            <td style="width: 16%; text-align: center; vertical-align: middle;">
+                @if($booking->isOneWay())
+                    <div style="font-size: 10pt; font-weight: bold; color: #0284c7;">{!! $isAr ? '&larr;' : '&rarr;' !!}</div>
+                    <div style="font-size: 5.8pt; font-weight: bold; color: #0369a1; background-color: #e0f2fe; padding: 1px 4px; border-radius: 3px; white-space: nowrap;">
+                        {{ __('ONE WAY / ذهاب') }}
+                    </div>
+                @else
+                    <div style="font-size: 10pt; font-weight: bold; color: #059669;">&#8644;</div>
+                    <div style="font-size: 5.8pt; font-weight: bold; color: #047857; background-color: #d1fae5; padding: 1px 4px; border-radius: 3px; white-space: nowrap;">
+                        {{ __('ROUND / عودة') }} ({{ $trip ? $trip->duration_days : 10 }}D)
+                    </div>
+                @endif
             </td>
-            <td style="width: 45%; text-align: {{ $isAr ? 'left' : 'right' }};">
+            <td style="width: 42%; text-align: {{ $isAr ? 'left' : 'right' }};">
                 <div class="city-label">{{ __('Destination / الوجهة') }}</div>
                 <div class="city-title">{{ $trip ? tdb($trip->destination_city) : __('Destination') }}</div>
                 <div class="trip-meta" style="font-size: 6.5pt; white-space: nowrap;">
-                    <strong>{{ __('Coach Fleet') }}:</strong>
-                    {{ $trip ? tdb($trip->bus_name) : __('Luxury Coach') }}
-                    @if($trip && $trip->bus_number) (<span dir="ltr">{{ $trip->bus_number }}</span>) @endif
+                    @if($booking->dropoff_location)
+                        <strong style="color: #b91c1c;">{{ __('Drop-off') }}:</strong> {{ $booking->dropoff_location }}
+                    @else
+                        <strong>{{ __('Coach Fleet') }}:</strong> {{ $trip ? tdb($trip->bus_name) : __('Luxury Coach') }}
+                    @endif
+                    @if($booking->isRoundTrip() && $booking->return_dropoff_location)
+                        <br><strong style="color: #b45309;">{{ __('Return Drop') }}:</strong> {{ $booking->return_dropoff_location }}
+                    @endif
                 </div>
             </td>
         </tr>
@@ -433,7 +444,7 @@
                             @if($booking->package_type === 'with_hotel')
                                 <div style="font-size: 7.5pt; font-weight: bold; color: #065f46; margin-top: 1px;">
                                     <strong>{{ __('Hotel / الفندق') }}:</strong> {{ tdb($booking->effective_hotel_name ?: __('Hotel Accommodation')) }}
-                                    <span style="font-weight: normal; font-size: 6.8pt; color: #334155;">({{ __($booking->room_type ?: 'quad_sharing') }})</span>
+                                    <span style="font-weight: normal; font-size: 6.8pt; color: #334155;">({{ $booking->roomTypeLabel() }})</span>
                                     @if($booking->nights_count) - {{ $booking->nights_count }} {{ __('Nights') }} @endif
                                 </div>
                                 @if($booking->effective_hotel_address)

@@ -2,6 +2,66 @@
 
 @section('title', __('Edit Trip') . ' - ' . $trip->trip_code)
 
+@section('styles')
+<style>
+    /* Filterable Search Dropdowns (Like Quotes / Job Orders) */
+    .filter-dropdown { position: relative; }
+    .filter-trigger {
+        cursor: pointer;
+        background-color: #fff !important;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e") !important;
+        background-repeat: no-repeat !important;
+        background-position: right 0.75rem center !important;
+        background-size: 16px 12px !important;
+        padding-right: 2.25rem !important;
+        font-weight: 500;
+        transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+    }
+    .filter-trigger:focus, .filter-trigger.active {
+        box-shadow: 0 0 0 0.25rem rgba(13,110,253,.2) !important;
+        border-color: #86b7fe !important;
+    }
+    .filter-panel {
+        display: none; position: absolute; top: calc(100% + 4px); left: 0; right: 0;
+        z-index: 1055; background: #fff; border: 1px solid #dee2e6;
+        border-radius: 0.5rem; box-shadow: 0 8px 24px rgba(0,0,0,.12); overflow: hidden;
+    }
+    .filter-panel.open { display: block; animation: filterDropdownIn .12s ease-in-out; }
+    @keyframes filterDropdownIn {
+        from { opacity: 0; transform: translateY(-4px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .filter-search-wrap { padding: 8px 10px; border-bottom: 1px solid #f0f0f0; background: #f8f9fa; }
+    .filter-search {
+        width: 100%; border: 1px solid #dee2e6; border-radius: 0.375rem;
+        padding: 6px 10px 6px 32px; font-size: .875rem; outline: none;
+        background: #fff url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' fill='%236c757d' viewBox='0 0 16 16'%3e%3cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398l3.85 3.85a1 1 0 0 0 1.415-1.415zm-5.242 1.156a5 5 0 1 1 0-10 5 5 0 0 1 0 10'/%3e%3c/svg%3e") no-repeat 10px center;
+    }
+    .filter-search:focus { border-color: #86b7fe; box-shadow: 0 0 0 3px rgba(13,110,253,.15); }
+    .filter-list { max-height: 230px; overflow-y: auto; padding: 4px 0; }
+    .filter-list::-webkit-scrollbar { width: 5px; }
+    .filter-list::-webkit-scrollbar-thumb { background: #dee2e6; border-radius: 4px; }
+    .filter-option {
+        padding: 8px 14px; font-size: .88rem; cursor: pointer;
+        border-left: 3px solid transparent; transition: background .12s, border-color .12s;
+        display: flex; justify-content: space-between; align-items: center;
+    }
+    .filter-option:hover, .filter-option.focused { background: #f0f4ff; border-left-color: #0d6efd; }
+    .filter-option.selected { background: #e7f0ff; border-left-color: #0d6efd; font-weight: 600; }
+    .filter-option.selected .check-icon { display: inline-block; color: #0d6efd; }
+    .filter-option .check-icon { display: none; }
+    .filter-option.custom-opt {
+        border-top: 1px dashed #dee2e6;
+        background: #fafbfc;
+        color: #0d6efd;
+        font-weight: 600;
+        margin-top: 4px;
+    }
+    .filter-option.custom-opt:hover { background: #f0f4ff; }
+    .filter-empty { padding: 14px; text-align: center; color: #6c757d; font-size: .875rem; }
+</style>
+@endsection
+
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div class="d-flex align-items-center">
@@ -32,68 +92,307 @@
         <div class="col-lg-8">
             <x-card :title="__('1. Trip Details & Bus Configuration')">
                 <div class="row g-3">
-                    <div class="col-md-4">
-                        <label class="form-label fw-bold text-dark">{{ __('Trip Code') }} *</label>
-                        <input type="text" class="form-control" value="{{ $trip->trip_code }}" readonly style="background-color: #f8fafc;">
+                    {{-- 1. Trip Code --}}
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold text-dark d-flex justify-content-between align-items-center">
+                            <span>{{ __('Trip Code') }} <span class="text-danger">*</span></span>
+                            <small class="text-muted fw-normal">{{ __('Auto Reference') }}</small>
+                        </label>
+                        <input type="text" class="form-control font-monospace fw-bold" value="{{ $trip->trip_code }}" readonly style="background-color: #f8fafc; color: #1e3a8a;">
+                        <div class="form-text extra-small">{{ __('Unique system trip tracking identifier.') }}</div>
                     </div>
 
-                    <div class="col-md-8">
-                        <label class="form-label fw-bold text-dark">{{ __('Trip Title / Route Headline') }} *</label>
-                        <input type="text" name="title" class="form-control @error('title') is-invalid @enderror" value="{{ old('title', $trip->title) }}" required>
+                    {{-- 2. Duration (Days) Dropdown (Searchable Filter List) --}}
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold text-dark d-flex justify-content-between align-items-center">
+                            <span>{{ __('Duration (Days)') }} <span class="text-danger">*</span></span>
+                            <span class="badge bg-light text-primary border" id="durationBadge">{{ old('duration_days', $trip->duration_days) }} {{ __('Days') }}</span>
+                        </label>
+                        @php
+                            $selectedDuration = (int) old('duration_days', $trip->duration_days);
+                            $isCustomDuration = !array_key_exists($selectedDuration, $durations);
+                            $durationTriggerText = $isCustomDuration 
+                                ? __('Custom (:days Days)', ['days' => $selectedDuration]) 
+                                : ($durations[$selectedDuration] ?? ($selectedDuration . ' Days'));
+                        @endphp
+                        <div class="filter-dropdown" id="duration-filter-dropdown">
+                            <input type="text" id="durationTrigger" class="form-control filter-trigger @error('duration_days') is-invalid @enderror" readonly value="{{ $durationTriggerText }}" placeholder="{{ __('Select Duration (Days) *') }}">
+                            <div class="filter-panel" id="durationFilterPanel">
+                                <div class="filter-search-wrap">
+                                    <input type="text" class="filter-search" id="durationSearchInput" placeholder="{{ __('Search duration (e.g. 10, 20, week, month)...') }}">
+                                </div>
+                                <div class="filter-list" id="durationFilterList">
+                                    @foreach($durations as $dVal => $dLabel)
+                                        @php $isSel = (!$isCustomDuration && $selectedDuration == $dVal); @endphp
+                                        <div class="filter-option {{ $isSel ? 'selected' : '' }}" data-value="{{ $dVal }}" data-label="{{ $dLabel }}">
+                                            <span class="opt-name">{{ $dLabel }}</span>
+                                            <i class="fas fa-check check-icon"></i>
+                                        </div>
+                                    @endforeach
+                                    <div class="filter-option custom-opt {{ $isCustomDuration ? 'selected' : '' }}" data-value="__custom__" data-label="{{ __('Custom Days...') }}">
+                                        <span><i class="fas fa-plus-circle me-1"></i>{{ __('Custom / Other Days (أيام أخرى)...') }}</span>
+                                        <i class="fas fa-edit text-primary"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <input type="number" name="duration_days" id="durationInput" class="form-control mt-2 {{ $isCustomDuration ? '' : 'd-none' }} @error('duration_days') is-invalid @enderror" value="{{ $selectedDuration }}" min="1" max="90" placeholder="{{ __('Enter number of days (1-90)') }}" required oninput="syncDurationBadge(this.value); autoCalculateReturnDate();">
+                        @error('duration_days') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
+                        <div class="form-text extra-small">{{ __('Select standard trip duration package or search/type custom.') }}</div>
+                    </div>
+
+                    {{-- 3. Departure City Dropdown (Searchable Filter List - Riyadh First) --}}
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold text-dark d-flex justify-content-between align-items-center">
+                            <span>{{ __('Departure City') }} <span class="text-danger">*</span></span>
+                            <small class="text-muted fw-normal">{{ __('City of departure (Saudi Arabia)') }}</small>
+                        </label>
+                        @php
+                            $selectedDeparture = old('departure_city', $trip->departure_city);
+                            $isCustomDeparture = !array_key_exists($selectedDeparture, $departureCities);
+                            $departureTriggerText = $isCustomDeparture 
+                                ? __('Custom (:city)', ['city' => $selectedDeparture]) 
+                                : ($departureCities[$selectedDeparture] ?? $selectedDeparture);
+                        @endphp
+                        <div class="filter-dropdown" id="departure-filter-dropdown">
+                            <input type="text" id="departureCityTrigger" class="form-control filter-trigger @error('departure_city') is-invalid @enderror" readonly value="{{ $departureTriggerText }}" placeholder="{{ __('Select Departure City *') }}">
+                            <div class="filter-panel" id="departureFilterPanel">
+                                <div class="filter-search-wrap">
+                                    <input type="text" class="filter-search" id="departureSearchInput" placeholder="{{ __('Search city (e.g. Riyadh, Jeddah, Dammam, الرياض)...') }}">
+                                </div>
+                                <div class="filter-list" id="departureFilterList">
+                                    @foreach($departureCities as $cVal => $cLabel)
+                                        @php $isSel = (!$isCustomDeparture && $selectedDeparture == $cVal); @endphp
+                                        <div class="filter-option {{ $isSel ? 'selected' : '' }}" data-value="{{ $cVal }}" data-label="{{ $cLabel }}">
+                                            <span class="opt-name">
+                                                @if($cVal === 'Riyadh')
+                                                    <span class="badge bg-primary text-white me-1">{{ __('Primary') }}</span>
+                                                @endif
+                                                {{ $cLabel }}
+                                            </span>
+                                            <i class="fas fa-check check-icon"></i>
+                                        </div>
+                                    @endforeach
+                                    <div class="filter-option custom-opt {{ $isCustomDeparture ? 'selected' : '' }}" data-value="__custom__" data-label="{{ __('Custom City...') }}">
+                                        <span><i class="fas fa-plus-circle me-1"></i>{{ __('Custom / Other City (مدينة أخرى)...') }}</span>
+                                        <i class="fas fa-edit text-primary"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <input type="text" name="departure_city" id="departureCityInput" class="form-control mt-2 {{ $isCustomDeparture ? '' : 'd-none' }} @error('departure_city') is-invalid @enderror" value="{{ $selectedDeparture }}" placeholder="{{ __('Type departure city name') }}" required>
+                        @error('departure_city') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
+                        <div class="form-text extra-small">{{ __('Select departure point with real-time search. Riyadh is prioritized at top.') }}</div>
+                    </div>
+
+                    {{-- 4. Destination City Dropdown (Searchable Filter List) --}}
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold text-dark d-flex justify-content-between align-items-center">
+                            <span>{{ __('Destination City') }} <span class="text-danger">*</span></span>
+                            <small class="text-muted fw-normal">{{ __('Trip destination') }}</small>
+                        </label>
+                        @php
+                            $selectedDestination = old('destination_city', $trip->destination_city);
+                            $destKeyMatch = array_key_exists($selectedDestination, $destinationCities);
+                            $destValMatch = in_array($selectedDestination, $destinationCities);
+                            $isCustomDestination = !$destKeyMatch && !$destValMatch;
+                            $destinationTriggerText = $isCustomDestination 
+                                ? __('Custom (:city)', ['city' => $selectedDestination]) 
+                                : ($destinationCities[$selectedDestination] ?? $selectedDestination);
+                        @endphp
+                        <div class="filter-dropdown" id="destination-filter-dropdown">
+                            <input type="text" id="destinationCityTrigger" class="form-control filter-trigger @error('destination_city') is-invalid @enderror" readonly value="{{ $destinationTriggerText }}" placeholder="{{ __('Select Destination City *') }}">
+                            <div class="filter-panel" id="destinationFilterPanel">
+                                <div class="filter-search-wrap">
+                                    <input type="text" class="filter-search" id="destinationSearchInput" placeholder="{{ __('Search Holy destination (e.g. Makkah, Madinah, مكة)...') }}">
+                                </div>
+                                <div class="filter-list" id="destinationFilterList">
+                                    @foreach($destinationCities as $destVal => $destLabel)
+                                        @php $isSel = (!$isCustomDestination && ($selectedDestination == $destVal || $selectedDestination == $destLabel)); @endphp
+                                        <div class="filter-option {{ $isSel ? 'selected' : '' }}" data-value="{{ $destVal }}" data-label="{{ $destLabel }}">
+                                            <span class="opt-name">{{ $destLabel }}</span>
+                                            <i class="fas fa-check check-icon"></i>
+                                        </div>
+                                    @endforeach
+                                    <div class="filter-option custom-opt {{ $isCustomDestination ? 'selected' : '' }}" data-value="__custom__" data-label="{{ __('Custom Destination...') }}">
+                                        <span><i class="fas fa-plus-circle me-1"></i>{{ __('Custom / Other Destination (وجهة أخرى)...') }}</span>
+                                        <i class="fas fa-edit text-primary"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <input type="text" name="destination_city" id="destinationCityInput" class="form-control mt-2 {{ $isCustomDestination ? '' : 'd-none' }} @error('destination_city') is-invalid @enderror" value="{{ $selectedDestination }}" placeholder="{{ __('Type destination city name') }}" required>
+                        @error('destination_city') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
+                        <div class="form-text extra-small">{{ __('Select Holy destination or search custom city.') }}</div>
+                    </div>
+
+                    {{-- 5. Trip Title / Route Headline --}}
+                    <div class="col-12">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <label class="form-label fw-bold text-dark mb-0">
+                                {{ __('Trip Title / Route Name') }} <span class="text-danger">*</span>
+                            </label>
+                            <button type="button" class="btn btn-sm btn-outline-primary py-0 px-2 rounded-pill small" onclick="generateAutoTitle(true)" title="{{ __('Automatically build headline from chosen route and duration') }}">
+                                <i class="fas fa-magic me-1"></i> {{ __('Auto-Generate Title') }}
+                            </button>
+                        </div>
+                        <input type="text" name="title" id="tripTitleInput" class="form-control @error('title') is-invalid @enderror" value="{{ old('title', $trip->title) }}" required>
                         @error('title') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                        <div class="form-text extra-small">{{ __('Descriptive trip headline displayed on passenger tickets and manifests.') }}</div>
+                    </div>
+
+                    {{-- 6. Departure Date & Time and Return Date & Time --}}
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold text-dark">
+                            {{ __('Departure Date & Time') }} <span class="text-danger">*</span>
+                        </label>
+                        <input type="datetime-local" name="departure_date" class="form-control @error('departure_date') is-invalid @enderror" value="{{ old('departure_date', $trip->departure_date ? $trip->departure_date->format('Y-m-d\TH:i') : '') }}" required id="depDateInput" onchange="autoCalculateReturnDate()">
+                        @error('departure_date') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
 
                     <div class="col-md-6">
-                        <label class="form-label fw-bold text-dark">{{ __('Bus Fleet Name / Model') }} *</label>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <label class="form-label fw-bold text-dark mb-1">
+                                {{ __('Return Date & Time') }}
+                            </label>
+                            <small class="text-muted fw-normal" id="calcReturnNote">{{ __('Auto-calculated from duration') }}</small>
+                        </div>
+                        <input type="datetime-local" name="return_date" class="form-control @error('return_date') is-invalid @enderror" value="{{ old('return_date', $trip->return_date ? $trip->return_date->format('Y-m-d\TH:i') : '') }}" id="retDateInput">
+                        @error('return_date') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                    </div>
+
+                    {{-- 7. Bus Fleet Details --}}
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold text-dark">
+                            {{ __('Bus Fleet Name / Model') }} <span class="text-danger">*</span>
+                        </label>
                         <input type="text" name="bus_name" class="form-control @error('bus_name') is-invalid @enderror" value="{{ old('bus_name', $trip->bus_name) }}" required>
                         @error('bus_name') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
 
                     <div class="col-md-3">
-                        <label class="form-label fw-bold text-dark">{{ __('Bus Plate / Reg #') }}</label>
+                        <label class="form-label fw-bold text-dark">
+                            {{ __('Bus Plate / Reg #') }}
+                        </label>
                         <input type="text" name="bus_number" class="form-control @error('bus_number') is-invalid @enderror" value="{{ old('bus_number', $trip->bus_number) }}">
                         @error('bus_number') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
 
                     <div class="col-md-3">
-                        <label class="form-label fw-bold text-dark">{{ __('Total Seats') }} *</label>
-                        <input type="number" name="total_seats" class="form-control @error('total_seats') is-invalid @enderror" value="{{ old('total_seats', $trip->total_seats) }}" min="{{ max(10, $trip->bookedSeatsCount()) }}" max="100" required>
+                        <label class="form-label fw-bold text-dark">
+                            {{ __('Total Seats') }} <span class="text-danger">*</span>
+                        </label>
+                        <input type="number" name="total_seats" id="totalSeatsInput" class="form-control @error('total_seats') is-invalid @enderror" value="{{ old('total_seats', $trip->total_seats) }}" min="{{ max(10, $trip->bookedSeatsCount()) }}" max="100" required oninput="recalcSeatClasses(false)">
                         @error('total_seats') <div class="invalid-feedback">{{ $message }}</div> @enderror
                         <div class="form-text extra-small">{{ __('Already booked:') }} {{ $trip->bookedSeatsCount() }} {{ __('seats') }}</div>
                     </div>
 
-                    <div class="col-md-6">
-                        <label class="form-label fw-bold text-dark">{{ __('Departure City') }} *</label>
-                        <input type="text" name="departure_city" class="form-control @error('departure_city') is-invalid @enderror" value="{{ old('departure_city', $trip->departure_city) }}" required>
-                        @error('departure_city') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                    {{-- 8. Seat Classes Configuration (VIP, Business, Economy) --}}
+                    <div class="col-12 mt-2 pt-3 border-top">
+                        <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+                            <div>
+                                <label class="form-label fw-bold text-dark mb-0">
+                                    <i class="fas fa-layer-group text-primary me-1"></i>{{ __('Seat Classes & Tier Allocation (درجات المقاعد الثلاث)') }}
+                                </label>
+                                <div class="text-muted extra-small">{{ __('Allocate total coach seats across VIP, Business and Economy with custom counts & fares.') }}</div>
+                            </div>
+                            <span class="badge bg-primary text-white" id="seatClassSummaryBadge">
+                                {{ $trip->total_seats }} {{ __('Total Seats Allocated') }}
+                            </span>
+                        </div>
+
+                        <div class="row g-3 p-3 rounded-4 bg-light border">
+                            {{-- VIP Class --}}
+                            <div class="col-md-4">
+                                <div class="card border-0 shadow-xs rounded-3 p-3 h-100 bg-white" style="border-top: 3px solid #f59e0b !important;">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <span class="badge bg-warning text-dark fw-bold px-2 py-1">
+                                            <i class="fas fa-crown me-1"></i> {{ __('VIP Class') }}
+                                        </span>
+                                        <span class="text-muted extra-small font-monospace fw-semibold" id="vipSeatRangePreview">{{ __('Seats 1 - 10') }}</span>
+                                    </div>
+                                    <div class="mb-2">
+                                        <label class="form-label text-dark small fw-bold mb-1">{{ __('VIP Seats Count') }}</label>
+                                        <input type="number" name="vip_seats_count" id="vipSeatsCountInput" class="form-control form-control-sm @error('vip_seats_count') is-invalid @enderror" value="{{ old('vip_seats_count', $trip->vip_seats_count ?? 10) }}" min="0" max="100" oninput="recalcSeatClasses()">
+                                        @error('vip_seats_count') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                                    </div>
+                                    <div>
+                                        <label class="form-label text-dark small fw-semibold mb-1">{{ __('VIP Fare (SAR)') }}</label>
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-text bg-light">{{ currency_symbol() }}</span>
+                                            <input type="number" step="0.01" name="vip_price" id="vipPriceInput" class="form-control" placeholder="e.g. 150.00" value="{{ old('vip_price', $trip->vip_price ?: '150.00') }}">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{-- Business Class --}}
+                            <div class="col-md-4">
+                                <div class="card border-0 shadow-xs rounded-3 p-3 h-100 bg-white" style="border-top: 3px solid #3b82f6 !important;">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <span class="badge bg-primary text-white fw-bold px-2 py-1">
+                                            <i class="fas fa-briefcase me-1"></i> {{ __('Business Class') }}
+                                        </span>
+                                        <span class="text-muted extra-small font-monospace fw-semibold" id="bizSeatRangePreview">{{ __('Seats 11 - 25') }}</span>
+                                    </div>
+                                    <div class="mb-2">
+                                        <label class="form-label text-dark small fw-bold mb-1">{{ __('Business Seats Count') }}</label>
+                                        <input type="number" name="business_seats_count" id="bizSeatsCountInput" class="form-control form-control-sm @error('business_seats_count') is-invalid @enderror" value="{{ old('business_seats_count', $trip->business_seats_count ?? 15) }}" min="0" max="100" oninput="recalcSeatClasses()">
+                                        @error('business_seats_count') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                                    </div>
+                                    <div>
+                                        <label class="form-label text-dark small fw-semibold mb-1">{{ __('Business Fare (SAR)') }}</label>
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-text bg-light">{{ currency_symbol() }}</span>
+                                            <input type="number" step="0.01" name="business_price" id="bizPriceInput" class="form-control" placeholder="e.g. 120.00" value="{{ old('business_price', $trip->business_price ?: '120.00') }}">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{-- Economy Class --}}
+                            <div class="col-md-4">
+                                <div class="card border-0 shadow-xs rounded-3 p-3 h-100 bg-white" style="border-top: 3px solid #10b981 !important;">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <span class="badge bg-success-subtle text-success border border-success-subtle fw-bold px-2 py-1">
+                                            <i class="fas fa-chair me-1"></i> {{ __('Economy Class') }}
+                                        </span>
+                                        <span class="text-muted extra-small font-monospace fw-semibold" id="ecoSeatRangePreview">{{ __('Seats 26 - 49') }}</span>
+                                    </div>
+                                    <div class="mb-2">
+                                        <label class="form-label text-dark small fw-bold mb-1">{{ __('Economy Seats Count') }}</label>
+                                        <input type="number" name="economy_seats_count" id="ecoSeatsCountInput" class="form-control form-control-sm @error('economy_seats_count') is-invalid @enderror" value="{{ old('economy_seats_count', $trip->economy_seats_count ?? 24) }}" min="0" max="100" oninput="recalcSeatClasses(true)">
+                                        @error('economy_seats_count') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                                    </div>
+                                    <div>
+                                        <label class="form-label text-dark small fw-semibold mb-1">{{ __('Economy Fare (SAR)') }}</label>
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-text bg-light">{{ currency_symbol() }}</span>
+                                            <input type="number" step="0.01" name="economy_price" id="ecoPriceInput" class="form-control" placeholder="e.g. 100.00" value="{{ old('economy_price', $trip->economy_price ?: '100.00') }}">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-12 mt-2">
+                                <div class="d-flex align-items-center justify-content-between p-2 rounded-3 bg-white border">
+                                    <span class="extra-small text-muted">
+                                        <i class="fas fa-info-circle text-info me-1"></i>
+                                        {{ __('Total seats sum updates dynamically as you adjust VIP, Business, or Economy seat counts.') }}
+                                    </span>
+                                    <span class="extra-small fw-bold text-dark font-monospace" id="seatClassRatioPreview">
+                                        VIP: {{ $trip->vip_seats_count ?? 10 }} &bull; Business: {{ $trip->business_seats_count ?? 15 }} &bull; Economy: {{ $trip->economy_seats_count ?? 24 }} = {{ $trip->total_seats }} Seats
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="col-md-6">
-                        <label class="form-label fw-bold text-dark">{{ __('Destination City') }} *</label>
-                        <input type="text" name="destination_city" class="form-control @error('destination_city') is-invalid @enderror" value="{{ old('destination_city', $trip->destination_city) }}" required>
-                        @error('destination_city') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                    </div>
-
-                    <div class="col-md-4">
-                        <label class="form-label fw-bold text-dark">{{ __('Departure Date & Time') }} *</label>
-                        <input type="datetime-local" name="departure_date" class="form-control @error('departure_date') is-invalid @enderror" value="{{ old('departure_date', $trip->departure_date ? $trip->departure_date->format('Y-m-d\TH:i') : '') }}" required>
-                        @error('departure_date') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                    </div>
-
-                    <div class="col-md-4">
-                        <label class="form-label fw-bold text-dark">{{ __('Return Date') }}</label>
-                        <input type="datetime-local" name="return_date" class="form-control @error('return_date') is-invalid @enderror" value="{{ old('return_date', $trip->return_date ? $trip->return_date->format('Y-m-d\TH:i') : '') }}">
-                        @error('return_date') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                    </div>
-
-                    <div class="col-md-4">
-                        <label class="form-label fw-bold text-dark">{{ __('Duration (Days)') }} *</label>
-                        <input type="number" name="duration_days" class="form-control @error('duration_days') is-invalid @enderror" value="{{ old('duration_days', $trip->duration_days) }}" min="1" max="90" required>
-                        @error('duration_days') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                    </div>
-
+                    {{-- 8. Trip Overview / Description --}}
                     <div class="col-12">
-                        <label class="form-label fw-bold text-dark">{{ __('Trip Overview / Description') }}</label>
+                        <label class="form-label fw-bold text-dark">
+                            {{ __('Trip Overview / Description') }}
+                        </label>
                         <textarea name="description" rows="2" class="form-control">{{ old('description', $trip->description) }}</textarea>
                     </div>
                 </div>
@@ -169,12 +468,22 @@
         <div class="col-lg-4">
             <x-card :title="__('3. Package Pricing & Fares')">
                 <div class="mb-3">
-                    <label class="form-label fw-bold text-dark">{{ __('Seat Fare Only (Without Hotel) *') }}</label>
+                    <label class="form-label fw-bold text-dark">{{ __('Round-Trip Fare (Without Hotel) *') }}</label>
                     <div class="input-group">
                         <span class="input-group-text bg-light fw-bold">{{ currency_symbol() }}</span>
                         <input type="number" step="0.01" name="price_without_hotel" class="form-control @error('price_without_hotel') is-invalid @enderror" value="{{ old('price_without_hotel', $trip->price_without_hotel) }}" required>
                     </div>
                     @error('price_without_hotel') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold text-dark">{{ __('One-Way Fare (ذهاب فقط / اتجاه واحد)') }}</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light fw-bold">{{ currency_symbol() }}</span>
+                        <input type="number" step="0.01" name="one_way_price" class="form-control @error('one_way_price') is-invalid @enderror" placeholder="{{ __('e.g. 150.00 (optional, defaults to 50%)') }}" value="{{ old('one_way_price', $trip->one_way_price) }}">
+                    </div>
+                    @error('one_way_price') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
+                    <div class="form-text extra-small">{{ __('Fare for passengers travelling one-way only.') }}</div>
                 </div>
 
                 <div class="mb-3">
@@ -211,4 +520,264 @@
         </div>
     </div>
 </form>
+
+@push('scripts')
+<script>
+function initFilterDropdown(options) {
+    const dropdown = document.getElementById(options.dropdownId);
+    if (!dropdown) return;
+
+    const trigger = dropdown.querySelector('.filter-trigger');
+    const panel = dropdown.querySelector('.filter-panel');
+    const searchInput = dropdown.querySelector('.filter-search');
+    const listEl = dropdown.querySelector('.filter-list');
+    const hiddenInput = document.getElementById(options.inputId);
+    const customOption = listEl.querySelector('.custom-opt');
+
+    const items = [];
+    listEl.querySelectorAll('.filter-option:not(.custom-opt)').forEach(function(el) {
+        items.push({
+            el: el,
+            value: el.dataset.value,
+            label: el.dataset.label,
+            searchStr: (el.dataset.search || (el.dataset.label + ' ' + el.dataset.value)).toLowerCase()
+        });
+    });
+
+    function esc(s) {
+        return (s || '').replace(/[&<>"']/g, function(c){
+            return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+        });
+    }
+
+    function hl(text, q) {
+        if (!text) return '';
+        if (!q) return esc(text);
+        const rx = new RegExp('(' + q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&') + ')', 'gi');
+        return esc(text).replace(rx, '<mark style="background:#fff3cd;padding:0 2px;border-radius:2px">$1</mark>');
+    }
+
+    function renderFilter(q) {
+        q = (q || '').toLowerCase().trim();
+        let matchCount = 0;
+
+        items.forEach(function(item) {
+            const isMatch = !q || item.searchStr.indexOf(q) > -1;
+            if (isMatch) {
+                item.el.style.display = 'flex';
+                const nameSpan = item.el.querySelector('.opt-name');
+                if (nameSpan) {
+                    nameSpan.innerHTML = hl(item.label, q);
+                }
+                matchCount++;
+            } else {
+                item.el.style.display = 'none';
+            }
+        });
+
+        if (customOption) {
+            customOption.style.display = 'flex';
+        }
+    }
+
+    function openDropdown() {
+        document.querySelectorAll('.filter-panel.open').forEach(function(p) {
+            if (p !== panel) p.classList.remove('open');
+        });
+        document.querySelectorAll('.filter-trigger.active').forEach(function(t) {
+            if (t !== trigger) t.classList.remove('active');
+        });
+
+        panel.classList.add('open');
+        trigger.classList.add('active');
+        searchInput.value = '';
+        renderFilter('');
+        setTimeout(function() { searchInput.focus(); }, 60);
+    }
+
+    function closeDropdown() {
+        panel.classList.remove('open');
+        trigger.classList.remove('active');
+    }
+
+    trigger.addEventListener('click', function(e) {
+        e.stopPropagation();
+        panel.classList.contains('open') ? closeDropdown() : openDropdown();
+    });
+
+    searchInput.addEventListener('input', function() {
+        renderFilter(this.value);
+    });
+
+    searchInput.addEventListener('click', function(e) {
+        e.stopPropagation();
+    });
+
+    items.forEach(function(item) {
+        item.el.addEventListener('click', function(e) {
+            e.stopPropagation();
+            listEl.querySelectorAll('.filter-option').forEach(o => o.classList.remove('selected'));
+            item.el.classList.add('selected');
+            trigger.value = item.label;
+            hiddenInput.value = item.value;
+            if (customOption) {
+                hiddenInput.classList.add('d-none');
+            }
+            closeDropdown();
+            if (options.onSelect) {
+                options.onSelect(item.value, item.label, false);
+            }
+        });
+    });
+
+    if (customOption) {
+        customOption.addEventListener('click', function(e) {
+            e.stopPropagation();
+            listEl.querySelectorAll('.filter-option').forEach(o => o.classList.remove('selected'));
+            customOption.classList.add('selected');
+            trigger.value = customOption.dataset.label || 'Custom...';
+            hiddenInput.classList.remove('d-none');
+            hiddenInput.focus();
+            closeDropdown();
+            if (options.onSelect) {
+                options.onSelect(hiddenInput.value, 'Custom', true);
+            }
+        });
+    }
+
+    document.addEventListener('click', function(e) {
+        if (!dropdown.contains(e.target)) {
+            closeDropdown();
+        }
+    });
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeDropdown();
+        }
+    });
+}
+
+function syncDurationBadge(val) {
+    const badge = document.getElementById('durationBadge');
+    if (badge && val) badge.textContent = val + ' Days';
+}
+
+function autoCalculateReturnDate() {
+    const depInput = document.getElementById('depDateInput');
+    const retInput = document.getElementById('retDateInput');
+    const durationInput = document.getElementById('durationInput');
+    if (!depInput || !retInput || !durationInput) return;
+
+    const depVal = depInput.value;
+    const days = parseInt(durationInput.value, 10);
+    if (!depVal || isNaN(days) || days <= 0) return;
+
+    try {
+        const depDate = new Date(depVal);
+        if (isNaN(depDate.getTime())) return;
+        
+        const retDate = new Date(depDate.getTime() + (days * 24 * 60 * 60 * 1000));
+        
+        const year = retDate.getFullYear();
+        const month = String(retDate.getMonth() + 1).padStart(2, '0');
+        const day = String(retDate.getDate()).padStart(2, '0');
+        const hours = String(retDate.getHours()).padStart(2, '0');
+        const minutes = String(retDate.getMinutes()).padStart(2, '0');
+        
+        retInput.value = `${year}-${month}-${day}T${hours}:${minutes}`;
+        const note = document.getElementById('calcReturnNote');
+        if (note) {
+            note.innerHTML = `<span class="text-success"><i class="fas fa-check-circle me-1"></i>Calculated (+${days} days)</span>`;
+        }
+    } catch (e) {
+        console.error(e);
+    }
+}
+
+function generateAutoTitle(force = false) {
+    const titleInput = document.getElementById('tripTitleInput');
+    if (!titleInput) return;
+    if (!force && titleInput.value.trim() !== '') return;
+
+    const depInput = document.getElementById('departureCityInput');
+    const destInput = document.getElementById('destinationCityInput');
+    const durInput = document.getElementById('durationInput');
+
+    const dep = (depInput && depInput.value.trim()) ? depInput.value.trim() : 'Riyadh';
+    const dest = (destInput && destInput.value.trim()) ? destInput.value.trim() : 'Makkah Al-Mukarramah';
+    const dur = (durInput && durInput.value.trim()) ? durInput.value.trim() : '10';
+
+    titleInput.value = `${dest} ${dur}-Days Umrah Trip (${dep})`;
+}
+
+function recalcSeatClasses(ecoEditedByUser = false) {
+    const totalInput = document.getElementById('totalSeatsInput');
+    const vipInput = document.getElementById('vipSeatsCountInput');
+    const bizInput = document.getElementById('bizSeatsCountInput');
+    const ecoInput = document.getElementById('ecoSeatsCountInput');
+    if (!totalInput || !vipInput || !bizInput || !ecoInput) return;
+
+    let vip = Math.max(0, parseInt(vipInput.value, 10) || 0);
+    let biz = Math.max(0, parseInt(bizInput.value, 10) || 0);
+    let eco = Math.max(0, parseInt(ecoInput.value, 10) || 0);
+    let total = Math.max(10, parseInt(totalInput.value, 10) || 49);
+
+    if (ecoEditedByUser) {
+        total = vip + biz + eco;
+        totalInput.value = total;
+    } else {
+        if (total < (vip + biz)) {
+            total = vip + biz;
+            totalInput.value = total;
+        }
+        eco = Math.max(0, total - (vip + biz));
+        ecoInput.value = eco;
+    }
+
+    const vipRange = document.getElementById('vipSeatRangePreview');
+    const bizRange = document.getElementById('bizSeatRangePreview');
+    const ecoRange = document.getElementById('ecoSeatRangePreview');
+    const summaryBadge = document.getElementById('seatClassSummaryBadge');
+    const ratioPreview = document.getElementById('seatClassRatioPreview');
+
+    if (vipRange) vipRange.innerText = vip > 0 ? `Seats 1 - ${vip}` : `0 Seats`;
+    if (bizRange) bizRange.innerText = biz > 0 ? `Seats ${vip + 1} - ${vip + biz}` : `0 Seats`;
+    if (ecoRange) ecoRange.innerText = eco > 0 ? `Seats ${vip + biz + 1} - ${total}` : `0 Seats`;
+    if (summaryBadge) summaryBadge.innerText = `${total} Total Seats Allocated`;
+    if (ratioPreview) ratioPreview.innerText = `VIP: ${vip} • Business: ${biz} • Economy: ${eco} = ${total} Seats`;
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    recalcSeatClasses(false);
+    // 1. Init Duration Filter Dropdown
+    initFilterDropdown({
+        dropdownId: 'duration-filter-dropdown',
+        inputId: 'durationInput',
+        onSelect: function(val, label, isCustom) {
+            syncDurationBadge(val);
+            autoCalculateReturnDate();
+        }
+    });
+
+    // 2. Init Departure City Filter Dropdown
+    initFilterDropdown({
+        dropdownId: 'departure-filter-dropdown',
+        inputId: 'departureCityInput',
+        onSelect: function(val, label, isCustom) {
+            // Updated
+        }
+    });
+
+    // 3. Init Destination City Filter Dropdown
+    initFilterDropdown({
+        dropdownId: 'destination-filter-dropdown',
+        inputId: 'destinationCityInput',
+        onSelect: function(val, label, isCustom) {
+            // Updated
+        }
+    });
+});
+</script>
+@endpush
 @endsection

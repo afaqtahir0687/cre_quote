@@ -82,6 +82,7 @@
         </div>
     </div>
 
+    @if(!$isEmployee)
     <div class="col-sm-6 col-xl-3">
         <div class="card border-0 shadow-sm rounded-4 h-100 bg-white">
             <div class="card-body p-3 d-flex align-items-center gap-3">
@@ -97,6 +98,23 @@
             </div>
         </div>
     </div>
+    @else
+    <div class="col-sm-6 col-xl-3">
+        <div class="card border-0 shadow-sm rounded-4 h-100 bg-white">
+            <div class="card-body p-3 d-flex align-items-center gap-3">
+                <div class="rounded-circle d-flex align-items-center justify-content-center text-success shadow-xs" 
+                     style="width: 52px; height: 52px; background: rgba(16, 185, 129, 0.12); font-size: 1.35rem; flex-shrink: 0;">
+                    <i class="fas fa-chair"></i>
+                </div>
+                <div>
+                    <div class="text-muted extra-small text-uppercase fw-bold">{{ __('Available Seats') }}</div>
+                    <h3 class="fw-bold text-success mb-0">{{ $stats['available_seats'] }}</h3>
+                    <span class="extra-small text-muted">{{ __('Total vacant seats for booking') }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
 </div>
 
 <!-- Trips ERP Table Card (Exact look & feel of Job Orders & Quotes) -->
@@ -118,6 +136,7 @@
                 <th class="text-nowrap" style="min-width: 150px;">{{ __('Coach Bus') }}</th>
                 <th class="text-nowrap" style="min-width: 140px;">{{ __('Departure & Duration') }}</th>
                 <th style="min-width: 140px;">{{ __('Seat Occupancy') }}</th>
+                <th class="text-nowrap" style="min-width: 130px;">{{ __('Counter Access') }}</th>
                 <th class="text-nowrap">{{ __('Fares') }}</th>
                 <th class="text-nowrap">{{ __('Status') }}</th>
                 <th class="text-end pe-3 text-nowrap" style="width: 70px;">{{ __('Action') }}</th>
@@ -183,6 +202,11 @@
                         </div>
                     </td>
                     <td class="text-nowrap">
+                        <span class="badge bg-light text-success border fw-medium px-2 py-1" title="{{ __('All agency counters and branches can sell tickets for this trip') }}">
+                            <i class="fas fa-users me-1 text-success"></i>{{ __('All Counters & Staff') }}
+                        </span>
+                    </td>
+                    <td class="text-nowrap">
                         <div class="small fw-semibold text-dark">{{ format_currency($trip->price_without_hotel) }}</div>
                         <div class="extra-small text-success">{{ __('Hotel:') }} {{ format_currency($trip->price_with_hotel) }}</div>
                     </td>
@@ -217,22 +241,24 @@
                                         </a>
                                     </li>
                                 @endif
-                                <li>
-                                    <a class="dropdown-item py-2" href="{{ route('travel.trips.edit', $trip->id) }}">
-                                        <i class="fas fa-edit me-2 text-warning"></i> {{ __('Edit Trip') }}
-                                    </a>
-                                </li>
-                                @if($bookedCount == 0)
-                                    <li><hr class="dropdown-divider my-1"></li>
+                                @if(!$isEmployee)
                                     <li>
-                                        <form action="{{ route('travel.trips.destroy', $trip->id) }}" method="POST" class="delete-form" onsubmit="return confirm('{{ __('Are you sure you want to delete this trip?') }}')">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="dropdown-item py-2 text-danger">
-                                                <i class="fas fa-trash me-2"></i> {{ __('Delete') }}
-                                            </button>
-                                        </form>
+                                        <a class="dropdown-item py-2" href="{{ route('travel.trips.edit', $trip->id) }}">
+                                            <i class="fas fa-edit me-2 text-warning"></i> {{ __('Edit Trip') }}
+                                        </a>
                                     </li>
+                                    @if($bookedCount == 0)
+                                        <li><hr class="dropdown-divider my-1"></li>
+                                        <li>
+                                            <form action="{{ route('travel.trips.destroy', $trip->id) }}" method="POST" class="delete-form" onsubmit="return confirm('{{ __('Are you sure you want to delete this trip?') }}')">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="dropdown-item py-2 text-danger">
+                                                    <i class="fas fa-trash me-2"></i> {{ __('Delete') }}
+                                                </button>
+                                            </form>
+                                        </li>
+                                    @endif
                                 @endif
                             </ul>
                         </div>
