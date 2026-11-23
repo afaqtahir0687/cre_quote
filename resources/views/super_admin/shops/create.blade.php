@@ -124,10 +124,19 @@
             <!-- 3. Branch Profile & Settings -->
             <x-card :title="__('3. Branch Profile & Identity')">
                 <div class="row g-3">
-                    <div class="col-md-8">
+                    <div class="col-md-6">
                         <label class="form-label fw-bold text-dark">{{ __('Shop / Branch Name *') }}</label>
-                        <input type="text" name="name" class="form-control @error('name') is-invalid @enderror" placeholder="e.g. Al-Noor Signage - Branch 2" value="{{ old('name') }}" required id="shopNameInput">
+                        <input type="text" name="name" class="form-control @error('name') is-invalid @enderror" placeholder="Al-Noor Signage - Branch 2" value="{{ old('name') }}" required id="shopNameInput">
                         @error('name') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold text-dark">
+                            <i class="fas fa-quote-left text-info me-1"></i>{{ __('Tagline / Slogan (شعار المنشأة اللفظي)') }}
+                        </label>
+                        <input type="text" name="tagline" class="form-control @error('tagline') is-invalid @enderror" placeholder="{{ __('Your Trusted Partner for Umrah & Travel') }}" value="{{ old('tagline') }}">
+                        @error('tagline') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                        <small class="text-muted d-block mt-1" style="font-size: 0.74rem;">{{ __('Appears on vouchers, tickets, and official invoice headers below shop name.') }}</small>
                     </div>
 
                     <div class="col-md-4">
@@ -136,17 +145,35 @@
                         @error('slug') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
 
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <label class="form-label fw-bold text-dark">{{ __('Shop Email') }}</label>
                         <input type="email" name="email" class="form-control @error('email') is-invalid @enderror" placeholder="branch2@example.com" value="{{ old('email') }}">
                         @error('email') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
 
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <label class="form-label fw-bold text-dark">{{ __('Shop Phone') }}</label>
                         <x-country-phone-picker id="shop_phone" name="phone" codeName="country_code" :required="false" placeholder="50 123 4567" :error="$errors->first('phone')" />
                         @error('phone') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
                         <small class="text-muted d-block mt-1" style="font-size: 0.74rem;">{{ __('Select country code and enter phone number without leading 0.') }}</small>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold text-dark">
+                            <i class="fas fa-file-contract text-primary me-1"></i>{{ __('CR Number (السجل التجاري)') }}
+                        </label>
+                        <input type="text" name="cr_number" class="form-control @error('cr_number') is-invalid @enderror" placeholder="1010XXXXXX" value="{{ old('cr_number') }}">
+                        @error('cr_number') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                        <small class="text-muted d-block mt-1" style="font-size: 0.74rem;">{{ __('Official Commercial Registration Number.') }}</small>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold text-dark">
+                            <i class="fas fa-id-card-alt text-success me-1"></i>{{ __('License Number (رقم الترخيص / ترخيص الحج والعمرة)') }}
+                        </label>
+                        <input type="text" name="license_number" class="form-control @error('license_number') is-invalid @enderror" placeholder="LIC-XXXXXX" value="{{ old('license_number') }}">
+                        @error('license_number') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                        <small class="text-muted d-block mt-1" style="font-size: 0.74rem;">{{ __('Ministry of Hajj & Umrah or Tourism License Number.') }}</small>
                     </div>
 
                     <div class="col-12">

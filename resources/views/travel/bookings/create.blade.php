@@ -127,7 +127,7 @@
                 <div class="row g-3">
                     <div class="col-md-7">
                         <label class="form-label fw-bold text-dark">{{ __('Passenger Full Name *') }}</label>
-                        <input type="text" name="passenger_name" class="form-control @error('passenger_name') is-invalid @enderror" placeholder="{{ __('e.g. Muhammad Abdullah') }}" value="{{ old('passenger_name') }}" required>
+                        <input type="text" name="passenger_name" class="form-control @error('passenger_name') is-invalid @enderror" placeholder="{{ __('Muhammad Abdullah') }}" value="{{ old('passenger_name') }}" required>
                         @error('passenger_name') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
 
@@ -147,25 +147,31 @@
 
                     <div class="col-md-6">
                         <label class="form-label fw-bold text-dark">{{ __('National ID / Iqama / Passport #') }}</label>
-                        <input type="text" name="passenger_id_number" id="passengerIdInput" class="form-control @error('passenger_id_number') is-invalid @enderror" placeholder="{{ __('e.g. 2489012345 or Passport #') }}" value="{{ old('passenger_id_number') }}">
+                        <input type="text" name="passenger_id_number" id="passengerIdInput" class="form-control @error('passenger_id_number') is-invalid @enderror" placeholder="{{ __('2489012345 or Passport #') }}" value="{{ old('passenger_id_number') }}">
                         @error('passenger_id_number') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
 
                     <div class="col-md-6">
                         <label class="form-label fw-bold text-dark">{{ __('Nationality (الجنسية)') }}</label>
-                        <input type="text" name="passenger_nationality" id="passengerNatInput" class="form-control @error('passenger_nationality') is-invalid @enderror" placeholder="{{ __('e.g. PAK, IND, BAN, SAU, EGY, SRI') }}" value="{{ old('passenger_nationality', 'PAK') }}">
+                        <input type="text" name="passenger_nationality" id="passengerNatInput" class="form-control @error('passenger_nationality') is-invalid @enderror" placeholder="{{ __('PAK, IND, BAN, SAU, EGY, SRI') }}" value="{{ old('passenger_nationality', 'PAK') }}">
                         @error('passenger_nationality') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
 
                     <div class="col-md-6">
                         <label class="form-label fw-bold text-dark">{{ __('Pickup / Boarding Office Location (موقع الركوب)') }}</label>
-                        <input type="text" name="pickup_location" id="pickupLocationInput" class="form-control @error('pickup_location') is-invalid @enderror" placeholder="{{ __('e.g. Main Office, Batha, Villa 12, Nesto') }}" value="{{ old('pickup_location', current_shop()?->name ?? 'Office') }}">
+                        @php
+                            $defaultPickupLocation = $currentEmployee?->name 
+                                ?: (auth()->user()?->employee?->name 
+                                ?: (auth()->user()?->name 
+                                ?: (current_shop()?->name ?? 'Office')));
+                        @endphp
+                        <input type="text" name="pickup_location" id="pickupLocationInput" class="form-control @error('pickup_location') is-invalid @enderror" placeholder="{{ __('Main Office, Batha, Villa 12, Nesto') }}" value="{{ old('pickup_location', $defaultPickupLocation) }}">
                         @error('pickup_location') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
 
                     <div class="col-md-6">
                         <label class="form-label fw-bold text-dark">{{ __('Outbound Destination Drop-off (موقع النزول في الذهاب)') }}</label>
-                        <input type="text" name="dropoff_location" id="dropoffLocationInput" class="form-control @error('dropoff_location') is-invalid @enderror" placeholder="{{ __('e.g. Makkah Haram, Kudai, Taif, Hotel, Highway Stop') }}" value="{{ old('dropoff_location') }}">
+                        <input type="text" name="dropoff_location" id="dropoffLocationInput" class="form-control @error('dropoff_location') is-invalid @enderror" placeholder="{{ __('Makkah Haram, Kudai, Taif, Hotel, Highway Stop') }}" value="{{ old('dropoff_location') }}">
                         @error('dropoff_location') <div class="invalid-feedback">{{ $message }}</div> @enderror
                         <div class="d-flex gap-1 flex-wrap mt-1">
                             <span class="badge bg-light text-secondary border extra-small" style="cursor: pointer;" onclick="setDropoffVal('Makkah Haram')">Makkah Haram</span>
@@ -183,7 +189,7 @@
                                 <span><i class="fas fa-undo-alt text-success me-1"></i> {{ __('Return Journey Drop-off / Midway Stop (موقع النزول في طريق العودة)') }}</span>
                                 <span class="badge bg-success text-white extra-small">{{ __('Round-Trip Return Stop') }}</span>
                             </label>
-                            <input type="text" name="return_dropoff_location" id="returnDropoffLocationInput" class="form-control form-control-sm @error('return_dropoff_location') is-invalid @enderror" placeholder="{{ __('e.g. Taif Highway Stop, Al-Kharj, Muzahimiyah, SASCO Station (Leave empty if returning to main office)') }}" value="{{ old('return_dropoff_location') }}">
+                            <input type="text" name="return_dropoff_location" id="returnDropoffLocationInput" class="form-control form-control-sm @error('return_dropoff_location') is-invalid @enderror" placeholder="{{ __('Taif Highway Stop, Al-Kharj, Muzahimiyah, SASCO Station (Leave empty if returning to main office)') }}" value="{{ old('return_dropoff_location') }}">
                             @error('return_dropoff_location') <div class="invalid-feedback">{{ $message }}</div> @enderror
                             <div class="d-flex gap-1 flex-wrap mt-2 align-items-center">
                                 <span class="extra-small text-muted me-1">{{ __('Quick Presets:') }}</span>
@@ -313,7 +319,7 @@
                     <div class="row g-3 p-3 rounded-3 bg-light border border-success-subtle">
                         <div class="col-md-5">
                             <label class="form-label fw-bold text-dark small">{{ __('Hotel Accommodation Partner') }}</label>
-                            <input type="text" name="hotel_name" id="hotelNameInput" class="form-control" placeholder="{{ __('e.g. Swissôtel Makkah') }}" value="{{ old('hotel_name', $selectedTrip?->hotel_name) }}">
+                            <input type="text" name="hotel_name" id="hotelNameInput" class="form-control" placeholder="{{ __('Swissôtel Makkah') }}" value="{{ old('hotel_name', $selectedTrip?->hotel_name) }}">
                         </div>
 
                         <div class="col-md-4">
@@ -323,17 +329,17 @@
                             </div>
                             <select name="room_type" id="roomTypeSelect" class="form-select form-select-sm" onchange="onRoomTypeChanged()">
                                 <optgroup label="{{ __('Standard Shared Rooms (مشترك)') }}">
-                                    <option value="quad_sharing" data-multiplier="1.0" data-surcharge="0" data-badge="Quad (4 Beds)" {{ old('room_type', 'quad_sharing') === 'quad_sharing' ? 'selected' : '' }}>{{ __('Quad Sharing (رباعي - 4 Beds)') }}</option>
-                                    <option value="triple_sharing" data-multiplier="1.25" data-surcharge="150" data-badge="Triple (3 Beds)" {{ old('room_type') === 'triple_sharing' ? 'selected' : '' }}>{{ __('Triple Sharing (ثلاثي - 3 Beds)') }}</option>
-                                    <option value="double_sharing" data-multiplier="1.5" data-surcharge="300" data-badge="Double (2 Beds)" {{ old('room_type') === 'double_sharing' ? 'selected' : '' }}>{{ __('Double Sharing (ثنائي - 2 Beds)') }}</option>
+                                    <option value="quad_sharing" data-surcharge="0" data-badge="Quad (4 Beds)" {{ old('room_type', 'quad_sharing') === 'quad_sharing' ? 'selected' : '' }}>{{ __('Quad Sharing (رباعي - 4 Beds)') }}</option>
+                                    <option value="triple_sharing" data-surcharge="100" data-badge="Triple (3 Beds)" {{ old('room_type') === 'triple_sharing' ? 'selected' : '' }}>{{ __('Triple Sharing (ثلاثي - 3 Beds)') }} (+100 SAR)</option>
+                                    <option value="double_sharing" data-surcharge="200" data-badge="Double (2 Beds)" {{ old('room_type') === 'double_sharing' ? 'selected' : '' }}>{{ __('Double Sharing (ثنائي - 2 Beds)') }} (+200 SAR)</option>
                                 </optgroup>
                                 <optgroup label="{{ __('Personal & Private Rooms (خاص / شخصي)') }}">
-                                    <option value="single_private" data-multiplier="2.0" data-surcharge="600" data-badge="Personal Single" {{ old('room_type') === 'single_private' ? 'selected' : '' }}>{{ __('Personal / Single Private Room (شخصي / مفرد)') }}</option>
-                                    <option value="private_room" data-multiplier="2.2" data-surcharge="700" data-badge="Private Family" {{ old('room_type') === 'private_room' ? 'selected' : '' }}>{{ __('Private Family Room (غرفة عائلية خاصة)') }}</option>
+                                    <option value="single_private" data-surcharge="500" data-badge="Personal Single" {{ old('room_type') === 'single_private' ? 'selected' : '' }}>{{ __('Personal / Single Private Room (شخصي / مفرد)') }} (+500 SAR)</option>
+                                    <option value="private_room" data-surcharge="600" data-badge="Private Family" {{ old('room_type') === 'private_room' ? 'selected' : '' }}>{{ __('Private Family Room (غرفة عائلية خاصة)') }} (+600 SAR)</option>
                                 </optgroup>
                                 <optgroup label="{{ __('Luxury & VIP Suites (أجنحة وغرف فاخرة)') }}">
-                                    <option value="luxury_haram_view" data-multiplier="2.5" data-surcharge="1000" data-badge="👑 Luxury Haram View" {{ old('room_type') === 'luxury_haram_view' ? 'selected' : '' }}>👑 {{ __('Luxury Haram View (إطلالة الحرم فاخرة)') }}</option>
-                                    <option value="executive_suite" data-multiplier="3.0" data-surcharge="1500" data-badge="⭐ Executive Suite" {{ old('room_type') === 'executive_suite' ? 'selected' : '' }}>⭐ {{ __('Executive Luxury Suite (جناح تنفيذي فاخر)') }}</option>
+                                    <option value="luxury_haram_view" data-surcharge="800" data-badge="👑 Luxury Haram View" {{ old('room_type') === 'luxury_haram_view' ? 'selected' : '' }}>👑 {{ __('Luxury Haram View (إطلالة الحرم فاخرة)') }} (+800 SAR)</option>
+                                    <option value="executive_suite" data-surcharge="1200" data-badge="⭐ Executive Suite" {{ old('room_type') === 'executive_suite' ? 'selected' : '' }}>⭐ {{ __('Executive Luxury Suite (جناح تنفيذي فاخر)') }} (+1,200 SAR)</option>
                                 </optgroup>
                             </select>
                         </div>
@@ -345,7 +351,7 @@
 
                         <div class="col-12">
                             <label class="form-label fw-bold text-dark small"><i class="fas fa-map-marker-alt text-danger me-1"></i> {{ __('Hotel Address / Location in Makkah / Madinah') }}</label>
-                            <input type="text" name="hotel_address" id="hotelAddressInput" class="form-control" placeholder="{{ __('e.g. Ibrahim Al Khalil Road, Makkah / Near Clock Tower') }}" value="{{ old('hotel_address', $selectedTrip?->hotel_address) }}">
+                            <input type="text" name="hotel_address" id="hotelAddressInput" class="form-control" placeholder="{{ __('Ibrahim Al Khalil Road, Makkah / Near Clock Tower') }}" value="{{ old('hotel_address', $selectedTrip?->hotel_address) }}">
                         </div>
                     </div>
                 </div>
@@ -358,7 +364,10 @@
                         <label class="form-label fw-bold text-dark small">{{ __('Travel Bus Fare') }} *</label>
                         <div class="input-group">
                             <span class="input-group-text bg-light fw-bold">{{ currency_symbol() }}</span>
-                            <input type="number" step="0.01" name="travel_fare" id="travelFareInput" class="form-control" value="{{ old('travel_fare', $selectedTrip?->price_without_hotel ?? 250) }}" required oninput="recalcBooking()">
+                            @php
+                                $initialFare = $selectedSeat ? ($selectedTrip?->getSeatFare($selectedSeat) ?? 100) : 0;
+                            @endphp
+                            <input type="number" step="0.01" name="travel_fare" id="travelFareInput" class="form-control" value="{{ old('travel_fare', number_format($initialFare, 2, '.', '')) }}" required oninput="recalcBooking()">
                         </div>
                         <small class="text-primary extra-small fw-semibold d-block mt-1" id="fareMultiplierNote"></small>
                     </div>
@@ -368,9 +377,11 @@
                         <div class="input-group">
                             <span class="input-group-text bg-light fw-bold">{{ currency_symbol() }}</span>
                             @php
-                                $defHotelExp = max(0, ($selectedTrip?->price_with_hotel ?? 1250) - ($selectedTrip?->price_without_hotel ?? 250));
+                                $defHotelExp = ($pkgType === 'with_hotel' && $selectedSeat && $selectedTrip) 
+                                    ? max(0, ($selectedTrip->price_with_hotel ?? 0) - ($selectedTrip->price_without_hotel ?? 0))
+                                    : 0;
                             @endphp
-                            <input type="number" step="0.01" name="hotel_expense" id="hotelExpenseInput" class="form-control" value="{{ old('hotel_expense', $defHotelExp) }}" oninput="recalcBooking()">
+                            <input type="number" step="0.01" name="hotel_expense" id="hotelExpenseInput" class="form-control" value="{{ old('hotel_expense', number_format($defHotelExp, 2, '.', '')) }}" oninput="recalcBooking()">
                         </div>
                         <small class="text-success extra-small fw-semibold d-block mt-1" id="hotelMultiplierNote"></small>
                     </div>
@@ -466,17 +477,17 @@
                     </div>
                     <div class="col-md-6 mt-2">
                         <label class="form-label fw-bold text-dark small">{{ __('Salesman / Agent Name') }}</label>
-                        <input type="text" name="salesman_name" id="salesmanNameInput" class="form-control" placeholder="{{ __('e.g. Salesman Name') }}" value="{{ old('salesman_name', $currentEmployee?->name ?? auth()->user()?->name) }}">
+                        <input type="text" name="salesman_name" id="salesmanNameInput" class="form-control" placeholder="{{ __('Salesman Name') }}" value="{{ old('salesman_name', $currentEmployee?->name ?? auth()->user()?->name) }}">
                     </div>
                     <div class="col-md-6 mt-2">
                         <label class="form-label fw-bold text-dark small">{{ __('Salesman Phone') }}</label>
-                        <input type="text" name="salesman_phone" id="salesmanPhoneInput" class="form-control" placeholder="{{ __('e.g. +966 50 123 4567') }}" value="{{ old('salesman_phone', $currentEmployee?->phone ?: (auth()->user()?->employee?->phone ?: (auth()->user()?->phone ?: ''))) }}">
+                        <input type="text" name="salesman_phone" id="salesmanPhoneInput" class="form-control" placeholder="{{ __('+966 50 123 4567') }}" value="{{ old('salesman_phone', $currentEmployee?->phone ?: (auth()->user()?->employee?->phone ?: (auth()->user()?->phone ?: ''))) }}">
                     </div>
                 </div>
 
                 <div class="mb-3">
                     <label class="form-label fw-bold text-dark small">{{ __('Special Requests / Notes') }}</label>
-                    <textarea name="notes" rows="2" class="form-control" placeholder="{{ __('e.g. Needs front seat, travelling with family, wheelchair request...') }}">{{ old('notes') }}</textarea>
+                    <textarea name="notes" rows="2" class="form-control" placeholder="{{ __('Needs front seat, travelling with family, wheelchair request...') }}">{{ old('notes') }}</textarea>
                 </div>
 
                 <div class="mt-4 pt-2 border-top d-flex justify-content-end gap-2">
@@ -605,6 +616,10 @@
     function onTripSelectChanged(tripId) {
         if (!tripId) return;
         selectedSeats = [];
+        const paidInput = document.getElementById('paidAmountInput');
+        if (paidInput) delete paidInput.dataset.userEdited;
+        const hotelInput = document.getElementById('hotelExpenseInput');
+        if (hotelInput) delete hotelInput.dataset.userEdited;
         updateSelectedSeatsUI();
         const alertBox = document.getElementById('liveSeatAlertContainer');
         if (alertBox) alertBox.style.display = 'none';
@@ -874,6 +889,10 @@
 
     function clearAllSelectedSeats() {
         selectedSeats = [];
+        const paidInput = document.getElementById('paidAmountInput');
+        if (paidInput) delete paidInput.dataset.userEdited;
+        const hotelInput = document.getElementById('hotelExpenseInput');
+        if (hotelInput) delete hotelInput.dataset.userEdited;
         updateSelectedSeatsUI();
     }
 
@@ -950,7 +969,8 @@
                 const isLead = (idx === 0);
                 const defaultGender = saved.gender || (isLead ? (document.querySelector('[name="passenger_gender"]')?.value || 'male') : 'male');
                 const defaultNat = saved.nationality || (isLead ? (document.querySelector('[name="passenger_nationality"]')?.value || 'PAK') : 'PAK');
-                const defaultLoc = saved.pickup_location || (isLead ? (document.querySelector('[name="pickup_location"]')?.value || 'Office') : 'Office');
+                const currentPickupVal = document.querySelector('[name="pickup_location"]')?.value || 'Office';
+                const defaultLoc = saved.pickup_location || currentPickupVal;
                 const defaultDrop = saved.dropoff_location || (isLead ? (document.querySelector('[name="dropoff_location"]')?.value || '') : '');
                 
                 const row = document.createElement('div');
@@ -1024,6 +1044,7 @@
             if (withoutRadio && !withoutRadio.checked) {
                 withoutRadio.checked = true;
                 onPackageTypeChanged('without_hotel');
+                return;
             }
         } else {
             if (dirSec) dirSec.style.display = 'none';
@@ -1031,6 +1052,9 @@
             if (lblRound) lblRound.classList.add('border-primary', 'bg-primary-subtle');
             if (lblOne) lblOne.classList.remove('border-info', 'bg-info-subtle');
         }
+
+        const paidInput = document.getElementById('paidAmountInput');
+        if (paidInput) delete paidInput.dataset.userEdited;
 
         recalcAutoFares();
     }
@@ -1070,6 +1094,12 @@
             lblWith.classList.remove('border-success', 'bg-success-subtle');
         }
 
+        const hotelInput = document.getElementById('hotelExpenseInput');
+        if (hotelInput) delete hotelInput.dataset.userEdited;
+
+        const paidInput = document.getElementById('paidAmountInput');
+        if (paidInput) delete paidInput.dataset.userEdited;
+
         recalcAutoFares();
     }
 
@@ -1079,22 +1109,37 @@
     }
 
     function recalcAutoFares() {
-        const count = Math.max(1, selectedSeats.length);
+        const count = selectedSeats.length;
         const fareInput = document.getElementById('travelFareInput');
         const hotelInput = document.getElementById('hotelExpenseInput');
         const noteEl = document.getElementById('fareMultiplierNote');
+        const hotelNoteEl = document.getElementById('hotelMultiplierNote');
         const journeyType = document.querySelector('input[name="journey_type"]:checked')?.value || 'round_trip';
         const isOneWay = (journeyType === 'one_way');
+        const pkgType = document.querySelector('input[name="package_type"]:checked')?.value || 'with_hotel';
 
         if (currentTripData) {
-            let totalTravelFare = 0;
-            const classCounts = { vip: 0, business: 0, economy: 0 };
-
             const roundTripBase = parseFloat(currentTripData.price_without_hotel) || 1;
-            const oneWayBase = parseFloat(currentTripData.one_way_price) || Math.round(roundTripBase * 0.5);
-            const ratio = isOneWay ? (oneWayBase / roundTripBase) : 1.0;
+            const oneWayBase = parseFloat(currentTripData.one_way_price) || 0;
+            // Ratio: One-Way is half (50%) by default, or exact ratio if one_way_price is set and less than round_trip
+            let ratio = 1.0;
+            if (isOneWay) {
+                if (oneWayBase > 0 && oneWayBase < roundTripBase) {
+                    ratio = oneWayBase / roundTripBase;
+                } else {
+                    ratio = 0.5;
+                }
+            }
 
-            if (selectedSeats.length > 0) {
+            if (count === 0) {
+                fareInput.value = '0.00';
+                hotelInput.value = '0.00';
+                if (noteEl) noteEl.innerText = '{{ __("Please click one or more seats on the bus map above to calculate fare.") }}';
+                if (hotelNoteEl) hotelNoteEl.innerText = '';
+            } else {
+                let totalTravelFare = 0;
+                const classCounts = { vip: 0, business: 0, economy: 0 };
+
                 selectedSeats.forEach(s => {
                     const btn = document.getElementById('seatBtn_' + s);
                     const baseFare = parseFloat(btn?.dataset.seatFare) || roundTripBase;
@@ -1103,52 +1148,46 @@
                     totalTravelFare += fare;
                     classCounts[sClass] = (classCounts[sClass] || 0) + 1;
                 });
-            } else {
-                totalTravelFare = isOneWay ? oneWayBase : roundTripBase;
-            }
 
-            fareInput.value = totalTravelFare.toFixed(2);
+                fareInput.value = totalTravelFare.toFixed(2);
 
-            const pkgType = document.querySelector('input[name="package_type"]:checked')?.value || 'with_hotel';
-            const unitFare = parseFloat(currentTripData.price_without_hotel) || 0;
-            const unitWithHotel = parseFloat(currentTripData.price_with_hotel) || 0;
+                const unitFare = parseFloat(currentTripData.price_without_hotel) || 0;
+                const unitWithHotel = parseFloat(currentTripData.price_with_hotel) || 0;
 
-            if (pkgType === 'with_hotel') {
-                const unitHotelDiff = Math.max(0, unitWithHotel - unitFare);
-                const roomTypeSelect = document.getElementById('roomTypeSelect');
-                const opt = roomTypeSelect ? roomTypeSelect.options[roomTypeSelect.selectedIndex] : null;
-                const multiplier = opt ? (parseFloat(opt.dataset.multiplier) || 1.0) : 1.0;
-                const surcharge = opt ? (parseFloat(opt.dataset.surcharge) || 0) : 0;
-                const badgeText = opt ? (opt.dataset.badge || 'Quad (4 Beds)') : 'Quad (4 Beds)';
+                if (pkgType === 'with_hotel') {
+                    const unitHotelDiff = Math.max(0, unitWithHotel - unitFare);
+                    const roomTypeSelect = document.getElementById('roomTypeSelect');
+                    const opt = roomTypeSelect ? roomTypeSelect.options[roomTypeSelect.selectedIndex] : null;
+                    const surcharge = opt ? (parseFloat(opt.dataset.surcharge) || 0) : 0;
+                    const badgeText = opt ? (opt.dataset.badge || 'Quad (4 Beds)') : 'Quad (4 Beds)';
 
-                const pill = document.getElementById('roomTypePillBadge');
-                if (pill) pill.innerText = badgeText;
+                    const pill = document.getElementById('roomTypePillBadge');
+                    if (pill) pill.innerText = badgeText;
 
-                if (!hotelInput.dataset.userEdited) {
-                    const singleSeatHotel = (unitHotelDiff * multiplier) + surcharge;
-                    const calculatedHotel = singleSeatHotel * count;
-                    hotelInput.value = calculatedHotel.toFixed(2);
+                    if (!hotelInput.dataset.userEdited) {
+                        const singleSeatHotel = Math.max(0, unitHotelDiff + surcharge);
+                        const calculatedHotel = singleSeatHotel * count;
+                        hotelInput.value = calculatedHotel.toFixed(2);
+                    }
+
+                    if (hotelNoteEl) {
+                        const surchargeNote = surcharge > 0 ? ` (+SAR ${surcharge} tier fee)` : '';
+                        hotelNoteEl.innerText = `${badgeText}: SAR ${hotelInput.value} (${count} {{ __('pax') }})${surchargeNote}`;
+                    }
+                } else {
+                    hotelInput.value = '0.00';
+                    if (hotelNoteEl) hotelNoteEl.innerText = '';
                 }
 
-                const hotelNoteEl = document.getElementById('hotelMultiplierNote');
-                if (hotelNoteEl) {
-                    const surchargeNote = surcharge > 0 ? ` (+SAR ${surcharge} tier fee)` : '';
-                    hotelNoteEl.innerText = `${badgeText}: SAR ${hotelInput.value} (${count} {{ __('pax') }})${surchargeNote}`;
+                if (noteEl) {
+                    let parts = [];
+                    if (classCounts.vip > 0) parts.push(`${classCounts.vip}x VIP`);
+                    if (classCounts.business > 0) parts.push(`${classCounts.business}x Business`);
+                    if (classCounts.economy > 0) parts.push(`${classCounts.economy}x Economy`);
+                    const breakdown = parts.length > 0 ? ` (${parts.join(', ')})` : '';
+                    const typeText = isOneWay ? ' [{{ __("ONE-WAY / ذهاب فقط") }}]' : ' [{{ __("ROUND TRIP / ذهاب وعودة") }}]';
+                    noteEl.innerText = count + ' {{ __("Seat(s)") }}' + typeText + breakdown + ' = {{ currency_symbol() }} ' + totalTravelFare.toFixed(2);
                 }
-            } else {
-                hotelInput.value = '0.00';
-                const hotelNoteEl = document.getElementById('hotelMultiplierNote');
-                if (hotelNoteEl) hotelNoteEl.innerText = '';
-            }
-
-            if (noteEl) {
-                let parts = [];
-                if (classCounts.vip > 0) parts.push(`${classCounts.vip}x VIP`);
-                if (classCounts.business > 0) parts.push(`${classCounts.business}x Business`);
-                if (classCounts.economy > 0) parts.push(`${classCounts.economy}x Economy`);
-                const breakdown = parts.length > 0 ? ` (${parts.join(', ')})` : '';
-                const typeText = isOneWay ? ' [{{ __("ONE-WAY / ذهاب فقط") }}]' : ' [{{ __("ROUND TRIP / ذهاب وعودة") }}]';
-                noteEl.innerText = count + ' {{ __("Seats") }}' + typeText + breakdown + ' = {{ currency_symbol() }} ' + totalTravelFare.toFixed(2);
             }
         }
 
@@ -1191,8 +1230,17 @@
             const phone = opt.getAttribute('data-phone');
             if (name) document.getElementById('salesmanNameInput').value = name;
             if (phone !== null && phone !== undefined) document.getElementById('salesmanPhoneInput').value = phone;
+
+            const pickupInput = document.getElementById('pickupLocationInput');
+            if (pickupInput && (!pickupInput.dataset.userEdited || pickupInput.value === '')) {
+                if (name) pickupInput.value = name;
+            }
         }
     }
+
+    document.getElementById('pickupLocationInput')?.addEventListener('input', function() {
+        this.dataset.userEdited = 'true';
+    });
 
     document.getElementById('hotelExpenseInput')?.addEventListener('input', function() {
         this.dataset.userEdited = 'true';

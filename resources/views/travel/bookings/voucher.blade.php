@@ -33,7 +33,9 @@
     }
 
     // Company registration details
-    $companyCr = $setting->company_cr_no ?? $shop->cr_number ?? null;
+    $companyCr = $shop->cr_number ?? $setting->company_cr_no ?? null;
+    $companyLicense = $shop->license_number ?? $setting->company_license_no ?? null;
+    $companyTagline = $shop->tagline ?? $setting->company_tagline ?? null;
     $companyVat = $setting->company_vat_no ?? $shop->vat_number ?? null;
     $companyPhone = $setting->company_phone ?? $shop->phone ?? null;
     $companyEmail = $setting->company_email ?? $shop->email ?? null;
@@ -405,19 +407,23 @@
                     <table style="width: 100%;">
                         <tr>
                             @if($logoSrc)
-                                <td style="width: 48px; vertical-align: middle; padding: 0;">
-                                    <img src="{{ $logoSrc }}" style="max-height: 38px; max-width: 45px; object-fit: contain;" />
+                                <td style="width: 85px; vertical-align: middle; padding: 0; text-align: center;">
+                                    <img src="{{ $logoSrc }}" style="max-height: 60px; max-width: 80px; object-fit: contain;" alt="Logo" />
                                 </td>
                             @endif
-                            <td style="vertical-align: middle; padding-{{ $isAr ? 'right' : 'left' }}: 6px;">
+                            <td style="vertical-align: middle; padding-{{ $isAr ? 'right' : 'left' }}: 8px;">
                                 <div class="agency-title">{{ $brandName }}</div>
+                                @if($companyTagline)
+                                    <div style="font-size: 6.8pt; color: #0284c7; font-style: italic; margin-top: -1px; margin-bottom: 2px; font-weight: 500;">{{ tdb($companyTagline) }}</div>
+                                @endif
                                 <div class="agency-meta">
                                     {{ tdb($companyAddress) }}@if($companyCity) - {{ tdb($companyCity) }}@endif
                                     @if($companyPhone) &bull; {{ __('Tel') }}: <span dir="ltr">{{ $companyPhone }}</span>@endif
-                                    @if($companyCr || $companyVat)
+                                    @if($companyCr || $companyLicense || $companyVat)
                                         <br>
                                         @if($companyCr) <strong>{{ __('CR') }}:</strong> <span dir="ltr">{{ $companyCr }}</span> @endif
-                                        @if($companyVat) <strong>{{ __('VAT') }}:</strong> <span dir="ltr">{{ $companyVat }}</span> @endif
+                                        @if($companyLicense) &bull; <strong>{{ __('License') }}:</strong> <span dir="ltr">{{ $companyLicense }}</span> @endif
+                                        @if($companyVat) &bull; <strong>{{ __('VAT') }}:</strong> <span dir="ltr">{{ $companyVat }}</span> @endif
                                     @endif
                                 </div>
                             </td>
@@ -707,7 +713,32 @@
             1. {{ __('Arrive at the departure terminal at least 30-45 minutes before departure.') }}
             2. {{ __('Original Iqama/Passport is mandatory.') }}
             3. {{ __('Baggage limit: 1 standard piece (max 25kg) + 1 hand luggage.') }}
+            4. {{ __('Madinah historical Ziyarat tour is optional with separate charges of SAR 10 per passenger.') }}
         </div>
+
+        @php
+            $tripConditions = $trip?->description ?: \App\Models\TravelTrip::defaultConditions();
+            $conditionBlocks = \App\Models\TravelTrip::parseConditionsBlocks($tripConditions);
+        @endphp
+        @if(!empty($conditionBlocks))
+            <!-- Trip Overview / Terms & Conditions Note -->
+            <div class="trip-overview-box" style="margin-top: 3px; background-color: #f8fafc; border: 1px solid #cbd5e1; border-{{ $isAr ? 'right' : 'left' }}: 3px solid #0284c7; padding: 4px 6px; font-size: 6.8pt; color: #1e293b; line-height: 1.3; border-radius: 2px;">
+                <div style="font-weight: bold; color: #0369a1; margin-bottom: 2px;">
+                    <i class="fas fa-file-contract me-1"></i>{{ __('Terms & Conditions / الشروط والأحكام') }}:
+                </div>
+                @foreach($conditionBlocks as $block)
+                    @if($block['type'] === 'rtl')
+                        <div dir="rtl" style="direction: rtl; text-align: right; font-family: 'Cairo', 'Amiri', 'Traditional Arabic', Tahoma, sans-serif; font-size: 6.5pt; color: #334155; margin-bottom: 3px;">
+                            {!! nl2br(e(implode("\n", $block['lines']))) !!}
+                        </div>
+                    @else
+                        <div dir="ltr" style="direction: ltr; text-align: left; font-size: 6.5pt; color: #334155; margin-bottom: 3px;">
+                            {!! nl2br(e(implode("\n", $block['lines']))) !!}
+                        </div>
+                    @endif
+                @endforeach
+            </div>
+        @endif
 
         <!-- Perforation Cut Line -->
         <div class="cut-line">

@@ -12,9 +12,12 @@ class Shop extends Model
 
     protected $fillable = [
         'name',
+        'tagline',
         'slug',
         'email',
         'phone',
+        'cr_number',
+        'license_number',
         'address',
         'city',
         'country',

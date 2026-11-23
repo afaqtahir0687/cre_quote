@@ -70,6 +70,69 @@ class TravelTrip extends Model
     ];
 
     /**
+     * Standard Arabic & English terms and conditions for Umrah travel trips.
+     */
+    public static function defaultConditions(): string
+    {
+        return "الشروط:
+١- لا تسترد القيمة في حال التخلف عن موعد الحضور أو عدم الإعتذار قبل الرحلة بيومين للعمرة.
+٢- لا يحق للمشترك الإعتراض على ترتيب جلوسه في الحافلة والسكن، وممنوع التدخين.
+٣- المكتب غير مسؤول عن الأغراض التي تُنسى في الحافلة.
+
+Conditions:
+1. No refunds will be issued for failure to arrive on time or failure to cancel at least two days before the Umrah trip.
+2. Participants have no right to object to their seating arrangements on the bus or in their accommodation. Smoking is prohibited.
+3. The office is not responsible for items left behind on the bus.";
+    }
+
+    /**
+     * Parse terms & conditions into RTL (Arabic) and LTR (English/other) blocks
+     * so they render with the correct text direction and alignment.
+     *
+     * @param string|null $text
+     * @return array<int, array{type: string, lines: array<int, string>}>
+     */
+    public static function parseConditionsBlocks(?string $text): array
+    {
+        if (empty($text)) {
+            return [];
+        }
+
+        $lines = preg_split('/\r\n|\r|\n/', $text);
+        $blocks = [];
+        $currentBlock = null;
+
+        foreach ($lines as $line) {
+            $trimmed = trim($line);
+            if ($trimmed === '') {
+                if ($currentBlock !== null) {
+                    $blocks[] = $currentBlock;
+                    $currentBlock = null;
+                }
+                continue;
+            }
+
+            $isArabic = (bool) preg_match('/\p{Arabic}/u', $trimmed);
+            $type = $isArabic ? 'rtl' : 'ltr';
+
+            if ($currentBlock === null) {
+                $currentBlock = ['type' => $type, 'lines' => [$trimmed]];
+            } elseif ($currentBlock['type'] === $type) {
+                $currentBlock['lines'][] = $trimmed;
+            } else {
+                $blocks[] = $currentBlock;
+                $currentBlock = ['type' => $type, 'lines' => [$trimmed]];
+            }
+        }
+
+        if ($currentBlock !== null) {
+            $blocks[] = $currentBlock;
+        }
+
+        return $blocks;
+    }
+
+    /**
      * Shop this trip belongs to.
      */
     public function shop()

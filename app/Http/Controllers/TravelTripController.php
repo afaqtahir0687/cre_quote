@@ -149,6 +149,10 @@ class TravelTripController extends Controller
             $validated['employee_id'] = $employee ? $employee->id : null;
         }
 
+        if (empty($validated['one_way_price']) || (float)$validated['one_way_price'] >= (float)$validated['price_without_hotel']) {
+            $validated['one_way_price'] = round((float)$validated['price_without_hotel'] * 0.5, 2);
+        }
+
         $trip = TravelTrip::create($validated);
 
         return redirect()->route('travel.trips.show', $trip->id)
@@ -238,6 +242,10 @@ class TravelTripController extends Controller
         $validated['vip_seats_count'] = $vipCount;
         $validated['business_seats_count'] = $bizCount;
         $validated['economy_seats_count'] = $ecoCount;
+
+        if (empty($validated['one_way_price']) || (float)$validated['one_way_price'] >= (float)$validated['price_without_hotel']) {
+            $validated['one_way_price'] = round((float)$validated['price_without_hotel'] * 0.5, 2);
+        }
 
         $trip->update($validated);
 

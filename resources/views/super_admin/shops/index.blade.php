@@ -59,6 +59,9 @@
                         <a href="{{ route('super_admin.shops.edit', $shop->id) }}" class="fw-bold text-dark text-decoration-none">
                             {{ tdb($shop->name) }}
                         </a>
+                        @if($shop->tagline)
+                            <div class="text-primary-emphasis extra-small fst-italic" style="font-size: 0.74rem;">"{{ $shop->tagline }}"</div>
+                        @endif
                         <div class="text-muted small">
                             <i class="fas fa-map-marker-alt me-1 text-danger"></i>{{ $shop->city ? tdb($shop->city) : __('Main Location') }}
                             @if($shop->country) &bull; {{ $shop->country }}@endif
@@ -83,6 +86,18 @@
                                     @else
                                         &bull; {{ $shop->subscriptionDaysRemaining() }} {{ __('days left') }}
                                     @endif
+                                </span>
+                            @endif
+
+                            @if($shop->cr_number)
+                                <span class="badge bg-light text-dark border font-monospace extra-small" style="font-size: 0.68rem;" title="{{ __('Commercial Registration No') }}">
+                                    <i class="fas fa-file-contract text-primary me-1"></i>CR: {{ $shop->cr_number }}
+                                </span>
+                            @endif
+
+                            @if($shop->license_number)
+                                <span class="badge bg-success-subtle text-success border font-monospace extra-small" style="font-size: 0.68rem;" title="{{ __('License No') }}">
+                                    <i class="fas fa-id-card-alt me-1"></i>LIC: {{ $shop->license_number }}
                                 </span>
                             @endif
                         </div>

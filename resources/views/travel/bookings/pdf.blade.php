@@ -13,7 +13,9 @@
     }
 
     // Company registration details
-    $companyCr = $setting->company_cr_no ?? $shop->cr_number ?? null;
+    $companyCr = $shop->cr_number ?? $setting->company_cr_no ?? null;
+    $companyLicense = $shop->license_number ?? $setting->company_license_no ?? null;
+    $companyTagline = $shop->tagline ?? $setting->company_tagline ?? null;
     $companyVat = $setting->company_vat_no ?? $shop->vat_number ?? null;
     $companyPhone = $setting->company_phone ?? $shop->phone ?? null;
     $companyEmail = $setting->company_email ?? $shop->email ?? null;
@@ -58,15 +60,15 @@
     <title>{{ __('Ticket Voucher') }} - {{ $booking->booking_reference }}</title>
     <style>
         @page {
-            margin: 5mm 6mm;
+            margin: 3mm 4mm;
         }
         body {
             font-family: 'amiri', 'dejavusans', sans-serif;
-            font-size: 9pt;
+            font-size: 8pt;
             color: #111827;
             direction: {{ $dir }};
             text-align: {{ $isAr ? 'right' : 'left' }};
-            line-height: 1.25;
+            line-height: 1.2;
             padding: 0;
             margin: 0;
         }
@@ -76,13 +78,13 @@
         }
         td, th {
             vertical-align: top;
-            padding: 2px 4px;
+            padding: 1.5px 3px;
         }
 
         /* Outer Box */
         .ticket-box {
-            border: 1.5px solid #008cc0;
-            padding: 6px 8px;
+            border: 1.2px solid #008cc0;
+            padding: 3px 5px;
             background-color: #ffffff;
         }
 
@@ -91,16 +93,16 @@
             vertical-align: middle;
         }
         .agency-title {
-            font-size: 13pt;
+            font-size: 10.5pt;
             font-weight: bold;
             color: #0f172a;
             margin: 0;
             line-height: 1.1;
         }
         .agency-meta {
-            font-size: 7.5pt;
+            font-size: 6.5pt;
             color: #475569;
-            line-height: 1.25;
+            line-height: 1.2;
         }
         .pnr-box {
             text-align: {{ $isAr ? 'left' : 'right' }};
@@ -110,57 +112,57 @@
             background-color: #008cc0;
             color: #ffffff;
             font-weight: bold;
-            font-size: 10pt;
-            padding: 3px 8px;
-            border-radius: 4px;
+            font-size: 9pt;
+            padding: 2px 6px;
+            border-radius: 3px;
             letter-spacing: 0.5px;
         }
 
         /* Route Banner */
         .route-table {
-            margin-top: 5px;
+            margin-top: 3px;
             background-color: #f0f9ff;
             border: 1px solid #bae6fd;
-            border-radius: 4px;
+            border-radius: 3px;
         }
         .route-table td {
-            padding: 4px 6px;
+            padding: 2px 5px;
         }
         .city-label {
-            font-size: 7pt;
+            font-size: 6.5pt;
             color: #0369a1;
             font-weight: bold;
             text-transform: uppercase;
         }
         .city-title {
-            font-size: 11pt;
+            font-size: 9.5pt;
             font-weight: bold;
             color: #0c4a6e;
         }
         .trip-meta {
-            font-size: 7.5pt;
+            font-size: 6.2pt;
             color: #334155;
         }
 
         /* Passenger & Seat Box */
         .info-grid-table {
-            margin-top: 5px;
+            margin-top: 3px;
             border: 1px solid #e2e8f0;
             background-color: #fafafa;
         }
         .info-grid-table td {
-            padding: 4px 6px;
+            padding: 2px 5px;
             border: 1px solid #e2e8f0;
-            font-size: 8pt;
+            font-size: 7.5pt;
         }
         .field-lbl {
-            font-size: 7pt;
+            font-size: 6.2pt;
             color: #64748b;
             font-weight: bold;
             text-transform: uppercase;
         }
         .field-val {
-            font-size: 8.5pt;
+            font-size: 8pt;
             font-weight: bold;
             color: #0f172a;
         }
@@ -168,12 +170,12 @@
             background-color: #008cc0;
             color: #ffffff;
             text-align: center;
-            padding: 4px 8px;
-            border-radius: 4px;
+            padding: 3px 6px;
+            border-radius: 3px;
             font-weight: bold;
         }
         .seat-numbers-text {
-            font-size: 13pt;
+            font-size: 11pt;
             font-weight: bold;
             color: #ffffff;
             line-height: 1;
@@ -181,72 +183,73 @@
 
         /* Financial Statement */
         .fare-table {
-            margin-top: 5px;
+            margin-top: 3px;
             border: 1px solid #cbd5e1;
         }
         .fare-table th {
             background-color: #f1f5f9;
             color: #334155;
-            font-size: 7.5pt;
+            font-size: 6.5pt;
             font-weight: bold;
             border: 1px solid #cbd5e1;
-            padding: 3px 5px;
+            padding: 2px 4px;
             text-transform: uppercase;
         }
         .fare-table td {
             border: 1px solid #e2e8f0;
-            padding: 3px 5px;
-            font-size: 8pt;
+            padding: 2px 4px;
+            font-size: 7pt;
         }
         .fare-total-row td {
             background-color: #f8fafc;
             font-weight: bold;
-            font-size: 8.5pt;
+            font-size: 7.5pt;
         }
 
         /* Guidelines */
         .rules-box {
-            margin-top: 4px;
+            margin-top: 2px;
             background-color: #fffbeb;
             border: 1px solid #fef3c7;
-            padding: 3px 6px;
-            font-size: 7pt;
+            padding: 2px 5px;
+            font-size: 6.2pt;
             color: #92400e;
-            line-height: 1.25;
+            line-height: 1.15;
+            border-radius: 2px;
         }
 
         /* Conductor Tear Stub */
         .cut-line {
-            border-top: 1.5px dashed #94a3b8;
-            margin: 6px 0 5px 0;
+            border-top: 1px dashed #94a3b8;
+            margin: 3px 0 2px 0;
             text-align: center;
-            font-size: 7pt;
+            font-size: 6pt;
             color: #64748b;
-            letter-spacing: 1px;
+            letter-spacing: 0.5px;
         }
         .stub-box {
             background-color: #f8fafc;
             border: 1px solid #cbd5e1;
-            padding: 4px 6px;
+            padding: 2px 4px;
         }
         .stub-table td {
-            padding: 2px 4px;
-            font-size: 7.5pt;
+            padding: 1px 3px;
+            font-size: 6.8pt;
         }
         .stub-seat-box {
             background-color: #0f172a;
             color: #fcd34d;
-            font-size: 7.5pt;
+            font-size: 7pt;
             font-weight: bold;
             text-align: center;
-            padding: 2px 4px;
-            border-radius: 3px;
+            padding: 1px 3px;
+            border-radius: 2px;
         }
         .footer-note {
             text-align: center;
-            font-size: 6.5pt;
+            font-size: 5.8pt;
             color: #94a3b8;
-            margin-top: 3px;
+            margin-top: 2px;
         }
     </style>
 </head>
@@ -256,40 +259,44 @@
     <!-- Top Header: Logo + Agency Details + PNR -->
     <table class="header-table">
         <tr>
-            <td style="width: 50%; vertical-align: middle;">
+            <td style="width: 58%; vertical-align: middle;">
                 <table style="width: 100%;">
                     <tr>
                         @if($logoPath && file_exists($logoPath))
-                            <td style="width: 48px; vertical-align: middle; padding: 0;">
-                                <img src="{{ $logoPath }}" style="max-height: 38px; max-width: 45px; object-fit: contain;" />
+                            <td style="width: 75px; vertical-align: middle; padding: 0; text-align: center;">
+                                <img src="{{ $logoPath }}" style="max-height: 52px; max-width: 72px; object-fit: contain;" alt="Logo" />
                             </td>
                         @endif
                         <td style="vertical-align: middle; padding-{{ $isAr ? 'right' : 'left' }}: 6px;">
                             <div class="agency-title">{{ $brandName }}</div>
+                            @if($companyTagline)
+                                <div style="font-size: 6.5pt; color: #0284c7; font-style: italic; margin-top: -1px; margin-bottom: 1px;">{{ tdb($companyTagline) }}</div>
+                            @endif
                             <div class="agency-meta">
                                 {{ tdb($companyAddress) }}@if($companyCity) - {{ tdb($companyCity) }}@endif
                                 @if($companyPhone) &bull; {{ __('Tel') }}: <span dir="ltr">{{ $companyPhone }}</span>@endif
-                                @if($companyCr || $companyVat)
+                                @if($companyCr || $companyLicense || $companyVat)
                                     <br>
                                     @if($companyCr) <strong>{{ __('CR') }}:</strong> <span dir="ltr">{{ $companyCr }}</span> @endif
-                                    @if($companyVat) <strong>{{ __('VAT') }}:</strong> <span dir="ltr">{{ $companyVat }}</span> @endif
+                                    @if($companyLicense) &bull; <strong>{{ __('License') }}:</strong> <span dir="ltr">{{ $companyLicense }}</span> @endif
+                                    @if($companyVat) &bull; <strong>{{ __('VAT') }}:</strong> <span dir="ltr">{{ $companyVat }}</span> @endif
                                 @endif
                             </div>
                         </td>
                     </tr>
                 </table>
             </td>
-            <td style="width: 50%; vertical-align: middle; text-align: {{ $isAr ? 'left' : 'right' }};">
-                <div style="font-size: 6.8pt; font-weight: bold; color: #008cc0; text-transform: uppercase; white-space: nowrap;">
+            <td style="width: 42%; vertical-align: middle; text-align: {{ $isAr ? 'left' : 'right' }};">
+                <div style="font-size: 6.2pt; font-weight: bold; color: #008cc0; text-transform: uppercase; white-space: nowrap;">
                     {{ __('PASSENGER TICKET & BOARDING PASS') }}
                 </div>
-                <div style="font-size: 6.5pt; color: #64748b; margin-top: 1px;">
+                <div style="font-size: 6pt; color: #64748b; margin-top: 1px;">
                     {{ __('Booking Reference / رقم الحجز') }}
                 </div>
                 <div class="pnr-badge" dir="ltr">
                     {{ $booking->booking_reference }}
                 </div>
-                <div style="font-size: 6.5pt; color: #64748b; margin-top: 2px;">
+                <div style="font-size: 6pt; color: #64748b; margin-top: 1px;">
                     {{ __('Date') }}: <span dir="ltr">{{ $booking->created_at->format('d M Y, h:i A') }}</span>
                     &bull; <strong>{{ __('Agent') }}:</strong> {{ tdb($booking->effective_salesman) }}@if($booking->effective_salesman_phone) (<span dir="ltr">{{ $booking->effective_salesman_phone }}</span>)@endif
                 </div>
@@ -568,7 +575,32 @@
         1. {{ __('Arrive at the departure terminal at least 30-45 minutes before departure.') }}
         2. {{ __('Original Iqama/Passport is mandatory.') }}
         3. {{ __('Baggage limit: 1 standard piece (max 25kg) + 1 hand luggage.') }}
+        4. {{ __('Madinah historical Ziyarat tour is optional with separate charges of SAR 10 per passenger.') }}
     </div>
+
+    @php
+        $tripConditions = $trip?->description ?: \App\Models\TravelTrip::defaultConditions();
+        $conditionBlocks = \App\Models\TravelTrip::parseConditionsBlocks($tripConditions);
+    @endphp
+    @if(!empty($conditionBlocks))
+        <!-- Trip Overview / Terms & Conditions Note -->
+        <div class="trip-overview-box" style="margin-top: 2px; background-color: #f8fafc; border: 1px solid #cbd5e1; border-{{ $isAr ? 'right' : 'left' }}: 2.5px solid #0284c7; padding: 2px 5px; font-size: 6pt; color: #1e293b; line-height: 1.15; border-radius: 2px;">
+            <div style="font-weight: bold; color: #0369a1; margin-bottom: 1px; font-size: 6.2pt;">
+                {{ __('Terms & Conditions / الشروط والأحكام') }}:
+            </div>
+            @foreach($conditionBlocks as $block)
+                @if($block['type'] === 'rtl')
+                    <div dir="rtl" style="direction: rtl; text-align: right; font-size: 5.8pt; color: #334155; margin-bottom: 1px; line-height: 1.15;">
+                        {!! nl2br(e(implode("\n", $block['lines']))) !!}
+                    </div>
+                @else
+                    <div dir="ltr" style="direction: ltr; text-align: left; font-size: 5.8pt; color: #334155; margin-bottom: 1px; line-height: 1.15;">
+                        {!! nl2br(e(implode("\n", $block['lines']))) !!}
+                    </div>
+                @endif
+            @endforeach
+        </div>
+    @endif
 
     <!-- Perforation Cut Line -->
     <div class="cut-line">

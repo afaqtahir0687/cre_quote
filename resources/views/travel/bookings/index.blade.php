@@ -13,6 +13,21 @@
             <span class="badge bg-primary text-white rounded-pill px-3 py-1">
                 {{ __('Coach Fleet Roster') }}
             </span>
+            @php
+                $currShop = current_shop();
+                $shopCr = $currShop?->cr_number ?: ($currShop?->setting?->company_cr_no ?? null);
+                $shopLic = $currShop?->license_number ?: ($currShop?->setting?->company_license_no ?? null);
+            @endphp
+            @if($shopCr)
+                <span class="badge bg-light text-secondary border font-monospace px-2 py-1" style="font-size: 0.72rem;" title="{{ __('Commercial Registration No') }}">
+                    <i class="fas fa-file-contract text-primary me-1"></i>CR: {{ $shopCr }}
+                </span>
+            @endif
+            @if($shopLic)
+                <span class="badge bg-success-subtle text-success border font-monospace px-2 py-1" style="font-size: 0.72rem;" title="{{ __('Ministry License No') }}">
+                    <i class="fas fa-id-card-alt me-1"></i>LIC: {{ $shopLic }}
+                </span>
+            @endif
         </div>
         <p class="text-muted small mb-0">{{ __('Manage passenger manifests, allocated 49-seat coach reservations, package hotels, and boarding pass vouchers.') }}</p>
     </div>
@@ -258,10 +273,24 @@
                             @endif
                         </div>
                         @if($booking->shop)
-                            <div class="mt-1">
+                            <div class="mt-1 d-flex gap-1 flex-wrap align-items-center">
                                 <span class="badge bg-primary-subtle text-primary border border-primary-subtle extra-small" style="font-size: 0.7rem;">
                                     <i class="fas fa-store me-1"></i>{{ tdb($booking->shop->name) }}
                                 </span>
+                                @php
+                                    $bShopCr = $booking->shop->cr_number ?: ($booking->shop->setting?->company_cr_no ?? null);
+                                    $bShopLic = $booking->shop->license_number ?: ($booking->shop->setting?->company_license_no ?? null);
+                                @endphp
+                                @if($bShopCr)
+                                    <span class="badge bg-light text-secondary border font-monospace extra-small" style="font-size: 0.65rem;" title="{{ __('Commercial Registration No') }}">
+                                        CR: {{ $bShopCr }}
+                                    </span>
+                                @endif
+                                @if($bShopLic)
+                                    <span class="badge bg-success-subtle text-success border font-monospace extra-small" style="font-size: 0.65rem;" title="{{ __('License No') }}">
+                                        LIC: {{ $bShopLic }}
+                                    </span>
+                                @endif
                             </div>
                         @endif
                     </td>

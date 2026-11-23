@@ -12,6 +12,7 @@ class Setting extends Model
     protected $fillable = [
         'shop_id',
         'company_name',
+        'company_tagline',
         'company_address',
         'company_city',
         'company_country',
@@ -20,6 +21,7 @@ class Setting extends Model
         'company_tax_id',
         'company_vat_no',
         'company_cr_no',
+        'company_license_no',
         'company_logo',
         'company_stamp',
         'bank_stamp_logo',

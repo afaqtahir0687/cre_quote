@@ -322,6 +322,15 @@
                         @error('company_name') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
 
+                    <div class="col-md-12">
+                        <label class="form-label fw-bold text-dark">
+                            <i class="fas fa-quote-left text-info me-1"></i>{{ __('Tagline / Slogan (شعار المنشأة اللفظي)') }}
+                        </label>
+                        <input type="text" name="company_tagline" class="form-control @error('company_tagline') is-invalid @enderror" value="{{ old('company_tagline', $setting?->company_tagline ?? $shop?->tagline) }}" placeholder="{{ __('Your Trusted Partner for Umrah & Travel') }}">
+                        <div class="form-text small">{{ __('Appears on vouchers, tickets, and official invoice headers below company name.') }}</div>
+                        @error('company_tagline') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                    </div>
+
                     <div class="col-md-6">
                         <label class="form-label fw-bold text-dark">{{ __('Official Email') }} *</label>
                         <input type="email" name="company_email" class="form-control @error('company_email') is-invalid @enderror" value="{{ old('company_email', $setting?->company_email ?? $shop?->email) }}" required placeholder="info@crelogics.com">
@@ -393,8 +402,14 @@
 
                     <div class="col-md-6">
                         <label class="form-label fw-bold text-dark">{{ __('CR Number (Commercial Reg.)') }}</label>
-                        <input type="text" name="company_cr_no" class="form-control @error('company_cr_no') is-invalid @enderror" value="{{ old('company_cr_no', $setting?->company_cr_no) }}" placeholder="1010XXXXXX">
+                        <input type="text" name="company_cr_no" class="form-control @error('company_cr_no') is-invalid @enderror" value="{{ old('company_cr_no', $setting?->company_cr_no ?: $shop?->cr_number) }}" placeholder="1010XXXXXX">
                         @error('company_cr_no') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold text-dark">{{ __('License Number (رقم الترخيص / ترخيص الحج والعمرة)') }}</label>
+                        <input type="text" name="company_license_no" class="form-control @error('company_license_no') is-invalid @enderror" value="{{ old('company_license_no', $setting?->company_license_no ?: $shop?->license_number) }}" placeholder="LIC-XXXXXX">
+                        @error('company_license_no') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
 
                     <div class="col-12"><hr class="my-2 opacity-25"></div>

@@ -23,6 +23,21 @@
                 @else
                     <span class="badge bg-secondary ms-2"><i class="fas fa-hourglass-start me-1"></i> {{ __('Unpaid') }}</span>
                 @endif
+                @php
+                    $bShop = $booking->shop;
+                    $bCr = $bShop?->cr_number ?: ($bShop?->setting?->company_cr_no ?? null);
+                    $bLic = $bShop?->license_number ?: ($bShop?->setting?->company_license_no ?? null);
+                @endphp
+                @if($bCr)
+                    <span class="badge bg-light text-secondary border font-monospace ms-2" title="{{ __('Commercial Registration No') }}">
+                        <i class="fas fa-file-contract text-primary me-1"></i>CR: {{ $bCr }}
+                    </span>
+                @endif
+                @if($bLic)
+                    <span class="badge bg-success-subtle text-success border font-monospace ms-2" title="{{ __('Ministry License No') }}">
+                        <i class="fas fa-id-card-alt me-1"></i>LIC: {{ $bLic }}
+                    </span>
+                @endif
             </div>
             <p class="text-muted small mb-0 mt-1">
                 {{ tdb($booking->passenger_name) }} &bull; {{ $booking->trip ? tdb($booking->trip->title) : '' }} ({{ $booking->trip ? $booking->trip->trip_code : '' }})

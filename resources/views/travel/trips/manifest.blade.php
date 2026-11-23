@@ -233,6 +233,21 @@
                     </div>
                 @endif
                 <h1 class="company-name">{{ $trip->shop?->name ?? 'UMRAH TRAVEL AGENCY' }}</h1>
+                @php
+                    $manifestCr = $shop?->cr_number ?: ($setting?->company_cr_no ?? null);
+                    $manifestLicense = $shop?->license_number ?: ($setting?->company_license_no ?? null);
+                    $manifestTagline = $shop?->tagline ?: ($setting?->company_tagline ?? null);
+                @endphp
+                @if($manifestTagline)
+                    <div class="text-primary-emphasis extra-small fst-italic mb-1" style="font-size: 0.74rem;">{{ $manifestTagline }}</div>
+                @endif
+                @if($manifestCr || $manifestLicense)
+                    <div class="text-muted extra-small font-monospace mb-1">
+                        @if($manifestCr)<strong>CR:</strong> {{ $manifestCr }}@endif
+                        @if($manifestCr && $manifestLicense) &bull; @endif
+                        @if($manifestLicense)<strong>{{ __('License') }}:</strong> {{ $manifestLicense }}@endif
+                    </div>
+                @endif
                 <h2 class="manifest-title">{{ __('TRIP MANIFEST & BUS STATEMENT') }}</h2>
                 <div class="route-subtext">
                     {{ $trip->departure_city }} &rarr; {{ $trip->destination_city }}

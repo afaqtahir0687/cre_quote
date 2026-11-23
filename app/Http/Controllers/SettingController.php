@@ -56,6 +56,7 @@ class SettingController extends Controller
     {
         $request->validate([
             'company_name' => 'required|string|max:255',
+            'company_tagline' => 'nullable|string|max:255',
             'company_email' => 'required|email|max:255',
             'company_logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:20480',
             'company_stamp' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:20480',
@@ -67,6 +68,8 @@ class SettingController extends Controller
             'bank_iban' => 'nullable|string|max:100',
             'bank_swift' => 'nullable|string|max:50',
             'company_phone' => 'nullable|string|max:50',
+            'company_cr_no' => 'nullable|string|max:100',
+            'company_license_no' => 'nullable|string|max:100',
             'company_address' => 'nullable|string',
             'company_city' => 'nullable|string|max:100',
             'company_country' => 'nullable|string|max:100',
@@ -143,6 +146,9 @@ class SettingController extends Controller
             'currency_symbol' => $data['currency_symbol'] ?? $shop->currency_symbol,
             'invoice_prefix' => $data['invoice_prefix'] ?? $shop->invoice_prefix,
             'quote_prefix' => $data['quote_prefix'] ?? $shop->quote_prefix,
+            'cr_number' => $data['company_cr_no'] ?? $shop->cr_number,
+            'license_number' => $data['company_license_no'] ?? $shop->license_number,
+            'tagline' => $data['company_tagline'] ?? $shop->tagline,
         ];
         if (isset($data['company_logo']) || $request->boolean('remove_logo')) {
             $shopUpdate['logo'] = $data['company_logo'] ?? null;

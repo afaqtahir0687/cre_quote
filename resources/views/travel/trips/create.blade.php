@@ -117,7 +117,7 @@
                             <input type="text" id="durationTrigger" class="form-control filter-trigger @error('duration_days') is-invalid @enderror" readonly value="{{ $durationTriggerText }}" placeholder="{{ __('Select Duration (Days) *') }}">
                             <div class="filter-panel" id="durationFilterPanel">
                                 <div class="filter-search-wrap">
-                                    <input type="text" class="filter-search" id="durationSearchInput" placeholder="{{ __('Search duration (e.g. 10, 20, week, month)...') }}">
+                                    <input type="text" class="filter-search" id="durationSearchInput" placeholder="{{ __('Search duration (10, 20, week, month)...') }}">
                                 </div>
                                 <div class="filter-list" id="durationFilterList">
                                     @foreach($durations as $dVal => $dLabel)
@@ -156,7 +156,7 @@
                             <input type="text" id="departureCityTrigger" class="form-control filter-trigger @error('departure_city') is-invalid @enderror" readonly value="{{ $departureTriggerText }}" placeholder="{{ __('Select Departure City *') }}">
                             <div class="filter-panel" id="departureFilterPanel">
                                 <div class="filter-search-wrap">
-                                    <input type="text" class="filter-search" id="departureSearchInput" placeholder="{{ __('Search city (e.g. Riyadh, Jeddah, Dammam, الرياض)...') }}">
+                                    <input type="text" class="filter-search" id="departureSearchInput" placeholder="{{ __('Search city (Riyadh, Jeddah, Dammam, الرياض)...') }}">
                                 </div>
                                 <div class="filter-list" id="departureFilterList">
                                     @foreach($departureCities as $cVal => $cLabel)
@@ -202,7 +202,7 @@
                             <input type="text" id="destinationCityTrigger" class="form-control filter-trigger @error('destination_city') is-invalid @enderror" readonly value="{{ $destinationTriggerText }}" placeholder="{{ __('Select Destination City *') }}">
                             <div class="filter-panel" id="destinationFilterPanel">
                                 <div class="filter-search-wrap">
-                                    <input type="text" class="filter-search" id="destinationSearchInput" placeholder="{{ __('Search Holy destination (e.g. Makkah, Madinah, مكة)...') }}">
+                                    <input type="text" class="filter-search" id="destinationSearchInput" placeholder="{{ __('Search Holy destination (Makkah, Madinah, مكة)...') }}">
                                 </div>
                                 <div class="filter-list" id="destinationFilterList">
                                     @foreach($destinationCities as $destVal => $destLabel)
@@ -234,7 +234,7 @@
                                 <i class="fas fa-magic me-1"></i> {{ __('Auto-Generate Title') }}
                             </button>
                         </div>
-                        <input type="text" name="title" id="tripTitleInput" class="form-control @error('title') is-invalid @enderror" placeholder="{{ __('e.g. Makkah & Madinah 10-Days Executive Umrah') }}" value="{{ old('title') }}" required>
+                        <input type="text" name="title" id="tripTitleInput" class="form-control @error('title') is-invalid @enderror" placeholder="{{ __('Makkah & Madinah 10-Days Executive Umrah') }}" value="{{ old('title') }}" required>
                         @error('title') <div class="invalid-feedback">{{ $message }}</div> @enderror
                         <div class="form-text extra-small">{{ __('Descriptive trip headline displayed on passenger tickets and manifests.') }}</div>
                     </div>
@@ -264,7 +264,7 @@
                         <label class="form-label fw-bold text-dark">
                             {{ __('Bus Fleet Name / Model') }} <span class="text-danger">*</span>
                         </label>
-                        <input type="text" name="bus_name" class="form-control @error('bus_name') is-invalid @enderror" placeholder="{{ __('e.g. VIP Luxury Coach Bus') }}" value="{{ old('bus_name', 'VIP Luxury Coach Bus') }}" required>
+                        <input type="text" name="bus_name" class="form-control @error('bus_name') is-invalid @enderror" placeholder="{{ __('VIP Luxury Coach Bus') }}" value="{{ old('bus_name', 'VIP Luxury Coach Bus') }}" required>
                         @error('bus_name') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
 
@@ -272,7 +272,7 @@
                         <label class="form-label fw-bold text-dark">
                             {{ __('Bus Plate / Reg #') }}
                         </label>
-                        <input type="text" name="bus_number" class="form-control @error('bus_number') is-invalid @enderror" placeholder="{{ __('e.g. 4819-KSA') }}" value="{{ old('bus_number') }}">
+                        <input type="text" name="bus_number" class="form-control @error('bus_number') is-invalid @enderror" placeholder="{{ __('4819-KSA') }}" value="{{ old('bus_number') }}">
                         @error('bus_number') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
 
@@ -318,7 +318,7 @@
                                         <label class="form-label text-dark small fw-semibold mb-1">{{ __('VIP Fare (SAR)') }}</label>
                                         <div class="input-group input-group-sm">
                                             <span class="input-group-text bg-light">{{ currency_symbol() }}</span>
-                                            <input type="number" step="0.01" name="vip_price" id="vipPriceInput" class="form-control" placeholder="e.g. 150.00" value="{{ old('vip_price', '150.00') }}">
+                                            <input type="number" step="0.01" name="vip_price" id="vipPriceInput" class="form-control" placeholder="150.00" value="{{ old('vip_price', '150.00') }}">
                                         </div>
                                     </div>
                                 </div>
@@ -342,7 +342,7 @@
                                         <label class="form-label text-dark small fw-semibold mb-1">{{ __('Business Fare (SAR)') }}</label>
                                         <div class="input-group input-group-sm">
                                             <span class="input-group-text bg-light">{{ currency_symbol() }}</span>
-                                            <input type="number" step="0.01" name="business_price" id="bizPriceInput" class="form-control" placeholder="e.g. 120.00" value="{{ old('business_price', '120.00') }}">
+                                            <input type="number" step="0.01" name="business_price" id="bizPriceInput" class="form-control" placeholder="120.00" value="{{ old('business_price', '120.00') }}">
                                         </div>
                                     </div>
                                 </div>
@@ -366,7 +366,7 @@
                                         <label class="form-label text-dark small fw-semibold mb-1">{{ __('Economy Fare (SAR)') }}</label>
                                         <div class="input-group input-group-sm">
                                             <span class="input-group-text bg-light">{{ currency_symbol() }}</span>
-                                            <input type="number" step="0.01" name="economy_price" id="ecoPriceInput" class="form-control" placeholder="e.g. 100.00" value="{{ old('economy_price', '100.00') }}">
+                                            <input type="number" step="0.01" name="economy_price" id="ecoPriceInput" class="form-control" placeholder="100.00" value="{{ old('economy_price', '100.00') }}">
                                         </div>
                                     </div>
                                 </div>
@@ -386,12 +386,18 @@
                         </div>
                     </div>
 
-                    {{-- 8. Trip Overview / Description --}}
+                    {{-- 8. Trip Overview & Terms / Conditions --}}
                     <div class="col-12">
-                        <label class="form-label fw-bold text-dark">
-                            {{ __('Trip Overview / Description') }}
-                        </label>
-                        <textarea name="description" rows="2" class="form-control" placeholder="{{ __('Brief itinerary points, ziyarat stops, gathering points...') }}">{{ old('description') }}</textarea>
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <label class="form-label fw-bold text-dark mb-0">
+                                <i class="fas fa-file-contract text-primary me-1"></i>{{ __('Trip Overview & Passenger Conditions (الشروط وملاحظات الرحلة)') }}
+                            </label>
+                            <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2 extra-small" onclick="document.getElementById('tripDescTextarea').value = @js(\App\Models\TravelTrip::defaultConditions())">
+                                <i class="fas fa-undo me-1"></i>{{ __('Reset to Standard Conditions') }}
+                            </button>
+                        </div>
+                        <textarea name="description" id="tripDescTextarea" rows="6" class="form-control font-monospace" style="font-size: 0.82rem; line-height: 1.45;" placeholder="{{ __('Terms & conditions, brief itinerary points, ziyarat stops...') }}">{{ old('description', \App\Models\TravelTrip::defaultConditions()) }}</textarea>
+                        <div class="form-text extra-small">{{ __('These terms & conditions are auto-loaded by default and print on ticket vouchers & PDFs. You can edit or add notes anytime.') }}</div>
                     </div>
                 </div>
             </x-card>
@@ -404,15 +410,15 @@
                     </div>
                     <div class="col-md-5">
                         <label class="form-label fw-bold text-dark small">{{ __('Driver 1 Full Name') }}</label>
-                        <input type="text" name="driver_1_name" class="form-control" placeholder="{{ __('e.g. Adnan Khan') }}" value="{{ old('driver_1_name') }}">
+                        <input type="text" name="driver_1_name" class="form-control" placeholder="{{ __('Adnan Khan') }}" value="{{ old('driver_1_name') }}">
                     </div>
                     <div class="col-md-3">
                         <label class="form-label fw-bold text-dark small">{{ __('Nationality / Country') }}</label>
-                        <input type="text" name="driver_1_nationality" class="form-control" placeholder="{{ __('e.g. PAK, SAU, IND, EGY') }}" value="{{ old('driver_1_nationality', 'PAK') }}">
+                        <input type="text" name="driver_1_nationality" class="form-control" placeholder="{{ __('PAK, SAU, IND, EGY') }}" value="{{ old('driver_1_nationality', 'PAK') }}">
                     </div>
                     <div class="col-md-4">
                         <label class="form-label fw-bold text-dark small">{{ __('Phone / Iqama Number') }}</label>
-                        <input type="text" name="driver_1_phone" class="form-control" placeholder="{{ __('e.g. 2580796130 / 0501234567') }}" value="{{ old('driver_1_phone') }}">
+                        <input type="text" name="driver_1_phone" class="form-control" placeholder="{{ __('0501234567 / 2580796130') }}" value="{{ old('driver_1_phone') }}">
                     </div>
 
                     <div class="col-12 mt-3 pt-2 border-top">
@@ -420,15 +426,15 @@
                     </div>
                     <div class="col-md-5">
                         <label class="form-label fw-bold text-dark small">{{ __('Driver 2 Full Name') }}</label>
-                        <input type="text" name="driver_2_name" class="form-control" placeholder="{{ __('e.g. Showkat') }}" value="{{ old('driver_2_name') }}">
+                        <input type="text" name="driver_2_name" class="form-control" placeholder="{{ __('Showkat') }}" value="{{ old('driver_2_name') }}">
                     </div>
                     <div class="col-md-3">
                         <label class="form-label fw-bold text-dark small">{{ __('Nationality / Country') }}</label>
-                        <input type="text" name="driver_2_nationality" class="form-control" placeholder="{{ __('e.g. PAK, SAU, IND, EGY') }}" value="{{ old('driver_2_nationality', 'PAK') }}">
+                        <input type="text" name="driver_2_nationality" class="form-control" placeholder="{{ __('PAK, SAU, IND, EGY') }}" value="{{ old('driver_2_nationality', 'PAK') }}">
                     </div>
                     <div class="col-md-4">
                         <label class="form-label fw-bold text-dark small">{{ __('Phone / Iqama Number') }}</label>
-                        <input type="text" name="driver_2_phone" class="form-control" placeholder="{{ __('e.g. 2620061750 / 0509876543') }}" value="{{ old('driver_2_phone') }}">
+                        <input type="text" name="driver_2_phone" class="form-control" placeholder="{{ __('0509876543 / 2620061750') }}" value="{{ old('driver_2_phone') }}">
                     </div>
                 </div>
             </x-card>
@@ -438,7 +444,7 @@
                 <div class="row g-3">
                     <div class="col-md-8">
                         <label class="form-label fw-bold text-dark">{{ __('Hotel Name in Makkah / Madinah') }}</label>
-                        <input type="text" name="hotel_name" class="form-control @error('hotel_name') is-invalid @enderror" placeholder="{{ __('e.g. Pullman Zamzam / Swissôtel / Dar Al Tawhid') }}" value="{{ old('hotel_name') }}">
+                        <input type="text" name="hotel_name" class="form-control @error('hotel_name') is-invalid @enderror" placeholder="{{ __('Pullman Zamzam / Swissôtel / Dar Al Tawhid') }}" value="{{ old('hotel_name') }}">
                         @error('hotel_name') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
 
@@ -455,7 +461,7 @@
 
                     <div class="col-12">
                         <label class="form-label fw-bold text-dark">{{ __('Hotel Address / Location') }}</label>
-                        <input type="text" name="hotel_address" class="form-control @error('hotel_address') is-invalid @enderror" placeholder="{{ __('e.g. Ibrahim Al Khalil Road, Makkah / Near Haram') }}" value="{{ old('hotel_address') }}">
+                        <input type="text" name="hotel_address" class="form-control @error('hotel_address') is-invalid @enderror" placeholder="{{ __('Ibrahim Al Khalil Road, Makkah / Near Haram') }}" value="{{ old('hotel_address') }}">
                         @error('hotel_address') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
                 </div>
@@ -483,7 +489,7 @@
                     <label class="form-label fw-bold text-dark">{{ __('One-Way Fare (ذهاب فقط / اتجاه واحد)') }}</label>
                     <div class="input-group">
                         <span class="input-group-text bg-light fw-bold">{{ currency_symbol() }}</span>
-                        <input type="number" step="0.01" name="one_way_price" class="form-control @error('one_way_price') is-invalid @enderror" placeholder="{{ __('e.g. 150.00 (optional, defaults to 50%)') }}" value="{{ old('one_way_price') }}">
+                        <input type="number" step="0.01" name="one_way_price" class="form-control @error('one_way_price') is-invalid @enderror" placeholder="{{ __('150.00 (optional, defaults to 50%)') }}" value="{{ old('one_way_price') }}">
                     </div>
                     @error('one_way_price') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
                     <div class="form-text extra-small">{{ __('Fare for passengers travelling one-way only (without return).') }}</div>

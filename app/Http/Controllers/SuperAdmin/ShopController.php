@@ -77,6 +77,7 @@ class ShopController extends Controller
         $request->validate([
             // Shop Details
             'name' => 'required|string|max:255',
+            'tagline' => 'nullable|string|max:255',
             'business_type' => 'required|string|in:' . implode(',', array_keys(Shop::availableBusinessTypes())),
             'enabled_modules' => 'nullable|array',
             'enabled_modules.*' => 'string|in:' . implode(',', array_keys(Shop::availableModules())),
@@ -84,6 +85,8 @@ class ShopController extends Controller
             'email' => 'nullable|email|max:255',
             'phone' => 'nullable|string|max:50',
             'country_code' => 'nullable|string|max:10',
+            'cr_number' => 'nullable|string|max:100',
+            'license_number' => 'nullable|string|max:100',
             'address' => 'nullable|string',
             'city' => 'nullable|string|max:100',
             'country' => 'nullable|string|max:100',
@@ -154,11 +157,14 @@ class ShopController extends Controller
             // 1. Create Shop
             $shop = Shop::create([
                 'name' => $request->name,
+                'tagline' => $request->tagline,
                 'business_type' => $businessType,
                 'enabled_modules' => $enabledModules,
                 'slug' => $slug,
                 'email' => $request->email,
                 'phone' => $normalizedPhone,
+                'cr_number' => $request->cr_number,
+                'license_number' => $request->license_number,
                 'address' => $request->address,
                 'city' => $request->city,
                 'country' => $request->country,
@@ -178,10 +184,13 @@ class ShopController extends Controller
             Setting::create([
                 'shop_id' => $shop->id,
                 'company_name' => $shop->name,
+                'company_tagline' => $shop->tagline,
                 'company_address' => $shop->address,
                 'company_city' => $shop->city,
                 'company_country' => $shop->country,
                 'company_phone' => $normalizedPhone,
+                'company_cr_no' => $request->cr_number,
+                'company_license_no' => $request->license_number,
                 'company_email' => $shop->email,
                 'company_logo' => $logoPath,
                 'currency_symbol' => $shop->currency_symbol,
@@ -300,6 +309,7 @@ class ShopController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
+            'tagline' => 'nullable|string|max:255',
             'business_type' => 'required|string|in:' . implode(',', array_keys(Shop::availableBusinessTypes())),
             'enabled_modules' => 'nullable|array',
             'enabled_modules.*' => 'string|in:' . implode(',', array_keys(Shop::availableModules())),
@@ -307,6 +317,8 @@ class ShopController extends Controller
             'email' => 'nullable|email|max:255',
             'phone' => 'nullable|string|max:50',
             'country_code' => 'nullable|string|max:10',
+            'cr_number' => 'nullable|string|max:100',
+            'license_number' => 'nullable|string|max:100',
             'address' => 'nullable|string',
             'city' => 'nullable|string|max:100',
             'country' => 'nullable|string|max:100',
@@ -347,8 +359,11 @@ class ShopController extends Controller
         }
         $settingUpdate = [
             'company_name' => $shop->name,
+            'company_tagline' => $shop->tagline,
             'company_email' => $shop->email,
             'company_phone' => $shop->phone,
+            'company_cr_no' => $shop->cr_number,
+            'company_license_no' => $shop->license_number,
             'company_address' => $shop->address,
             'company_city' => $shop->city,
             'company_country' => $shop->country,

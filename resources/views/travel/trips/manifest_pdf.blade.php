@@ -133,6 +133,21 @@
                     </div>
                 @endif
                 <div style="font-size: 10pt; font-weight: bold; color: #0A6FB7;">{{ $trip->shop?->name ?? 'UMRAH TRAVEL AGENCY' }}</div>
+                @php
+                    $manifestCr = $shop?->cr_number ?: ($setting?->company_cr_no ?? null);
+                    $manifestLicense = $shop?->license_number ?: ($setting?->company_license_no ?? null);
+                    $manifestTagline = $shop?->tagline ?: ($setting?->company_tagline ?? null);
+                @endphp
+                @if($manifestTagline)
+                    <div style="font-size: 6.8pt; color: #0284c7; font-style: italic; margin-top: 1px;">{{ $manifestTagline }}</div>
+                @endif
+                @if($manifestCr || $manifestLicense)
+                    <div style="font-size: 6.5pt; color: #4b5563; margin-top: 1px;">
+                        @if($manifestCr)<strong>CR:</strong> {{ $manifestCr }}@endif
+                        @if($manifestCr && $manifestLicense) &bull; @endif
+                        @if($manifestLicense)<strong>{{ __('License') }}:</strong> {{ $manifestLicense }}@endif
+                    </div>
+                @endif
                 <div style="font-size: 8.5pt; font-weight: bold; margin-top: 1px;">{{ __('TRIP MANIFEST & BUS STATEMENT') }}</div>
                 <div style="font-size: 7.5pt; font-weight: bold; color: #FA7436;">
                     {{ $trip->departure_city }} &rarr; {{ $trip->destination_city }} ({{ $trip->duration_days }} {{ __('Days') }})

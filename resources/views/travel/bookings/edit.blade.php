@@ -87,19 +87,19 @@
 
                     <div class="col-md-6">
                         <label class="form-label fw-bold text-dark">{{ __('Pickup / Boarding Location (موقع الركوب)') }}</label>
-                        <input type="text" name="pickup_location" class="form-control @error('pickup_location') is-invalid @enderror" value="{{ old('pickup_location', $booking->pickup_location ?: $booking->shop?->name) }}" placeholder="e.g. Office, Batha, Villa 12, Nesto">
+                        <input type="text" name="pickup_location" class="form-control @error('pickup_location') is-invalid @enderror" value="{{ old('pickup_location', $booking->pickup_location ?: $booking->shop?->name) }}" placeholder="Office, Batha, Villa 12, Nesto">
                         @error('pickup_location') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
 
                     <div class="col-md-6">
                         <label class="form-label fw-bold text-dark">{{ __('Outbound Drop-off Point / Station (موقع النزول في الذهاب)') }}</label>
-                        <input type="text" name="dropoff_location" class="form-control @error('dropoff_location') is-invalid @enderror" value="{{ old('dropoff_location', $booking->dropoff_location) }}" placeholder="e.g. Makkah Haram, Kudai, Taif, Hotel">
+                        <input type="text" name="dropoff_location" class="form-control @error('dropoff_location') is-invalid @enderror" value="{{ old('dropoff_location', $booking->dropoff_location) }}" placeholder="Makkah Haram, Kudai, Taif, Hotel">
                         @error('dropoff_location') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
 
                     <div class="col-md-6">
                         <label class="form-label fw-bold text-dark">{{ __('Return Journey Drop-off / Midway Stop (موقع النزول في العودة)') }}</label>
-                        <input type="text" name="return_dropoff_location" class="form-control @error('return_dropoff_location') is-invalid @enderror" value="{{ old('return_dropoff_location', $booking->return_dropoff_location) }}" placeholder="{{ __('e.g. Taif Highway Stop, Al-Kharj, Muzahimiyah, SASCO Station') }}">
+                        <input type="text" name="return_dropoff_location" class="form-control @error('return_dropoff_location') is-invalid @enderror" value="{{ old('return_dropoff_location', $booking->return_dropoff_location) }}" placeholder="{{ __('Taif Highway Stop, Al-Kharj, Muzahimiyah, SASCO Station') }}">
                         @error('return_dropoff_location') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
 
@@ -146,7 +146,7 @@
                     </div>
                     <div class="col-md-6">
                         <label class="form-label fw-bold text-dark"><i class="fas fa-phone-alt text-primary me-1"></i> {{ __('Salesman Phone / هاتف البائع') }}</label>
-                        <input type="text" name="salesman_phone" class="form-control" placeholder="{{ __('e.g. +966 50 123 4567') }}" value="{{ old('salesman_phone', $booking->effective_salesman_phone) }}">
+                        <input type="text" name="salesman_phone" class="form-control" placeholder="{{ __('+966 50 123 4567') }}" value="{{ old('salesman_phone', $booking->effective_salesman_phone) }}">
                     </div>
                 </div>
             </x-card>
@@ -203,7 +203,7 @@
 
                     <div class="col-12" id="hotelAddressGroup">
                         <label class="form-label fw-bold text-dark"><i class="fas fa-map-marker-alt text-danger me-1"></i> {{ __('Hotel Address / Location in Makkah / Madinah') }}</label>
-                        <input type="text" name="hotel_address" class="form-control" placeholder="{{ __('e.g. Ibrahim Al Khalil Road, Makkah / Near Haram') }}" value="{{ old('hotel_address', $booking->hotel_address ?: $booking->trip?->hotel_address) }}">
+                        <input type="text" name="hotel_address" class="form-control" placeholder="{{ __('Ibrahim Al Khalil Road, Makkah / Near Haram') }}" value="{{ old('hotel_address', $booking->hotel_address ?: $booking->trip?->hotel_address) }}">
                     </div>
 
                     <div class="col-12">
