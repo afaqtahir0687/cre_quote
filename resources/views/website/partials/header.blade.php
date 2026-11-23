@@ -180,6 +180,22 @@
 </header>
 
 <style>
+/* Header Action Buttons (Sign In / Get Started) single-line compact sizing */
+.nav-actions {
+    flex-wrap: nowrap;
+}
+.nav-actions .btn-erp-primary,
+.nav-actions .btn-erp-secondary {
+    font-size: 0.82rem !important;
+    padding: 7px 15px !important;
+    white-space: nowrap !important;
+    gap: 6px !important;
+    line-height: 1.25 !important;
+    border-radius: 8px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+}
+
 /* Multi-Level Services Dropdown (crelogics.com style) */
 .services-nav-dropdown {
     position: relative;
