@@ -486,7 +486,7 @@
                     <label class="form-label fw-bold text-dark">{{ __('One-Way Fare (ذهاب فقط / اتجاه واحد)') }}</label>
                     <div class="input-group">
                         <span class="input-group-text bg-light fw-bold">{{ currency_symbol() }}</span>
-                        <input type="number" step="0.01" min="0" name="one_way_price" class="form-control @error('one_way_price') is-invalid @enderror" placeholder="{{ __('150.00 (optional, defaults to 50%)') }}" value="{{ old('one_way_price', $trip->one_way_price) }}">
+                        <input type="number" step="0.01" min="0" name="one_way_price" class="form-control @error('one_way_price') is-invalid @enderror" placeholder="0.00" value="{{ old('one_way_price', $trip->one_way_price) }}">
                     </div>
                     @error('one_way_price') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
                     <div class="form-text extra-small">{{ __('Fare for passengers travelling one-way only.') }}</div>

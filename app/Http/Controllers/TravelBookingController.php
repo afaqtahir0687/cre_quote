@@ -166,6 +166,28 @@ class TravelBookingController extends Controller
             'notes' => 'nullable|string',
         ]);
 
+        // Security check: Only Admin can assign/choose employee; employees are locked to their own account
+        $isAdmin = auth()->user()->isSuperAdmin() || auth()->user()->isAdmin();
+        $currentEmp = \App\Models\Employee::where('user_id', auth()->id())->first();
+
+        if (!$isAdmin) {
+            $validated['employee_id'] = $currentEmp?->id;
+            $validated['salesman_name'] = $currentEmp?->name ?? auth()->user()->name;
+            $validated['salesman_phone'] = $currentEmp?->phone ?? (auth()->user()?->phone ?? null);
+        } else {
+            if (!empty($validated['employee_id'])) {
+                $assignedEmp = \App\Models\Employee::find($validated['employee_id']);
+                if ($assignedEmp) {
+                    $validated['salesman_name'] = $validated['salesman_name'] ?: $assignedEmp->name;
+                    $validated['salesman_phone'] = $validated['salesman_phone'] ?: $assignedEmp->phone;
+                }
+            } else {
+                $validated['employee_id'] = null;
+                $validated['salesman_name'] = $validated['salesman_name'] ?: auth()->user()->name;
+                $validated['salesman_phone'] = $validated['salesman_phone'] ?: (auth()->user()?->phone ?? null);
+            }
+        }
+
         $trip = TravelTrip::forCurrentShop()->findOrFail($validated['travel_trip_id']);
 
         // 1. Strict anti-collision check: prevent double booking of ANY selected seat on this trip
@@ -376,9 +398,9 @@ class TravelBookingController extends Controller
                     'return_dropoff_location' => $pRetDrop,
                     'journey_type' => $validated['journey_type'] ?? 'round_trip',
                     'one_way_direction' => ($validated['journey_type'] ?? 'round_trip') === 'one_way' ? ($validated['one_way_direction'] ?? 'outbound') : null,
-                    'employee_id' => $validated['employee_id'] ?? (auth()->user()?->employee?->id ?: null),
-                    'salesman_name' => $validated['salesman_name'] ?? (auth()->user()?->name ?: null),
-                    'salesman_phone' => $validated['salesman_phone'] ?? (auth()->user()?->employee?->phone ?: (auth()->user()?->phone ?: null)),
+                    'employee_id' => $validated['employee_id'] ?? null,
+                    'salesman_name' => $validated['salesman_name'] ?? null,
+                    'salesman_phone' => $validated['salesman_phone'] ?? null,
                     'seat_number' => $sNum,
                     'seat_class' => $trip->getSeatClass((int)$sNum),
                     'package_type' => $validated['package_type'],
@@ -510,8 +532,9 @@ class TravelBookingController extends Controller
     {
         $booking = TravelBooking::forCurrentShop()->with('trip')->findOrFail($id);
         $trips = TravelTrip::forCurrentShop()->get();
+        $employees = \App\Models\Employee::orderBy('name')->get();
 
-        return view('travel.bookings.edit', compact('booking', 'trips'));
+        return view('travel.bookings.edit', compact('booking', 'trips', 'employees'));
     }
 
     /**
@@ -551,6 +574,25 @@ class TravelBookingController extends Controller
             'booking_status' => 'required|in:confirmed,cancelled',
             'notes' => 'nullable|string',
         ]);
+
+        $isAdmin = auth()->user()->isSuperAdmin() || auth()->user()->isAdmin();
+        if (!$isAdmin) {
+            $validated['employee_id'] = $booking->employee_id;
+            $validated['salesman_name'] = $booking->salesman_name;
+            $validated['salesman_phone'] = $booking->salesman_phone;
+        } else {
+            if (!empty($validated['employee_id'])) {
+                $assignedEmp = \App\Models\Employee::find($validated['employee_id']);
+                if ($assignedEmp) {
+                    $validated['salesman_name'] = $validated['salesman_name'] ?: $assignedEmp->name;
+                    $validated['salesman_phone'] = $validated['salesman_phone'] ?: $assignedEmp->phone;
+                }
+            } else {
+                $validated['employee_id'] = null;
+                $validated['salesman_name'] = $validated['salesman_name'] ?: auth()->user()->name;
+                $validated['salesman_phone'] = $validated['salesman_phone'] ?: (auth()->user()?->phone ?? null);
+            }
+        }
 
         $newSeat = (int) $validated['seat_number'];
 

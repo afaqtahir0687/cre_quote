@@ -328,6 +328,12 @@ class TravelBooking extends Model
                 'multiplier' => 3.0,
                 'surcharge' => 1500,
             ],
+            'custom' => [
+                'label' => __('Custom Room / Rate (غرفة مخصصة / سعر يدوي)'),
+                'category' => 'custom',
+                'multiplier' => 1.0,
+                'surcharge' => 0,
+            ],
         ];
     }
 
@@ -352,6 +358,9 @@ class TravelBooking extends Model
         }
         if (in_array($rt, ['single_private', 'private_room'])) {
             return '<span class="badge bg-primary text-white fw-bold"><i class="fas fa-user-shield me-1"></i>' . $label . '</span>';
+        }
+        if ($rt === 'custom') {
+            return '<span class="badge bg-secondary text-white fw-bold"><i class="fas fa-edit me-1"></i>' . $label . '</span>';
         }
         return '<span class="badge bg-light text-dark border fw-bold"><i class="fas fa-bed me-1 text-muted"></i>' . $label . '</span>';
     }

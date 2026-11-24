@@ -189,15 +189,22 @@
                                 <span><i class="fas fa-undo-alt text-success me-1"></i> {{ __('Return Journey Drop-off / Midway Stop (موقع النزول في طريق العودة)') }}</span>
                                 <span class="badge bg-success text-white extra-small">{{ __('Round-Trip Return Stop') }}</span>
                             </label>
-                            <input type="text" name="return_dropoff_location" id="returnDropoffLocationInput" class="form-control form-control-sm @error('return_dropoff_location') is-invalid @enderror" placeholder="{{ __('Taif Highway Stop, Al-Kharj, Muzahimiyah, SASCO Station (Leave empty if returning to main office)') }}" value="{{ old('return_dropoff_location') }}">
+                            <input type="text" name="return_dropoff_location" id="returnDropoffLocationInput" class="form-control form-control-sm @error('return_dropoff_location') is-invalid @enderror" placeholder="{{ __('Select employee point below or type custom return stop') }}" value="{{ old('return_dropoff_location') }}">
                             @error('return_dropoff_location') <div class="invalid-feedback">{{ $message }}</div> @enderror
                             <div class="d-flex gap-1 flex-wrap mt-2 align-items-center">
-                                <span class="extra-small text-muted me-1">{{ __('Quick Presets:') }}</span>
+                                <span class="extra-small text-muted me-1"><i class="fas fa-users text-primary me-1"></i>{{ __('Quick Presets (Employees):') }}</span>
                                 <span class="badge bg-white text-secondary border extra-small" style="cursor: pointer;" onclick="setReturnDropoffVal('Same as Boarding Office')">{{ __('Same as Boarding Office') }}</span>
-                                <span class="badge bg-white text-secondary border extra-small" style="cursor: pointer;" onclick="setReturnDropoffVal('Taif Highway Stop (طائف)')">{{ __('Taif Highway Stop') }}</span>
-                                <span class="badge bg-white text-secondary border extra-small" style="cursor: pointer;" onclick="setReturnDropoffVal('Al-Kharj (الخرج)')">{{ __('Al-Kharj') }}</span>
-                                <span class="badge bg-white text-secondary border extra-small" style="cursor: pointer;" onclick="setReturnDropoffVal('Muzahimiyah (المزاحمية)')">{{ __('Muzahimiyah') }}</span>
-                                <span class="badge bg-white text-secondary border extra-small" style="cursor: pointer;" onclick="setReturnDropoffVal('Highway SASCO Station')">{{ __('SASCO Station') }}</span>
+                                @if(isset($employees) && $employees->isNotEmpty())
+                                    @php
+                                        $uniqueEmpNames = $employees->pluck('name')->unique()->filter();
+                                    @endphp
+                                    @foreach($uniqueEmpNames as $empName)
+                                        <span class="badge bg-white text-dark border border-primary-subtle extra-small shadow-sm" style="cursor: pointer;" onclick="setReturnDropoffVal(@js($empName))">
+                                            <i class="fas fa-user-tie text-primary me-1"></i>{{ $empName }}
+                                        </span>
+                                    @endforeach
+                                @endif
+                                <span class="badge bg-white text-danger border border-danger-subtle extra-small" style="cursor: pointer;" onclick="clearReturnDropoffVal()" title="{{ __('Clear to type custom manually') }}"><i class="fas fa-times me-1"></i>{{ __('Clear') }}</span>
                             </div>
                             <div class="form-text extra-small text-muted mt-1">
                                 <i class="fas fa-info-circle text-primary me-1"></i>{{ __('Specify if the passenger requires a midway drop-off along the highway or a specific return stop (printed on the driver manifest).') }}
@@ -317,17 +324,27 @@
                 <!-- Hotel Configuration Fields (toggled by package type) -->
                 <div id="hotelConfigSection" style="{{ $pkgType === 'without_hotel' ? 'display:none;' : '' }}">
                     <div class="row g-3 p-3 rounded-3 bg-light border border-success-subtle">
-                        <div class="col-md-5">
-                            <label class="form-label fw-bold text-dark small">{{ __('Hotel Accommodation Partner') }}</label>
+                        {{-- Row 1: Hotel Name & Address (50% / 50% balanced) --}}
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-dark small mb-1">
+                                <i class="fas fa-hotel text-primary me-1"></i>{{ __('Hotel Accommodation Partner') }}
+                            </label>
                             <input type="text" name="hotel_name" id="hotelNameInput" class="form-control" placeholder="{{ __('Swissôtel Makkah') }}" value="{{ old('hotel_name', $selectedTrip?->hotel_name) }}">
                         </div>
 
-                        <div class="col-md-4">
-                            <div class="d-flex justify-content-between align-items-center mb-1">
-                                <label class="form-label fw-bold text-dark small mb-0">{{ __('Room Category / Type') }}</label>
-                                <span class="badge bg-primary-subtle text-primary extra-small" id="roomTypePillBadge">Quad Sharing</span>
-                            </div>
-                            <select name="room_type" id="roomTypeSelect" class="form-select form-select-sm" onchange="onRoomTypeChanged()">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-dark small mb-1">
+                                <i class="fas fa-map-marker-alt text-danger me-1"></i>{{ __('Hotel Address / Location in Makkah / Madinah') }}
+                            </label>
+                            <input type="text" name="hotel_address" id="hotelAddressInput" class="form-control" placeholder="{{ __('Ibrahim Al Khalil Road, Makkah / Near Clock Tower') }}" value="{{ old('hotel_address', $selectedTrip?->hotel_address) }}">
+                        </div>
+
+                        {{-- Row 2: Room Category, Room Price, and Hotel Nights (Laser-straight horizontal alignment) --}}
+                        <div class="col-md-5">
+                            <label class="form-label fw-bold text-dark small mb-1">
+                                <i class="fas fa-bed text-primary me-1"></i>{{ __('Room Category / Type') }}
+                            </label>
+                            <select name="room_type" id="roomTypeSelect" class="form-select" onchange="onRoomTypeChanged()">
                                 <optgroup label="{{ __('Standard Shared Rooms (مشترك)') }}">
                                     <option value="quad_sharing" data-surcharge="0" data-badge="Quad (4 Beds)" {{ old('room_type', 'quad_sharing') === 'quad_sharing' ? 'selected' : '' }}>{{ __('Quad Sharing (رباعي - 4 Beds)') }}</option>
                                     <option value="triple_sharing" data-surcharge="100" data-badge="Triple (3 Beds)" {{ old('room_type') === 'triple_sharing' ? 'selected' : '' }}>{{ __('Triple Sharing (ثلاثي - 3 Beds)') }} (+100 SAR)</option>
@@ -341,17 +358,35 @@
                                     <option value="luxury_haram_view" data-surcharge="800" data-badge="👑 Luxury Haram View" {{ old('room_type') === 'luxury_haram_view' ? 'selected' : '' }}>👑 {{ __('Luxury Haram View (إطلالة الحرم فاخرة)') }} (+800 SAR)</option>
                                     <option value="executive_suite" data-surcharge="1200" data-badge="⭐ Executive Suite" {{ old('room_type') === 'executive_suite' ? 'selected' : '' }}>⭐ {{ __('Executive Luxury Suite (جناح تنفيذي فاخر)') }} (+1,200 SAR)</option>
                                 </optgroup>
+                                <optgroup label="{{ __('Custom / Manual (مخصص / يدوي)') }}">
+                                    <option value="custom" data-surcharge="0" data-badge="Custom Room" {{ old('room_type') === 'custom' ? 'selected' : '' }}>✏️ {{ __('Custom Room / Custom Price (غرفة مخصصة / سعر يدوي)') }}</option>
+                                </optgroup>
                             </select>
                         </div>
 
-                        <div class="col-md-3">
-                            <label class="form-label fw-bold text-dark small">{{ __('Hotel Nights') }}</label>
-                            <input type="number" name="nights_count" id="nightsCountInput" class="form-control" min="1" max="90" placeholder="10" value="{{ old('nights_count', $selectedTrip?->duration_days ?: 10) }}">
+                        <div class="col-md-4">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <label class="form-label fw-bold text-dark small mb-0 text-success">
+                                    <i class="fas fa-tag me-1"></i>{{ __('Room / Hotel Price') }}
+                                </label>
+                                <button type="button" class="btn btn-xs btn-outline-secondary py-0 px-2 extra-small border-0" style="font-size: 0.70rem;" onclick="resetHotelPriceToAuto()" title="{{ __('Auto Calculate from Package') }}">
+                                    <i class="fas fa-magic text-primary me-1"></i>{{ __('Auto') }}
+                                </button>
+                            </div>
+                            <div class="input-group">
+                                <span class="input-group-text bg-success-subtle text-success fw-bold">{{ currency_symbol() }}</span>
+                                <input type="number" step="0.01" min="0" id="roomCategoryPriceInput" class="form-control font-monospace fw-bold text-success" placeholder="0.00" oninput="onRoomCategoryPriceInput(this.value)">
+                            </div>
                         </div>
 
-                        <div class="col-12">
-                            <label class="form-label fw-bold text-dark small"><i class="fas fa-map-marker-alt text-danger me-1"></i> {{ __('Hotel Address / Location in Makkah / Madinah') }}</label>
-                            <input type="text" name="hotel_address" id="hotelAddressInput" class="form-control" placeholder="{{ __('Ibrahim Al Khalil Road, Makkah / Near Clock Tower') }}" value="{{ old('hotel_address', $selectedTrip?->hotel_address) }}">
+                        <div class="col-md-3">
+                            <label class="form-label fw-bold text-dark small mb-1">
+                                <i class="fas fa-moon text-warning me-1"></i>{{ __('Hotel Nights') }}
+                            </label>
+                            <div class="input-group">
+                                <input type="number" name="nights_count" id="nightsCountInput" class="form-control font-monospace" min="1" max="90" placeholder="10" value="{{ old('nights_count', $selectedTrip?->duration_days ?: 10) }}">
+                                <span class="input-group-text bg-white text-muted small">{{ __('Nights') }}</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -473,6 +508,7 @@
                     </div>
                 @endif
 
+                @if(auth()->user()->isSuperAdmin() || auth()->user()->isAdmin())
                 <div class="row g-2 mb-3">
                     <div class="col-md-12">
                         <label class="form-label fw-bold text-dark small">{{ __('Assign Employee / Agent (مسؤول الحجز)') }}</label>
@@ -501,6 +537,16 @@
                         <input type="text" name="salesman_phone" id="salesmanPhoneInput" class="form-control" placeholder="{{ __('+966 50 123 4567') }}" value="{{ old('salesman_phone', $currentEmployee?->phone ?: (auth()->user()?->employee?->phone ?: (auth()->user()?->phone ?: ''))) }}">
                     </div>
                 </div>
+                @else
+                    @if($currentEmployee)
+                        <input type="hidden" name="employee_id" value="{{ $currentEmployee->id }}">
+                        <input type="hidden" name="salesman_name" id="salesmanNameInput" value="{{ $currentEmployee->name }}">
+                        <input type="hidden" name="salesman_phone" id="salesmanPhoneInput" value="{{ $currentEmployee->phone }}">
+                    @else
+                        <input type="hidden" name="salesman_name" id="salesmanNameInput" value="{{ auth()->user()?->name }}">
+                        <input type="hidden" name="salesman_phone" id="salesmanPhoneInput" value="{{ auth()->user()?->phone }}">
+                    @endif
+                @endif
 
                 <div class="mb-3">
                     <label class="form-label fw-bold text-dark small">{{ __('Special Requests / Notes') }}</label>
@@ -1038,6 +1084,14 @@
         if (input) input.value = val;
     }
 
+    function clearReturnDropoffVal() {
+        const input = document.getElementById('returnDropoffLocationInput');
+        if (input) {
+            input.value = '';
+            input.focus();
+        }
+    }
+
     function onJourneyTypeChanged(type) {
         const dirSec = document.getElementById('oneWayDirectionSection');
         const retSec = document.getElementById('returnDropoffGroup');
@@ -1183,6 +1237,11 @@
                         hotelInput.value = calculatedHotel.toFixed(2);
                     }
 
+                    const topRoomPriceInput = document.getElementById('roomCategoryPriceInput');
+                    if (topRoomPriceInput && !topRoomPriceInput.matches(':focus')) {
+                        topRoomPriceInput.value = hotelInput.value;
+                    }
+
                     if (hotelNoteEl) {
                         const surchargeNote = surcharge > 0 ? ` (+SAR ${surcharge} tier fee)` : '';
                         hotelNoteEl.innerText = `${badgeText}: SAR ${hotelInput.value} (${count} {{ __('pax') }})${surchargeNote}`;
@@ -1252,9 +1311,62 @@
         }
     }
 
-    function onRoomTypeChanged() {
+    function onRoomCategoryPriceInput(val) {
         const hotelInput = document.getElementById('hotelExpenseInput');
-        if (hotelInput) delete hotelInput.dataset.userEdited;
+        const helperText = document.getElementById('roomPriceHelperText');
+        const hotelNoteEl = document.getElementById('hotelMultiplierNote');
+        
+        const price = parseFloat(val);
+        const validPrice = (isNaN(price) || price < 0) ? 0 : price;
+        if (hotelInput) {
+            hotelInput.value = validPrice.toFixed(2);
+            hotelInput.dataset.userEdited = 'true';
+        }
+        if (helperText) {
+            helperText.innerHTML = '<span class="text-success fw-semibold"><i class="fas fa-check-circle me-1"></i>{{ __("Manual Custom Rate Active") }}</span>';
+        }
+        if (hotelNoteEl) {
+            const count = selectedSeats.length || 1;
+            hotelNoteEl.innerHTML = `<span class="text-success"><i class="fas fa-edit me-1"></i>{{ __("Custom Hotel Rate") }}: {{ currency_symbol() }}${validPrice.toFixed(2)} (${count} pax)</span>`;
+        }
+        recalcBooking();
+    }
+
+    function resetHotelPriceToAuto() {
+        const hotelInput = document.getElementById('hotelExpenseInput');
+        const helperText = document.getElementById('roomPriceHelperText');
+        if (hotelInput) {
+            delete hotelInput.dataset.userEdited;
+        }
+        if (helperText) {
+            helperText.innerText = '{{ __("Enter custom rate or auto-calc") }}';
+        }
+        recalcAutoFares();
+    }
+
+    function onRoomTypeChanged() {
+        const sel = document.getElementById('roomTypeSelect');
+        const hotelInput = document.getElementById('hotelExpenseInput');
+        const priceInput = document.getElementById('roomCategoryPriceInput');
+        const helperText = document.getElementById('roomPriceHelperText');
+
+        if (sel && sel.value === 'custom') {
+            if (hotelInput) hotelInput.dataset.userEdited = 'true';
+            if (helperText) {
+                helperText.innerHTML = '<span class="text-primary fw-semibold"><i class="fas fa-pen me-1"></i>{{ __("Type custom price below") }}</span>';
+            }
+            if (priceInput) {
+                priceInput.focus();
+                priceInput.select();
+            }
+        } else {
+            if (hotelInput) {
+                delete hotelInput.dataset.userEdited;
+            }
+            if (helperText) {
+                helperText.innerText = '{{ __("Enter custom rate or auto-calc") }}';
+            }
+        }
         recalcAutoFares();
     }
 
@@ -1263,8 +1375,10 @@
         if (opt) {
             const name = opt.getAttribute('data-name');
             const phone = opt.getAttribute('data-phone');
-            if (name) document.getElementById('salesmanNameInput').value = name;
-            if (phone !== null && phone !== undefined) document.getElementById('salesmanPhoneInput').value = phone;
+            const nameInput = document.getElementById('salesmanNameInput');
+            const phoneInput = document.getElementById('salesmanPhoneInput');
+            if (name && nameInput) nameInput.value = name;
+            if (phone !== null && phone !== undefined && phoneInput) phoneInput.value = phone;
 
             const pickupInput = document.getElementById('pickupLocationInput');
             if (pickupInput && (!pickupInput.dataset.userEdited || pickupInput.value === '')) {
@@ -1279,6 +1393,14 @@
 
     document.getElementById('hotelExpenseInput')?.addEventListener('input', function() {
         this.dataset.userEdited = 'true';
+        const topRoomPriceInput = document.getElementById('roomCategoryPriceInput');
+        if (topRoomPriceInput && !topRoomPriceInput.matches(':focus')) {
+            topRoomPriceInput.value = this.value;
+        }
+        const helperText = document.getElementById('roomPriceHelperText');
+        if (helperText) {
+            helperText.innerHTML = '<span class="text-success fw-semibold"><i class="fas fa-check-circle me-1"></i>{{ __("Manual Custom Rate Active") }}</span>';
+        }
     });
 
     document.getElementById('paidAmountInput')?.addEventListener('input', function() {
@@ -1287,6 +1409,12 @@
 
     // Initialize on page load
     document.addEventListener("DOMContentLoaded", function () {
+        const hotelInput = document.getElementById('hotelExpenseInput');
+        const topRoomPriceInput = document.getElementById('roomCategoryPriceInput');
+        if (hotelInput && topRoomPriceInput) {
+            topRoomPriceInput.value = hotelInput.value;
+        }
+
         const initialTripId = document.getElementById('tripSelect')?.value;
         if (initialTripId) {
             fetchTripSeats(initialTripId);

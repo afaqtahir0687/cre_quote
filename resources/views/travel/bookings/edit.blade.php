@@ -99,8 +99,23 @@
 
                     <div class="col-md-6">
                         <label class="form-label fw-bold text-dark">{{ __('Return Journey Drop-off / Midway Stop (موقع النزول في العودة)') }}</label>
-                        <input type="text" name="return_dropoff_location" class="form-control @error('return_dropoff_location') is-invalid @enderror" value="{{ old('return_dropoff_location', $booking->return_dropoff_location) }}" placeholder="{{ __('Taif Highway Stop, Al-Kharj, Muzahimiyah, SASCO Station') }}">
+                        <input type="text" name="return_dropoff_location" id="returnDropoffLocationInput" class="form-control @error('return_dropoff_location') is-invalid @enderror" value="{{ old('return_dropoff_location', $booking->return_dropoff_location) }}" placeholder="{{ __('Select employee point below or type custom return stop') }}">
                         @error('return_dropoff_location') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                        <div class="d-flex gap-1 flex-wrap mt-2 align-items-center">
+                            <span class="extra-small text-muted me-1"><i class="fas fa-users text-primary me-1"></i>{{ __('Quick Presets (Employees):') }}</span>
+                            <span class="badge bg-white text-secondary border extra-small" style="cursor: pointer;" onclick="setReturnDropoffVal('Same as Boarding Office')">{{ __('Same as Boarding Office') }}</span>
+                            @if(isset($employees) && $employees->isNotEmpty())
+                                @php
+                                    $uniqueEmpNames = $employees->pluck('name')->unique()->filter();
+                                @endphp
+                                @foreach($uniqueEmpNames as $empName)
+                                    <span class="badge bg-white text-dark border border-primary-subtle extra-small shadow-sm" style="cursor: pointer;" onclick="setReturnDropoffVal(@js($empName))">
+                                        <i class="fas fa-user-tie text-primary me-1"></i>{{ $empName }}
+                                    </span>
+                                @endforeach
+                            @endif
+                            <span class="badge bg-white text-danger border border-danger-subtle extra-small" style="cursor: pointer;" onclick="clearReturnDropoffVal()" title="{{ __('Clear to type custom manually') }}"><i class="fas fa-times me-1"></i>{{ __('Clear') }}</span>
+                        </div>
                     </div>
 
                     <div class="col-md-6">
@@ -129,14 +144,40 @@
                         @error('booking_status') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
 
-                    <div class="col-md-6">
-                        <label class="form-label fw-bold text-dark"><i class="fas fa-user-tag text-primary me-1"></i> {{ __('Salesman / Agent / البائع أو مسؤول الحجز') }}</label>
-                        <input type="text" name="salesman_name" class="form-control" value="{{ old('salesman_name', $booking->effective_salesman) }}">
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label fw-bold text-dark"><i class="fas fa-phone-alt text-primary me-1"></i> {{ __('Salesman Phone / هاتف البائع') }}</label>
-                        <input type="text" name="salesman_phone" class="form-control" placeholder="{{ __('+966 50 123 4567') }}" value="{{ old('salesman_phone', $booking->effective_salesman_phone) }}">
-                    </div>
+                    @if(auth()->user()->isSuperAdmin() || auth()->user()->isAdmin())
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-dark"><i class="fas fa-user-tag text-primary me-1"></i> {{ __('Assign Employee / Agent (مسؤول الحجز)') }}</label>
+                            <select name="employee_id" id="editEmployeeSelect" class="form-select @error('employee_id') is-invalid @enderror" onchange="onEditEmployeeChanged(this)">
+                                <option value="" data-name="{{ auth()->user()?->name }}" data-phone="{{ auth()->user()?->phone }}">-- {{ __('Admin / Central Office') }} --</option>
+                                @if(isset($employees))
+                                    @foreach($employees as $emp)
+                                        <option value="{{ $emp->id }}" 
+                                                data-name="{{ $emp->name }}" 
+                                                data-phone="{{ $emp->phone }}"
+                                                {{ (string)old('employee_id', $booking->employee_id ?? '') === (string)$emp->id ? 'selected' : '' }}>
+                                            {{ $emp->name }} ({{ $emp->designation ?? 'Staff' }})
+                                        </option>
+                                    @endforeach
+                                @endif
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-dark"><i class="fas fa-user-edit text-primary me-1"></i> {{ __('Salesman / Agent Name') }}</label>
+                            <input type="text" name="salesman_name" id="editSalesmanNameInput" class="form-control" value="{{ old('salesman_name', $booking->effective_salesman) }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-dark"><i class="fas fa-phone-alt text-primary me-1"></i> {{ __('Salesman Phone / هاتف البائع') }}</label>
+                            <input type="text" name="salesman_phone" id="editSalesmanPhoneInput" class="form-control" placeholder="{{ __('+966 50 123 4567') }}" value="{{ old('salesman_phone', $booking->effective_salesman_phone) }}">
+                        </div>
+                    @else
+                        <input type="hidden" name="employee_id" value="{{ $booking->employee_id }}">
+                        <input type="hidden" name="salesman_name" value="{{ $booking->salesman_name }}">
+                        <input type="hidden" name="salesman_phone" value="{{ $booking->salesman_phone }}">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-muted"><i class="fas fa-user-tag text-secondary me-1"></i> {{ __('Salesman / Agent (مسؤول الحجز)') }}</label>
+                            <input type="text" class="form-control bg-light text-muted" value="{{ $booking->effective_salesman }}" readonly disabled>
+                        </div>
+                    @endif
                 </div>
             </x-card>
 
@@ -161,38 +202,52 @@
                         </div>
                     </div>
 
-                    <div class="col-md-5" id="hotelNameGroup">
-                        <label class="form-label fw-bold text-dark">{{ __('Hotel Name') }}</label>
+                    <div class="col-md-6" id="hotelNameGroup">
+                        <label class="form-label fw-bold text-dark small mb-1"><i class="fas fa-hotel text-primary me-1"></i>{{ __('Hotel Name') }}</label>
                         <input type="text" name="hotel_name" class="form-control" value="{{ old('hotel_name', $booking->hotel_name) }}">
                     </div>
 
-                    <div class="col-md-4" id="roomTypeGroup">
-                        <label class="form-label fw-bold text-dark">{{ __('Room Category / Type') }}</label>
-                        <select name="room_type" class="form-select">
+                    <div class="col-md-6" id="hotelAddressGroup">
+                        <label class="form-label fw-bold text-dark small mb-1"><i class="fas fa-map-marker-alt text-danger me-1"></i> {{ __('Hotel Address / Location in Makkah / Madinah') }}</label>
+                        <input type="text" name="hotel_address" class="form-control" placeholder="{{ __('Ibrahim Al Khalil Road, Makkah / Near Haram') }}" value="{{ old('hotel_address', $booking->hotel_address ?: $booking->trip?->hotel_address) }}">
+                    </div>
+
+                    <div class="col-md-5" id="roomTypeGroup">
+                        <label class="form-label fw-bold text-dark small mb-1"><i class="fas fa-bed text-primary me-1"></i>{{ __('Room Category / Type') }}</label>
+                        <select name="room_type" id="editRoomTypeSelect" class="form-select" onchange="onEditRoomTypeChanged()">
                             <optgroup label="{{ __('Standard Shared Rooms (مشترك)') }}">
-                                <option value="quad_sharing" {{ old('room_type', $booking->room_type) === 'quad_sharing' ? 'selected' : '' }}>{{ __('Quad Sharing (رباعي - 4 Beds)') }}</option>
-                                <option value="triple_sharing" {{ old('room_type', $booking->room_type) === 'triple_sharing' ? 'selected' : '' }}>{{ __('Triple Sharing (ثلاثي - 3 Beds)') }}</option>
-                                <option value="double_sharing" {{ old('room_type', $booking->room_type) === 'double_sharing' ? 'selected' : '' }}>{{ __('Double Sharing (ثنائي - 2 Beds)') }}</option>
+                                <option value="quad_sharing" data-surcharge="0" {{ old('room_type', $booking->room_type) === 'quad_sharing' ? 'selected' : '' }}>{{ __('Quad Sharing (رباعي - 4 Beds)') }}</option>
+                                <option value="triple_sharing" data-surcharge="100" {{ old('room_type', $booking->room_type) === 'triple_sharing' ? 'selected' : '' }}>{{ __('Triple Sharing (ثلاثي - 3 Beds)') }} (+100 SAR)</option>
+                                <option value="double_sharing" data-surcharge="200" {{ old('room_type', $booking->room_type) === 'double_sharing' ? 'selected' : '' }}>{{ __('Double Sharing (ثنائي - 2 Beds)') }} (+200 SAR)</option>
                             </optgroup>
                             <optgroup label="{{ __('Personal & Private Rooms (خاص / شخصي)') }}">
-                                <option value="single_private" {{ old('room_type', $booking->room_type) === 'single_private' ? 'selected' : '' }}>{{ __('Personal / Single Private Room (شخصي / مفرد)') }}</option>
-                                <option value="private_room" {{ old('room_type', $booking->room_type) === 'private_room' ? 'selected' : '' }}>{{ __('Private Family Room (غرفة عائلية خاصة)') }}</option>
+                                <option value="single_private" data-surcharge="500" {{ old('room_type', $booking->room_type) === 'single_private' ? 'selected' : '' }}>{{ __('Personal / Single Private Room (شخصي / مفرد)') }} (+500 SAR)</option>
+                                <option value="private_room" data-surcharge="600" {{ old('room_type', $booking->room_type) === 'private_room' ? 'selected' : '' }}>{{ __('Private Family Room (غرفة عائلية خاصة)') }} (+600 SAR)</option>
                             </optgroup>
                             <optgroup label="{{ __('Luxury & VIP Suites (أجنحة وغرف فاخرة)') }}">
-                                <option value="luxury_haram_view" {{ old('room_type', $booking->room_type) === 'luxury_haram_view' ? 'selected' : '' }}>👑 {{ __('Luxury Haram View (إطلالة الحرم فاخرة)') }}</option>
-                                <option value="executive_suite" {{ old('room_type', $booking->room_type) === 'executive_suite' ? 'selected' : '' }}>⭐ {{ __('Executive Luxury Suite (جناح تنفيذي فاخر)') }}</option>
+                                <option value="luxury_haram_view" data-surcharge="800" {{ old('room_type', $booking->room_type) === 'luxury_haram_view' ? 'selected' : '' }}>👑 {{ __('Luxury Haram View (إطلالة الحرم فاخرة)') }} (+800 SAR)</option>
+                                <option value="executive_suite" data-surcharge="1200" {{ old('room_type', $booking->room_type) === 'executive_suite' ? 'selected' : '' }}>⭐ {{ __('Executive Luxury Suite (جناح تنفيذي فاخر)') }} (+1,200 SAR)</option>
+                            </optgroup>
+                            <optgroup label="{{ __('Custom / Manual (مخصص / يدوي)') }}">
+                                <option value="custom" data-surcharge="0" {{ old('room_type', $booking->room_type) === 'custom' ? 'selected' : '' }}>✏️ {{ __('Custom Room / Custom Price (غرفة مخصصة / سعر يدوي)') }}</option>
                             </optgroup>
                         </select>
                     </div>
 
-                    <div class="col-md-3" id="nightsCountGroup">
-                        <label class="form-label fw-bold text-dark">{{ __('Hotel Nights') }}</label>
-                        <input type="number" name="nights_count" class="form-control" min="1" max="90" value="{{ old('nights_count', $booking->nights_count ?: ($booking->trip?->duration_days ?: 10)) }}">
+                    <div class="col-md-4" id="roomPriceGroup">
+                        <label class="form-label fw-bold text-dark text-success small mb-1"><i class="fas fa-tag me-1"></i>{{ __('Room / Hotel Price') }}</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-success-subtle text-success fw-bold">{{ currency_symbol() }}</span>
+                            <input type="number" step="0.01" min="0" id="editRoomPriceInput" class="form-control font-monospace fw-bold text-success" value="{{ old('hotel_expense', $booking->hotel_expense) }}" oninput="syncEditHotelExpense(this.value)">
+                        </div>
                     </div>
 
-                    <div class="col-12" id="hotelAddressGroup">
-                        <label class="form-label fw-bold text-dark"><i class="fas fa-map-marker-alt text-danger me-1"></i> {{ __('Hotel Address / Location in Makkah / Madinah') }}</label>
-                        <input type="text" name="hotel_address" class="form-control" placeholder="{{ __('Ibrahim Al Khalil Road, Makkah / Near Haram') }}" value="{{ old('hotel_address', $booking->hotel_address ?: $booking->trip?->hotel_address) }}">
+                    <div class="col-md-3" id="nightsCountGroup">
+                        <label class="form-label fw-bold text-dark small mb-1"><i class="fas fa-moon text-warning me-1"></i>{{ __('Hotel Nights') }}</label>
+                        <div class="input-group">
+                            <input type="number" name="nights_count" class="form-control font-monospace" min="1" max="90" value="{{ old('nights_count', $booking->nights_count ?: ($booking->trip?->duration_days ?: 10)) }}">
+                            <span class="input-group-text bg-white text-muted small">{{ __('Nights') }}</span>
+                        </div>
                     </div>
 
                     <div class="col-12">
@@ -218,7 +273,7 @@
                     <label class="form-label fw-bold text-dark">{{ __('Hotel / Accommodation Expense') }}</label>
                     <div class="input-group">
                         <span class="input-group-text bg-light fw-bold">{{ currency_symbol() }}</span>
-                        <input type="number" step="0.01" name="hotel_expense" id="hotelExpense" class="form-control font-monospace" value="{{ old('hotel_expense', $booking->hotel_expense) }}" oninput="recalcTotals()">
+                        <input type="number" step="0.01" name="hotel_expense" id="hotelExpense" class="form-control font-monospace" value="{{ old('hotel_expense', $booking->hotel_expense) }}" oninput="recalcTotals(); const topP = document.getElementById('editRoomPriceInput'); if (topP && !topP.matches(':focus')) topP.value = this.value;">
                     </div>
                 </div>
 
@@ -316,6 +371,19 @@
 
 @push('scripts')
 <script>
+function setReturnDropoffVal(val) {
+    const input = document.getElementById('returnDropoffLocationInput');
+    if (input) input.value = val;
+}
+
+function clearReturnDropoffVal() {
+    const input = document.getElementById('returnDropoffLocationInput');
+    if (input) {
+        input.value = '';
+        input.focus();
+    }
+}
+
 function toggleHotelFields() {
     const isWithHotel = document.getElementById('pkgWithHotel').checked;
     const hotelGroup = document.getElementById('hotelNameGroup');
@@ -385,6 +453,48 @@ function recalcTotals() {
     if (badge) {
         badge.className = 'badge px-3 py-1 fw-bold fs-7 ' + statusClass;
         badge.innerText = statusLabel;
+    }
+}
+
+function syncEditHotelExpense(val) {
+    const mainHotel = document.getElementById('hotelExpense');
+    if (mainHotel) {
+        mainHotel.value = val;
+        recalcTotals();
+    }
+}
+
+function onEditRoomTypeChanged() {
+    const sel = document.getElementById('editRoomTypeSelect');
+    if (!sel) return;
+    const opt = sel.options[sel.selectedIndex];
+    const pInput = document.getElementById('editRoomPriceInput');
+    const mainHotel = document.getElementById('hotelExpense');
+
+    if (sel.value === 'custom') {
+        if (pInput) {
+            pInput.focus();
+            pInput.select();
+        }
+    } else {
+        const surcharge = opt ? (parseFloat(opt.dataset.surcharge) || 0) : 0;
+        const tripHotelDiff = parseFloat(@json(max(0, ($booking->trip?->price_with_hotel ?? 0) - ($booking->trip?->price_without_hotel ?? 0)))) || 0;
+        const calculated = tripHotelDiff + surcharge;
+        if (pInput) pInput.value = calculated.toFixed(2);
+        if (mainHotel) mainHotel.value = calculated.toFixed(2);
+        recalcTotals();
+    }
+}
+
+function onEditEmployeeChanged(sel) {
+    const opt = sel.options[sel.selectedIndex];
+    if (opt) {
+        const name = opt.getAttribute('data-name');
+        const phone = opt.getAttribute('data-phone');
+        const nameInput = document.getElementById('editSalesmanNameInput');
+        const phoneInput = document.getElementById('editSalesmanPhoneInput');
+        if (name && nameInput) nameInput.value = name;
+        if (phone !== null && phone !== undefined && phoneInput) phoneInput.value = phone;
     }
 }
 

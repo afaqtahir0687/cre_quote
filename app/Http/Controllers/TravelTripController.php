@@ -150,7 +150,7 @@ class TravelTripController extends Controller
             $validated['employee_id'] = $employee ? $employee->id : null;
         }
 
-        if (empty($validated['one_way_price']) || (float)$validated['one_way_price'] >= (float)$validated['price_without_hotel']) {
+        if ((empty($validated['one_way_price']) || (float)$validated['one_way_price'] <= 0 || ((float)$validated['price_without_hotel'] > 0 && (float)$validated['one_way_price'] >= (float)$validated['price_without_hotel']))) {
             $validated['one_way_price'] = round((float)$validated['price_without_hotel'] * 0.5, 2);
         }
 
@@ -246,7 +246,7 @@ class TravelTripController extends Controller
         $validated['business_seats_count'] = $bizCount;
         $validated['economy_seats_count'] = $ecoCount;
 
-        if (empty($validated['one_way_price']) || (float)$validated['one_way_price'] >= (float)$validated['price_without_hotel']) {
+        if ((empty($validated['one_way_price']) || (float)$validated['one_way_price'] <= 0 || ((float)$validated['price_without_hotel'] > 0 && (float)$validated['one_way_price'] >= (float)$validated['price_without_hotel']))) {
             $validated['one_way_price'] = round((float)$validated['price_without_hotel'] * 0.5, 2);
         }
 

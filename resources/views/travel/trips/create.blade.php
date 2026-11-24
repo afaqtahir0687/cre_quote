@@ -104,10 +104,10 @@
                     <div class="col-md-6">
                         <label class="form-label fw-bold text-dark d-flex justify-content-between align-items-center">
                             <span>{{ __('Duration (Days)') }} <span class="text-danger">*</span></span>
-                            <span class="badge bg-light text-primary border" id="durationBadge">{{ old('duration_days', 10) }} {{ __('Days') }}</span>
+                            <span class="badge bg-light text-primary border" id="durationBadge">{{ old('duration_days', 3) }} {{ __('Days') }}</span>
                         </label>
                         @php
-                            $selectedDuration = (int) old('duration_days', 10);
+                            $selectedDuration = (int) old('duration_days', 3);
                             $isCustomDuration = !array_key_exists($selectedDuration, $durations);
                             $durationTriggerText = $isCustomDuration 
                                 ? __('Custom (:days Days)', ['days' => $selectedDuration]) 
@@ -234,7 +234,7 @@
                                 <i class="fas fa-magic me-1"></i> {{ __('Auto-Generate Title') }}
                             </button>
                         </div>
-                        <input type="text" name="title" id="tripTitleInput" class="form-control @error('title') is-invalid @enderror" placeholder="{{ __('Makkah & Madinah 10-Days Executive Umrah') }}" value="{{ old('title') }}" required>
+                        <input type="text" name="title" id="tripTitleInput" class="form-control @error('title') is-invalid @enderror" placeholder="{{ __('Makkah & Madinah 3-Days Executive Umrah') }}" value="{{ old('title') }}" required>
                         @error('title') <div class="invalid-feedback">{{ $message }}</div> @enderror
                         <div class="form-text extra-small">{{ __('Descriptive trip headline displayed on passenger tickets and manifests.') }}</div>
                     </div>
@@ -479,7 +479,7 @@
                     <label class="form-label fw-bold text-dark">{{ __('Round-Trip Fare (Without Hotel) *') }}</label>
                     <div class="input-group">
                         <span class="input-group-text bg-light fw-bold">{{ currency_symbol() }}</span>
-                        <input type="number" step="0.01" min="0" name="price_without_hotel" id="priceWithoutHotelInput" class="form-control @error('price_without_hotel') is-invalid @enderror" placeholder="0.00" value="{{ old('price_without_hotel', '100.00') }}" required>
+                        <input type="number" step="0.01" min="0" name="price_without_hotel" id="priceWithoutHotelInput" class="form-control @error('price_without_hotel') is-invalid @enderror" placeholder="0.00" value="{{ old('price_without_hotel', '0.00') }}" required>
                     </div>
                     @error('price_without_hotel') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
                     <div class="form-text extra-small">{{ __('Standard two-way bus transportation ticket per passenger.') }}</div>
@@ -489,7 +489,7 @@
                     <label class="form-label fw-bold text-dark">{{ __('One-Way Fare (ذهاب فقط / اتجاه واحد)') }}</label>
                     <div class="input-group">
                         <span class="input-group-text bg-light fw-bold">{{ currency_symbol() }}</span>
-                        <input type="number" step="0.01" min="0" name="one_way_price" class="form-control @error('one_way_price') is-invalid @enderror" placeholder="{{ __('150.00 (optional, defaults to 50%)') }}" value="{{ old('one_way_price') }}">
+                        <input type="number" step="0.01" min="0" name="one_way_price" class="form-control @error('one_way_price') is-invalid @enderror" placeholder="0.00" value="{{ old('one_way_price', '0.00') }}">
                     </div>
                     @error('one_way_price') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
                     <div class="form-text extra-small">{{ __('Fare for passengers travelling one-way only (without return).') }}</div>
@@ -716,7 +716,7 @@ function generateAutoTitle(force = false) {
 
     const dep = (depInput && depInput.value.trim()) ? depInput.value.trim() : 'Riyadh';
     const dest = (destInput && destInput.value.trim()) ? destInput.value.trim() : 'Makkah Al-Mukarramah';
-    const dur = (durInput && durInput.value.trim()) ? durInput.value.trim() : '10';
+    const dur = (durInput && durInput.value.trim()) ? durInput.value.trim() : '3';
 
     titleInput.value = `${dest} ${dur}-Days Umrah Trip (${dep})`;
 }

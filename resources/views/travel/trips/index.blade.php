@@ -134,7 +134,7 @@
                 <th class="text-nowrap" style="width: 100px;">{{ __('Trip Code') }}</th>
                 <th style="min-width: 190px;">{{ __('Trip / Route') }}</th>
                 <th class="text-nowrap" style="min-width: 150px;">{{ __('Coach Bus') }}</th>
-                <th class="text-nowrap" style="min-width: 140px;">{{ __('Departure & Duration') }}</th>
+                <th class="text-nowrap" style="min-width: 165px;">{{ __('Departure & Duration') }}</th>
                 <th style="min-width: 140px;">{{ __('Seat Occupancy') }}</th>
                 <th class="text-nowrap" style="min-width: 130px;">{{ __('Counter Access') }}</th>
                 <th class="text-nowrap">{{ __('Fares') }}</th>
@@ -184,10 +184,12 @@
                     </td>
                     <td class="text-nowrap">
                         <span class="d-none">{{ $trip->departure_date ? $trip->departure_date->format('Y-m-d') : '' }}</span>
-                        <div class="fw-semibold text-dark small">{{ $trip->departure_date ? $trip->departure_date->format('d-M-Y') : 'N/A' }}</div>
-                        <div class="extra-small text-muted">
-                            {{ $trip->departure_date ? $trip->departure_date->format('h:i A') : '' }} 
-                            &bull; <span class="badge bg-light text-primary border py-0 px-1">{{ $trip->duration_days }} {{ __('Days') }}</span>
+                        <div class="fw-bold text-dark fs-6">
+                            <i class="far fa-calendar-alt text-primary me-1"></i>{{ $trip->departure_date ? $trip->departure_date->format('d-M-Y') : 'N/A' }}
+                        </div>
+                        <div class="small text-muted fw-bold mt-1">
+                            <i class="far fa-clock me-1 text-secondary"></i>{{ $trip->departure_date ? $trip->departure_date->format('h:i A') : '' }} 
+                            &bull; <span class="badge bg-primary-subtle text-primary border border-primary-subtle fw-bold px-2 py-1">{{ $trip->duration_days }} {{ __('Days') }}</span>
                         </div>
                     </td>
                     <td>
