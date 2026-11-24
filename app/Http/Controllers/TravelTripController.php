@@ -117,7 +117,7 @@ class TravelTripController extends Controller
             'duration_days' => 'required|integer|min:1|max:90',
             'price_without_hotel' => 'required|numeric|min:0',
             'one_way_price' => 'nullable|numeric|min:0',
-            'price_with_hotel' => 'required|numeric|min:0',
+            'price_with_hotel' => 'nullable|numeric|min:0',
             'vip_price' => 'nullable|numeric|min:0',
             'business_price' => 'nullable|numeric|min:0',
             'economy_price' => 'nullable|numeric|min:0',
@@ -129,6 +129,7 @@ class TravelTripController extends Controller
             'notes' => 'nullable|string',
         ]);
 
+        $validated['price_with_hotel'] = (float) ($validated['price_with_hotel'] ?? 0);
         $validated['shop_id'] = $shopId;
         $validated['created_by'] = auth()->id();
 
@@ -219,7 +220,7 @@ class TravelTripController extends Controller
             'duration_days' => 'required|integer|min:1|max:90',
             'price_without_hotel' => 'required|numeric|min:0',
             'one_way_price' => 'nullable|numeric|min:0',
-            'price_with_hotel' => 'required|numeric|min:0',
+            'price_with_hotel' => 'nullable|numeric|min:0',
             'vip_price' => 'nullable|numeric|min:0',
             'business_price' => 'nullable|numeric|min:0',
             'economy_price' => 'nullable|numeric|min:0',
@@ -230,6 +231,8 @@ class TravelTripController extends Controller
             'description' => 'nullable|string',
             'notes' => 'nullable|string',
         ]);
+
+        $validated['price_with_hotel'] = (float) ($validated['price_with_hotel'] ?? 0);
 
         $vipCount = max(0, (int) ($validated['vip_seats_count'] ?? ($trip->vip_seats_count ?? 10)));
         $bizCount = max(0, (int) ($validated['business_seats_count'] ?? ($trip->business_seats_count ?? 15)));

@@ -268,7 +268,13 @@
                     </div>
 
                     <div class="mb-2">
-                        <label class="form-label fw-bold text-dark extra-small mb-1">{{ __('Paid Amount') }}</label>
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <label class="form-label fw-bold text-dark extra-small mb-0">{{ __('Paid Amount') }}</label>
+                            <div class="btn-group btn-group-sm" role="group">
+                                <button type="button" class="btn btn-xs btn-outline-secondary py-0 px-2" style="font-size: 0.70rem;" onclick="setPaidZero()">{{ __('0 / Unpaid') }}</button>
+                                <button type="button" class="btn btn-xs btn-outline-success py-0 px-2" style="font-size: 0.70rem;" onclick="setPaidFull()">{{ __('Full Paid') }}</button>
+                            </div>
+                        </div>
                         <div class="input-group">
                             <span class="input-group-text bg-success-subtle text-success fw-bold">{{ currency_symbol() }}</span>
                             <input type="number" step="0.01" name="paid_amount" id="paidAmount" class="form-control font-monospace" value="{{ old('paid_amount', $booking->paid_amount) }}" oninput="recalcTotals()">
@@ -279,6 +285,13 @@
                         <span class="fw-bold text-dark">{{ __('Balance Due') }}:</span>
                         <span class="fs-6 fw-bold font-monospace text-danger" id="displayBalance">
                             {{ currency_symbol() }} {{ number_format($booking->balance_due, 2) }}
+                        </span>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+                        <span class="fw-bold text-dark">{{ __('Payment Status (الحالة)') }}:</span>
+                        <span id="displayStatusBadge" class="badge px-3 py-1 fw-bold fs-7 {{ $booking->payment_status === 'paid' ? 'bg-success-subtle text-success border border-success-subtle' : ($booking->payment_status === 'partial' ? 'bg-warning-subtle text-warning-emphasis border border-warning-subtle' : 'bg-danger-subtle text-danger border border-danger-subtle') }}">
+                            {{ $booking->payment_status === 'paid' ? __('PAID / مدفوع بالكامل') : ($booking->payment_status === 'partial' ? __('PARTIAL / مدفوع جزئياً') : __('UNPAID / غير مدفوع')) }}
                         </span>
                     </div>
                 </div>
@@ -316,6 +329,28 @@ function toggleHotelFields() {
     }
 }
 
+function setPaidZero() {
+    const paid = document.getElementById('paidAmount');
+    if (paid) {
+        paid.value = '0.00';
+        recalcTotals();
+    }
+}
+
+function setPaidFull() {
+    const paid = document.getElementById('paidAmount');
+    if (paid) {
+        const fare = parseFloat(document.getElementById('travelFare').value) || 0;
+        const hotel = parseFloat(document.getElementById('hotelExpense').value) || 0;
+        const extra = parseFloat(document.getElementById('extraCharges').value) || 0;
+        const disc = parseFloat(document.getElementById('discountInput').value) || 0;
+        const tax = parseFloat(document.getElementById('taxAmount').value) || 0;
+        const total = Math.max(0, fare + hotel + extra - disc + tax);
+        paid.value = total.toFixed(2);
+        recalcTotals();
+    }
+}
+
 function recalcTotals() {
     const fare = parseFloat(document.getElementById('travelFare').value) || 0;
     const hotel = parseFloat(document.getElementById('hotelExpense').value) || 0;
@@ -329,6 +364,23 @@ function recalcTotals() {
 
     document.getElementById('displayTotal').textContent = '{{ currency_symbol() }} ' + total.toFixed(2);
     document.getElementById('displayBalance').textContent = '{{ currency_symbol() }} ' + balance.toFixed(2);
+
+    let statusLabel = '{{ __("UNPAID / غير مدفوع") }}';
+    let statusClass = 'bg-danger-subtle text-danger border border-danger-subtle';
+
+    if (total > 0 && paid >= total) {
+        statusLabel = '{{ __("PAID / مدفوع بالكامل") }}';
+        statusClass = 'bg-success-subtle text-success border border-success-subtle';
+    } else if (paid > 0 && paid < total) {
+        statusLabel = '{{ __("PARTIAL / مدفوع جزئياً") }}';
+        statusClass = 'bg-warning-subtle text-warning-emphasis border border-warning-subtle';
+    }
+
+    const badge = document.getElementById('displayStatusBadge');
+    if (badge) {
+        badge.className = 'badge px-3 py-1 fw-bold fs-7 ' + statusClass;
+        badge.innerText = statusLabel;
+    }
 }
 
 document.addEventListener('DOMContentLoaded', function() {

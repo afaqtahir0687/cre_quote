@@ -208,7 +208,11 @@
                     </td>
                     <td class="text-nowrap">
                         <div class="small fw-semibold text-dark">{{ format_currency($trip->price_without_hotel) }}</div>
-                        <div class="extra-small text-success">{{ __('Hotel:') }} {{ format_currency($trip->price_with_hotel) }}</div>
+                        @if($trip->price_with_hotel > 0)
+                            <div class="extra-small text-success">{{ __('Hotel:') }} {{ format_currency($trip->price_with_hotel) }}</div>
+                        @else
+                            <div class="extra-small text-muted">{{ __('Seat Only (No Hotel)') }}</div>
+                        @endif
                     </td>
                     <td class="text-nowrap">
                         <span class="badge-soft {{ $statusBadge }}">{{ __(ucfirst(str_replace('_', ' ', $trip->status))) }}</span>

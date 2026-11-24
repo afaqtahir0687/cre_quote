@@ -477,7 +477,7 @@
                     <label class="form-label fw-bold text-dark">{{ __('Round-Trip Fare (Without Hotel) *') }}</label>
                     <div class="input-group">
                         <span class="input-group-text bg-light fw-bold">{{ currency_symbol() }}</span>
-                        <input type="number" step="0.01" name="price_without_hotel" class="form-control @error('price_without_hotel') is-invalid @enderror" value="{{ old('price_without_hotel', $trip->price_without_hotel) }}" required>
+                        <input type="number" step="0.01" min="0" name="price_without_hotel" id="priceWithoutHotelInput" class="form-control @error('price_without_hotel') is-invalid @enderror" value="{{ old('price_without_hotel', $trip->price_without_hotel) }}" required>
                     </div>
                     @error('price_without_hotel') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
                 </div>
@@ -486,17 +486,17 @@
                     <label class="form-label fw-bold text-dark">{{ __('One-Way Fare (ذهاب فقط / اتجاه واحد)') }}</label>
                     <div class="input-group">
                         <span class="input-group-text bg-light fw-bold">{{ currency_symbol() }}</span>
-                        <input type="number" step="0.01" name="one_way_price" class="form-control @error('one_way_price') is-invalid @enderror" placeholder="{{ __('150.00 (optional, defaults to 50%)') }}" value="{{ old('one_way_price', $trip->one_way_price) }}">
+                        <input type="number" step="0.01" min="0" name="one_way_price" class="form-control @error('one_way_price') is-invalid @enderror" placeholder="{{ __('150.00 (optional, defaults to 50%)') }}" value="{{ old('one_way_price', $trip->one_way_price) }}">
                     </div>
                     @error('one_way_price') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
                     <div class="form-text extra-small">{{ __('Fare for passengers travelling one-way only.') }}</div>
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label fw-bold text-success">{{ __('Complete Package (With Hotel) *') }}</label>
+                    <label class="form-label fw-bold text-success">{{ __('Complete Package (With Hotel)') }}</label>
                     <div class="input-group">
                         <span class="input-group-text bg-success-subtle text-success fw-bold">{{ currency_symbol() }}</span>
-                        <input type="number" step="0.01" name="price_with_hotel" class="form-control @error('price_with_hotel') is-invalid @enderror" value="{{ old('price_with_hotel', $trip->price_with_hotel) }}" required>
+                        <input type="number" step="0.01" min="0" name="price_with_hotel" id="priceWithHotelInput" class="form-control font-monospace @error('price_with_hotel') is-invalid @enderror" placeholder="0.00" value="{{ old('price_with_hotel', number_format($trip->price_with_hotel ?? 0, 2, '.', '')) }}">
                     </div>
                     @error('price_with_hotel') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
                 </div>
@@ -752,6 +752,21 @@ function recalcSeatClasses(ecoEditedByUser = false) {
     if (ecoRange) ecoRange.innerText = eco > 0 ? `Seats ${vip + biz + 1} - ${total}` : `0 Seats`;
     if (summaryBadge) summaryBadge.innerText = `${total} Total Seats Allocated`;
     if (ratioPreview) ratioPreview.innerText = `VIP: ${vip} • Business: ${biz} • Economy: ${eco} = ${total} Seats`;
+}
+
+function setPrice(inputId, val) {
+    const input = document.getElementById(inputId);
+    if (input) {
+        input.value = parseFloat(val).toFixed(2);
+    }
+}
+
+function focusCustomPrice(inputId) {
+    const input = document.getElementById(inputId);
+    if (input) {
+        input.value = '';
+        input.focus();
+    }
 }
 
 document.addEventListener('DOMContentLoaded', function() {

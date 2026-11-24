@@ -422,10 +422,16 @@
 
                     <div class="row g-2 pt-2 border-top">
                         <div class="col-md-6">
-                            <label class="form-label fw-bold text-dark small">{{ __('Paid Amount (Cash In Hand / Card) *') }}</label>
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <label class="form-label fw-bold text-dark small mb-0">{{ __('Paid Amount (Cash In Hand / Card) *') }}</label>
+                                <div class="btn-group btn-group-sm" role="group">
+                                    <button type="button" class="btn btn-xs btn-outline-secondary py-0 px-2" style="font-size: 0.70rem;" onclick="setPaidZero()">{{ __('0 / Unpaid') }}</button>
+                                    <button type="button" class="btn btn-xs btn-outline-success py-0 px-2" style="font-size: 0.70rem;" onclick="setPaidFull()">{{ __('Full Paid') }}</button>
+                                </div>
+                            </div>
                             <div class="input-group">
                                 <span class="input-group-text bg-success-subtle text-success fw-bold">{{ currency_symbol() }}</span>
-                                <input type="number" step="0.01" name="paid_amount" id="paidAmountInput" class="form-control fw-bold text-success" value="{{ old('paid_amount', '0.00') }}" required oninput="recalcBooking()">
+                                <input type="number" step="0.01" min="0" name="paid_amount" id="paidAmountInput" class="form-control fw-bold text-success" value="{{ old('paid_amount', '0.00') }}" required oninput="recalcBooking()">
                             </div>
                         </div>
 
@@ -441,8 +447,16 @@
                     </div>
 
                     <div class="d-flex justify-content-between align-items-center mt-3 pt-2 border-top small">
-                        <span class="text-muted">{{ __('Remaining Balance Due:') }}</span>
+                        <span class="text-muted fw-bold">{{ __('Remaining Balance Due:') }}</span>
                         <strong class="text-danger fs-6" id="balanceDueDisplay">{{ currency_symbol() }}0.00</strong>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mt-2 pt-2 border-top small">
+                        <span class="text-muted fw-bold">{{ __('Payment Status (الحالة):') }}</span>
+                        <span id="paymentStatusBadge" class="badge bg-danger-subtle text-danger border border-danger-subtle px-3 py-1 fw-bold fs-7">
+                            {{ __('UNPAID / غير مدفوع') }}
+                        </span>
+                        <input type="hidden" name="payment_status" id="paymentStatusInput" value="{{ old('payment_status', 'unpaid') }}">
                     </div>
                 </div>
 
@@ -616,8 +630,6 @@
     function onTripSelectChanged(tripId) {
         if (!tripId) return;
         selectedSeats = [];
-        const paidInput = document.getElementById('paidAmountInput');
-        if (paidInput) delete paidInput.dataset.userEdited;
         const hotelInput = document.getElementById('hotelExpenseInput');
         if (hotelInput) delete hotelInput.dataset.userEdited;
         updateSelectedSeatsUI();
@@ -889,8 +901,6 @@
 
     function clearAllSelectedSeats() {
         selectedSeats = [];
-        const paidInput = document.getElementById('paidAmountInput');
-        if (paidInput) delete paidInput.dataset.userEdited;
         const hotelInput = document.getElementById('hotelExpenseInput');
         if (hotelInput) delete hotelInput.dataset.userEdited;
         updateSelectedSeatsUI();
@@ -1205,16 +1215,38 @@
         document.getElementById('totalAmountDisplay').innerText = '{{ currency_symbol() }} ' + total.toFixed(2);
 
         const paidInput = document.getElementById('paidAmountInput');
-        let paid = parseFloat(paidInput.value) || 0;
-
-        // Auto-fill paid if user hasn't explicitly customized paid amount
-        if (!paidInput.dataset.userEdited || paid === 0) {
-            paidInput.value = total.toFixed(2);
-            paid = total;
+        let paid = parseFloat(paidInput.value);
+        if (isNaN(paid) || paid < 0) {
+            paid = 0;
         }
 
         const balance = Math.max(0, total - paid);
         document.getElementById('balanceDueDisplay').innerText = '{{ currency_symbol() }} ' + balance.toFixed(2);
+
+        // Dynamic Payment Status
+        let status = 'unpaid';
+        let statusLabel = '{{ __("UNPAID / غير مدفوع") }}';
+        let statusClass = 'bg-danger-subtle text-danger border border-danger-subtle';
+
+        if (total > 0 && paid >= total) {
+            status = 'paid';
+            statusLabel = '{{ __("PAID / مدفوع بالكامل") }}';
+            statusClass = 'bg-success-subtle text-success border border-success-subtle';
+        } else if (paid > 0 && paid < total) {
+            status = 'partial';
+            statusLabel = '{{ __("PARTIAL / مدفوع جزئياً") }}';
+            statusClass = 'bg-warning-subtle text-warning-emphasis border border-warning-subtle';
+        }
+
+        const badge = document.getElementById('paymentStatusBadge');
+        if (badge) {
+            badge.className = 'badge px-3 py-1 fw-bold fs-7 ' + statusClass;
+            badge.innerText = statusLabel;
+        }
+        const statusInput = document.getElementById('paymentStatusInput');
+        if (statusInput) {
+            statusInput.value = status;
+        }
     }
 
     function onRoomTypeChanged() {

@@ -95,7 +95,11 @@
             </div>
             <div class="d-flex justify-content-between small text-success mt-1">
                 <span>{{ __('With Hotel:') }}</span>
-                <strong>{{ format_currency($trip->price_with_hotel) }}</strong>
+                @if($trip->price_with_hotel > 0)
+                    <strong>{{ format_currency($trip->price_with_hotel) }}</strong>
+                @else
+                    <span class="text-muted">{{ __('None (Seat Only)') }}</span>
+                @endif
             </div>
         </div>
     </div>

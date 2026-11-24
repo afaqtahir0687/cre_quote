@@ -719,24 +719,44 @@
         @php
             $tripConditions = $trip?->description ?: \App\Models\TravelTrip::defaultConditions();
             $conditionBlocks = \App\Models\TravelTrip::parseConditionsBlocks($tripConditions);
+            $rtlBlocks = array_values(array_filter($conditionBlocks, fn($b) => $b['type'] === 'rtl'));
+            $ltrBlocks = array_values(array_filter($conditionBlocks, fn($b) => $b['type'] === 'ltr'));
+            $hasBoth = !empty($rtlBlocks) && !empty($ltrBlocks);
         @endphp
         @if(!empty($conditionBlocks))
             <!-- Trip Overview / Terms & Conditions Note -->
-            <div class="trip-overview-box" style="margin-top: 3px; background-color: #f8fafc; border: 1px solid #cbd5e1; border-{{ $isAr ? 'right' : 'left' }}: 3px solid #0284c7; padding: 4px 6px; font-size: 6.8pt; color: #1e293b; line-height: 1.3; border-radius: 2px;">
+            <div class="trip-overview-box" style="margin-top: 3px; background-color: #f8fafc; border: 1px solid #cbd5e1; border-{{ $isAr ? 'right' : 'left' }}: 3px solid #0284c7; padding: 4px 6px; font-size: 6.8pt; color: #1e293b; line-height: 1.25; border-radius: 2px;">
                 <div style="font-weight: bold; color: #0369a1; margin-bottom: 2px;">
                     <i class="fas fa-file-contract me-1"></i>{{ __('Terms & Conditions / الشروط والأحكام') }}:
                 </div>
-                @foreach($conditionBlocks as $block)
-                    @if($block['type'] === 'rtl')
-                        <div dir="rtl" style="direction: rtl; text-align: right; font-family: 'Cairo', 'Amiri', 'Traditional Arabic', Tahoma, sans-serif; font-size: 6.5pt; color: #334155; margin-bottom: 3px;">
-                            {!! nl2br(e(implode("\n", $block['lines']))) !!}
-                        </div>
-                    @else
-                        <div dir="ltr" style="direction: ltr; text-align: left; font-size: 6.5pt; color: #334155; margin-bottom: 3px;">
-                            {!! nl2br(e(implode("\n", $block['lines']))) !!}
-                        </div>
-                    @endif
-                @endforeach
+                @if($hasBoth)
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <tr>
+                            <td style="width: 50%; vertical-align: top; padding: 0 6px 0 0; direction: ltr; text-align: left; font-size: 6.5pt; color: #334155; line-height: 1.25; border-right: 1px dashed #cbd5e1;">
+                                @foreach($ltrBlocks as $block)
+                                    <div>{!! nl2br(e(implode("\n", $block['lines']))) !!}</div>
+                                @endforeach
+                            </td>
+                            <td style="width: 50%; vertical-align: top; padding: 0 0 0 6px; direction: rtl; text-align: right; font-family: 'Cairo', 'Amiri', 'Traditional Arabic', Tahoma, sans-serif; font-size: 6.5pt; color: #334155; line-height: 1.25;">
+                                @foreach($rtlBlocks as $block)
+                                    <div dir="rtl" style="direction: rtl; text-align: right;">{!! nl2br(e(implode("\n", $block['lines']))) !!}</div>
+                                @endforeach
+                            </td>
+                        </tr>
+                    </table>
+                @else
+                    @foreach($conditionBlocks as $block)
+                        @if($block['type'] === 'rtl')
+                            <div dir="rtl" style="direction: rtl; text-align: right; font-family: 'Cairo', 'Amiri', 'Traditional Arabic', Tahoma, sans-serif; font-size: 6.5pt; color: #334155; margin-bottom: 3px;">
+                                {!! nl2br(e(implode("\n", $block['lines']))) !!}
+                            </div>
+                        @else
+                            <div dir="ltr" style="direction: ltr; text-align: left; font-size: 6.5pt; color: #334155; margin-bottom: 3px;">
+                                {!! nl2br(e(implode("\n", $block['lines']))) !!}
+                            </div>
+                        @endif
+                    @endforeach
+                @endif
             </div>
         @endif
 
