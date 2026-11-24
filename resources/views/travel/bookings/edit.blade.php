@@ -80,6 +80,9 @@
 @endsection
 
 @section('content')
+@php
+    $isAdmin = $isAdmin ?? (auth()->check() && (auth()->user()->isSuperAdmin() || auth()->user()->isAdmin()));
+@endphp
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div class="d-flex align-items-center">
         <a href="{{ route('travel.bookings.show', $booking->id) }}" class="btn btn-light btn-sm rounded-circle me-3 shadow-sm">

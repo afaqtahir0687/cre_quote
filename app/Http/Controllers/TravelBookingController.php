@@ -99,8 +99,9 @@ class TravelBookingController extends Controller
         $customers = (current_shop_id() ? Customer::where('shop_id', current_shop_id()) : Customer::query())->orderBy('name')->get();
         $employees = \App\Models\Employee::orderBy('name')->get();
         $currentEmployee = \App\Models\Employee::where('user_id', auth()->id())->first();
+        $isAdmin = auth()->user()->isSuperAdmin() || auth()->user()->isAdmin();
 
-        return view('travel.bookings.create', compact('trips', 'selectedTrip', 'selectedSeat', 'customers', 'employees', 'currentEmployee'));
+        return view('travel.bookings.create', compact('trips', 'selectedTrip', 'selectedSeat', 'customers', 'employees', 'currentEmployee', 'isAdmin'));
     }
 
     /**
@@ -233,7 +234,7 @@ class TravelBookingController extends Controller
             $firstBooking = DB::transaction(function () use (
                 $validated, $trip, $seatNumbers, $seatsCount, $shopId,
                 $totalTravelFare, $totalHotelExpense, $totalExtraCharges, $totalDiscount,
-                $totalTaxAmount, $totalAmount, $paidAmount, $balanceDue, $paymentStatus, $request, $passengersInput
+                $totalTaxAmount, $totalAmount, $paidAmount, $balanceDue, $paymentStatus, $request, $passengersInput, $isAdmin
             ) {
                 // Strict concurrency anti-collision check inside transaction with lockForUpdate to prevent race condition across counters
                 $collision = TravelBooking::where('travel_trip_id', $trip->id)
@@ -540,7 +541,9 @@ class TravelBookingController extends Controller
         $trips = TravelTrip::forCurrentShop()->get();
         $employees = \App\Models\Employee::orderBy('name')->get();
 
-        return view('travel.bookings.edit', compact('booking', 'trips', 'employees'));
+        $isAdmin = auth()->user()->isSuperAdmin() || auth()->user()->isAdmin();
+
+        return view('travel.bookings.edit', compact('booking', 'trips', 'employees', 'isAdmin'));
     }
 
     /**
