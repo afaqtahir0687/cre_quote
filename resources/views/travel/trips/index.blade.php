@@ -26,9 +26,11 @@
         <a href="{{ route('travel.bookings.index') }}" class="btn btn-outline-secondary text-nowrap">
             <i class="fas fa-ticket-alt me-1"></i> {{ __('All Bookings') }}
         </a>
+        @if(auth()->user()->isSuperAdmin() || auth()->user()->isAdmin())
         <a href="{{ route('travel.trips.create') }}" class="btn btn-primary-modern text-nowrap">
             <i class="fas fa-plus me-2"></i> {{ __('Schedule New Trip') }}
         </a>
+        @endif
     </div>
 </div>
 

@@ -161,38 +161,6 @@
                 </div>
 
                 <div class="col-md-6">
-                    <div class="p-3 bg-light rounded-3 border">
-                        <span class="text-muted extra-small d-block text-uppercase fw-bold">{{ __('Journey Type / Direction') }}</span>
-                        <div class="d-flex align-items-center gap-2 mt-1">
-                            {!! $booking->journeyTypeBadge() !!}
-                            @if($booking->isOneWay() && $booking->one_way_direction)
-                                <span class="badge bg-light text-dark border extra-small">
-                                    {{ $booking->one_way_direction === 'return' ? __('Return / Inbound') : __('Outbound / Going') }}
-                                </span>
-                            @endif
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-6">
-                    <div class="p-3 bg-light rounded-3 border">
-                        <span class="text-muted extra-small d-block text-uppercase fw-bold">{{ __('Boarding & Drop-off Points') }}</span>
-                        <div class="small fw-bold text-dark mt-1">
-                            <span class="text-success"><i class="fas fa-sign-in-alt me-1"></i>{{ $booking->effective_pickup_location }}</span>
-                            <span class="text-muted mx-1">&rarr;</span>
-                            <span class="text-danger"><i class="fas fa-map-marker-alt me-1"></i>{{ $booking->effective_dropoff_location }}</span>
-                        </div>
-                        @if($booking->isRoundTrip() && $booking->return_dropoff_location)
-                            <div class="extra-small text-muted mt-2 pt-1 border-top">
-                                <i class="fas fa-undo-alt text-warning me-1"></i>
-                                <strong>{{ __('Return Midway Stop / موقع النزول في العودة:') }}</strong>
-                                <span class="text-dark fw-bold">{{ $booking->return_dropoff_location }}</span>
-                            </div>
-                        @endif
-                    </div>
-                </div>
-
-                <div class="col-md-6">
                     <div class="p-2 px-3 bg-light rounded-3 border d-flex justify-content-between align-items-center">
                         <div class="d-flex align-items-center gap-2">
                             <i class="fas fa-user-tag text-primary fs-5"></i>

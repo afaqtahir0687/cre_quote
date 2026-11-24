@@ -46,6 +46,21 @@ class Invoice extends Model
         return $this->belongsTo(Employee::class);
     }
 
+    public function travelBookings()
+    {
+        return $this->hasMany(TravelBooking::class, 'invoice_id');
+    }
+
+    public function travelBooking()
+    {
+        return $this->hasOne(TravelBooking::class, 'invoice_id');
+    }
+
+    public function isTravelInvoice(): bool
+    {
+        return $this->travelBookings()->exists();
+    }
+
     public function getAmountPaidAttribute($value)
     {
         if (strtolower($this->status) === 'cancelled') {

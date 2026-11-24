@@ -150,6 +150,16 @@ class InvoiceController extends Controller
     {
         $invoice->load('customer', 'customerCompany', 'items', 'payments', 'employee');
         $employees = \App\Models\Employee::orderBy('name')->get();
+
+        if ($invoice->travelBookings()->exists()) {
+            $groupBookings = \App\Models\TravelBooking::where('invoice_id', $invoice->id)
+                ->with(['trip', 'customer', 'shop.setting', 'invoice'])
+                ->orderBy('seat_number')
+                ->get();
+            $booking = $groupBookings->first();
+            return view('travel.invoices.show', compact('invoice', 'booking', 'groupBookings', 'employees'));
+        }
+
         return view('admin.invoices.show', compact('invoice', 'employees'));
     }
 
@@ -261,6 +271,38 @@ class InvoiceController extends Controller
         if (request()->filled('lang')) {
             app()->setLocale(request('lang'));
         }
+
+        if ($invoice->travelBookings()->exists()) {
+            $groupBookings = \App\Models\TravelBooking::where('invoice_id', $invoice->id)
+                ->with(['trip', 'customer', 'shop.setting', 'invoice'])
+                ->orderBy('seat_number')
+                ->get();
+            $booking = $groupBookings->first();
+
+            $mpdf = new \Mpdf\Mpdf([
+                'mode' => 'utf-8',
+                'format' => 'A5',
+                'margin_left' => 3,
+                'margin_right' => 3,
+                'margin_top' => 2.5,
+                'margin_bottom' => 2.5,
+                'default_font' => 'amiri',
+                'autoScriptToLang' => true,
+                'autoLangToFont'   => true,
+            ]);
+            if (app()->getLocale() === 'ar') {
+                $mpdf->SetDirectionality('rtl');
+            }
+
+            $html = view('travel.bookings.pdf', compact('booking', 'groupBookings'))->render();
+            $mpdf->WriteHTML($html);
+
+            $filename = 'Invoice_' . $invoice->invoice_number . '.pdf';
+            return response($mpdf->Output('', 'S'))
+                ->header('Content-Type', 'application/pdf')
+                ->header('Content-Disposition', 'inline; filename="' . $filename . '"');
+        }
+
         $invoice->load('customer', 'customerCompany', 'items', 'employee');
         $setting = ($invoice->shop_id ? Setting::withoutGlobalScopes()->where('shop_id', $invoice->shop_id)->first() : null) ?: current_setting();
         

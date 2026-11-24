@@ -28,9 +28,11 @@
             <a href="{{ route('travel.bookings.create') }}" class="btn btn-primary-modern btn-sm shadow-sm">
                 <i class="fas fa-ticket-alt me-1"></i> {{ __('Book Bus Seat') }}
             </a>
+            @if(auth()->user()->isSuperAdmin() || auth()->user()->isAdmin())
             <a href="{{ route('travel.trips.create') }}" class="btn btn-secondary-modern btn-sm shadow-sm">
                 <i class="fas fa-bus me-1"></i> {{ __('Schedule Umrah Trip') }}
             </a>
+            @endif
         @endif
         @if(shop_has_module('job_orders'))
             <a href="{{ route('job-orders.create') }}" class="btn btn-primary-modern btn-sm shadow-sm">
@@ -471,11 +473,13 @@
                                     <td colspan="5" class="text-center py-4 text-muted">
                                         <i class="fas fa-bus-alt fa-2x mb-2 opacity-50 d-block"></i>
                                         {{ __('No active Umrah trips scheduled yet.') }}
+                                        @if(auth()->user()->isSuperAdmin() || auth()->user()->isAdmin())
                                         <div class="mt-2">
                                             <a href="{{ route('travel.trips.create') }}" class="btn btn-sm btn-primary-modern">
                                                 <i class="fas fa-plus me-1"></i> {{ __('Schedule First Umrah Trip') }}
                                             </a>
                                         </div>
+                                        @endif
                                     </td>
                                 </tr>
                             @endforelse

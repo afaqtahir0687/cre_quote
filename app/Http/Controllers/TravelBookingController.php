@@ -174,6 +174,9 @@ class TravelBookingController extends Controller
             $validated['employee_id'] = $currentEmp?->id;
             $validated['salesman_name'] = $currentEmp?->name ?? auth()->user()->name;
             $validated['salesman_phone'] = $currentEmp?->phone ?? (auth()->user()?->phone ?? null);
+            // Boarding / Pickup office is strictly locked for employees (Admin only can change)
+            $defaultPickupLoc = $currentEmp?->name ?: (auth()->user()?->name ?: (current_shop()?->name ?? 'Office'));
+            $validated['pickup_location'] = $defaultPickupLoc;
         } else {
             if (!empty($validated['employee_id'])) {
                 $assignedEmp = \App\Models\Employee::find($validated['employee_id']);
@@ -369,18 +372,21 @@ class TravelBookingController extends Controller
                 $seatPassenger = $passengersInput[$sNum] ?? [];
                 $pDrop = !empty($seatPassenger['dropoff_location']) ? trim($seatPassenger['dropoff_location']) : ($validated['dropoff_location'] ?? null);
                 $pRetDrop = !empty($seatPassenger['return_dropoff_location']) ? trim($seatPassenger['return_dropoff_location']) : ($validated['return_dropoff_location'] ?? null);
+                if (!$isAdmin) {
+                    $pLoc = $validated['pickup_location'];
+                } else {
+                    $pLoc = !empty($seatPassenger['pickup_location']) ? trim($seatPassenger['pickup_location']) : ($validated['pickup_location'] ?? null);
+                }
                 if ($idx === 0) {
                     $pName = !empty($seatPassenger['name']) ? trim($seatPassenger['name']) : $validated['passenger_name'];
                     $pGender = !empty($seatPassenger['gender']) ? $seatPassenger['gender'] : $validated['passenger_gender'];
                     $pIdNum = !empty($seatPassenger['id_number']) ? trim($seatPassenger['id_number']) : ($validated['passenger_id_number'] ?? null);
                     $pNat = !empty($seatPassenger['nationality']) ? trim($seatPassenger['nationality']) : ($validated['passenger_nationality'] ?? null);
-                    $pLoc = !empty($seatPassenger['pickup_location']) ? trim($seatPassenger['pickup_location']) : ($validated['pickup_location'] ?? null);
                 } else {
                     $pName = !empty($seatPassenger['name']) ? trim($seatPassenger['name']) : ($validated['passenger_name'] . ' (' . __('Seat') . ' #' . $sNum . ')');
                     $pGender = !empty($seatPassenger['gender']) ? $seatPassenger['gender'] : $validated['passenger_gender'];
                     $pIdNum = !empty($seatPassenger['id_number']) ? trim($seatPassenger['id_number']) : null;
                     $pNat = !empty($seatPassenger['nationality']) ? trim($seatPassenger['nationality']) : ($validated['passenger_nationality'] ?? null);
-                    $pLoc = !empty($seatPassenger['pickup_location']) ? trim($seatPassenger['pickup_location']) : ($validated['pickup_location'] ?? null);
                 }
 
                 $createdBookings[] = TravelBooking::create([
@@ -580,6 +586,7 @@ class TravelBookingController extends Controller
             $validated['employee_id'] = $booking->employee_id;
             $validated['salesman_name'] = $booking->salesman_name;
             $validated['salesman_phone'] = $booking->salesman_phone;
+            $validated['pickup_location'] = $booking->pickup_location;
         } else {
             if (!empty($validated['employee_id'])) {
                 $assignedEmp = \App\Models\Employee::find($validated['employee_id']);

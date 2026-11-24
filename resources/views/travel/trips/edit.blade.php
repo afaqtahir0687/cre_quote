@@ -257,7 +257,7 @@
                             </label>
                             <small class="text-muted fw-normal" id="calcReturnNote">{{ __('Auto-calculated from duration') }}</small>
                         </div>
-                        <input type="datetime-local" name="return_date" class="form-control @error('return_date') is-invalid @enderror" value="{{ old('return_date', $trip->return_date ? $trip->return_date->format('Y-m-d\TH:i') : '') }}" id="retDateInput">
+                        <input type="datetime-local" name="return_date" class="form-control @error('return_date') is-invalid @enderror" value="{{ old('return_date', $trip->return_date ? $trip->return_date->format('Y-m-d\TH:i') : '') }}" id="retDateInput" onchange="onReturnDateChanged()">
                         @error('return_date') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
 
@@ -683,7 +683,11 @@ function autoCalculateReturnDate() {
         const depDate = new Date(depVal);
         if (isNaN(depDate.getTime())) return;
         
-        const retDate = new Date(depDate.getTime() + (days * 24 * 60 * 60 * 1000));
+        // Travel duration convention: Day 1 is departure day.
+        // E.g. A 3-day trip starting on Nov 25th returns on Nov 27th (25, 26, 27 = 3 days).
+        // Therefore, addDays = Math.max(0, days - 1).
+        const addDays = Math.max(0, days - 1);
+        const retDate = new Date(depDate.getTime() + (addDays * 24 * 60 * 60 * 1000));
         
         const year = retDate.getFullYear();
         const month = String(retDate.getMonth() + 1).padStart(2, '0');
@@ -694,11 +698,40 @@ function autoCalculateReturnDate() {
         retInput.value = `${year}-${month}-${day}T${hours}:${minutes}`;
         const note = document.getElementById('calcReturnNote');
         if (note) {
-            note.innerHTML = `<span class="text-success"><i class="fas fa-check-circle me-1"></i>Calculated (+${days} days)</span>`;
+            note.innerHTML = `<span class="text-success"><i class="fas fa-check-circle me-1"></i>${days} {{ __('Days Trip') }}</span>`;
         }
     } catch (e) {
         console.error(e);
     }
+}
+
+function onReturnDateChanged() {
+    const depInput = document.getElementById('depDateInput');
+    const retInput = document.getElementById('retDateInput');
+    const durationInput = document.getElementById('durationInput');
+    if (!depInput || !retInput || !durationInput || !depInput.value || !retInput.value) return;
+
+    try {
+        const depDate = new Date(depInput.value);
+        const retDate = new Date(retInput.value);
+        if (isNaN(depDate.getTime()) || isNaN(retDate.getTime())) return;
+
+        const diffMs = retDate.getTime() - depDate.getTime();
+        if (diffMs >= 0) {
+            const diffDays = Math.round(diffMs / (24 * 60 * 60 * 1000)) + 1;
+            if (diffDays >= 1 && diffDays <= 90) {
+                durationInput.value = diffDays;
+                syncDurationBadge(diffDays);
+                const durTrigger = document.getElementById('durationTrigger');
+                if (durTrigger) durTrigger.value = diffDays + ' Days';
+                const note = document.getElementById('calcReturnNote');
+                if (note) {
+                    note.innerHTML = `<span class="text-success"><i class="fas fa-check-circle me-1"></i>${diffDays} {{ __('Days Trip') }}</span>`;
+                }
+                autoUpdateTripTitle();
+            }
+        }
+    } catch(e) { console.error(e); }
 }
 
 function generateAutoTitle(force = false) {

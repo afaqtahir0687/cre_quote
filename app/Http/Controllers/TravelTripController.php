@@ -72,6 +72,11 @@ class TravelTripController extends Controller
      */
     public function create()
     {
+        if (!auth()->user()->isSuperAdmin() && !auth()->user()->isAdmin()) {
+            return redirect()->route('travel.trips.index')
+                ->with('error', __('Unauthorized action. Only Admin can create new trips or bus schedules.'));
+        }
+
         $shopId = current_shop_id() ?? auth()->user()->shop_id ?? 1;
         $tripCode = TravelTrip::generateTripCode($shopId);
 
@@ -89,6 +94,11 @@ class TravelTripController extends Controller
      */
     public function store(Request $request)
     {
+        if (!auth()->user()->isSuperAdmin() && !auth()->user()->isAdmin()) {
+            return redirect()->route('travel.trips.index')
+                ->with('error', __('Unauthorized action. Only Admin can create new trips or bus schedules.'));
+        }
+
         $shopId = current_shop_id() ?? auth()->user()->shop_id;
         if (!$shopId) {
             return redirect()->back()->with('error', __('Please switch to an active shop before creating a trip.'));
@@ -154,6 +164,12 @@ class TravelTripController extends Controller
             $validated['one_way_price'] = round((float)$validated['price_without_hotel'] * 0.5, 2);
         }
 
+        if (empty($validated['return_date']) && !empty($validated['departure_date']) && !empty($validated['duration_days'])) {
+            $dep = \Carbon\Carbon::parse($validated['departure_date']);
+            $addDays = max(0, ((int)$validated['duration_days']) - 1);
+            $validated['return_date'] = $dep->copy()->addDays($addDays);
+        }
+
         $trip = TravelTrip::create($validated);
 
         return redirect()->route('travel.trips.show', $trip->id)
@@ -182,6 +198,11 @@ class TravelTripController extends Controller
      */
     public function edit($id)
     {
+        if (!auth()->user()->isSuperAdmin() && !auth()->user()->isAdmin()) {
+            return redirect()->route('travel.trips.index')
+                ->with('error', __('Unauthorized action. Only Admin can edit trip configurations.'));
+        }
+
         $trip = TravelTrip::forCurrentShop()->findOrFail($id);
         $departureCities = TravelTrip::dynamicDepartureCities();
         $destinationCities = TravelTrip::dynamicDestinationCities();
@@ -196,6 +217,11 @@ class TravelTripController extends Controller
      */
     public function update(Request $request, $id)
     {
+        if (!auth()->user()->isSuperAdmin() && !auth()->user()->isAdmin()) {
+            return redirect()->route('travel.trips.index')
+                ->with('error', __('Unauthorized action. Only Admin can edit trip configurations.'));
+        }
+
         $trip = TravelTrip::forCurrentShop()->findOrFail($id);
 
         $validated = $request->validate([
@@ -250,6 +276,12 @@ class TravelTripController extends Controller
             $validated['one_way_price'] = round((float)$validated['price_without_hotel'] * 0.5, 2);
         }
 
+        if (empty($validated['return_date']) && !empty($validated['departure_date']) && !empty($validated['duration_days'])) {
+            $dep = \Carbon\Carbon::parse($validated['departure_date']);
+            $addDays = max(0, ((int)$validated['duration_days']) - 1);
+            $validated['return_date'] = $dep->copy()->addDays($addDays);
+        }
+
         $trip->update($validated);
 
         return redirect()->route('travel.trips.show', $trip->id)
@@ -282,6 +314,11 @@ class TravelTripController extends Controller
      */
     public function destroy($id)
     {
+        if (!auth()->user()->isSuperAdmin() && !auth()->user()->isAdmin()) {
+            return redirect()->route('travel.trips.index')
+                ->with('error', __('Unauthorized action. Only Admin can delete trips.'));
+        }
+
         $trip = TravelTrip::forCurrentShop()->findOrFail($id);
 
         if ($trip->bookedSeatsCount() > 0) {
