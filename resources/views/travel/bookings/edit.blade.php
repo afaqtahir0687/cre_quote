@@ -130,20 +130,6 @@
                     </div>
 
                     <div class="col-md-6">
-                        <label class="form-label fw-bold text-dark">{{ __('Payment Method *') }}</label>
-                        @php
-                            $curPaymentMethod = old('payment_method', $booking->payment_method ?? 'cash');
-                        @endphp
-                        <select name="payment_method" class="form-select @error('payment_method') is-invalid @enderror" required>
-                            <option value="cash" {{ in_array($curPaymentMethod, ['cash', 'Cash', 'نقدي']) ? 'selected' : '' }}>{{ __('Cash at Counter (نقدي)') }}</option>
-                            <option value="bank_transfer" {{ in_array($curPaymentMethod, ['bank_transfer', 'Bank Transfer', 'تحويل بنكي']) ? 'selected' : '' }}>{{ __('Bank Transfer (تحويل بنكي)') }}</option>
-                            <option value="card" {{ in_array($curPaymentMethod, ['card', 'credit_card', 'Credit Card', 'Credit / Debit Card', 'شبكة']) ? 'selected' : '' }}>{{ __('Credit / Debit Card (شبكة)') }}</option>
-                            <option value="online" {{ in_array($curPaymentMethod, ['online', 'online_pos', 'mada', 'Online Payment', 'إلكتروني']) ? 'selected' : '' }}>{{ __('Online Payment (إلكتروني)') }}</option>
-                        </select>
-                        @error('payment_method') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                    </div>
-
-                    <div class="col-md-6">
                         <label class="form-label fw-bold text-dark"><i class="fas fa-user-tag text-primary me-1"></i> {{ __('Salesman / Agent / البائع أو مسؤول الحجز') }}</label>
                         <input type="text" name="salesman_name" class="form-control" value="{{ old('salesman_name', $booking->effective_salesman) }}">
                     </div>
@@ -270,17 +256,33 @@
                         </span>
                     </div>
 
-                    <div class="mb-2">
-                        <div class="d-flex justify-content-between align-items-center mb-1">
-                            <label class="form-label fw-bold text-dark extra-small mb-0">{{ __('Paid Amount') }}</label>
-                            <div class="btn-group btn-group-sm" role="group">
-                                <button type="button" class="btn btn-xs btn-outline-secondary py-0 px-2" style="font-size: 0.70rem;" onclick="setPaidZero()">{{ __('0 / Unpaid') }}</button>
-                                <button type="button" class="btn btn-xs btn-outline-success py-0 px-2" style="font-size: 0.70rem;" onclick="setPaidFull()">{{ __('Full Paid') }}</button>
+                    <div class="row g-2 pt-2 border-top mb-2">
+                        <div class="col-md-6">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <label class="form-label fw-bold text-dark extra-small mb-0">{{ __('Paid Amount') }} *</label>
+                                <div class="btn-group btn-group-sm" role="group">
+                                    <button type="button" class="btn btn-xs btn-outline-secondary py-0 px-2" style="font-size: 0.70rem;" onclick="setPaidZero()">{{ __('0 / Unpaid') }}</button>
+                                    <button type="button" class="btn btn-xs btn-outline-success py-0 px-2" style="font-size: 0.70rem;" onclick="setPaidFull()">{{ __('Full Paid') }}</button>
+                                </div>
+                            </div>
+                            <div class="input-group">
+                                <span class="input-group-text bg-success-subtle text-success fw-bold">{{ currency_symbol() }}</span>
+                                <input type="number" step="0.01" min="0" name="paid_amount" id="paidAmount" class="form-control font-monospace fw-bold text-success" value="{{ old('paid_amount', $booking->paid_amount) }}" oninput="recalcTotals()">
                             </div>
                         </div>
-                        <div class="input-group">
-                            <span class="input-group-text bg-success-subtle text-success fw-bold">{{ currency_symbol() }}</span>
-                            <input type="number" step="0.01" name="paid_amount" id="paidAmount" class="form-control font-monospace" value="{{ old('paid_amount', $booking->paid_amount) }}" oninput="recalcTotals()">
+
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-dark extra-small mb-1">{{ __('Payment Method') }} *</label>
+                            @php
+                                $curPaymentMethod = old('payment_method', $booking->payment_method ?? 'cash');
+                            @endphp
+                            <select name="payment_method" class="form-select @error('payment_method') is-invalid @enderror" required>
+                                <option value="cash" {{ in_array($curPaymentMethod, ['cash', 'Cash', 'نقدي']) ? 'selected' : '' }}>{{ __('Cash at Counter (نقدي)') }}</option>
+                                <option value="bank_transfer" {{ in_array($curPaymentMethod, ['bank_transfer', 'Bank Transfer', 'تحويل بنكي']) ? 'selected' : '' }}>{{ __('Bank Transfer (تحويل بنكي)') }}</option>
+                                <option value="card" {{ in_array($curPaymentMethod, ['card', 'credit_card', 'Credit Card', 'Credit / Debit Card', 'شبكة']) ? 'selected' : '' }}>{{ __('Credit / Debit Card (شبكة)') }}</option>
+                                <option value="online" {{ in_array($curPaymentMethod, ['online', 'online_pos', 'mada', 'Online Payment', 'إلكتروني']) ? 'selected' : '' }}>{{ __('Online Payment (إلكتروني)') }}</option>
+                            </select>
+                            @error('payment_method') <div class="invalid-feedback">{{ $message }}</div> @enderror
                         </div>
                     </div>
 
