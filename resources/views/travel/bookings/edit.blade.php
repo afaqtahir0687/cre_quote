@@ -131,11 +131,14 @@
 
                     <div class="col-md-6">
                         <label class="form-label fw-bold text-dark">{{ __('Payment Method *') }}</label>
+                        @php
+                            $curPaymentMethod = old('payment_method', $booking->payment_method ?? 'cash');
+                        @endphp
                         <select name="payment_method" class="form-select @error('payment_method') is-invalid @enderror" required>
-                            <option value="cash" {{ old('payment_method', $booking->payment_method) === 'cash' ? 'selected' : '' }}>{{ __('Cash') }}</option>
-                            <option value="bank_transfer" {{ old('payment_method', $booking->payment_method) === 'bank_transfer' ? 'selected' : '' }}>{{ __('Bank Transfer') }}</option>
-                            <option value="credit_card" {{ old('payment_method', $booking->payment_method) === 'credit_card' ? 'selected' : '' }}>{{ __('Credit Card') }}</option>
-                            <option value="online_pos" {{ old('payment_method', $booking->payment_method) === 'online_pos' ? 'selected' : '' }}>{{ __('Mada / POS Machine') }}</option>
+                            <option value="cash" {{ in_array($curPaymentMethod, ['cash', 'Cash', 'نقدي']) ? 'selected' : '' }}>{{ __('Cash at Counter (نقدي)') }}</option>
+                            <option value="bank_transfer" {{ in_array($curPaymentMethod, ['bank_transfer', 'Bank Transfer', 'تحويل بنكي']) ? 'selected' : '' }}>{{ __('Bank Transfer (تحويل بنكي)') }}</option>
+                            <option value="card" {{ in_array($curPaymentMethod, ['card', 'credit_card', 'Credit Card', 'Credit / Debit Card', 'شبكة']) ? 'selected' : '' }}>{{ __('Credit / Debit Card (شبكة)') }}</option>
+                            <option value="online" {{ in_array($curPaymentMethod, ['online', 'online_pos', 'mada', 'Online Payment', 'إلكتروني']) ? 'selected' : '' }}>{{ __('Online Payment (إلكتروني)') }}</option>
                         </select>
                         @error('payment_method') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>

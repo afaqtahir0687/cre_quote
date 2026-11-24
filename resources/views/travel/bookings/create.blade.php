@@ -437,11 +437,14 @@
 
                         <div class="col-md-6">
                             <label class="form-label fw-bold text-dark small">{{ __('Payment Method') }} *</label>
+                            @php
+                                $curPaymentMethod = old('payment_method', 'cash');
+                            @endphp
                             <select name="payment_method" class="form-select" required>
-                                <option value="cash">{{ __('Cash at Counter (نقدي)') }}</option>
-                                <option value="bank_transfer">{{ __('Bank Transfer (تحويل بنكي)') }}</option>
-                                <option value="card">{{ __('Credit / Debit Card (شبكة)') }}</option>
-                                <option value="online">{{ __('Online Payment (إلكتروني)') }}</option>
+                                <option value="cash" {{ in_array($curPaymentMethod, ['cash', 'Cash', 'نقدي']) ? 'selected' : '' }}>{{ __('Cash at Counter (نقدي)') }}</option>
+                                <option value="bank_transfer" {{ in_array($curPaymentMethod, ['bank_transfer', 'Bank Transfer', 'تحويل بنكي']) ? 'selected' : '' }}>{{ __('Bank Transfer (تحويل بنكي)') }}</option>
+                                <option value="card" {{ in_array($curPaymentMethod, ['card', 'credit_card', 'Credit Card', 'Credit / Debit Card', 'شبكة']) ? 'selected' : '' }}>{{ __('Credit / Debit Card (شبكة)') }}</option>
+                                <option value="online" {{ in_array($curPaymentMethod, ['online', 'online_pos', 'mada', 'Online Payment', 'إلكتروني']) ? 'selected' : '' }}>{{ __('Online Payment (إلكتروني)') }}</option>
                             </select>
                         </div>
                     </div>

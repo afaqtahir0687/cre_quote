@@ -607,6 +607,16 @@ class TravelBookingController extends Controller
 
         $booking->update($validated);
 
+        if ($booking->invoice) {
+            $booking->invoice->update([
+                'total' => $totalAmount,
+                'paid_amount' => $paidAmount,
+                'balance_due' => $balanceDue,
+                'status' => $paymentStatus === 'paid' ? 'Paid' : ($paidAmount > 0 ? 'Partially Paid' : 'Unpaid'),
+                'payment_method' => $validated['payment_method'],
+            ]);
+        }
+
         return redirect()->route('travel.bookings.show', $booking->id)
             ->with('success', __('Booking updated successfully!'));
     }
