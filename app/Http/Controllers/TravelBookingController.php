@@ -19,20 +19,56 @@ class TravelBookingController extends Controller
     }
 
     /**
+     * Check if current user is an admin (super_admin or admin).
+     */
+    private function isAdminUser(): bool
+    {
+        $user = auth()->user();
+        return $user && ($user->isSuperAdmin() || $user->isAdmin());
+    }
+
+    /**
+     * Scope travel bookings query to the current employee if user is not an admin.
+     */
+    private function applyEmployeeScope($query)
+    {
+        if ($this->isAdminUser()) {
+            return $query;
+        }
+
+        $user = auth()->user();
+        $currentEmp = \App\Models\Employee::where('user_id', $user->id)->first();
+
+        return $query->where(function ($q) use ($user, $currentEmp) {
+            $q->where('created_by', $user->id);
+            if ($currentEmp) {
+                $q->orWhere('employee_id', $currentEmp->id);
+            }
+        });
+    }
+
+    /**
      * Display a listing of bookings.
      */
     public function index(Request $request)
     {
-        $isEmployee = auth()->user()->role === 'employee';
+        $user = auth()->user();
+        $isAdmin = $this->isAdminUser();
+        $isEmployee = !$isAdmin;
+        $currentEmp = \App\Models\Employee::where('user_id', $user->id)->first();
+
         $query = TravelBooking::forCurrentShop()
             ->with(['trip', 'customer', 'shop', 'employee'])
             ->latest('id');
+
+        // Employees only see their own bookings
+        $query = $this->applyEmployeeScope($query);
 
         if ($request->filled('trip_id')) {
             $query->where('travel_trip_id', $request->trip_id);
         }
 
-        if ($request->filled('employee_id')) {
+        if ($isAdmin && $request->filled('employee_id')) {
             if ($request->employee_id === 'admin') {
                 $query->whereNull('employee_id');
             } else {
@@ -40,7 +76,7 @@ class TravelBookingController extends Controller
             }
         }
 
-        if ($request->filled('branch_id')) {
+        if ($isAdmin && $request->filled('branch_id')) {
             $query->where('shop_id', $request->branch_id);
         }
 
@@ -64,18 +100,22 @@ class TravelBookingController extends Controller
 
         $bookings = $query->paginate(15)->withQueryString();
         $trips = TravelTrip::forCurrentShop()->latest('departure_date')->get();
-        $employees = \App\Models\Employee::orderBy('name')->get();
+        $employees = $isAdmin ? \App\Models\Employee::orderBy('name')->get() : collect();
         $currentShop = current_shop();
-        $branches = ($currentShop && !$currentShop->parent_shop_id) ? $currentShop->branches : collect();
+        $branches = ($isAdmin && $currentShop && !$currentShop->parent_shop_id) ? $currentShop->branches : collect();
+
+        // Stats calculation: admins see overall stats, employees see ONLY their own stats
+        $statsBase = TravelBooking::forCurrentShop();
+        $statsBase = $this->applyEmployeeScope($statsBase);
 
         $stats = [
-            'total_bookings' => TravelBooking::forCurrentShop()->count(),
-            'confirmed_bookings' => TravelBooking::forCurrentShop()->where('booking_status', 'confirmed')->count(),
-            'paid_amount' => TravelBooking::forCurrentShop()->where('booking_status', 'confirmed')->sum('paid_amount'),
-            'balance_due' => TravelBooking::forCurrentShop()->where('booking_status', 'confirmed')->sum('balance_due'),
+            'total_bookings' => (clone $statsBase)->count(),
+            'confirmed_bookings' => (clone $statsBase)->where('booking_status', 'confirmed')->count(),
+            'paid_amount' => (clone $statsBase)->where('booking_status', 'confirmed')->sum('paid_amount'),
+            'balance_due' => (clone $statsBase)->where('booking_status', 'confirmed')->sum('balance_due'),
         ];
 
-        return view('travel.bookings.index', compact('bookings', 'trips', 'stats', 'branches', 'employees', 'isEmployee'));
+        return view('travel.bookings.index', compact('bookings', 'trips', 'stats', 'branches', 'employees', 'isEmployee', 'isAdmin', 'currentEmp'));
     }
 
     /**
@@ -153,8 +193,11 @@ class TravelBookingController extends Controller
             'package_type' => 'required|in:with_hotel,without_hotel',
             'hotel_name' => 'nullable|string|max:255',
             'hotel_address' => 'nullable|string|max:255',
+            'hotel_city' => 'nullable|string|max:100',
             'room_type' => 'nullable|string|max:50',
-            'nights_count' => 'nullable|integer|min:1',
+            'nights_count' => 'nullable|integer|min:0',
+            'makkah_nights' => 'nullable|integer|min:0',
+            'madinah_nights' => 'nullable|integer|min:0',
             'travel_fare' => 'required|numeric|min:0',
             'hotel_expense' => 'nullable|numeric|min:0',
             'extra_charges' => 'nullable|numeric|min:0',
@@ -348,6 +391,23 @@ class TravelBookingController extends Controller
             $createdBookings = [];
             $accumFare = 0; $accumHotel = 0; $accumExtra = 0; $accumDisc = 0; $accumTax = 0; $accumTotal = 0; $accumPaid = 0; $accumBal = 0;
 
+            $mkNights = isset($validated['makkah_nights']) ? (int)$validated['makkah_nights'] : 0;
+            $mdNights = isset($validated['madinah_nights']) ? (int)$validated['madinah_nights'] : 0;
+            $totNights = isset($validated['nights_count']) ? (int)$validated['nights_count'] : 0;
+            if ($mkNights > 0 || $mdNights > 0) {
+                $totNights = max($totNights, ($mkNights + $mdNights));
+            }
+            $hCity = $validated['hotel_city'] ?? null;
+            if ($mkNights > 0 && $mdNights > 0) {
+                $hCity = 'Makkah & Madinah';
+            } elseif ($mdNights > 0 && $mkNights === 0) {
+                $hCity = 'Madinah';
+            } elseif ($mkNights > 0 && $mdNights === 0) {
+                $hCity = 'Makkah';
+            } else {
+                $hCity = $hCity ?: 'Makkah';
+            }
+
             foreach ($seatNumbers as $idx => $sNum) {
                 $isLast = ($idx === $seatsCount - 1);
 
@@ -413,8 +473,11 @@ class TravelBookingController extends Controller
                     'package_type' => $validated['package_type'],
                     'hotel_name' => $validated['package_type'] === 'with_hotel' ? (($validated['hotel_name'] ?? null) ?: $trip->hotel_name) : null,
                     'hotel_address' => $validated['package_type'] === 'with_hotel' ? (($validated['hotel_address'] ?? null) ?: $trip->hotel_address) : null,
-                    'room_type' => $validated['package_type'] === 'with_hotel' ? (($validated['room_type'] ?? null) ?: 'quad_sharing') : null,
-                    'nights_count' => $validated['package_type'] === 'with_hotel' ? (($validated['nights_count'] ?? null) ?: $trip->duration_days) : null,
+                    'hotel_city' => $validated['package_type'] === 'with_hotel' ? $hCity : null,
+                    'room_type' => $validated['package_type'] === 'with_hotel' ? (($validated['room_type'] ?? null) ?: 'share_room') : null,
+                    'nights_count' => $validated['package_type'] === 'with_hotel' ? $totNights : null,
+                    'makkah_nights' => $validated['package_type'] === 'with_hotel' ? $mkNights : null,
+                    'madinah_nights' => $validated['package_type'] === 'with_hotel' ? $mdNights : null,
                     'travel_fare' => $sFare,
                     'hotel_expense' => $sHotel,
                     'extra_charges' => $sExtra,
@@ -453,8 +516,7 @@ class TravelBookingController extends Controller
      */
     public function show($id)
     {
-        $booking = TravelBooking::forCurrentShop()
-            ->with(['trip', 'customer', 'invoice'])
+        $booking = $this->applyEmployeeScope(TravelBooking::forCurrentShop()->with(['trip', 'customer', 'invoice']))
             ->findOrFail($id);
 
         $groupBookings = TravelBooking::where('booking_reference', $booking->booking_reference)
@@ -475,8 +537,7 @@ class TravelBookingController extends Controller
             app()->setLocale(request('lang'));
         }
 
-        $booking = TravelBooking::forCurrentShop()
-            ->with(['trip', 'customer', 'shop.setting', 'invoice'])
+        $booking = $this->applyEmployeeScope(TravelBooking::forCurrentShop()->with(['trip', 'customer', 'shop.setting', 'invoice']))
             ->findOrFail($id);
 
         $groupBookings = TravelBooking::where('booking_reference', $booking->booking_reference)
@@ -497,8 +558,7 @@ class TravelBookingController extends Controller
             app()->setLocale(request('lang'));
         }
 
-        $booking = TravelBooking::forCurrentShop()
-            ->with(['trip', 'customer', 'shop.setting', 'invoice'])
+        $booking = $this->applyEmployeeScope(TravelBooking::forCurrentShop()->with(['trip', 'customer', 'shop.setting', 'invoice']))
             ->findOrFail($id);
 
         $groupBookings = TravelBooking::where('booking_reference', $booking->booking_reference)
@@ -537,7 +597,7 @@ class TravelBookingController extends Controller
      */
     public function edit($id)
     {
-        $booking = TravelBooking::forCurrentShop()->with('trip')->findOrFail($id);
+        $booking = $this->applyEmployeeScope(TravelBooking::forCurrentShop()->with('trip'))->findOrFail($id);
         $trips = TravelTrip::forCurrentShop()->get();
         $employees = \App\Models\Employee::orderBy('name')->get();
 
@@ -551,7 +611,7 @@ class TravelBookingController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $booking = TravelBooking::forCurrentShop()->findOrFail($id);
+        $booking = $this->applyEmployeeScope(TravelBooking::forCurrentShop())->findOrFail($id);
 
         $validated = $request->validate([
             'seat_number' => 'required|integer|min:1|max:100',
@@ -571,8 +631,11 @@ class TravelBookingController extends Controller
             'package_type' => 'required|in:with_hotel,without_hotel',
             'hotel_name' => 'nullable|string|max:255',
             'hotel_address' => 'nullable|string|max:255',
+            'hotel_city' => 'nullable|string|max:100',
             'room_type' => 'nullable|string|max:50',
-            'nights_count' => 'nullable|integer|min:1',
+            'nights_count' => 'nullable|integer|min:0',
+            'makkah_nights' => 'nullable|integer|min:0',
+            'madinah_nights' => 'nullable|integer|min:0',
             'travel_fare' => 'required|numeric|min:0',
             'hotel_expense' => 'nullable|numeric|min:0',
             'extra_charges' => 'nullable|numeric|min:0',
@@ -648,12 +711,35 @@ class TravelBookingController extends Controller
         $validated['payment_status'] = $paymentStatus;
 
         if ($validated['package_type'] === 'with_hotel') {
-            $validated['nights_count'] = $validated['nights_count'] ?? $booking->nights_count ?? $booking->trip?->duration_days;
+            $mkNights = isset($validated['makkah_nights']) ? (int)$validated['makkah_nights'] : ($booking->makkah_nights ?? 0);
+            $mdNights = isset($validated['madinah_nights']) ? (int)$validated['madinah_nights'] : ($booking->madinah_nights ?? 0);
+            $totNights = isset($validated['nights_count']) ? (int)$validated['nights_count'] : ($booking->nights_count ?? 0);
+            if ($mkNights > 0 || $mdNights > 0) {
+                $totNights = max($totNights, ($mkNights + $mdNights));
+            }
+            $hCity = $validated['hotel_city'] ?? $booking->hotel_city ?? null;
+            if ($mkNights > 0 && $mdNights > 0) {
+                $hCity = 'Makkah & Madinah';
+            } elseif ($mdNights > 0 && $mkNights === 0) {
+                $hCity = 'Madinah';
+            } elseif ($mkNights > 0 && $mdNights === 0) {
+                $hCity = 'Makkah';
+            } else {
+                $hCity = $hCity ?: 'Makkah';
+            }
+            $validated['nights_count'] = $totNights;
+            $validated['makkah_nights'] = $mkNights;
+            $validated['madinah_nights'] = $mdNights;
+            $validated['hotel_city'] = $hCity;
             $validated['hotel_address'] = $validated['hotel_address'] ?? $booking->hotel_address ?? $booking->trip?->hotel_address;
+            $validated['room_type'] = $validated['room_type'] ?? $booking->room_type ?? 'share_room';
         } else {
             $validated['nights_count'] = null;
+            $validated['makkah_nights'] = null;
+            $validated['madinah_nights'] = null;
             $validated['hotel_name'] = null;
             $validated['hotel_address'] = null;
+            $validated['hotel_city'] = null;
             $validated['room_type'] = null;
         }
 
@@ -678,14 +764,22 @@ class TravelBookingController extends Controller
      */
     public function cancel($id)
     {
-        $booking = TravelBooking::forCurrentShop()->findOrFail($id);
+        $booking = $this->applyEmployeeScope(TravelBooking::forCurrentShop())->findOrFail($id);
         $booking->update(['booking_status' => 'cancelled']);
 
-        return redirect()->back()
-            ->with('success', __('Booking :ref cancelled. Seat #:seat is now available for other passengers.', [
-                'ref' => $booking->booking_reference,
-                'seat' => $booking->seat_number,
-            ]));
+        $msg = __('Booking :ref cancelled. Seat #:seat is now available for other passengers.', [
+            'ref' => $booking->booking_reference,
+            'seat' => $booking->seat_number,
+        ]);
+
+        if (request()->ajax() || request()->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => $msg,
+            ]);
+        }
+
+        return redirect()->back()->with('success', $msg);
     }
 
     /**
@@ -693,7 +787,7 @@ class TravelBookingController extends Controller
      */
     public function destroy($id)
     {
-        $booking = TravelBooking::forCurrentShop()->findOrFail($id);
+        $booking = $this->applyEmployeeScope(TravelBooking::forCurrentShop())->findOrFail($id);
         $booking->delete();
 
         return redirect()->route('travel.bookings.index')

@@ -296,23 +296,39 @@
 
             @if($booking->package_type === 'with_hotel')
                 <div class="row g-3">
-                    <div class="col-md-5">
+                    <div class="col-md-3">
                         <label class="form-label text-muted extra-small uppercase fw-bold mb-1">{{ __('Hotel Name') }}</label>
                         <div class="fw-bold text-dark fs-6">{{ tdb($booking->effective_hotel_name ?: __('Designated Hotel')) }}</div>
                     </div>
-                    <div class="col-md-4">
-                        <label class="form-label text-muted extra-small uppercase fw-bold mb-1">{{ __('Room Sharing Category') }}</label>
+                    <div class="col-md-3">
+                        <label class="form-label text-muted extra-small uppercase fw-bold mb-1">{{ __('Room Category / Type') }}</label>
                         <div>
                             {!! $booking->roomTypeBadge() !!}
                         </div>
                     </div>
                     <div class="col-md-3">
-                        <label class="form-label text-muted extra-small uppercase fw-bold mb-1">{{ __('Stay Duration') }}</label>
-                        <div class="fw-bold text-dark fs-6">{{ $booking->nights_count ?: ($booking->trip?->duration_days ?: 10) }} {{ __('Nights') }}</div>
+                        <label class="form-label text-muted extra-small uppercase fw-bold mb-1">{{ __('Extra Hotel Nights') }}</label>
+                        <div class="fw-bold text-dark fs-6">
+                            {{ $booking->nights_count ?? 0 }} {{ __('Nights') }}
+                            @if(($booking->makkah_nights ?? 0) > 0 || ($booking->madinah_nights ?? 0) > 0)
+                                <div class="small text-muted mt-1">
+                                    @if(($booking->makkah_nights ?? 0) > 0)
+                                        <span class="badge bg-success-subtle text-success me-1"><i class="fas fa-kaaba me-1"></i>{{ $booking->makkah_nights }} {{ __('Makkah') }}</span>
+                                    @endif
+                                    @if(($booking->madinah_nights ?? 0) > 0)
+                                        <span class="badge bg-info-subtle text-info"><i class="fas fa-mosque me-1"></i>{{ $booking->madinah_nights }} {{ __('Madinah') }}</span>
+                                    @endif
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label text-muted extra-small uppercase fw-bold mb-1">{{ __('Hotel Location / City') }}</label>
+                        <div class="fw-bold text-dark fs-6"><i class="fas fa-map-marker-alt text-danger me-1"></i>{{ $booking->hotelCityLabel() }}</div>
                     </div>
                     @if($booking->effective_hotel_address)
                         <div class="col-12 mt-2">
-                            <label class="form-label text-muted extra-small uppercase fw-bold mb-1"><i class="fas fa-map-marker-alt text-danger me-1"></i> {{ __('Hotel Address / Location') }}</label>
+                            <label class="form-label text-muted extra-small uppercase fw-bold mb-1"><i class="fas fa-location-arrow text-primary me-1"></i> {{ __('Hotel Address / Details') }}</label>
                             <div class="p-2 rounded bg-light border text-dark small">{{ tdb($booking->effective_hotel_address) }}</div>
                         </div>
                     @endif

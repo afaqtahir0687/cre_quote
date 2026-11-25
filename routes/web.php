@@ -23,6 +23,7 @@ use App\Http\Controllers\SuperAdmin\UserController as SuperAdminUserController;
 use App\Http\Controllers\SuperAdmin\SubscriptionController as SuperAdminSubscriptionController;
 use App\Http\Controllers\WebsiteController;
 use App\Http\Controllers\ServiceController;
+use App\Http\Controllers\ExpenseController;
 
 Route::get('/', [WebsiteController::class, 'index'])->name('home');
 Route::get('/services', [WebsiteController::class, 'services'])->name('website.services');
@@ -103,6 +104,11 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     
     Route::resource('employees', EmployeeController::class)->middleware('admin');
+    
+    // Daily Office Expenses Management (Multi-Shop & Office-Scoped)
+    Route::get('expenses/export-pdf', [ExpenseController::class, 'exportPdf'])->name('expenses.pdf');
+    Route::get('expenses/{expense}/pdf', [ExpenseController::class, 'singlePdf'])->name('expenses.single_pdf');
+    Route::resource('expenses', ExpenseController::class);
     
     Route::resource('customers', CustomerController::class);
     Route::post('customers/ajax-store', [CustomerController::class, 'ajaxStore'])->name('customers.ajax_store');

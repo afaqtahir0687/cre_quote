@@ -190,6 +190,29 @@
                     </a>
                 </div>
             </div>
+
+            {{-- Daily Office Expenses inside Umrah & Travel Agency --}}
+            @php $isExpenseActive = request()->routeIs('expenses.*'); @endphp
+            <div class="menu-item-wrapper">
+                <a href="#menuExpenses" class="sidebar-link sidebar-parent {{ $isExpenseActive ? 'active' : 'collapsed' }}"
+                   data-bs-toggle="collapse" role="button" aria-expanded="{{ $isExpenseActive ? 'true' : 'false' }}" aria-controls="menuExpenses">
+                    <div class="sidebar-parent-label">
+                        <i class="fas fa-wallet text-warning"></i>
+                        <span>{{ __('Daily Office Expenses') }}</span>
+                    </div>
+                    <i class="fas fa-chevron-down sidebar-arrow"></i>
+                </a>
+                <div class="collapse sidebar-submenu {{ $isExpenseActive ? 'show' : '' }}" id="menuExpenses">
+                    <a href="{{ route('expenses.index') }}" class="submenu-link {{ request()->routeIs('expenses.index') ? 'active' : '' }}">
+                        <span class="submenu-bullet"></span>
+                        <span>{{ __('Expense List') }}</span>
+                    </a>
+                    <a href="{{ route('expenses.create') }}" class="submenu-link {{ request()->routeIs('expenses.create') ? 'active' : '' }}">
+                        <span class="submenu-bullet"></span>
+                        <span>{{ __('Record New Expense') }}</span>
+                    </a>
+                </div>
+            </div>
         @endif
 
         @php

@@ -275,6 +275,18 @@
             line-height: 1.25;
         }
 
+        /* Special Requests / Notes */
+        .notes-box {
+            margin-top: 3px;
+            background-color: #eff6ff;
+            border: 1px solid #bfdbfe;
+            padding: 3px 6px;
+            font-size: 7pt;
+            color: #1e40af;
+            line-height: 1.25;
+            border-radius: 2px;
+        }
+
         /* Conductor Tear Stub */
         .cut-line {
             border-top: 1.5px dashed #94a3b8;
@@ -348,6 +360,8 @@
             .fare-table th,
             .fare-total-row td,
             .rules-box,
+            .notes-box,
+            .trip-overview-box,
             .stub-box,
             .stub-seat-box {
                 -webkit-print-color-adjust: exact !important;
@@ -595,8 +609,12 @@
                                 @if($booking->package_type === 'with_hotel')
                                     <div style="font-size: 7.5pt; font-weight: bold; color: #065f46; margin-top: 1px;">
                                         <strong>{{ __('Hotel / الفندق') }}:</strong> {{ tdb($booking->effective_hotel_name ?: __('Hotel Accommodation')) }}
-                                        <span style="font-weight: normal; font-size: 6.8pt; color: #334155;">({{ $booking->roomTypeLabel() }})</span>
-                                        @if($booking->nights_count) - {{ $booking->nights_count }} {{ __('Nights') }} @endif
+                                        &bull; <strong style="color: #b45309;">{{ __('Room / الغرفة') }}:</strong> {{ $booking->roomTypeLabel() }}
+                                        @if($booking->hotelStaySummary())
+                                            &bull; <strong style="color: #0284c7;">{{ __('Stay / الإقامة') }}:</strong> {{ $booking->hotelStaySummary() }}
+                                        @elseif($booking->hotel_city)
+                                            &bull; <strong style="color: #0284c7;">{{ __('Location / المدينة') }}:</strong> {{ $booking->hotelCityLabel() }}
+                                        @endif
                                     </div>
                                     @if($booking->effective_hotel_address)
                                         <div style="font-size: 6.5pt; color: #475569; margin-top: 1px;">
@@ -715,6 +733,21 @@
             3. {{ __('Baggage limit: 1 standard piece (max 25kg) + 1 hand luggage.') }}
             4. {{ __('Madinah historical Ziyarat tour is optional with separate charges of SAR 10 per passenger.') }}
         </div>
+
+        @php
+            $allNotes = collect(isset($groupBookings) && $groupBookings->isNotEmpty() ? $groupBookings : [$booking])
+                ->pluck('notes')
+                ->filter()
+                ->unique()
+                ->values();
+        @endphp
+        @if($allNotes->isNotEmpty())
+            <!-- Special Requests / Notes -->
+            <div class="notes-box" style="border-{{ $isAr ? 'right' : 'left' }}: 3px solid #2563eb;">
+                <strong style="color: #1e3a8a;"><i class="fas fa-clipboard-list me-1"></i>{{ __('Special Requests / Notes') }} ({{ __('طلبات خاصة / ملاحظات') }}):</strong>
+                <span>{{ $allNotes->implode(' | ') }}</span>
+            </div>
+        @endif
 
         @php
             $tripConditions = $trip?->description ?: \App\Models\TravelTrip::defaultConditions();

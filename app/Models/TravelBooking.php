@@ -33,8 +33,11 @@ class TravelBooking extends Model
         'package_type',
         'hotel_name',
         'hotel_address',
+        'hotel_city',
         'room_type',
         'nights_count',
+        'makkah_nights',
+        'madinah_nights',
         'travel_fare',
         'hotel_expense',
         'extra_charges',
@@ -54,6 +57,8 @@ class TravelBooking extends Model
     protected $casts = [
         'seat_number' => 'integer',
         'nights_count' => 'integer',
+        'makkah_nights' => 'integer',
+        'madinah_nights' => 'integer',
         'travel_fare' => 'decimal:2',
         'hotel_expense' => 'decimal:2',
         'extra_charges' => 'decimal:2',
@@ -278,63 +283,79 @@ class TravelBooking extends Model
     /**
      * Standard Room Types and their attributes.
      */
+    /**
+     * Standard Room categories for Travel & Umrah Hotel Accommodation.
+     * 1- Share Room (غرفة مشتركة)
+     * 2- Private Room (غرفة خاصة)
+     * 3- Bridal Room (غرفة عروسين / جناح العرسان)
+     */
     public static function roomTypes(): array
     {
         return [
-            // Standard / Sharing Rooms
-            'quad_sharing' => [
-                'label' => __('Quad Sharing (رباعي - 4 Beds)'),
+            'share_room' => [
+                'label' => __('Share Room (غرفة مشتركة)'),
                 'category' => 'sharing',
                 'multiplier' => 1.0,
                 'surcharge' => 0,
             ],
-            'triple_sharing' => [
-                'label' => __('Triple Sharing (ثلاثي - 3 Beds)'),
-                'category' => 'sharing',
-                'multiplier' => 1.25,
-                'surcharge' => 150,
-            ],
-            'double_sharing' => [
-                'label' => __('Double Sharing (ثنائي - 2 Beds)'),
-                'category' => 'sharing',
-                'multiplier' => 1.5,
-                'surcharge' => 300,
-            ],
-
-            // Private / Personal Rooms
-            'single_private' => [
-                'label' => __('Personal / Single Private Room (شخصي / مفرد)'),
-                'category' => 'private',
-                'multiplier' => 2.0,
-                'surcharge' => 600,
-            ],
             'private_room' => [
-                'label' => __('Private Family Room (غرفة عائلية خاصة)'),
+                'label' => __('Private Room (غرفة خاصة)'),
                 'category' => 'private',
-                'multiplier' => 2.2,
-                'surcharge' => 700,
+                'multiplier' => 1.0,
+                'surcharge' => 0,
             ],
-
-            // Luxury & VIP Rooms
-            'luxury_haram_view' => [
-                'label' => __('Luxury Haram View Room (إطلالة الحرم فاخرة)'),
-                'category' => 'luxury',
-                'multiplier' => 2.5,
-                'surcharge' => 1000,
-            ],
-            'executive_suite' => [
-                'label' => __('Executive Luxury Suite (جناح رئاسي / تنفيذي فاخر)'),
-                'category' => 'luxury',
-                'multiplier' => 3.0,
-                'surcharge' => 1500,
-            ],
-            'custom' => [
-                'label' => __('Custom Room / Rate (غرفة مخصصة / سعر يدوي)'),
-                'category' => 'custom',
+            'bridal_room' => [
+                'label' => __('Bridal Room (غرفة عروسين / جناح العرسان)'),
+                'category' => 'bridal',
                 'multiplier' => 1.0,
                 'surcharge' => 0,
             ],
         ];
+    }
+
+    /**
+     * Standard Hotel cities / locations.
+     */
+    public static function hotelCities(): array
+    {
+        return [
+            'Makkah' => __('Makkah Al-Mukarramah (مكة المكرمة)'),
+            'Madinah' => __('Madinah Al-Munawwarah (المدينة المنورة)'),
+            'Makkah & Madinah' => __('Both Holy Cities (مكة المكرمة والمدينة المنورة)'),
+        ];
+    }
+
+    /**
+     * User-friendly hotel city label.
+     */
+    public function hotelCityLabel(): string
+    {
+        $cities = self::hotelCities();
+        return $cities[$this->hotel_city] ?? ($this->hotel_city ?: '—');
+    }
+
+    /**
+     * Human-readable hotel nights and city stay distribution.
+     * e.g. "5 Nights (3 Makkah + 2 Madinah)" or "3 Nights in Makkah"
+     */
+    public function hotelStaySummary(): string
+    {
+        $mk = (int) ($this->makkah_nights ?? 0);
+        $md = (int) ($this->madinah_nights ?? 0);
+        $total = (int) ($this->nights_count ?? 0);
+
+        if ($mk > 0 && $md > 0) {
+            return "{$total} " . __('Nights') . " ({$mk} " . __('Makkah') . " + {$md} " . __('Madinah') . ")";
+        } elseif ($mk > 0) {
+            return "{$mk} " . __('Nights') . " (" . __('Makkah') . ")";
+        } elseif ($md > 0) {
+            return "{$md} " . __('Nights') . " (" . __('Madinah') . ")";
+        } elseif ($total > 0) {
+            $city = $this->hotel_city ? ($this->hotelCities()[$this->hotel_city] ?? $this->hotel_city) : '';
+            return $city ? "{$total} " . __('Nights') . " ({$city})" : "{$total} " . __('Nights');
+        }
+
+        return $this->hotelCityLabel() ?: '—';
     }
 
     /**
@@ -343,7 +364,15 @@ class TravelBooking extends Model
     public function roomTypeLabel(): string
     {
         $types = self::roomTypes();
-        return $types[$this->room_type]['label'] ?? ucwords(str_replace('_', ' ', $this->room_type ?: 'quad_sharing'));
+        if (isset($types[$this->room_type])) {
+            return $types[$this->room_type]['label'];
+        }
+        return match($this->room_type) {
+            'quad_sharing', 'triple_sharing', 'double_sharing' => __('Share Room (غرفة مشتركة)'),
+            'single_private' => __('Private Room (غرفة خاصة)'),
+            'bridal_room' => __('Bridal Room (غرفة عروسين / جناح العرسان)'),
+            default => ucwords(str_replace('_', ' ', $this->room_type ?: 'share_room')),
+        };
     }
 
     /**
@@ -351,18 +380,15 @@ class TravelBooking extends Model
      */
     public function roomTypeBadge(): string
     {
-        $rt = $this->room_type ?: 'quad_sharing';
+        $rt = $this->room_type ?: 'share_room';
         $label = $this->roomTypeLabel();
-        if (in_array($rt, ['luxury_haram_view', 'executive_suite'])) {
-            return '<span class="badge bg-warning text-dark border border-warning-subtle fw-bold"><i class="fas fa-crown me-1 text-dark"></i>' . $label . '</span>';
+        if ($rt === 'bridal_room') {
+            return '<span class="badge bg-warning text-dark border border-warning-subtle fw-bold"><i class="fas fa-gem me-1 text-danger"></i>' . $label . '</span>';
         }
-        if (in_array($rt, ['single_private', 'private_room'])) {
+        if (in_array($rt, ['private_room', 'single_private'])) {
             return '<span class="badge bg-primary text-white fw-bold"><i class="fas fa-user-shield me-1"></i>' . $label . '</span>';
         }
-        if ($rt === 'custom') {
-            return '<span class="badge bg-secondary text-white fw-bold"><i class="fas fa-edit me-1"></i>' . $label . '</span>';
-        }
-        return '<span class="badge bg-light text-dark border fw-bold"><i class="fas fa-bed me-1 text-muted"></i>' . $label . '</span>';
+        return '<span class="badge bg-light text-primary border fw-bold"><i class="fas fa-users me-1"></i>' . $label . '</span>';
     }
 
     /**

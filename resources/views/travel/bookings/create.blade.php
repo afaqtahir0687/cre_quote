@@ -107,23 +107,113 @@
         <!-- Left: Trip Selection & Interactive Visual Bus Seat Map -->
         <div class="col-xl-5 col-lg-6">
             <x-card :title="__('1. Select Trip & Choose Seat Number')">
+                <!-- Trip Departure Date Filter & Calendar Control -->
+                <div class="p-2 mb-2 bg-white rounded-3 border">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <label for="tripDepartureDateFilter" class="form-label fw-bold text-dark small mb-0">
+                            <i class="fas fa-calendar-alt text-primary me-1"></i> {{ __('Filter / Select Departure Date (تاريخ المغادرة)') }}
+                        </label>
+                        <span class="badge bg-light text-muted border extra-small" id="tripsCountBadge">
+                            {{ count($trips) }} {{ __('Available Trips') }}
+                        </span>
+                    </div>
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text bg-light text-primary border-end-0"><i class="fas fa-calendar-day"></i></span>
+                        <input type="date" id="tripDepartureDateFilter" class="form-control" 
+                               value="{{ $selectedTrip && $selectedTrip->departure_date ? $selectedTrip->departure_date->format('Y-m-d') : '' }}"
+                               placeholder="YYYY-MM-DD" title="{{ __('Pick a departure date to filter trips') }}">
+                        <button type="button" class="btn btn-outline-secondary btn-sm" id="clearTripDateFilterBtn" title="{{ __('Show all scheduled trips') }}">
+                            <i class="fas fa-calendar-check me-1"></i> {{ __('All Dates') }}
+                        </button>
+                    </div>
+                    <div id="noTripsForDateAlert" class="extra-small text-danger mt-1" style="display: none;">
+                        <i class="fas fa-info-circle me-1"></i> {{ __('No trips scheduled on this date. Showing all available trips.') }}
+                    </div>
+                </div>
+
                 <div class="mb-3">
-                    <label class="form-label fw-bold text-dark">{{ __('Scheduled Trip / Route *') }}</label>
+                    <label class="form-label fw-bold text-dark small">{{ __('Scheduled Trip / Route *') }}</label>
                     <select name="travel_trip_id" id="tripSelect" class="form-select @error('travel_trip_id') is-invalid @enderror" required onchange="onTripSelectChanged(this.value)">
                         @foreach($trips as $t)
+                            @php
+                                $depDateFormatted = $t->departure_date ? $t->departure_date->format('d M Y (h:i A)') : __('No Date');
+                                $depDateYmd = $t->departure_date ? $t->departure_date->format('Y-m-d') : '';
+                                $retDateFormatted = $t->return_date ? $t->return_date->format('d M Y (h:i A)') : __('No Date');
+                                $freeSeats = $t->availableSeatsCount();
+                            @endphp
                             <option value="{{ $t->id }}" 
                                     data-seats="{{ $t->total_seats }}" 
+                                    data-available-seats="{{ $freeSeats }}"
                                     data-fare-no-hotel="{{ $t->price_without_hotel }}"
                                     data-fare-with-hotel="{{ $t->price_with_hotel }}"
                                     data-hotel="{{ $t->hotel_name }}"
                                     data-hotel-address="{{ $t->hotel_address }}"
                                     data-duration="{{ $t->duration_days }}"
+                                    data-departure-date="{{ $depDateYmd }}"
+                                    data-departure-time="{{ $t->departure_date ? $t->departure_date->format('h:i A') : '' }}"
+                                    data-departure-datetime="{{ $depDateFormatted }}"
+                                    data-return-datetime="{{ $retDateFormatted }}"
+                                    data-trip-code="{{ $t->trip_code }}"
+                                    data-trip-title="{{ tdb($t->title) }}"
+                                    data-departure-city="{{ tdb($t->departure_city) }}"
+                                    data-destination-city="{{ tdb($t->destination_city) }}"
                                     {{ $selectedTrip && $selectedTrip->id == $t->id ? 'selected' : '' }}>
-                                {{ $t->trip_code }} — {{ tdb($t->title) }} ({{ $t->availableSeatsCount() }} {{ __('Seats Free') }})
+                                [{{ $depDateFormatted }}] &bull; {{ $t->trip_code }} — {{ tdb($t->title) }} ({{ $freeSeats }} {{ __('Seats Free') }})
                             </option>
                         @endforeach
                     </select>
                     @error('travel_trip_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                </div>
+
+                <!-- Selected Trip Live Schedule Details Card -->
+                <div id="tripScheduleCard" class="card border-0 shadow-xs rounded-3 mb-3" style="background: linear-gradient(135deg, #f8fafc 0%, #edf2f7 100%); border: 1.5px solid #cbd5e1 !important; {{ $selectedTrip ? '' : 'display:none;' }}">
+                    <div class="card-body p-2 p-md-3">
+                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="badge bg-primary text-white font-monospace" id="tripScheduleCode">
+                                    {{ $selectedTrip ? $selectedTrip->trip_code : '' }}
+                                </span>
+                                <span class="fw-bold text-dark small" id="tripScheduleTitle">
+                                    {{ $selectedTrip ? tdb($selectedTrip->title) : '' }}
+                                </span>
+                            </div>
+                            <span class="badge bg-success text-white extra-small px-2 py-1" id="tripScheduleFreeSeats">
+                                <i class="fas fa-chair me-1"></i> {{ $selectedTrip ? $selectedTrip->availableSeatsCount() : 0 }} {{ __('Seats Free') }}
+                            </span>
+                        </div>
+
+                        <div class="row g-2 pt-2 border-top border-secondary-subtle">
+                            <div class="col-6">
+                                <div class="p-2 bg-white rounded-2 border h-100">
+                                    <span class="text-muted extra-small d-block text-uppercase fw-bold">
+                                        <i class="fas fa-plane-departure text-success me-1"></i> {{ __('Departure Date & Time') }}
+                                    </span>
+                                    <span class="fw-bold text-dark small d-block mt-1" id="tripScheduleDeparture">
+                                        {{ $selectedTrip && $selectedTrip->departure_date ? $selectedTrip->departure_date->format('d M Y — h:i A') : __('Not Set') }}
+                                    </span>
+                                    <span class="text-muted extra-small d-block mt-1" id="tripScheduleFromCity">
+                                        <i class="fas fa-map-marker-alt text-danger me-1"></i> {{ $selectedTrip ? tdb($selectedTrip->departure_city) : '' }}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="p-2 bg-white rounded-2 border h-100">
+                                    <span class="text-muted extra-small d-block text-uppercase fw-bold">
+                                        <i class="fas fa-plane-arrival text-danger me-1"></i> {{ __('Return Date & Time') }}
+                                    </span>
+                                    <span class="fw-bold text-dark small d-block mt-1" id="tripScheduleReturn">
+                                        {{ $selectedTrip && $selectedTrip->return_date ? $selectedTrip->return_date->format('d M Y — h:i A') : __('Not Set') }}
+                                    </span>
+                                    <span class="text-muted extra-small d-block mt-1" id="tripScheduleToCity">
+                                        <i class="fas fa-map-marker-alt text-primary me-1"></i> {{ $selectedTrip ? tdb($selectedTrip->destination_city) : '' }}
+                                        @if($selectedTrip && $selectedTrip->duration_days)
+                                            &bull; <span class="badge bg-light text-dark border extra-small">{{ $selectedTrip->duration_days }} {{ __('Days') }}</span>
+                                        @endif
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Selected Seats Banner -->
@@ -438,54 +528,51 @@
                             <input type="text" name="hotel_address" id="hotelAddressInput" class="form-control" placeholder="{{ __('Ibrahim Al Khalil Road, Makkah / Near Clock Tower') }}" value="{{ old('hotel_address', $selectedTrip?->hotel_address) }}">
                         </div>
 
-                        {{-- Row 2: Room Category, Room Price, and Hotel Nights (Laser-straight horizontal alignment) --}}
-                        <div class="col-md-5">
+                        {{-- Row 2: Room Category & Room Price (50% / 50%) --}}
+                        <div class="col-md-6">
                             <label class="form-label fw-bold text-dark small mb-1">
                                 <i class="fas fa-bed text-primary me-1"></i>{{ __('Room Category / Type') }}
                             </label>
                             <select name="room_type" id="roomTypeSelect" class="form-select" onchange="onRoomTypeChanged()">
-                                <optgroup label="{{ __('Standard Shared Rooms (مشترك)') }}">
-                                    <option value="quad_sharing" data-surcharge="0" data-badge="Quad (4 Beds)" {{ old('room_type', 'quad_sharing') === 'quad_sharing' ? 'selected' : '' }}>{{ __('Quad Sharing (رباعي - 4 Beds)') }}</option>
-                                    <option value="triple_sharing" data-surcharge="100" data-badge="Triple (3 Beds)" {{ old('room_type') === 'triple_sharing' ? 'selected' : '' }}>{{ __('Triple Sharing (ثلاثي - 3 Beds)') }} (+100 SAR)</option>
-                                    <option value="double_sharing" data-surcharge="200" data-badge="Double (2 Beds)" {{ old('room_type') === 'double_sharing' ? 'selected' : '' }}>{{ __('Double Sharing (ثنائي - 2 Beds)') }} (+200 SAR)</option>
-                                </optgroup>
-                                <optgroup label="{{ __('Personal & Private Rooms (خاص / شخصي)') }}">
-                                    <option value="single_private" data-surcharge="500" data-badge="Personal Single" {{ old('room_type') === 'single_private' ? 'selected' : '' }}>{{ __('Personal / Single Private Room (شخصي / مفرد)') }} (+500 SAR)</option>
-                                    <option value="private_room" data-surcharge="600" data-badge="Private Family" {{ old('room_type') === 'private_room' ? 'selected' : '' }}>{{ __('Private Family Room (غرفة عائلية خاصة)') }} (+600 SAR)</option>
-                                </optgroup>
-                                <optgroup label="{{ __('Luxury & VIP Suites (أجنحة وغرف فاخرة)') }}">
-                                    <option value="luxury_haram_view" data-surcharge="800" data-badge="👑 Luxury Haram View" {{ old('room_type') === 'luxury_haram_view' ? 'selected' : '' }}>👑 {{ __('Luxury Haram View (إطلالة الحرم فاخرة)') }} (+800 SAR)</option>
-                                    <option value="executive_suite" data-surcharge="1200" data-badge="⭐ Executive Suite" {{ old('room_type') === 'executive_suite' ? 'selected' : '' }}>⭐ {{ __('Executive Luxury Suite (جناح تنفيذي فاخر)') }} (+1,200 SAR)</option>
-                                </optgroup>
-                                <optgroup label="{{ __('Custom / Manual (مخصص / يدوي)') }}">
-                                    <option value="custom" data-surcharge="0" data-badge="Custom Room" {{ old('room_type') === 'custom' ? 'selected' : '' }}>✏️ {{ __('Custom Room / Custom Price (غرفة مخصصة / سعر يدوي)') }}</option>
-                                </optgroup>
+                                <option value="share_room" {{ old('room_type', 'share_room') === 'share_room' ? 'selected' : '' }}>{{ __('1- Share room (غرفة مشتركة)') }}</option>
+                                <option value="private_room" {{ old('room_type') === 'private_room' ? 'selected' : '' }}>{{ __('2- Private room (غرفة خاصة)') }}</option>
+                                <option value="bridal_room" {{ old('room_type') === 'bridal_room' ? 'selected' : '' }}>{{ __('3- Bridle room (غرفة عروسين)') }}</option>
                             </select>
                         </div>
 
-                        <div class="col-md-4">
+                        <div class="col-md-6">
                             <div class="d-flex justify-content-between align-items-center mb-1">
                                 <label class="form-label fw-bold text-dark small mb-0 text-success">
                                     <i class="fas fa-tag me-1"></i>{{ __('Room / Hotel Price') }}
                                 </label>
-                                <button type="button" class="btn btn-xs btn-outline-secondary py-0 px-2 extra-small border-0" style="font-size: 0.70rem;" onclick="resetHotelPriceToAuto()" title="{{ __('Auto Calculate from Package') }}">
-                                    <i class="fas fa-magic text-primary me-1"></i>{{ __('Auto') }}
-                                </button>
                             </div>
                             <div class="input-group">
                                 <span class="input-group-text bg-success-subtle text-success fw-bold">{{ currency_symbol() }}</span>
-                                <input type="number" step="0.01" min="0" id="roomCategoryPriceInput" class="form-control font-monospace fw-bold text-success" placeholder="0.00" oninput="onRoomCategoryPriceInput(this.value)">
+                                <input type="number" step="0.01" min="0" id="roomCategoryPriceInput" class="form-control font-monospace fw-bold text-success" placeholder="0.00" value="{{ old('hotel_expense', '0.00') }}" oninput="onRoomCategoryPriceInput(this.value)">
                             </div>
                         </div>
 
-                        <div class="col-md-3">
+                        {{-- Row 3: Hotel Nights Breakdown (33.3% / 33.3% / 33.3%) --}}
+                        <div class="col-md-4">
                             <label class="form-label fw-bold text-dark small mb-1">
-                                <i class="fas fa-moon text-warning me-1"></i>{{ __('Hotel Nights') }}
+                                <i class="fas fa-moon text-warning me-1"></i>{{ __('Extra Hotel Nights') }}
                             </label>
-                            <div class="input-group">
-                                <input type="number" name="nights_count" id="nightsCountInput" class="form-control font-monospace" min="1" max="90" placeholder="10" value="{{ old('nights_count', $selectedTrip?->duration_days ?: 10) }}">
-                                <span class="input-group-text bg-white text-muted small">{{ __('Nights') }}</span>
-                            </div>
+                            <input type="number" name="nights_count" id="nightsCountInput" class="form-control font-monospace" min="0" max="90" placeholder="0" value="{{ old('nights_count', 0) }}" oninput="syncCreateHotelNights('total')">
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold text-dark small mb-1">
+                                <i class="fas fa-kaaba text-success me-1"></i>{{ __('Makkah Nights') }}
+                            </label>
+                            <input type="number" name="makkah_nights" id="makkahNightsInput" class="form-control font-monospace" min="0" max="90" placeholder="0" value="{{ old('makkah_nights', 0) }}" oninput="syncCreateHotelNights('makkah')">
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold text-dark small mb-1">
+                                <i class="fas fa-mosque text-success me-1"></i>{{ __('Madinah Nights') }}
+                            </label>
+                            <input type="number" name="madinah_nights" id="madinahNightsInput" class="form-control font-monospace" min="0" max="90" placeholder="0" value="{{ old('madinah_nights', 0) }}" oninput="syncCreateHotelNights('madinah')">
+                            <input type="hidden" name="hotel_city" id="hotelCityInput" value="{{ old('hotel_city', 'Makkah') }}">
                         </div>
                     </div>
                 </div>
@@ -521,7 +608,7 @@
                     </div>
 
                     <div class="col-md-4">
-                        <label class="form-label fw-bold text-dark small">{{ __('Extra / Visa Charges') }}</label>
+                        <label class="form-label fw-bold text-dark small">{{ __('Extra / Pickup Charges') }}</label>
                         <div class="input-group">
                             <span class="input-group-text bg-light fw-bold">{{ currency_symbol() }}</span>
                             <input type="number" step="0.01" name="extra_charges" id="extraChargesInput" class="form-control" value="{{ old('extra_charges', '0.00') }}" oninput="recalcBooking()">
@@ -783,7 +870,92 @@
         updateSelectedSeatsUI();
         const alertBox = document.getElementById('liveSeatAlertContainer');
         if (alertBox) alertBox.style.display = 'none';
+        updateTripScheduleBanner(tripId);
         fetchTripSeats(tripId);
+    }
+
+    function updateTripScheduleBanner(tripId) {
+        const select = document.getElementById('tripSelect');
+        if (!select) return;
+        const opt = select.querySelector(`option[value="${tripId}"]`) || (select.selectedIndex >= 0 ? select.options[select.selectedIndex] : null);
+        if (!opt) return;
+
+        // Sync Date Filter input if user is not actively typing in it
+        const dateInput = document.getElementById('tripDepartureDateFilter');
+        if (dateInput && opt.dataset.departureDate && !dateInput.matches(':focus')) {
+            dateInput.value = opt.dataset.departureDate;
+        }
+
+        // Update Live Banner
+        const cardEl = document.getElementById('tripScheduleCard');
+        if (cardEl) cardEl.style.display = 'block';
+
+        const codeEl = document.getElementById('tripScheduleCode');
+        const titleEl = document.getElementById('tripScheduleTitle');
+        const freeSeatsEl = document.getElementById('tripScheduleFreeSeats');
+        const depEl = document.getElementById('tripScheduleDeparture');
+        const retEl = document.getElementById('tripScheduleReturn');
+        const fromEl = document.getElementById('tripScheduleFromCity');
+        const toEl = document.getElementById('tripScheduleToCity');
+
+        if (codeEl) codeEl.textContent = opt.dataset.tripCode || '';
+        if (titleEl) titleEl.textContent = opt.dataset.tripTitle || '';
+        if (freeSeatsEl) freeSeatsEl.innerHTML = `<i class="fas fa-chair me-1"></i> ${opt.dataset.availableSeats || 0} {{ __('Seats Free') }}`;
+        if (depEl) depEl.textContent = opt.dataset.departureDatetime || '{{ __("Not Set") }}';
+        if (retEl) retEl.textContent = opt.dataset.returnDatetime || '{{ __("Not Set") }}';
+        if (fromEl) fromEl.innerHTML = `<i class="fas fa-map-marker-alt text-danger me-1"></i> ${opt.dataset.departureCity || ''}`;
+        if (toEl) {
+            let toHtml = `<i class="fas fa-map-marker-alt text-primary me-1"></i> ${opt.dataset.destinationCity || ''}`;
+            if (opt.dataset.duration) {
+                toHtml += ` &bull; <span class="badge bg-light text-dark border extra-small">${opt.dataset.duration} {{ __('Days') }}</span>`;
+            }
+            toEl.innerHTML = toHtml;
+        }
+    }
+
+    function filterTripsByDate(targetDate) {
+        const select = document.getElementById('tripSelect');
+        const alertBox = document.getElementById('noTripsForDateAlert');
+        const badge = document.getElementById('tripsCountBadge');
+        if (!select) return;
+
+        let matchingTripId = null;
+        let matchCount = 0;
+        const total = select.options.length;
+
+        Array.from(select.options).forEach(function(opt) {
+            const optDate = opt.dataset.departureDate || '';
+            const matches = !targetDate || optDate === targetDate;
+            if (matches) {
+                matchCount++;
+                if (!matchingTripId) matchingTripId = opt.value;
+            }
+        });
+
+        if (targetDate && matchCount === 0) {
+            if (alertBox) alertBox.style.display = 'block';
+            if (badge) badge.textContent = `0 / ${total} {{ __('Trips') }}`;
+        } else {
+            if (alertBox) alertBox.style.display = 'none';
+            if (badge) {
+                badge.textContent = targetDate ? `${matchCount} / ${total} {{ __('Trips on Date') }}` : `${total} {{ __('Available Trips') }}`;
+            }
+            if (matchingTripId && select.value !== matchingTripId) {
+                select.value = matchingTripId;
+                if (select._filterControl) {
+                    select._filterControl.syncFromSelect();
+                }
+                onTripSelectChanged(matchingTripId);
+            }
+        }
+
+        if (select._filterControl) {
+            if (targetDate) {
+                select._filterControl.filterOptionsByDate(targetDate);
+            } else {
+                select._filterControl.filterOptions('');
+            }
+        }
     }
 
     function fetchTripSeats(tripId) {
@@ -1325,15 +1497,13 @@
                     const unitHotelDiff = Math.max(0, unitWithHotel - unitFare);
                     const roomTypeSelect = document.getElementById('roomTypeSelect');
                     const opt = roomTypeSelect ? roomTypeSelect.options[roomTypeSelect.selectedIndex] : null;
-                    const surcharge = opt ? (parseFloat(opt.dataset.surcharge) || 0) : 0;
-                    const badgeText = opt ? (opt.dataset.badge || 'Quad (4 Beds)') : 'Quad (4 Beds)';
+                    const badgeText = opt ? opt.text : '{{ __("Share room") }}';
 
                     const pill = document.getElementById('roomTypePillBadge');
                     if (pill) pill.innerText = badgeText;
 
                     if (!hotelInput.dataset.userEdited) {
-                        const singleSeatHotel = Math.max(0, unitHotelDiff + surcharge);
-                        const calculatedHotel = singleSeatHotel * count;
+                        const calculatedHotel = unitHotelDiff * count;
                         hotelInput.value = calculatedHotel.toFixed(2);
                     }
 
@@ -1343,8 +1513,7 @@
                     }
 
                     if (hotelNoteEl) {
-                        const surchargeNote = surcharge > 0 ? ` (+SAR ${surcharge} tier fee)` : '';
-                        hotelNoteEl.innerText = `${badgeText}: SAR ${hotelInput.value} (${count} {{ __('pax') }})${surchargeNote}`;
+                        hotelNoteEl.innerText = `${badgeText}: SAR ${hotelInput.value} (${count} {{ __('pax') }})`;
                     }
                 } else {
                     hotelInput.value = '0.00';
@@ -1444,30 +1613,52 @@
         recalcAutoFares();
     }
 
-    function onRoomTypeChanged() {
-        const sel = document.getElementById('roomTypeSelect');
-        const hotelInput = document.getElementById('hotelExpenseInput');
-        const priceInput = document.getElementById('roomCategoryPriceInput');
-        const helperText = document.getElementById('roomPriceHelperText');
+    function syncCreateHotelNights(source) {
+        const mkInput = document.getElementById('makkahNightsInput');
+        const mdInput = document.getElementById('madinahNightsInput');
+        const totInput = document.getElementById('nightsCountInput');
+        const cityInput = document.getElementById('hotelCityInput');
 
-        if (sel && sel.value === 'custom') {
-            if (hotelInput) hotelInput.dataset.userEdited = 'true';
-            if (helperText) {
-                helperText.innerHTML = '<span class="text-primary fw-semibold"><i class="fas fa-pen me-1"></i>{{ __("Type custom price below") }}</span>';
-            }
-            if (priceInput) {
-                priceInput.focus();
-                priceInput.select();
-            }
-        } else {
-            if (hotelInput) {
-                delete hotelInput.dataset.userEdited;
-            }
-            if (helperText) {
-                helperText.innerText = '{{ __("Enter custom rate or auto-calc") }}';
+        let mk = parseInt(mkInput ? mkInput.value : 0) || 0;
+        let md = parseInt(mdInput ? mdInput.value : 0) || 0;
+        let tot = parseInt(totInput ? totInput.value : 0) || 0;
+
+        if (source === 'makkah' || source === 'madinah') {
+            tot = mk + md;
+            if (totInput) totInput.value = tot;
+        } else if (source === 'total') {
+            if (mk === 0 && md === 0 && tot > 0) {
+                mk = tot;
+                if (mkInput) mkInput.value = mk;
+            } else if (mk + md !== tot) {
+                mk = Math.max(0, tot - md);
+                if (mkInput) mkInput.value = mk;
             }
         }
-        recalcAutoFares();
+
+        if (cityInput) {
+            if (mk > 0 && md > 0) {
+                cityInput.value = 'Makkah & Madinah';
+            } else if (md > 0) {
+                cityInput.value = 'Madinah';
+            } else {
+                cityInput.value = 'Makkah';
+            }
+        }
+    }
+
+    function onRoomTypeChanged() {
+        const sel = document.getElementById('roomTypeSelect');
+        const opt = sel ? sel.options[sel.selectedIndex] : null;
+        const badgeText = opt ? opt.text : '';
+        const pill = document.getElementById('roomTypePillBadge');
+        if (pill) pill.innerText = badgeText;
+        const hotelNoteEl = document.getElementById('hotelMultiplierNote');
+        const hotelInput = document.getElementById('hotelExpenseInput');
+        if (hotelNoteEl && hotelInput) {
+            const count = selectedSeats.length || 1;
+            hotelNoteEl.innerText = `${badgeText}: SAR ${hotelInput.value} (${count} {{ __('pax') }})`;
+        }
     }
 
     function onBookingEmployeeChanged(sel) {
@@ -1524,8 +1715,24 @@
             initSearchableFilterSelect(el);
         });
 
+        // Initialize Departure Date Calendar Filter
+        const dateFilterInput = document.getElementById('tripDepartureDateFilter');
+        if (dateFilterInput) {
+            dateFilterInput.addEventListener('change', function() {
+                filterTripsByDate(this.value);
+            });
+        }
+        const clearDateFilterBtn = document.getElementById('clearTripDateFilterBtn');
+        if (clearDateFilterBtn) {
+            clearDateFilterBtn.addEventListener('click', function() {
+                if (dateFilterInput) dateFilterInput.value = '';
+                filterTripsByDate(null);
+            });
+        }
+
         const initialTripId = document.getElementById('tripSelect')?.value;
         if (initialTripId) {
+            updateTripScheduleBanner(initialTripId);
             fetchTripSeats(initialTripId);
         }
     });
@@ -1630,7 +1837,7 @@
                 value: opt.value,
                 text: opt.text,
                 groupHeader: groupHeader,
-                searchStr: (opt.text + ' ' + opt.value + ' ' + (opt.dataset.name || '') + ' ' + (opt.dataset.phone || '')).toLowerCase()
+                searchStr: (opt.text + ' ' + opt.value + ' ' + (opt.dataset.name || '') + ' ' + (opt.dataset.phone || '') + ' ' + (opt.dataset.departureDate || '') + ' ' + (opt.dataset.departureDatetime || '') + ' ' + (opt.dataset.tripCode || '')).toLowerCase()
             };
 
             itemEl.addEventListener('click', function(e) {
@@ -1771,6 +1978,22 @@
             buildOptions();
         });
         observer.observe(select, { childList: true, subtree: true, characterData: true });
+
+        select._filterControl = {
+            filterOptions: filterOptions,
+            filterOptionsByDate: function(d) {
+                let visibleCount = 0;
+                items.forEach(function(item) {
+                    const optDate = item.opt.dataset.departureDate || '';
+                    const isMatch = !d || optDate === d;
+                    item.el.style.display = isMatch ? 'flex' : 'none';
+                    if (isMatch) visibleCount++;
+                });
+                emptyEl.style.display = visibleCount === 0 ? 'block' : 'none';
+            },
+            syncFromSelect: syncFromSelect,
+            buildOptions: buildOptions
+        };
 
         buildOptions();
         return wrapper;

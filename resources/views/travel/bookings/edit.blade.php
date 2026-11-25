@@ -312,42 +312,37 @@
                         <input type="text" name="hotel_address" class="form-control" placeholder="{{ __('Ibrahim Al Khalil Road, Makkah / Near Haram') }}" value="{{ old('hotel_address', $booking->hotel_address ?: $booking->trip?->hotel_address) }}">
                     </div>
 
-                    <div class="col-md-5" id="roomTypeGroup">
+                    <div class="col-md-6" id="roomTypeGroup">
                         <label class="form-label fw-bold text-dark small mb-1"><i class="fas fa-bed text-primary me-1"></i>{{ __('Room Category / Type') }}</label>
-                        <select name="room_type" id="editRoomTypeSelect" class="form-select" onchange="onEditRoomTypeChanged()">
-                            <optgroup label="{{ __('Standard Shared Rooms (مشترك)') }}">
-                                <option value="quad_sharing" data-surcharge="0" {{ old('room_type', $booking->room_type) === 'quad_sharing' ? 'selected' : '' }}>{{ __('Quad Sharing (رباعي - 4 Beds)') }}</option>
-                                <option value="triple_sharing" data-surcharge="100" {{ old('room_type', $booking->room_type) === 'triple_sharing' ? 'selected' : '' }}>{{ __('Triple Sharing (ثلاثي - 3 Beds)') }} (+100 SAR)</option>
-                                <option value="double_sharing" data-surcharge="200" {{ old('room_type', $booking->room_type) === 'double_sharing' ? 'selected' : '' }}>{{ __('Double Sharing (ثنائي - 2 Beds)') }} (+200 SAR)</option>
-                            </optgroup>
-                            <optgroup label="{{ __('Personal & Private Rooms (خاص / شخصي)') }}">
-                                <option value="single_private" data-surcharge="500" {{ old('room_type', $booking->room_type) === 'single_private' ? 'selected' : '' }}>{{ __('Personal / Single Private Room (شخصي / مفرد)') }} (+500 SAR)</option>
-                                <option value="private_room" data-surcharge="600" {{ old('room_type', $booking->room_type) === 'private_room' ? 'selected' : '' }}>{{ __('Private Family Room (غرفة عائلية خاصة)') }} (+600 SAR)</option>
-                            </optgroup>
-                            <optgroup label="{{ __('Luxury & VIP Suites (أجنحة وغرف فاخرة)') }}">
-                                <option value="luxury_haram_view" data-surcharge="800" {{ old('room_type', $booking->room_type) === 'luxury_haram_view' ? 'selected' : '' }}>👑 {{ __('Luxury Haram View (إطلالة الحرم فاخرة)') }} (+800 SAR)</option>
-                                <option value="executive_suite" data-surcharge="1200" {{ old('room_type', $booking->room_type) === 'executive_suite' ? 'selected' : '' }}>⭐ {{ __('Executive Luxury Suite (جناح تنفيذي فاخر)') }} (+1,200 SAR)</option>
-                            </optgroup>
-                            <optgroup label="{{ __('Custom / Manual (مخصص / يدوي)') }}">
-                                <option value="custom" data-surcharge="0" {{ old('room_type', $booking->room_type) === 'custom' ? 'selected' : '' }}>✏️ {{ __('Custom Room / Custom Price (غرفة مخصصة / سعر يدوي)') }}</option>
-                            </optgroup>
+                        <select name="room_type" id="editRoomTypeSelect" class="form-select">
+                            <option value="share_room" {{ old('room_type', $booking->room_type) === 'share_room' || in_array($booking->room_type, ['quad_sharing', 'triple_sharing', 'double_sharing']) ? 'selected' : '' }}>{{ __('1- Share room (غرفة مشتركة)') }}</option>
+                            <option value="private_room" {{ old('room_type', $booking->room_type) === 'private_room' || $booking->room_type === 'single_private' ? 'selected' : '' }}>{{ __('2- Private room (غرفة خاصة)') }}</option>
+                            <option value="bridal_room" {{ old('room_type', $booking->room_type) === 'bridal_room' ? 'selected' : '' }}>{{ __('3- Bridle room (غرفة عروسين)') }}</option>
                         </select>
                     </div>
 
-                    <div class="col-md-4" id="roomPriceGroup">
+                    <div class="col-md-6" id="roomPriceGroup">
                         <label class="form-label fw-bold text-dark text-success small mb-1"><i class="fas fa-tag me-1"></i>{{ __('Room / Hotel Price') }}</label>
                         <div class="input-group">
                             <span class="input-group-text bg-success-subtle text-success fw-bold">{{ currency_symbol() }}</span>
-                            <input type="number" step="0.01" min="0" id="editRoomPriceInput" class="form-control font-monospace fw-bold text-success" value="{{ old('hotel_expense', $booking->hotel_expense) }}" oninput="syncEditHotelExpense(this.value)">
+                            <input type="number" step="0.01" min="0" name="hotel_expense" id="editRoomPriceInput" class="form-control font-monospace fw-bold text-success" value="{{ old('hotel_expense', $booking->hotel_expense) }}" oninput="syncEditHotelExpense(this.value)">
                         </div>
                     </div>
 
-                    <div class="col-md-3" id="nightsCountGroup">
-                        <label class="form-label fw-bold text-dark small mb-1"><i class="fas fa-moon text-warning me-1"></i>{{ __('Hotel Nights') }}</label>
-                        <div class="input-group">
-                            <input type="number" name="nights_count" class="form-control font-monospace" min="1" max="90" value="{{ old('nights_count', $booking->nights_count ?: ($booking->trip?->duration_days ?: 10)) }}">
-                            <span class="input-group-text bg-white text-muted small">{{ __('Nights') }}</span>
-                        </div>
+                    <div class="col-md-4" id="nightsCountGroup">
+                        <label class="form-label fw-bold text-dark small mb-1"><i class="fas fa-moon text-warning me-1"></i>{{ __('Extra Hotel Nights') }}</label>
+                        <input type="number" name="nights_count" id="editNightsCountInput" class="form-control font-monospace" min="0" max="90" value="{{ old('nights_count', $booking->nights_count ?? 0) }}" oninput="syncEditHotelNights('total')">
+                    </div>
+
+                    <div class="col-md-4" id="makkahNightsGroup">
+                        <label class="form-label fw-bold text-dark small mb-1"><i class="fas fa-kaaba text-success me-1"></i>{{ __('Makkah Nights') }}</label>
+                        <input type="number" name="makkah_nights" id="editMakkahNightsInput" class="form-control font-monospace" min="0" max="90" value="{{ old('makkah_nights', $booking->makkah_nights ?? 0) }}" oninput="syncEditHotelNights('makkah')">
+                    </div>
+
+                    <div class="col-md-4" id="madinahNightsGroup">
+                        <label class="form-label fw-bold text-dark small mb-1"><i class="fas fa-mosque text-success me-1"></i>{{ __('Madinah Nights') }}</label>
+                        <input type="number" name="madinah_nights" id="editMadinahNightsInput" class="form-control font-monospace" min="0" max="90" value="{{ old('madinah_nights', $booking->madinah_nights ?? 0) }}" oninput="syncEditHotelNights('madinah')">
+                        <input type="hidden" name="hotel_city" id="editHotelCityInput" value="{{ old('hotel_city', $booking->hotel_city ?? 'Makkah') }}">
                     </div>
 
                     <div class="col-12">
@@ -487,18 +482,59 @@ function clearReturnDropoffVal() {
 function toggleHotelFields() {
     const isWithHotel = document.getElementById('pkgWithHotel').checked;
     const hotelGroup = document.getElementById('hotelNameGroup');
+    const hotelAddressGroup = document.getElementById('hotelAddressGroup');
     const roomGroup = document.getElementById('roomTypeGroup');
+    const roomPriceGroup = document.getElementById('roomPriceGroup');
     const nightsGroup = document.getElementById('nightsCountGroup');
-    if (isWithHotel) {
-        hotelGroup.style.display = 'block';
-        roomGroup.style.display = 'block';
-        if (nightsGroup) nightsGroup.style.display = 'block';
-    } else {
-        hotelGroup.style.display = 'none';
-        roomGroup.style.display = 'none';
-        if (nightsGroup) nightsGroup.style.display = 'none';
+    const makkahGroup = document.getElementById('makkahNightsGroup');
+    const madinahGroup = document.getElementById('madinahNightsGroup');
+    const d = isWithHotel ? 'block' : 'none';
+    if (hotelGroup) hotelGroup.style.display = d;
+    if (hotelAddressGroup) hotelAddressGroup.style.display = d;
+    if (roomGroup) roomGroup.style.display = d;
+    if (roomPriceGroup) roomPriceGroup.style.display = d;
+    if (nightsGroup) nightsGroup.style.display = d;
+    if (makkahGroup) makkahGroup.style.display = d;
+    if (madinahGroup) madinahGroup.style.display = d;
+    if (!isWithHotel) {
         document.getElementById('hotelExpense').value = 0;
+        const editPrice = document.getElementById('editRoomPriceInput');
+        if (editPrice) editPrice.value = '0.00';
         recalcTotals();
+    }
+}
+
+function syncEditHotelNights(source) {
+    const mkInput = document.getElementById('editMakkahNightsInput');
+    const mdInput = document.getElementById('editMadinahNightsInput');
+    const totInput = document.getElementById('editNightsCountInput');
+    const cityInput = document.getElementById('editHotelCityInput');
+
+    let mk = parseInt(mkInput ? mkInput.value : 0) || 0;
+    let md = parseInt(mdInput ? mdInput.value : 0) || 0;
+    let tot = parseInt(totInput ? totInput.value : 0) || 0;
+
+    if (source === 'makkah' || source === 'madinah') {
+        tot = mk + md;
+        if (totInput) totInput.value = tot;
+    } else if (source === 'total') {
+        if (mk === 0 && md === 0 && tot > 0) {
+            mk = tot;
+            if (mkInput) mkInput.value = mk;
+        } else if (mk + md !== tot) {
+            mk = Math.max(0, tot - md);
+            if (mkInput) mkInput.value = mk;
+        }
+    }
+
+    if (cityInput) {
+        if (mk > 0 && md > 0) {
+            cityInput.value = 'Makkah & Madinah';
+        } else if (md > 0) {
+            cityInput.value = 'Madinah';
+        } else {
+            cityInput.value = 'Makkah';
+        }
     }
 }
 

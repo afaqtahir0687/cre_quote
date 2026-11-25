@@ -286,23 +286,39 @@
 
             @if($booking->package_type === 'with_hotel')
                 <div class="row g-3">
-                    <div class="col-md-5">
+                    <div class="col-md-3">
                         <label class="form-label text-muted extra-small uppercase fw-bold mb-1">{{ __('Hotel Name') }}</label>
                         <div class="fw-bold text-dark fs-6">{{ tdb($booking->effective_hotel_name ?: __('Designated Hotel')) }}</div>
                     </div>
-                    <div class="col-md-4">
-                        <label class="form-label text-muted extra-small uppercase fw-bold mb-1">{{ __('Room Sharing Category') }}</label>
+                    <div class="col-md-3">
+                        <label class="form-label text-muted extra-small uppercase fw-bold mb-1">{{ __('Room Category / Type') }}</label>
                         <div>
                             {!! $booking->roomTypeBadge() !!}
                         </div>
                     </div>
                     <div class="col-md-3">
-                        <label class="form-label text-muted extra-small uppercase fw-bold mb-1">{{ __('Stay Duration') }}</label>
-                        <div class="fw-bold text-dark fs-6">{{ $booking->nights_count ?: ($booking->trip?->duration_days ?: 10) }} {{ __('Nights') }}</div>
+                        <label class="form-label text-muted extra-small uppercase fw-bold mb-1">{{ __('Extra Hotel Nights') }}</label>
+                        <div class="fw-bold text-dark fs-6">
+                            {{ $booking->nights_count ?? 0 }} {{ __('Nights') }}
+                            @if(($booking->makkah_nights ?? 0) > 0 || ($booking->madinah_nights ?? 0) > 0)
+                                <div class="small text-muted mt-1">
+                                    @if(($booking->makkah_nights ?? 0) > 0)
+                                        <span class="badge bg-success-subtle text-success me-1"><i class="fas fa-kaaba me-1"></i>{{ $booking->makkah_nights }} {{ __('Makkah') }}</span>
+                                    @endif
+                                    @if(($booking->madinah_nights ?? 0) > 0)
+                                        <span class="badge bg-info-subtle text-info"><i class="fas fa-mosque me-1"></i>{{ $booking->madinah_nights }} {{ __('Madinah') }}</span>
+                                    @endif
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label text-muted extra-small uppercase fw-bold mb-1">{{ __('Hotel Location / City') }}</label>
+                        <div class="fw-bold text-dark fs-6"><i class="fas fa-map-marker-alt text-danger me-1"></i>{{ $booking->hotelCityLabel() }}</div>
                     </div>
                     @if($booking->effective_hotel_address)
                         <div class="col-12 mt-2">
-                            <label class="form-label text-muted extra-small uppercase fw-bold mb-1"><i class="fas fa-map-marker-alt text-danger me-1"></i> {{ __('Hotel Address / Location') }}</label>
+                            <label class="form-label text-muted extra-small uppercase fw-bold mb-1"><i class="fas fa-location-arrow text-primary me-1"></i> {{ __('Hotel Address / Details') }}</label>
                             <div class="p-2 rounded bg-light border text-dark small">{{ tdb($booking->effective_hotel_address) }}</div>
                         </div>
                     @endif
@@ -399,9 +415,9 @@
             <!-- Cancellation Warning or Action -->
             @if($booking->booking_status === 'confirmed')
                 <div class="mt-4 pt-3 border-top text-center">
-                    <form action="{{ route('travel.bookings.cancel', $booking->id) }}" method="POST" onsubmit="return confirm('{{ __('Are you sure you want to cancel this booking and free Seat #:seat for other passengers?', ['seat' => $booking->seat_number]) }}');">
+                    <form action="{{ route('travel.bookings.cancel', $booking->id) }}" method="POST" id="cancelBookingShowForm">
                         @csrf
-                        <button type="submit" class="btn btn-outline-danger btn-sm w-100 shadow-sm">
+                        <button type="button" class="btn btn-outline-danger btn-sm w-100 shadow-sm" onclick="confirmCancelBookingShow()">
                             <i class="fas fa-ban me-1"></i> {{ __('Cancel Booking & Release Seat #:seat', ['seat' => $booking->seat_number]) }}
                         </button>
                     </form>
@@ -410,4 +426,45 @@
         </x-card>
     </div>
 </div>
+
+@push('scripts')
+<script>
+function confirmCancelBookingShow() {
+    if (typeof Swal !== 'undefined') {
+        Swal.fire({
+            title: '{{ __("Cancel Booking & Release Seat?") }}',
+            html: `
+                <div class="text-center py-2">
+                    <p class="mb-1 text-muted">{{ __("Passenger:") }} <strong class="text-dark">{{ $booking->passenger_name }}</strong></p>
+                    <span class="badge bg-danger fs-6 px-3 py-1 mb-2">{{ __("Seat #") }}{{ $booking->seat_number }}</span>
+                    <div class="small text-muted mt-2">{{ $booking->booking_reference }}</div>
+                    <div class="alert alert-warning text-start small mt-3 mb-0">
+                        <i class="fas fa-exclamation-triangle me-1"></i>
+                        {{ __("Are you sure you want to cancel this booking? The seat will be released and made available for other passengers.") }}
+                    </div>
+                </div>
+            `,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#dc3545',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: '<i class="fas fa-ban me-1"></i> {{ __("Yes, Cancel & Release Seat") }}',
+            cancelButtonText: '{{ __("No, Keep Booking") }}',
+            reverseButtons: true,
+            customClass: {
+                popup: 'rounded-4 shadow-lg'
+            }
+        }).then(function(result) {
+            if (result.isConfirmed) {
+                document.getElementById('cancelBookingShowForm').submit();
+            }
+        });
+    } else {
+        if (confirm('{{ __("Are you sure you want to cancel this booking and free Seat #:seat for other passengers?", ["seat" => $booking->seat_number]) }}')) {
+            document.getElementById('cancelBookingShowForm').submit();
+        }
+    }
+}
+</script>
+@endpush
 @endsection
