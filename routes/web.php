@@ -219,6 +219,10 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('trips/{trip}/seats-json', [\App\Http\Controllers\TravelTripController::class, 'seatsJson'])->name('trips.seats_json');
         Route::resource('trips', \App\Http\Controllers\TravelTripController::class);
 
+        // Daily Staff Sales, Seats & Expenses Statement (Closing Report)
+        Route::get('daily-report', [\App\Http\Controllers\TravelDailyReportController::class, 'index'])->name('daily_report');
+        Route::get('daily-report/pdf', [\App\Http\Controllers\TravelDailyReportController::class, 'downloadPdf'])->name('daily_report.pdf');
+
         // Seat & Passenger Bookings
         Route::post('bookings/{booking}/cancel', [\App\Http\Controllers\TravelBookingController::class, 'cancel'])->name('bookings.cancel');
         Route::get('bookings/{booking}/voucher', [\App\Http\Controllers\TravelBookingController::class, 'printVoucher'])->name('bookings.voucher');

@@ -188,6 +188,10 @@
                         <span class="submenu-bullet"></span>
                         <span>{{ __('Book a Seat') }}</span>
                     </a>
+                    <a href="{{ route('travel.daily_report') }}" class="submenu-link {{ request()->routeIs('travel.daily_report*') ? 'active' : '' }}">
+                        <span class="submenu-bullet"></span>
+                        <span class="fw-bold text-success">{{ __('Daily Closing & Staff Sales') }}</span>
+                    </a>
                 </div>
             </div>
 
